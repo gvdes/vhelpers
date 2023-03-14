@@ -24,8 +24,8 @@ module.exports = configure(function (/* ctx */) {
     // https://v2.quasar.dev/quasar-cli/boot-files
     boot: [
       'auth',
-      'axios',
-      'AccessDB'
+      // 'axios',
+      // 'AccessDB'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

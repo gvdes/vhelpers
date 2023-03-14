@@ -69,7 +69,7 @@ import { ref, computed, onUnmounted, onDeactivated } from 'vue';
   });
 
   const openCashDesk = () => {
-    $emit('openCashDesk', { _inc:inc.value, _iva:iva.value });
+    $emit('openCashDesk', { _inc:inc.value, _iva:incops[iva.value] });
   }
 
   onUnmounted(() => {

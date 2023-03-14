@@ -62,7 +62,7 @@
   const folio = ref("");
   const ticket = ref(null);
   const inc = ref(0.00);
-  const iva = ref(null);
+  const iva = ref(0.00);
   const wndPayment = ref({ state:false });
 
   const cansearch = computed(() => (cashdesk.value&&folio.value.length));
@@ -99,11 +99,11 @@
   const openCashDesk = ({_inc, _iva}) => {
     console.log(_inc, _iva);
     inc.value=parseFloat(_inc);
-    iva.value=_iva;
+    iva.value=parseFloat(_iva);
     wndPayment.value.state = true;
   }
 
-  const pay = () => {
+  const pay = (modes) => {
     console.log("pagando...");
 
     let host = VDB.session.store.ip;
@@ -111,41 +111,40 @@
     let url = `http://${host}/access/public/iva/create`;
 
     let data = {
-      modes:wndPayment.value.modes,
+      modes, by,
       ticket:ticket.value.ticket,
-      iva, by
+      iva:iva.value
     }
 
     $q.loading.show({ message:"Imprimiendo..." });
     console.log(data);
 
-    // axios.post(url,data).then( done =>{
-    //   console.log(done.data);
-    //   let resp = done.data;
+    axios.post(url,data).then( done =>{
+      console.log(done.data);
+      let resp = done.data;
 
-    //   $q.loading.hide();
+      $q.loading.hide();
+      wndPayment.value.state = false;
+      ticket.iva = null;
+      ticket.value = null;
 
-    //   wndPayment.value.state = false;
-    //   ticket.iva = null;
-    //   ticket.value = null;
+      $q.notify({
+        html:true,
+        color:"positive",
+        position:"center",
+        message:`<span class="fs-inc2"> El ticket <b>${resp.ticket}</b> fue generado! </span>`,
+      });
 
-    //   $q.notify({
-    //     html:true,
-    //     color:"positive",
-    //     position:"center",
-    //     message:`<span class="fs-inc2"> El ticket <b>${resp.ticket}</b> fue generado! </span>`,
-    //   });
-
-    //   if(!resp.printed){
-    //     $q.notify({
-    //       html:true,
-    //       color:"negative",
-    //       position:"top",
-    //       icon:"fas fa-bugs",
-    //       message:`<span class="fs-inc2"> No se pudo emitir el ticket, la conexion a la impresora no esta disponible! </span>`,
-    //     });
-    //   }
-    // }).catch( fail => { console.log(fail); $q.loading.hide(); } );
+      if(!resp.printed){
+        $q.notify({
+          html:true,
+          color:"negative",
+          position:"top",
+          icon:"fas fa-bugs",
+          message:`<span class="fs-inc2"> No se pudo emitir el ticket, la conexion a la impresora no esta disponible! </span>`,
+        });
+      }
+    }).catch( fail => { console.log(fail); $q.loading.hide(); } );
   }
 
 </script>

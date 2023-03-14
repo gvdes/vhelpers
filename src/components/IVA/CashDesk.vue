@@ -81,6 +81,6 @@ import { ref, computed } from 'vue';
   const totalPayment = computed(() => (parseFloat(modes.value.EFE)+parseFloat(modes.value.DIG.val)).toFixed(2) );
 
   const pay = () => {
-    $emit('pay');
+    $emit('pay', modes.value);
   }
 </script>
