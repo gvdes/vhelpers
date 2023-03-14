@@ -1,0 +1,48 @@
+// app global css in SCSS form
+
+.seeme{ border:1px solid red;}
+
+.bg-bluedeepdark{ background-color: $bluedeepdark !important; }
+.bg-bluedark{ background-color: $bluedark !important; }
+.bg-bluegrey{ background-color: $bluegrey !important; }
+.bg-bluelight{ background-color: $bluelight !important; }
+
+@font-face { font-family: 'TFontRG';  src: url("../assets/fonts/ChocolatesRegular.otf"); }
+@font-face { font-family: 'TFontMD';  src: url("../assets/fonts/ChocolatesMedium.otf"); }
+@font-face { font-family: 'TFontLG';  src: url("../assets/fonts/ChocolatesLight.otf"); }
+@font-face { font-family: 'TFontXLG';  src: url("../assets/fonts/ChocolatesExtraLight.otf"); }
+@font-face { font-family: 'TFontSBO';  src: url("../assets/fonts/ChocolatesSemiBold.otf"); }
+@font-face { font-family: 'TFontBO';  src: url("../assets/fonts/ChocolatesBold.otf"); }
+@font-face { font-family: 'TFontXBO';  src: url("../assets/fonts/ChocolatesExtraBold.otf"); }
+
+.fw-reg{ font-family: "FontTRG"; }
+.fw-med{ font-family: "FontTMD"; }
+.fw-light{ font-family: "TFontLG"; }
+.fw-xlight{ font-family: "TFontXLG"; }
+.fw-sbold{ font-family: "TFontSBO"; }
+.fw-bold{ font-family: "TFontBO"; }
+.fw-xbold{ font-family: "TFontXBO"; }
+
+.fc-deepbluedark{ color: $bluedeepdark; }
+.fc-bluedark{ color: $bluedark; }
+.fc-bluegrey{ color: $bluegrey; }
+.fc-bluelight{ color: $bluelight; }
+.fc-primary{ color: $primaryv1; }
+.fc-secondary{ color: $secondaryv1; }
+.fc-accent{ color: $accentv1; }
+.fc-positive{ color: $positivev1; }
+.fc-negative{ color: $negativev1; }
+.fc-warning{ color: $warningv1; }
+.fc-info{ color: $infov1; }
+
+.fs-inc1{ font-size: 1.25em; }
+.fs-inc2{ font-size: 1.50em; }
+.fs-inc3{ font-size: 1.75em; }
+.fs-inc4{ font-size: 2em; }
+
+.fs-dec1{ font-size: .9em; }
+.fs-dec2{ font-size: .8em; }
+.fs-dec3{ font-size: .7em; }
+.fs-dec4{ font-size: .6em; }
+
+*, html{ font-family: "TFontMD"; }
