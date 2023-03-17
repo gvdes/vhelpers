@@ -27,3 +27,6 @@ const routes = [
 ]
 
 export default routes
+
+/** Despliegue en produccion */
+// scp -P6122 -r ./pwa lalo@192.168.10.15:/home/lalo/frontend/vhelpers
