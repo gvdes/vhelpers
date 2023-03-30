@@ -9,12 +9,12 @@ export const useVDBStore = defineStore('vdb', {
     series:[1,2,3,4,5,6,7,8,9],
     modules:[
       { id:1, name:"IVA", alias:"IVA", desc:"Agregue iva a tickets cobrados", path:"iva" },
-      // { id:2, name:"Devoluciones", alias:"DEV", desc:"Realice devoluciones totales o parciales de un ticket", path:"devoluciones" }
+      { id:2, name:"Ciclicos", alias:"CIC", desc:"Visor de Inventarios Ciclicos", path:"ciclicos" }
     ]
   }),
 
   getters: {
-    findByNick (state) {
+    findByNick (state) { // se usa para el inicio de sesion
       return (nick) => state.users.find( u => u.credentials.nick==nick );
     },
   },

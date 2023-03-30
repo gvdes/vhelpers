@@ -12,7 +12,7 @@
         <q-list separator>
           <div class="q-py-md text-center">
             <div class="text-h4 text-indigo-10">Menu</div>
-            <div class="text-grey-5">Deje de robar porque me ponen a trabajar</div>
+            <div class="text-grey-5">Herramientas rapiditas</div>
           </div>
 
           <q-item clickable v-ripple v-for="(module, idx) in appmodules" :key="idx" :to="module.path">

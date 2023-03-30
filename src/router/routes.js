@@ -14,6 +14,10 @@ const routes = [
     component: () => import('layouts/IvaLayout.vue'),
   },
   {
+    path: '/ciclicos',
+    component: () => import('layouts/CiclicosLayout.vue'),
+  },
+  {
     path:'/__set1',
     component: () => import('layouts/Setter1.vue')
   },
