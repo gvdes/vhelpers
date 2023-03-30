@@ -1,6 +1,7 @@
 <template>
   <div class="q-pa-sm transparent text-dark row items-center">
-    <div class="col"><span class="text-bold text-h6 text-pink">{{ user.credentials.nick }}</span></div>
+    <q-btn color="primary" icon="home" flat dense class="q-mr-sm" @click="$router.push('/')"/>
+    <div class="col"><span class="text-h6 text-pink">{{ user.credentials.nick }}</span></div>
     <div class="col text-center fs-inc1 text-primary fw-sbold">{{ user.store.name }}</div>
     <div class="col text-right">
       <q-btn color="pink" icon="logout" no-caps flat @click="WSD.state=true" />

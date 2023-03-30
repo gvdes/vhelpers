@@ -6,16 +6,16 @@
       <UserToolbar />
       <q-separator />
       <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Ciclicos</span></div>
+        <div><span class="text-grey">Helpers</span> <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Ciclicos</span></div>
 
-        <div class="row">
+        <div class="row items-center">
           <q-select v-model="viewdate" :options="optranges" label="Vista" autofocus @update:model-value="reloadView" borderless>
             <template v-slot:prepend>
               <q-btn dense flat color="primary" icon="autorenew"  @click.stop="init" />
             </template>
           </q-select>
           <!-- <q-btn color="primary" /> -->
-          <q-btn color="primary" icon="search">
+          <q-btn color="primary" icon="search" dense flat>
             <q-menu>
               <div class="q-pa-md bg-grey-2 text-primary">Buscar Inventario</div>
               <q-separator />
@@ -47,7 +47,7 @@
         </q-card>
 
         <q-dialog v-model="wndViewer.state" full-width>
-          <InvViewer :folio="wndViewer.folio" :store="$user.session.store.id"/>
+          <InvViewer :folio="wndViewer.folio" :store="$user.session.store.id" />
         </q-dialog>
       </q-page>
     </q-page-container>
@@ -114,15 +114,13 @@ const dispDateEnd = computed(() =>  dateranges.value.to.format("YYYY/MM/DD")); /
 
 const search = () => {
   console.log("searching folio");
-  const response = CDB.find();
-  console.log(response);
+  wndViewer.value.folio = folio.value;
+  wndViewer.value.state = true;
 }
 
 const rowclicked = async (evt,row,idx) => {
-
   wndViewer.value.folio = row.id;
   wndViewer.value.state = true;
-
 }
 
 const init = async () => {

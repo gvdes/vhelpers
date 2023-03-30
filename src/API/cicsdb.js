@@ -11,7 +11,7 @@ export default{
     // return "Esta es la base";
   },
   find(folio,store){
-    return vizapi.get(`/ciclicos/${folio}?store=${store}`).then( done=>done.data ).catch( fail => { return {fail}} );
+    return vizapi.get(`/ciclicos/${folio}?store=${store}`).then( done=>done.data ).catch( fail => { return {fail}; } );
   }
 
 }

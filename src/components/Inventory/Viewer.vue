@@ -1,5 +1,5 @@
 <template>
-  <q-card class="my-card">
+  <q-card class="my-card" v-if="inv">
     <q-card-section>
       <div class="row justify-between">
         <div class="text-h6">Inventario {{ folio }}</div>
@@ -31,6 +31,12 @@
         </q-tab-panel>
       </q-tab-panels>
   </q-card>
+
+  <q-card v-if="errorsearch" class="bg-negative">
+    <q-card-section>
+      <pre class="text-white">{{errorsearch}}</pre>
+    </q-card-section>
+  </q-card>
 </template>
 
 <script setup>
@@ -41,14 +47,17 @@ import fsaver from "file-saver";
 import dayjs from 'dayjs';
 
 const $props = defineProps({
-  folio:Number,
+  folio:[String, Number],
   store:[String, Number],
 });
+
+const $emit = defineEmits(['errorsearch']);
 
 const folio = $props.folio;
 const store = $props.store;
 
 const inv = ref(null);
+const errorsearch = ref(null);
 const tab = ref("body");
 const rowsproducts = ref(null);
 const tproducts = ref({
@@ -76,7 +85,7 @@ const endsat = computed(() => "");
 const findInv = async() => {
   const response = await CDB.find(folio, store);
   console.log(response);
-  inv.value = response.inventory;
+  response.fail ? errorsearch.value=response.fail : inv.value=response.inventory;
 }
 
 findInv();

@@ -2,7 +2,7 @@
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
     <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
 
-    <q-header bordered class="transparent">
+    <q-header bordered class="bg-grey-3 ">
       <UserToolbar />
     </q-header>
 
