@@ -782,5 +782,21 @@
           "ip": "192.168.100.250:1619"
         },
         "rol": "caj"
-      }
+      },
+    {
+      "id": "159",
+      "name": "Cesar Valencia",
+      "credentials": {
+        "nick": "Cesarv",
+        "pass": "606a",
+        "hash": "2ee6ad3e37104f3dde6e1c5a3600ea81"
+      },
+      "store": {
+        "id": "3",
+        "name": "San Pablo 1",
+        "alias": "SP1",
+        "ip": "192.168.100.250:1619"
+      },
+      "rol": "aux"
+    }
   ]
