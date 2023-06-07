@@ -784,10 +784,10 @@
         "rol": "caj"
       },
     {
-      "id": "159",
-      "name": "Cesar Valencia",
+      "id": "160",
+      "name": "Naomi Cruz",
       "credentials": {
-        "nick": "Cesarv",
+        "nick": "NaomiC",
         "pass": "606a",
         "hash": "2ee6ad3e37104f3dde6e1c5a3600ea81"
       },
@@ -797,6 +797,6 @@
         "alias": "SP1",
         "ip": "192.168.100.250:1619"
       },
-      "rol": "aux"
+      "rol": "caj"
     }
   ]
