@@ -798,5 +798,37 @@
         "ip": "192.168.100.250:1619"
       },
       "rol": "caj"
+    },
+    {
+      "id": "345",
+      "name": "Luz Carrera",
+      "credentials": {
+        "nick": "LuzC",
+        "pass": "9564",
+        "hash": "a3b36cb25e2e0b93b5f334ffb4e4064e"
+      },
+      "store": {
+        "id": "22",
+        "name": "Brasil 3",
+        "alias": "BR3",
+        "ip": "192.168.82.253:1619"
+      },
+      "rol": "caj"
+    },
+    {
+      "id": "393",
+      "name": "Jesus Gonzalez",
+      "credentials": {
+        "nick": "JesusG",
+        "pass": "169e",
+        "hash": "e2f0e4b241f71614d47c633ba1d04ef7"
+      },
+      "store": {
+        "id": "22",
+        "name": "Brasil 3",
+        "alias": "BR3",
+        "ip": "192.168.82.253:1619"
+      },
+      "rol": "caj"
     }
   ]
