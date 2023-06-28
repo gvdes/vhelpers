@@ -184,10 +184,10 @@
         "hash": "4aadd661908b181d059a117f02fbc9ec"
       },
       "store": {
-        "id": "17",
-        "name": "San Pablo C",
-        "alias": "SPC",
-        "ip": "192.168.60.249:1619"
+        "id": "8",
+        "name": "Apartado 2",
+        "alias": "AP2",
+        "ip": "192.168.20.200:1619"
       },
       "rol": "caj"
     },
