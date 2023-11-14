@@ -18,6 +18,10 @@ const routes = [
     component: () => import('layouts/CiclicosLayout.vue'),
   },
   {
+    path: '/modificaciones',
+    component: () => import('layouts/ModifyLayout.vue'),
+  },
+  {
     path:'/__set1',
     component: () => import('layouts/Setter1.vue')
   },

@@ -456,10 +456,10 @@
         "hash": "4cefb8023f6bca9376946c07c256d6a0"
       },
       "store": {
-        "id": "13",
-        "name": "Bolivia",
-        "alias": "BOL",
-        "ip": "192.168.70.253:1619"
+        "id": "23",
+        "name": "Corregidora",
+        "alias": "CRG",
+        "ip": "192.168.30.2:1619"
       },
       "rol": "aux"
     },
@@ -747,7 +747,7 @@
         "id": "1",
         "name": "CEDIS SP",
         "alias": "CSP",
-        "ip": "192.168.12.13:1619"
+        "ip": "192.168.10.232:1619"
       },
       "rol": "root"
     },
@@ -846,5 +846,21 @@
         "ip": "192.168.82.253:1619"
       },
       "rol": "aux"
+    },
+     {
+      "id": "760",
+      "name": "Linda Michell Sanchez Rodriguez",
+      "credentials": {
+        "nick": "LindaMi",
+        "pass": "dd2f",
+        "hash": "3beddce06bf229bfd00df3b16bb85dbd"
+      },
+      "store": {
+        "id": "23",
+        "name": "Corregidora",
+        "alias": "CRG",
+        "ip": "192.168.10.2:1619"
+      },
+      "rol": "gen"
     }
   ]
