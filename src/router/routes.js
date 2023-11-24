@@ -22,6 +22,10 @@ const routes = [
     component: () => import('layouts/ModifyLayout.vue'),
   },
   {
+    path: '/tarjetas',
+    component: () => import('layouts/TarjetaLayout.vue'),
+  },
+  {
     path:'/__set1',
     component: () => import('layouts/Setter1.vue')
   },

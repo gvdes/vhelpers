@@ -10,7 +10,9 @@ export const useVDBStore = defineStore('vdb', {
     modules:[
       { id:1, name:"IVA", alias:"IVA", desc:"Agregue iva a tickets cobrados", path:"iva" },
       { id:2, name:"Ciclicos", alias:"CIC", desc:"Visor de Inventarios Ciclicos", path:"ciclicos" },
-      // { id:3, name:"Modificaciones", alias:"MOD", desc:"Modificaciones de Tickets", path:"modificaciones"}
+      { id:3, name:"Tickets", alias:"MOD", desc:"Moviemientos para  Tickets", path:"modificaciones"},
+      // { id:4, name:"Tarjetas", alias:"MOD", desc:"Consulta de pagos con tarjeta", path:"tarjetas"}
+
 
     ]
   }),
