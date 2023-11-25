@@ -282,7 +282,7 @@
                       @click="modes.EFE = 0" />
                   </div>
                 </q-card-section>
-                <div v-if="tickmod.body.ticket.fecha == fecha">
+                <div>
                   <q-card-section>
                     <div class="row">
                       <q-select class="col-3" v-model="modes.DIG.id" :options="paymeths" label="Terminal"
@@ -368,12 +368,12 @@ import { computed, ref } from 'vue';
 const VDB = useVDBStore();
 const $q = useQuasar();
 
-let fechaActual = new Date();
-let dia = fechaActual.getDate();
-let mes = (fechaActual.getMonth() + 1).toString().padStart(2, 0);
-let anio = fechaActual.getFullYear()
+// let fechaActual = new Date();
+// let dia = fechaActual.getDate();
+// let mes = (fechaActual.getMonth() + 1).toString().padStart(2, 0);
+// let anio = fechaActual.getFullYear()
 
-let fecha = dia + '/' + mes + '/' + anio
+// let fecha = dia + '/' + mes + '/' + anio
 
 const cashdesks = VDB.series;
 const clifac = ref(null);
