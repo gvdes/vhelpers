@@ -22,7 +22,7 @@ const routes = [
     component: () => import('layouts/ModifyLayout.vue'),
   },
   {
-    path: '/tarjetas',
+    path: '/pagos',
     component: () => import('layouts/TarjetaLayout.vue'),
   },
   {
