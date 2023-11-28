@@ -20,6 +20,9 @@ export const useVDBStore = defineStore('vdb', {
     findByNick (state) { // se usa para el inicio de sesion
       return (nick) => state.users.find( u => u.credentials.nick==nick );
     },
+    authsCashiers (state) {
+      return state.modules.filter((m) => m.id <= 2)
+    }
   },
 
   actions: {

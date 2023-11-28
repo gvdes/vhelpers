@@ -8,6 +8,8 @@
 
     <q-page-container>
       <!-- This is where pages get injected -->
+
+
       <q-page class="flex flex-center" padding>
         <q-list separator>
           <div class="q-py-md text-center">
@@ -41,21 +43,29 @@
 
 <script setup>
   import { useVDBStore } from 'src/stores/VDB'
-  import { ref } from 'vue'
+  import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router';
   import UserToolbar from 'src/components/UserToolbar.vue';
 
   const VDB = useVDBStore();
   const $router = useRouter();
+  const user = VDB.session;
 
-  const appmodules = VDB.modules;
+  // const appmodules = VDB.modules;
+
+  const appmodules = computed(() => {
+    return  user.rol == 'caj' ? VDB.authsCashiers : VDB.modules
+  })
 
   if(appmodules.length>1){
       console.log("vamo a seleccionar modulo");
   }else{
+    console.log(appmodules.length)
     const mod = appmodules[0];
+    if(mod){
+      $router.replace(mod.path);
+    }
 
-    $router.replace(mod.path);
   }
 
 </script>
