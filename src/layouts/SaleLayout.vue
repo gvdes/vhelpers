@@ -42,7 +42,7 @@
           <q-card class="my-card" @click="mosant">
             <q-card-section>
               <div class="text-h6 text-center">Diferencia</div>
-              <div class="text-h4 text-center">{{  Number(report.salesact / report.salesant * 100).toFixed(2) - Number(report.salesant / report.salesant * 100) + '%'}}</div>
+              <div class="text-h4 text-center">{{  Number(Number(report.salesact / report.salesant * 100) - Number(report.salesant / report.salesant * 100)).toFixed(2) + '%'}}</div>
             </q-card-section>
 
             <q-card-section>
