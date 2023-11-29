@@ -1,0 +1,157 @@
+<template>
+  <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
+
+    <q-header class="transparent text-dark" bordered>
+      <UserToolbar />
+      <q-separator />
+      <q-toolbar class="justify-between">
+        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Consulta Ventas</span></div>
+      </q-toolbar>
+    </q-header>
+
+    <q-page-container>
+      <q-page padding>
+        <div class="row justify-between" v-if="informe">
+
+          <q-card class="my-card" @click="mosant">
+
+            <q-card-section>
+              <div class="text-h6 text-center">Ventas 2022</div>
+              <div class="text-h4 text-center">{{ Number(report.salesant / report.salesant * 100) + '%' }}</div>
+            </q-card-section>
+
+            <q-card-section>
+              <div class="text-h6 text-center">Tickets 2022</div>
+              <div class="text-h4 text-center">{{ report.tiketsant }}</div>
+            </q-card-section>
+
+          </q-card>
+
+          <q-card class="my-card" @click="mosant">
+            <q-card-section>
+              <div class="text-h6 text-center">Ventas 2023</div>
+              <div class="text-h4 text-center">{{  Number(report.salesact / report.salesant * 100).toFixed(2) + '%' }}</div>
+            </q-card-section>
+
+            <q-card-section>
+              <div class="text-h6 text-center">Tickets 2023</div>
+              <div class="text-h4 text-center">{{ report.tiketsact }}</div>
+            </q-card-section>
+
+          </q-card>
+          <q-card class="my-card" @click="mosant">
+            <q-card-section>
+              <div class="text-h6 text-center">Diferencia</div>
+              <div class="text-h4 text-center">{{  Number(report.salesact / report.salesant * 100).toFixed(2) - Number(report.salesant / report.salesant * 100) + '%'}}</div>
+            </q-card-section>
+
+            <q-card-section>
+              <div class="text-h6 text-center">Tickets Diferencia</div>
+              <div class="text-h4 text-center">{{ report.tiketsact - report.tiketsant }}</div>
+            </q-card-section>
+          </q-card>
+
+            <q-card class="my-card" @click="moshoy" >
+              <q-card-section>
+                <div class="text-h6 text-center">VENTA HOY </div>
+                <div class="text-h4 text-center">{{ Number.parseFloat(report.saleshoy).toLocaleString('en-US',
+                  { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
+              </q-card-section>
+              <q-card-section>
+                <div class="text-h6 text-center">Tickets Hoy</div>
+                <div class="text-h4 text-center">{{ report.hoytck }}</div>
+              </q-card-section>
+            </q-card>
+
+        </div>
+
+
+        <div v-if="barras">
+          <div class="q-pa-md" v-for="(depvent, index) in report.ventasdepmonth" :key="index">
+            <q-linear-progress size="25px" stripe rounded :value="depvent.VENTA / report.salesact" color="primary">
+              <div class="absolute-full flex flex-center">
+                <q-badge color="white" text-color="accent"
+                  :label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.salesact * 100).toFixed(2) + ')'" />
+              </div>
+            </q-linear-progress>
+          </div>
+        </div>
+
+        <div v-if="barrashoy">
+          <div class="q-pa-md" v-for="(depvent, index) in report.ventasdepday" :key="index">
+            <q-linear-progress size="25px" stripe rounded :value="depvent.VENTA / report.saleshoy" color="primary">
+              <div class="absolute-full flex flex-center">
+                <q-badge color="white" text-color="accent"
+                  :label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.saleshoy * 100).toFixed(2) + ')'" />
+              </div>
+            </q-linear-progress>
+          </div>
+        </div>
+
+        <q-dialog v-model="load" persistent>
+          <div v-if="load">
+            <q-spinner-facebook color="primary" size="7.5em" />
+            <q-tooltip :offset="[0, 8]">Cargando Informacion</q-tooltip>
+          </div>
+        </q-dialog>
+
+
+
+
+
+      </q-page>
+    </q-page-container>
+
+  </q-layout>
+</template>
+
+<script setup>
+import { useVDBStore } from 'stores/VDB';
+import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
+import axios from 'axios';//para dirigirme bro
+import { useQuasar } from 'quasar';
+import { computed, ref } from 'vue';
+
+const VDB = useVDBStore();
+const $q = useQuasar();
+
+const informe = ref(false);
+const barras = ref(false);
+const barrashoy = ref(false);
+
+
+const report = ref(null);
+
+const load = ref(false);
+
+
+
+const index = async () => {
+  load.value = true
+  let host = VDB.session.store.ip;
+  let sale = `http://${host}/access/public/reports/getSales`;
+  axios.get(sale)
+    .then(done => {
+      report.value = done.data
+      console.log("datos obt")
+      informe.value = true
+      barras.value = true
+      load.value = false
+    })
+    .catch(fail => {
+      console.log(fail.response.data.message);
+    });
+}
+
+const moshoy = () => {
+  barras.value = false
+  barrashoy.value = true
+}
+
+const mosant = () => {
+  barras.value = true
+  barrashoy.value = false
+}
+
+index()
+</script>
