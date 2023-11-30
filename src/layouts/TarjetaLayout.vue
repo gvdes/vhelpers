@@ -138,7 +138,7 @@ const otckopt = ref({
   body: null
 });
 
-let ini = computed(() => (fpas.value.body && impresoras.value.body));
+let ini = computed(() => ((fpas.value.body != null) && (impresoras.value.body != null)));
 
 
 
