@@ -138,10 +138,8 @@ const otckopt = ref({
   body: null
 });
 
+let ini = computed(() => (fpas.value.body && impresoras.value.body));
 
-const search = () => {
-  console.log("buscar")
-}
 
 
 const imptck = () => {
@@ -180,14 +178,14 @@ const index = async () => {
 }
 
 const impre = async () => {
-  load.value = true
+  // load.value = true
   let host = VDB.session.store.ip;
   let impr = `http://${host}/access/public/modify/getPrinter`;
   axios.get(impr)
     .then(done => {
       impresoras.value.body = done.data
       console.log("Impresoras listas :)")
-      load.value = false
+      // load.value = false
     })
     .catch(fail => {
       console.log(fail.response.data.message);
