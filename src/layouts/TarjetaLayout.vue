@@ -165,7 +165,7 @@ const imptck = () => {
 
 const index = async () => {
   console.log("Recibiendo Datos :)")
-  load.value = true
+
   let host = VDB.session.store.ip;
   let riwo = `http://${host}/access/public/reports/getCash`;
   axios.get(riwo)
@@ -174,18 +174,20 @@ const index = async () => {
       fpas.value.body = r.data.formaspagos
       fpas.value.state = true;
       console.log("ya lo recibi que no te enganen :)")
-      load.value = false
+
     })
     .catch(r => console.log(r))
 }
 
 const impre = async () => {
+  load.value = true
   let host = VDB.session.store.ip;
   let impr = `http://${host}/access/public/modify/getPrinter`;
   axios.get(impr)
     .then(done => {
       impresoras.value.body = done.data
       console.log("Impresoras listas :)")
+      load.value = false
     })
     .catch(fail => {
       console.log(fail.response.data.message);
