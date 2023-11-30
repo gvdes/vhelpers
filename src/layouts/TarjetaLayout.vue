@@ -28,8 +28,8 @@
           </q-table>
 
         </div>
-        <q-dialog v-model="load" persistent>
-          <div v-if="load">
+        <q-dialog v-model="ini" persistent>
+          <div v-if="ini">
             <q-spinner-facebook color="primary" size="7.5em" />
             <q-tooltip :offset="[0, 8]">Cargando Informacion</q-tooltip>
           </div>
