@@ -28,8 +28,8 @@
           </q-table>
 
         </div>
-        <q-dialog v-model="ini" persistent>
-          <div v-if="ini">
+        <q-dialog v-model="load" persistent>
+          <div v-if="load">
             <q-spinner-facebook color="primary" size="7.5em" />
             <q-tooltip :offset="[0, 8]">Cargando Informacion</q-tooltip>
           </div>
@@ -138,7 +138,6 @@ const otckopt = ref({
   body: null
 });
 
-let ini = computed(() => ((fpas.value.body != null) && (impresoras.value.body != null)));
 
 
 
@@ -178,14 +177,14 @@ const index = async () => {
 }
 
 const impre = async () => {
-  // load.value = true
+  load.value = true
   let host = VDB.session.store.ip;
   let impr = `http://${host}/access/public/modify/getPrinter`;
   axios.get(impr)
     .then(done => {
       impresoras.value.body = done.data
       console.log("Impresoras listas :)")
-      // load.value = false
+      load.value = false
     })
     .catch(fail => {
       console.log(fail.response.data.message);
