@@ -80,7 +80,7 @@
               <div v-if="ala">
                 <q-card-actions align="between">
                   <q-btn flat icon="cancel" />
-                  <q-btn flat icon="arrow_forward" @click="envia" />
+                  <q-btn flat icon="arrow_forward" @click="envia" :disable="datenv" />
                 </q-card-actions>
               </div>
             </q-card>
@@ -420,7 +420,7 @@ let enval = ref({
 })
 let val1 = ref(0)
 const motivo = ref('');
-
+const datenv = ref(null);
 
 
 const modes = ref({ "EFE": 0, "DIG": { id: null, val: 0 }});
@@ -483,6 +483,7 @@ const envia = async () => {
   let host = VDB.session.store.ip;
   let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
   if (mod.value == "Devolucion") {
+    datenv.value = true
     let impdat = {
       type: mod.value,
       serie: cashdesk.value,
@@ -502,6 +503,7 @@ const envia = async () => {
         impresoras.value.val = null;
         cashdesk.value = null;
         folio.value = "";
+        datenv.value = false;
 
         $q.notify({
           html: true,
@@ -514,6 +516,7 @@ const envia = async () => {
       })
       .catch(fail => {
         console.log(fail.response.data.message);
+        datenv.value = false
         $q.notify({
           html: true,
           message: fail.response.data.message,
@@ -523,6 +526,7 @@ const envia = async () => {
       });
 
   } else if (mod.value == "Reimpresion") {
+    datenv.value = true
     let impdat = {
       type: mod.value,
       serie: cashdesk.value,
@@ -538,7 +542,7 @@ const envia = async () => {
         impresoras.value.val = null;
         cashdesk.value = null;
         folio.value = "";
-
+        datenv.value = false
       })
       .catch(r => r);
   } else if (mod.value == "Modificacion") {
@@ -548,6 +552,7 @@ const envia = async () => {
       serie: cashdesk.value,
       folio: folio.value,
     }
+    datenv.value = true
     let url = `http://${host}/access/public/modify/newmod`;
     axios.post(url, impdat)
       .then(r => {
@@ -558,9 +563,11 @@ const envia = async () => {
         totm.value = Number(r.data.ticket.total)
         clifac.value = r.data.ticket.codcli;
         obs1.value = r.data.ticket.observacion;
+        datenv.value = false
       })
       .catch(r => {
         console.log(r.response.data.message);
+        datenv.value = false
         $q.notify({
           html: true,
           message: r.response.data.message,

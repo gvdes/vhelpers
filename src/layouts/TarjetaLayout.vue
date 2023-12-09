@@ -88,7 +88,7 @@
                   filled autofocus style="width: 200px" />
                 <div>
                   <q-btn label="Enviar" type="submit" color="primary" style="width: 200px"
-                    :disable="impresoras.val === null" />
+                    :disable="impresoras.val === null || imp" />
                 </div>
               </q-form>
             </q-card-section>
@@ -138,6 +138,8 @@ const otckopt = ref({
   body: null
 });
 
+const imp = ref(false);
+
 
 
 
@@ -149,11 +151,13 @@ const imptck = () => {
     folio: split[1],
     print: impresoras.value.val.ip
   }
+  imp.value = true;
   let host = VDB.session.store.ip;
   let url = `http://${host}/access/public/modify/newmod`;
   axios.post(url, impdat)
     .then(r => {
       console.log(r)
+      imp.value = false
       impresoras.value.val = null;
       impresoras.value.state = false
     })
