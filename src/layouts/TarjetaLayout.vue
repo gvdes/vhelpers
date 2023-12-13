@@ -166,34 +166,37 @@ const imptck = () => {
 
 const index = async () => {
   console.log("Recibiendo Datos :)")
-
+  load.value = true
   let host = VDB.session.store.ip;
   let riwo = `http://${host}/access/public/reports/getCash`;
   axios.get(riwo)
     .then(r => {
       cash.value.body = r.data.terminales
       fpas.value.body = r.data.formaspagos
+      impresoras.value.body = r.data.impresoras
       fpas.value.state = true;
+      load.value = false
       console.log("ya lo recibi que no te enganen :)")
+      console.log("Impresoras listas :)")
 
     })
     .catch(r => console.log(r))
 }
 
-const impre = async () => {
-  load.value = true
-  let host = VDB.session.store.ip;
-  let impr = `http://${host}/access/public/modify/getPrinter`;
-  axios.get(impr)
-    .then(done => {
-      impresoras.value.body = done.data
-      console.log("Impresoras listas :)")
-      load.value = false
-    })
-    .catch(fail => {
-      console.log(fail.response.data.message);
-    });
-}
+// const impre = async () => {
+//   load.value = true
+//   let host = VDB.session.store.ip;
+//   let impr = `http://${host}/access/public/modify/getPrinter`;
+//   axios.get(impr)
+//     .then(done => {
+//       impresoras.value.body = done.data
+//       console.log("Impresoras listas :)")
+//       load.value = false
+//     })
+//     .catch(fail => {
+//       console.log(fail.response.data.message);
+//     });
+// }
 
 
 
@@ -204,5 +207,5 @@ const mostck = (a, row) => {
   otckopt.value.body = row
 }
 index();
-impre();
+// impre();
 </script>
