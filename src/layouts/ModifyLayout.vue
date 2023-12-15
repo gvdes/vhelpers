@@ -674,7 +674,7 @@ const addpr = () => {
   };
 
   tickmod.value.body.product.push(ardpr);
-  totm.value = tickmod.value.body.product.reduce((a, e) => a + Number(e.TOTAL), 0)
+  totm.value = tickmod.value.body.product.reduce((a, e) => a + (Number(e.CANTIDAD) * Number(e.PRECIO)), 0)
   addproduct.value.account = 0;
   sarchpro.value = null
 }

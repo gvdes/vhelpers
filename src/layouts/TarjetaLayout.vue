@@ -6,17 +6,23 @@
       <q-separator />
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Consulta de Pagos</span></div>
+
       </q-toolbar>
     </q-header>
 
     <q-page-container>
       <q-page padding>
+        <div class="justify-end">
+
+          <q-btn color="primary" icon="event" @click="date = !date" flat round />
+
+        </div>
+        <q-separator spaced inset vertical dark />
 
         <div v-if="fpas.state">
 
-          <q-table class="my-sticky-header-table" title="Fromas de Pago" :rows="fpas.body"
-            row-key="name" :filter="fpas.filter" separator="cell"
-             @row-click="mostck">
+          <q-table class="my-sticky-header-table" title="Fromas de Pago" :rows="fpas.body" row-key="name"
+            :filter="fpas.filter" separator="cell" @row-click="mostck">
             <template v-slot:top-right>
               <q-input borderless dense debounce="300" v-model="fpas.filter" placeholder="Search">
                 <template v-slot:append>
@@ -59,10 +65,10 @@
                 </q-item>
                 <q-item>
                   <q-item-section>{{ otckopt.body.EFECTIVO }}</q-item-section>
-                  <q-item-section>{{otckopt.body.TARJETAS}}</q-item-section>
-                  <q-item-section>{{otckopt.body.TRANSFERENCIAS}}</q-item-section>
-                  <q-item-section>{{otckopt.body.VALES}}</q-item-section>
-                  <q-item-section>{{otckopt.body.CREDITOS}}</q-item-section>
+                  <q-item-section>{{ otckopt.body.TARJETAS }}</q-item-section>
+                  <q-item-section>{{ otckopt.body.TRANSFERENCIAS }}</q-item-section>
+                  <q-item-section>{{ otckopt.body.VALES }}</q-item-section>
+                  <q-item-section>{{ otckopt.body.CREDITOS }}</q-item-section>
                 </q-item>
               </q-list>
             </q-card-section>
@@ -95,11 +101,30 @@
           </q-card>
         </q-dialog>
 
+        <q-dialog v-model="date">
+          <q-card class="my-card">
+            <q-card-section>
+              <div class="q-pa-md">
+                <div class="q-pb-sm">
+                  <!-- Desde: {{ fechas.from }} : Hasta {{ fechas.to }} -->
+                </div>
+                <q-date v-model="fechas" range minimal />
+              </div>
+            </q-card-section>
+            <q-card-section>
+              <q-card-actions align="right">
+                <q-btn flat icon="close" color="negative" @click="date =! date" />
+                <q-btn flat icon="check" color="positive" @click="buscas" />
+              </q-card-actions>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+
+
 
 
       </q-page>
     </q-page-container>
-
   </q-layout>
 </template>
 
@@ -140,7 +165,9 @@ const otckopt = ref({
 
 const imp = ref(false);
 
+const date = ref(false);
 
+const fechas = ref(null);
 
 
 const imptck = () => {
@@ -198,7 +225,25 @@ const index = async () => {
 //     });
 // }
 
-
+const buscas = () => {
+  console.log(fechas.value);
+  let filtro = {
+    filt:fechas.value
+  }
+  console.log("Recibiendo Datos :)")
+  load.value = true
+  let host = VDB.session.store.ip;
+  let riwo = `http://${host}/access/public/reports/filter`;
+  axios.post(riwo,filtro)
+    .then(r => {
+      fpas.value.body = r.data.formaspagos
+      fpas.value.state = true;
+      load.value = false
+      date.value = false
+      console.log("ya lo recibi que no te enganen :)")
+    })
+    .catch(r => console.log(r))
+}
 
 const mostck = (a, row) => {
   console.log('aqui se podra reimprimir');
