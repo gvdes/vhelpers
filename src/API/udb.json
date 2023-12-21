@@ -138,7 +138,7 @@
    "id":11,
    "name":"Brasil 1",
    "alias":"BR1",
-   "ip":"mx68-brasil1y2-wcrczvkczk.dynamic-m.com:1619"
+   "ip":"192.168.80.252:1619"
    },
   "rol":"caj"
   },
@@ -250,7 +250,7 @@
    "id":11,
    "name":"Brasil 1",
    "alias":"BR1",
-   "ip":"mx68-brasil1y2-wcrczvkczk.dynamic-m.com:1619"
+   "ip":"192.168.80.252:1619"
    },
   "rol":"aux"
   },
@@ -650,7 +650,7 @@
    "id":11,
    "name":"Brasil 1",
    "alias":"BR1",
-   "ip":"mx68-brasil1y2-wcrczvkczk.dynamic-m.com:1619"
+   "ip":"192.168.80.252:1619"
    },
   "rol":"gen"
   },
