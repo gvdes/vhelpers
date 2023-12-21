@@ -82,7 +82,7 @@
   "id":"6",
   "name":"ANA LAURA FLORES RIOS",
   "credentials":{
-   "nick":"AnaLa",
+   "nick":"AnaLass",
    "pass":"7539",
    "hash":"4aadd661908b181d059a117f02fbc9ec"
    },
@@ -138,7 +138,7 @@
    "id":11,
    "name":"Brasil 1",
    "alias":"BR1",
-   "ip":"192.168.80.252:1619"
+   "ip":"mx68-brasil1y2-wcrczvkczk.dynamic-m.com:1619"
    },
   "rol":"caj"
   },
@@ -240,9 +240,9 @@
   },
  {
   "id":"16",
-  "name":"JAHLEEL JOSAFAT GARCIA SERRANO",
+  "name":"JESUS HECTOR MENDOZA SERRANO",
   "credentials":{
-   "nick":"JahleelJo",
+   "nick":"JesusHe",
    "pass":"0f62",
    "hash":"3cfd95f4ce1149ed1897a2c107dc5a13"
    },
@@ -288,9 +288,9 @@
   },
  {
   "id":"19",
-  "name":"JESUS HECTOR MENDOZA SERRANO",
+  "name":"ANA LAURA FLORES RIOS",
   "credentials":{
-   "nick":"JesusHe",
+   "nick":"AnaLa",
    "pass":"8324",
    "hash":"e5fc3b8d9510b02e42361c337597d9fa"
    },
@@ -304,9 +304,9 @@
   },
  {
   "id":"20",
-  "name":"JESUS HECTOR MENDOZA SERRANO",
+  "name":"ANA LAURA FLORES RIOS",
   "credentials":{
-   "nick":"JesusHeRA2",
+   "nick":"AnaLaRA2",
    "pass":"a9da",
    "hash":"5682abb105fb4764cd54bccc2ab33621"
    },
@@ -650,7 +650,7 @@
    "id":11,
    "name":"Brasil 1",
    "alias":"BR1",
-   "ip":"192.168.80.252:1619"
+   "ip":"mx68-brasil1y2-wcrczvkczk.dynamic-m.com:1619"
    },
   "rol":"gen"
   },
