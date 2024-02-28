@@ -289,7 +289,7 @@
                         option-value="id" option-label="desc" dense>
                       </q-select>
                       <q-input class="col" v-model="modes.DIG.val" type="number" :min="0.00" step="any" dense
-                        input-class="q-pl-md fw-sbold fs-inc4" :disable="!modes.DIG.id"/>
+                        input-class="q-pl-md fw-sbold fs-inc4" :disable="!modes.DIG.id" />
                       <q-btn color="primary" icon="backspace" flat dense round v-if="parseFloat(modes.DIG.val)"
                         @click="modes.DIG.val = 0; modes.DIG.id = null" />
                     </div>
@@ -308,6 +308,11 @@
                         Number.parseFloat(enval.val.IMPANT).toFixed(2) }}</div>
                     </div>
                   </q-card-section>
+                  <q-card-section v-if="retirada">
+                    <div class="fs-dec3 row items-center justify-end q-pa-xs text-black">
+                      <q-checkbox left-label v-model="checkretirada" label="Hacer Retirada de el sobrante" />
+                    </div>
+                  </q-card-section>
                 </div>
               </q-form>
             </div>
@@ -321,33 +326,22 @@
                 <q-btn color="primary" icon="payment" label="Pagar" @click="mosimp" />
               </div>
             </div>
-
             <q-dialog v-model="stateimp">
               <q-card class="my-card">
                 <q-card-section>
                   <div class="text-h6 text-center">Impresora</div>
                 </q-card-section>
                 <q-card-section>
-                  <q-form
-                    @submit="terminar"
-                    class="q-gutter-md"
-                  >
-                  <q-select dense option-label="name" v-model="impresoras.val" :options="impresoras.body"
+                  <q-form @submit="terminar" class="q-gutter-md">
+                    <q-select dense option-label="name" v-model="impresoras.val" :options="impresoras.body"
                       label="Impresora" filled autofocus style="width: 200px" />
-                    <div >
-                      <q-btn label="Enviar" type="submit" color="primary" style="width: 200px"/>
+                    <div>
+                      <q-btn label="Enviar" type="submit" color="primary" style="width: 200px" />
                     </div>
                   </q-form>
                 </q-card-section>
               </q-card>
             </q-dialog>
-
-
-
-
-
-
-
           </q-card>
         </q-dialog>
 
@@ -374,7 +368,7 @@ const $q = useQuasar();
 // let anio = fechaActual.getFullYear()
 
 // let fecha = dia + '/' + mes + '/' + anio
-
+const checkretirada = ref(false);
 const cashdesks = VDB.series;
 const clifac = ref(null);
 const pag = ref(false);
@@ -423,7 +417,7 @@ const motivo = ref('');
 const datenv = ref(null);
 
 
-const modes = ref({ "EFE": 0, "DIG": { id: null, val: 0 }});
+const modes = ref({ "EFE": 0, "DIG": { id: null, val: 0 } });
 const paymeths = [
   { id: "TBA", desc: "TARJETA C/D BANCOMER" },
   { id: "TSA", desc: "TARJETA C/D SANTANDER" },
@@ -434,12 +428,20 @@ const paymeths = [
 
 ];
 
+
 const mod = ref(null);//guarda el movimiento
 const listmod = ["Devolucion", "Modificacion", "Reimpresion"]//listado de movimiento
 const cansearch = computed(() => (cashdesk.value && folio.value.length));//para enviar a buscar
 const productos = computed(() => tickmod.value.body.product)
 const ala = computed(() => (((impresoras.value.val) && ((mod.value == "Devolucion" && motivo.value.length > 10) || (mod.value == "Reimpresion"))) || mod.value == "Modificacion"))
 const cambio = computed(() => (Number.parseFloat(modes.value.DIG.val) + Number.parseFloat(modes.value.EFE) + Number.parseFloat(val1.value)) - totm.value)
+const retirada = computed(() => {
+  if (Number.parseFloat(modes.value.DIG.val) && (Number.parseFloat(modes.value.DIG.val) > totm.value) && Number.parseFloat(modes.value.EFE) == 0) {
+    return true
+  } else {
+    return false
+  }
+})
 
 
 const index = async () => {
@@ -661,7 +663,7 @@ const deleteprod = () => {
   console.log(inx);
   tickmod.value.body.product.splice(inx, 1);
   editprod.value.state = false;
-  totm.value = tickmod.value.body.product.reduce((a, e) => a + Number(e.TOTAL), 0)
+  totm.value = tickmod.value.body.product.reduce((a, e) => a + (Number(e.CANTIDAD) * Number(e.PRECIO)), 0)
 }
 
 const addpr = () => {
@@ -763,68 +765,102 @@ const terminar = async () => {
     print: impresoras.value.val.ip
   }
   let ticknw = {
-    serdev:cashdesk.value,
-    foldev:folio.value,
-    fdp:{
-      efedig:modes.value,
-      vale:enval.value.val,
+    serdev: cashdesk.value,
+    foldev: folio.value,
+    fdp: {
+      efedig: modes.value,
+      vale: enval.value.val,
     },
-    total:totm.value,
-    create:by,
-    productos:tickmod.value.body.product,
+    total: totm.value,
+    create: by,
+    productos: tickmod.value.body.product,
     print: impresoras.value.val.ip,
-    cliente:clifac.value
+    cliente: clifac.value
   }
 
 
+
   console.log(tickdev);
-    let url = `http://${host}/access/public/modify/modificacion`;
-    axios.post(url, tickdev)
-      .then(r => {
-        ticket.value.state = false
-        console.log(r)
-        mod.value = null;
-        motivo.value = '';
-        impresoras.value.val = null;
-        cashdesk.value = null;
-        folio.value = "";
-        stateimp.value = false,
+  let url = `http://${host}/access/public/modify/modificacion`;
+  axios.post(url, tickdev)
+    .then(r => {
+      ticket.value.state = false
+      console.log(r)
+      mod.value = null;
+      motivo.value = '';
+      folio.value = "";
+      stateimp.value = false,
         pag.value = false;
-        tickmod.value.state = false;
-        tickmod.value.body = null;
-        $q.notify({
-          html: true,
-          message: r.data.mssg,
-          color: "positive",
-          position: "center"
-        });
-        let nwtck = `http://${host}/access/public/modify/nwtck`;
-        axios.post(nwtck,ticknw)
-        .then(p=>{
+      tickmod.value.state = false;
+      tickmod.value.body = null;
+      $q.notify({
+        html: true,
+        message: r.data.mssg,
+        color: "positive",
+        position: "center"
+      });
+      let nwtck = `http://${host}/access/public/modify/nwtck`;
+      axios.post(nwtck, ticknw)
+        .then(p => {
           $q.notify({
-          html: true,
-          message: p.data.mssg,
-          color: "positive",
-          position: "center"
-        });
+            html: true,
+            message: p.data.mssg,
+            color: "positive",
+            position: "center"
+          });
+          if (checkretirada.value == true) {
+            let ret = `http://${host}/access/public/modify/retirada`;
+            let retiro = {
+                nota: p.data.mssg,
+                retiro: cambio.value,
+                serdev: cashdesk.value,
+                print: impresoras.value.val.ip,
+                create: by,
+              }
+            axios.post(ret, retiro)
+              .then(p => {
+                console.log(p);
+                $q.notify({
+                  html: true,
+                  message: p.data.mssg,
+                  color: 'positive',
+                  postion: 'center'
+                })
+                impresoras.value.val = null;
+                cashdesk.value = null;
+                checkretirada.value = false;
+                modes.value = { "EFE": 0, "DIG": { id: null, val: 0 } };
+                enval.value.val = {val: null, body: null}
+              })
+                  .catch(p => {
+                    console.log(p);
+                    $q.notify({
+                      html: true,
+                      message: p.data,
+                      color: "negative",
+                      position: "center"
+                    })
+                  })
+          }
         })
-        .catch(p=>{
+        .catch(p => {
+          console.log(p);
           $q.notify({
-          html: true,
-          message: p.data.mssg,
-          color: "positive",
-          position: "center"
-        });
+            html: true,
+            message: p.data,
+            color: "negative",
+            position: "center"
+          });
         })
-      })
-      .catch(r =>{
-        $q.notify({
-          html: true,
-          message: r.data.mssg,
-          color: "negative",
-          position: "center"
-        });
-      })
+    })
+    .catch(r => {
+      $q.notify({
+        html: true,
+        message: r.data.mssg,
+        color: "negative",
+        position: "center"
+      });
+    })
 
 }
 

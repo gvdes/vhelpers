@@ -10,6 +10,11 @@ import axios from 'axios'
 const vizapi = axios.create({ baseURL: 'http://192.168.10.189/vizapi/public/LVH' });
 // const vizapi = axios.create({ baseURL: 'http://localhost/vizapi/public/LVH' });
 
+// const assist = axios.create({ baseURL: 'http://192.168.10.61:1619/assist/public' });
+const assist = axios.create({ baseURL: 'http://192.168.10.112:1920/Assist/public/api'});
+
+
+
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 
@@ -20,6 +25,9 @@ export default boot(({ app }) => {
   app.config.globalProperties.$api = vizapi
   // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
   //       so you can easily perform requests against your app's API
+  app.config.globalProperties.$assist = assist
+  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
+  //       so you can easily perform requests against your app's API
 })
 
-export { vizapi }
+export { vizapi, assist }

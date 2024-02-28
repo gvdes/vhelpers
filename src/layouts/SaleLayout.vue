@@ -16,12 +16,13 @@
           <q-card class="my-card" @click="mosant">
 
             <q-card-section>
-              <div class="text-h6 text-center">Ventas 2022</div>
+              <div class="text-h6 text-center">Ventas 2023</div>
               <div class="text-h4 text-center">{{ Number(report.salesant / report.salesant * 100) + '%' }}</div>
+
             </q-card-section>
 
             <q-card-section>
-              <div class="text-h6 text-center">Tickets 2022</div>
+              <div class="text-h6 text-center">Tickets 2023</div>
               <div class="text-h4 text-center">{{ report.tiketsant }}</div>
             </q-card-section>
 
@@ -29,12 +30,12 @@
 
           <q-card class="my-card" @click="mosant">
             <q-card-section>
-              <div class="text-h6 text-center">Ventas 2023</div>
+              <div class="text-h6 text-center">Ventas 2024</div>
               <div class="text-h4 text-center">{{  Number(report.salesact / report.salesant * 100).toFixed(2) + '%' }}</div>
             </q-card-section>
 
             <q-card-section>
-              <div class="text-h6 text-center">Tickets 2023</div>
+              <div class="text-h6 text-center">Tickets 2024</div>
               <div class="text-h4 text-center">{{ report.tiketsact }}</div>
             </q-card-section>
 

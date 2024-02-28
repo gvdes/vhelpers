@@ -30,6 +30,10 @@ const routes = [
     component: () => import('layouts/SaleLayout.vue'),
   },
   {
+    path: '/apertura',
+    component: () => import('layouts/OpenLayout.vue'),
+  },
+  {
     path:'/__set1',
     component: () => import('layouts/Setter1.vue')
   },
