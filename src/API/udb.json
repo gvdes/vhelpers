@@ -26,7 +26,7 @@
    "id":8,
    "name":"CEDIS SP",
    "alias":"CSP",
-   "ip":"192.168.10.112:1619"
+   "ip":"192.168.12.219:1619"
    },
   "rol":"root"
   },
@@ -322,7 +322,7 @@
   "id":"21",
   "name":"Joaquin Hernandez Hernandez",
   "credentials":{
-   "nick":"JoaquinHe",
+   "nick":"JoaquinHeBr2",
    "pass":"fbdf",
    "hash":"5a69fe2f397af468398a1afbcd7a8120"
    },
@@ -346,7 +346,7 @@
    "id":8,
    "name":"Apartado 2",
    "alias":"AP2",
-   "ip":"192.168.20.200:1619"
+   "ip":"192.168.20.201:1619"
    },
   "rol":"gen"
   },
@@ -586,7 +586,7 @@
    "id":8,
    "name":"Apartado 2",
    "alias":"AP2",
-   "ip":"192.168.20.200:1619"
+   "ip":"192.168.20.201:1619"
    },
   "rol":"aux"
   },
@@ -714,7 +714,7 @@
    "id":8,
    "name":"Apartado 2",
    "alias":"AP2",
-   "ip":"192.168.20.200:1619"
+   "ip":"192.168.20.201:1619"
    },
   "rol":"caj"
   },
