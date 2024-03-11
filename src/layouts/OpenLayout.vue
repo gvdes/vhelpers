@@ -244,7 +244,7 @@ const getUrl = (files) => {
 
   console.log(formData);
 
-    axios.post('http://192.168.10.112:1920/Assist/public/api/cashier/AddFile', formData)
+    axios.post('http://192.168.10.61:1619/Assist/public/api/cashier/AddFile', formData)
 
     .then(response => {
       console.log(response.data);
@@ -264,7 +264,7 @@ const getUrl = (files) => {
       })
     });
 
-  return 'http://192.168.10.112:1920/Assist/public/api/cashier/AddFile';
+  return 'http://192.168.10.61:1619/Assist/public/api/cashier/AddFile';
 
 }
 
