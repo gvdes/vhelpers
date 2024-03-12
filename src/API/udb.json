@@ -8,10 +8,10 @@
       "hash": "e2f0e4b241f71614d47c633ba1d04ef7"
     },
     "store": {
-      "id": 16,
-      "name": "Apartado 1",
-      "alias": "AP1",
-      "ip": "192.168.20.253:1619"
+      "id": 8,
+      "name": "Correo 1",
+      "alias": "CR1",
+      "ip": "192.168.30.253:1619"
     },
     "rol": "gen"
   },
@@ -280,10 +280,10 @@
       "hash": "00393349ec963eb12d383698fdfdde32"
     },
     "store": {
-      "id": 8,
-      "name": "Correo 1",
-      "alias": "CR1",
-      "ip": "192.168.30.253:1619"
+      "id": 16,
+      "name": "Apartado 1",
+      "alias": "AP1",
+      "ip": "192.168.20.253:1619"
     },
     "rol": "gen"
   },
