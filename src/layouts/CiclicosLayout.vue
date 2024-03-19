@@ -136,7 +136,7 @@ const init = async () => {
   viewdate.value = optranges.value[idx]; // setea el valor del select de la vista
   dateranges.value.from = dayjs(Date.now()).startOf(viewdate.value.id); // setea el valor de inicio de la vista
 
-  const response = await CDB.index( { dateranges, view:viewdate.value, store:$user.session.store.id });
+  const response = await CDB.index( { dateranges, view:viewdate.value, store:$user.session.store.id_viz });
   console.log(response);
   inventoriesdb.value = response.inventories;
 
