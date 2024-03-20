@@ -47,7 +47,7 @@
         </q-card>
 
         <q-dialog v-model="wndViewer.state" full-width>
-          <InvViewer :folio="wndViewer.folio" :store="$user.session.store.id" />
+          <InvViewer :folio="wndViewer.folio" :store="$user.session.store.id_viz" />
         </q-dialog>
       </q-page>
     </q-page-container>
