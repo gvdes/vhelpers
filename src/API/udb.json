@@ -127,11 +127,11 @@
       "hash": "3beddce06bf229bfd00df3b16bb85dbd"
     },
     "store": {
-      "id": 12,
-      "name": "Bolivia",
-      "alias": "BOL",
-      "ip": "192.168.70.253:1619",
-      "id_viz":13
+      "id": 1,
+      "name": "CEDIS",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz":1
     },
     "rol": "gen"
   },
