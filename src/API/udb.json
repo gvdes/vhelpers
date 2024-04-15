@@ -171,20 +171,20 @@
   },
   {
     "id": 65,
-    "name": "JESUS HECTOR MENDOZA SERRANO",
+    "name": "YESENIA GUADALUPE RODRIGUEZ CEDILLO",
     "credentials": {
-      "nick": "dispo",
+      "nick": "YeseniaG",
       "pass": "0f62",
       "hash": "3cfd95f4ce1149ed1897a2c107dc5a13"
     },
     "store": {
-      "id": 13,
-      "name": "Brasil 1",
-      "alias": "BR1",
-      "ip": "192.168.80.253:1619",
-      "id_viz":11
+      "id": 12,
+      "name": "Bolivia",
+      "alias": "Bol",
+      "ip": "192.168.70.253:1619",
+      "id_viz":13
     },
-    "rol": "aux"
+    "rol": "gen"
   },
   {
     "id": 37,
