@@ -239,20 +239,20 @@
   },
   {
     "id": 193,
-    "name": "SELENE YAÑEZ DOMINGUEZ",
+    "name": "ROBERTO ALDAIR ARROYO LÓPEZ",
     "credentials": {
-      "nick": "SeleneYaBR3",
+      "nick": "RobertoAr",
       "pass": "9564",
       "hash": "a3b36cb25e2e0b93b5f334ffb4e4064e"
     },
     "store": {
       "id": 15,
-      "name": "Brasil 3",
-      "alias": "BR3",
-      "ip": "192.168.82.253:1619",
+      "name": "Brasil 1",
+      "alias": "BR1",
+      "ip": "192.168.80.253:1619",
       "id_viz":22
     },
-    "rol": "gen"
+    "rol": "aux"
   },
   {
     "id": 160,
