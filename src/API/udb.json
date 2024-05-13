@@ -477,9 +477,9 @@
   },
   {
     "id": 5,
-    "name": "Pedro Sanchez Pena",
+    "name": "GEHOVANY JUAN LOPEZ AMADOR",
     "credentials": {
-      "nick": "PedroSa",
+      "nick": "JuanLo",
       "pass": "c6a5",
       "hash": "21e097a5d71e732d4e26f171f8413cd0"
     },
@@ -490,7 +490,7 @@
       "ip": "192.168.90.253:1619",
       "id_viz":18
     },
-    "rol": "gen"
+    "rol": "aux"
   },
   {
     "id": 193,
