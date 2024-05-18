@@ -5,7 +5,8 @@
       <UserToolbar />
       <q-separator />
       <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Consulta de Pagos</span></div>
+        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Consulta de Pagos</span>
+        </div>
 
       </q-toolbar>
     </q-header>
@@ -22,13 +23,21 @@
         <div v-if="fpas.state">
 
           <q-table class="my-sticky-header-table" title="Fromas de Pago" :rows="fpas.body" row-key="name"
-            :filter="fpas.filter" separator="cell" @row-click="mostck">
+            :filter="fpas.filter" separator="cell" @row-click="mostck" :columns="table">
+
             <template v-slot:top-right>
-              <q-input borderless dense debounce="300" v-model="fpas.filter" placeholder="Search">
-                <template v-slot:append>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
+              <div class="row">
+                <div class="col"> <q-input borderless dense debounce="300" v-model="fpas.filter" placeholder="Search">
+                    <template v-slot:append>
+                      <q-icon name="search" />
+                    </template>
+                  </q-input></div>
+
+                <q-separator spaced inset vertical dark />
+                <div class="col"> <q-btn color="primary" icon="archive" dense no-caps flat round @click="exportTable" />
+                </div>
+              </div>
+
             </template>
 
           </q-table>
@@ -90,8 +99,8 @@
             </q-card-section>
             <q-card-section>
               <q-form @submit="imptck" class="q-gutter-md">
-                <q-select dense option-label="name" v-model="impresoras.val" :options="impresoras.body" label="Impresora"
-                  filled autofocus style="width: 200px" />
+                <q-select dense option-label="name" v-model="impresoras.val" :options="impresoras.body"
+                  label="Impresora" filled autofocus style="width: 200px" />
                 <div>
                   <q-btn label="Enviar" type="submit" color="primary" style="width: 200px"
                     :disable="impresoras.val === null || imp" />
@@ -113,7 +122,7 @@
             </q-card-section>
             <q-card-section>
               <q-card-actions align="right">
-                <q-btn flat icon="close" color="negative" @click="date =! date" />
+                <q-btn flat icon="close" color="negative" @click="date = !date" />
                 <q-btn flat icon="check" color="positive" @click="buscas" />
               </q-card-actions>
             </q-card-section>
@@ -132,12 +141,27 @@
 import { useVDBStore } from 'stores/VDB';
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import axios from 'axios';//para dirigirme bro
-import { useQuasar } from 'quasar';
+import {exportFile ,useQuasar } from 'quasar';
 import { computed, ref } from 'vue';
+import { assist } from "src/boot/axios";
+
 
 const VDB = useVDBStore();
 const $q = useQuasar();
 
+const table =[
+  {name:'terminal', label:'TERMINAL',align:'center' , field: row => row.TERMINAL},
+  {name:'ticket', label:'TICKET' ,align:'center', field: row => row.TICKET},
+  {name:'cliente', label:'CLIENTE' ,align:'center', field: row => row.CLIENTE},
+  {name:'fecha', label:'FECHA' ,align:'center', field: row => row.FECHA},
+  {name:'hora', label:'HORA' ,align:'center', field: row => row.HORA},
+  {name:'efectivo', label:'EFECTIVO' ,align:'center', field: row => row.EFECTIVO},
+  {name:'tarjetas', label:'TARJETAS' ,align:'center', field: row => row.TARJETAS},
+  {name:'transferencias', label:'TRANSFERENCIAS' ,align:'center', field: row => row.TRANSFERENCIAS},
+  {name:'creditos', label:'CREDITOS' ,align:'center', field: row => row.CREDITOS},
+  {name:'vales', label:'VALES' ,align:'center', field: row => row.VALES},
+
+]
 
 const cash = ref({
   val: null,
@@ -176,7 +200,7 @@ const imptck = () => {
     type: "Reimpresion",
     serie: split[0],
     folio: split[1],
-    print: impresoras.value.val.ip
+    print: impresoras.value.val.ip_address
   }
   imp.value = true;
   let host = VDB.session.store.ip;
@@ -200,41 +224,108 @@ const index = async () => {
     .then(r => {
       cash.value.body = r.data.terminales
       fpas.value.body = r.data.formaspagos
-      impresoras.value.body = r.data.impresoras
+      console.log(r.data);
+      // impresoras.value.body = r.data.impresoras
       fpas.value.state = true;
       load.value = false
       console.log("ya lo recibi que no te enganen :)")
-      console.log("Impresoras listas :)")
+      impre()
+      // console.log("Impresoras listas :)")
 
     })
     .catch(r => console.log(r))
 }
 
-// const impre = async () => {
-//   load.value = true
-//   let host = VDB.session.store.ip;
-//   let impr = `http://${host}/access/public/modify/getPrinter`;
-//   axios.get(impr)
-//     .then(done => {
-//       impresoras.value.body = done.data
-//       console.log("Impresoras listas :)")
-//       load.value = false
-//     })
-//     .catch(fail => {
-//       console.log(fail.response.data.message);
-//     });
-// }
+const impre = async () => {
+  let idstore = VDB.session.store.id;
+  console.log(idstore)
+  // console.log(host);
+  // let impr = `http://${host}/access/public/modify/getPrinter`;
+  try {
+    let resp = await assist.get(`/cashier/getPrinters/${idstore}`)
+    if (resp.status == 200) {
+      impresoras.value.body = resp.data
+      console.log("Impresoras listas :)")
+    }
+
+  } catch (err) {
+    console.log(err);
+    $q.notify({
+      message: 'No se pudiron obtener las impresoras',
+      type: 'negative',
+      position: 'center',
+      icon: 'error'
+    })
+  }
+}
+
+const wrapCsvValue = (val, formatFn, row) => {
+  let formatted = formatFn !== void 0
+    ? formatFn(val, row)
+    : val
+
+  formatted = formatted === void 0 || formatted === null
+    ? ''
+    : String(formatted)
+
+  formatted = formatted.split('"').join('""')
+  if (/^\d{1,2}-\d{4}$/.test(formatted)) {
+    formatted = `'${formatted}`
+  }
+  /**
+   * Excel accepts \n and \r in strings, but some other CSV parsers do not
+   * Uncomment the next two lines to escape new lines
+   */
+  // .split('\n').join('\\n')
+  // .split('\r').join('\\r')
+
+  return `"${formatted}"`
+}
+
+const exportTable = () => {
+  // naive encoding to csv format
+  const content = [table.map(col => wrapCsvValue(col.label))].concat(
+    fpas.value.body.map(row => table.map(col => wrapCsvValue(
+      typeof col.field === 'function'
+        ? col.field(row)
+        : row[col.field === void 0 ? col.name : col.field],
+      col.format,
+      row
+    )).join(','))
+  ).join('\r\n')
+
+  const status = exportFile(
+    'reporteCobros.csv',
+    content,
+    'text/csv'
+  )
+
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning'
+    })
+  }else{
+    $q.notify({
+      message: 'Descarga Completa :)',
+      color: 'positive',
+      icon: 'check',
+      position:'center'
+    })
+  }
+}
 
 const buscas = () => {
   console.log(fechas.value);
   let filtro = {
-    filt:fechas.value
+    filt: fechas.value
   }
   console.log("Recibiendo Datos :)")
   load.value = true
   let host = VDB.session.store.ip;
   let riwo = `http://${host}/access/public/reports/filter`;
-  axios.post(riwo,filtro)
+  axios.post(riwo, filtro)
     .then(r => {
       fpas.value.body = r.data.formaspagos
       fpas.value.state = true;

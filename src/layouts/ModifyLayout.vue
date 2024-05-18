@@ -356,6 +356,7 @@ import { useVDBStore } from 'stores/VDB';
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import axios from 'axios';//para dirigirme bro
 import { useQuasar } from 'quasar';
+import { assist } from "src/boot/axios";
 
 import { computed, ref } from 'vue';
 
@@ -445,16 +446,26 @@ const retirada = computed(() => {
 
 
 const index = async () => {
-  let host = VDB.session.store.ip;
-  let impr = `http://${host}/access/public/modify/getPrinter`;
-  axios.get(impr)
-    .then(done => {
-      impresoras.value.body = done.data
-      console.log("Impresoras listas :)")
+  let idstore = VDB.session.store.id;
+  console.log(idstore)
+  // console.log(host);
+  // let impr = `http://${host}/access/public/modify/getPrinter`;
+  try{
+    let resp = await assist.get(`/cashier/getPrinters/${idstore}`)
+    if(resp.status == 200){
+      impresoras.value.body = resp.data
+    console.log("Impresoras listas :)")
+    }
+
+  }catch (err){
+    console.log(err);
+    $q.notify({
+      message: 'No se pudiron obtener las impresoras',
+      type:'negative',
+      position:'center',
+      icon:'error'
     })
-    .catch(fail => {
-      console.log(fail.response.data.message);
-    });
+  }
 }
 
 const search = async () => {
@@ -492,14 +503,34 @@ const envia = async () => {
       folio: folio.value,
       mot: motivo.value,
       create: by,
-      print: impresoras.value.val.ip
+      print: impresoras.value.val.ip_address
     }
     console.log(impdat);
     let url = `http://${host}/access/public/modify/newmod`;
     axios.post(url, impdat)
       .then(r => {
+
         ticket.value.state = false
         console.log(r)
+        if(r.status == 200){
+
+        $q.notify({
+          html: true,
+          message: r.data.original.mssg,
+          color: "positive",
+          position: "center"
+
+        });
+        } else{
+          $q.notify({
+          html: true,
+          message: r.data.original.message,
+          color: "negative",
+          position: "center"
+
+        });
+        }
+
         mod.value = null;
         motivo.value = '';
         impresoras.value.val = null;
@@ -507,33 +538,34 @@ const envia = async () => {
         folio.value = "";
         datenv.value = false;
 
-        $q.notify({
-          html: true,
-          message: r.data.mssg,
-          color: "positive",
-          position: "center"
-
-        });
 
       })
       .catch(fail => {
-        console.log(fail.response.data.message);
+        console.log(fail.response.data.original.message);
         datenv.value = false
         $q.notify({
           html: true,
-          message: fail.response.data.message,
+          message: fail.response.data.original.message,
           color: "negative",
           position: "center"
         });
+        ticket.value.state = false
+        mod.value = null;
+        motivo.value = '';
+        impresoras.value.val = null;
+        cashdesk.value = null;
+        folio.value = "";
+        datenv.value = false;
       });
 
   } else if (mod.value == "Reimpresion") {
+    console.log(impresoras.value.val)
     datenv.value = true
     let impdat = {
       type: mod.value,
       serie: cashdesk.value,
       folio: folio.value,
-      print: impresoras.value.val.ip
+      print: impresoras.value.val.ip_address
     }
     let url = `http://${host}/access/public/modify/newmod`;
     axios.post(url, impdat)
@@ -558,7 +590,7 @@ const envia = async () => {
     let url = `http://${host}/access/public/modify/newmod`;
     axios.post(url, impdat)
       .then(r => {
-        console.log(r)
+        console.log(r.data)
         tickmod.value.state = true;
         ticket.value.state = false;
         tickmod.value.body = r.data;
@@ -762,7 +794,7 @@ const terminar = async () => {
     folio: folio.value,
     mot: motivo.value,
     create: by,
-    print: impresoras.value.val.ip
+    print: impresoras.value.val.ip_address
   }
   let ticknw = {
     serdev: cashdesk.value,
@@ -774,7 +806,7 @@ const terminar = async () => {
     total: totm.value,
     create: by,
     productos: tickmod.value.body.product,
-    print: impresoras.value.val.ip,
+    print: impresoras.value.val.ip_address,
     cliente: clifac.value
   }
 
@@ -811,12 +843,12 @@ const terminar = async () => {
           if (checkretirada.value == true) {
             let ret = `http://${host}/access/public/modify/retirada`;
             let retiro = {
-                nota: p.data.mssg,
-                retiro: cambio.value,
-                serdev: cashdesk.value,
-                print: impresoras.value.val.ip,
-                create: by,
-              }
+              nota: p.data.mssg,
+              retiro: cambio.value,
+              serdev: cashdesk.value,
+              print: impresoras.value.val.ip,
+              create: by,
+            }
             axios.post(ret, retiro)
               .then(p => {
                 console.log(p);
@@ -830,17 +862,17 @@ const terminar = async () => {
                 cashdesk.value = null;
                 checkretirada.value = false;
                 modes.value = { "EFE": 0, "DIG": { id: null, val: 0 } };
-                enval.value.val = {val: null, body: null}
+                enval.value.val = { val: null, body: null }
               })
-                  .catch(p => {
-                    console.log(p);
-                    $q.notify({
-                      html: true,
-                      message: p.data,
-                      color: "negative",
-                      position: "center"
-                    })
-                  })
+              .catch(p => {
+                console.log(p);
+                $q.notify({
+                  html: true,
+                  message: p.data,
+                  color: "negative",
+                  position: "center"
+                })
+              })
           }
         })
         .catch(p => {

@@ -20,8 +20,14 @@
         <q-item-section>Total</q-item-section>
         <q-item-section>$ {{ ticket.total }}</q-item-section>
       </q-item>
+      <q-item >
+        <q-item-section>Impresora</q-item-section>
+        <q-item-section>
+          <q-select dense v-model="impresoras.val" :options="impresoras.body" label="Impresora" option-label="name" filled autofocus/>
+        </q-item-section>
+      </q-item>
       <q-separator />
-      <q-item class="bg-deep-purple-1">
+      <q-item class="bg-deep-purple-1" v-if="impresoras.val">
         <q-item-section>IVA</q-item-section>
         <q-item-section>
           <q-select dense v-model="iva" :options="ivas" label="Seleccione" filled autofocus/>
@@ -46,10 +52,13 @@
 
 <script setup>
 import { ref, computed, onUnmounted, onDeactivated } from 'vue';
+import { useVDBStore } from 'stores/VDB';
+import { assist } from "src/boot/axios";
 
   const $props = defineProps({
     data:{ type:Object, default:null }
   });
+  const VDB = useVDBStore();
 
   const $emit = defineEmits([ 'openCashDesk' ]);
 
@@ -57,6 +66,10 @@ import { ref, computed, onUnmounted, onDeactivated } from 'vue';
   const iva = ref(null);
   const ivas = [ "6%", "8%", "16%" ];
   const incops = { "6%":.06, "8%":.08, "16%":.16 };
+  const impresoras = ref({
+    body:null,
+    val:null
+  })
 
   const inc = computed(() => {
     if(iva.value && ticket.value){
@@ -69,11 +82,35 @@ import { ref, computed, onUnmounted, onDeactivated } from 'vue';
   });
 
   const openCashDesk = () => {
-    $emit('openCashDesk', { _inc:inc.value, _iva:incops[iva.value] });
+    $emit('openCashDesk', { _inc:inc.value, _iva:incops[iva.value], impresora:impresoras.value.val.ip_address });
   }
 
   onUnmounted(() => {
     console.log("El componente ha muerto!!");
   });
+
+  const impre = async () => {
+  let idstore = VDB.session.store.id;
+  console.log(idstore)
+  // console.log(host);
+  // let impr = `http://${host}/access/public/modify/getPrinter`;
+  try {
+    let resp = await assist.get(`/cashier/getPrinters/${idstore}`)
+    if (resp.status == 200) {
+      impresoras.value.body = resp.data
+      console.log("Impresoras listas :)")
+    }
+
+  } catch (err) {
+    console.log(err);
+    $q.notify({
+      message: 'No se pudiron obtener las impresoras',
+      type: 'negative',
+      position: 'center',
+      icon: 'error'
+    })
+  }
+}
+impre()
 
 </script>

@@ -51,6 +51,7 @@
   import { useQuasar } from 'quasar';
   import TicketIva from 'src/components/IVA/Ticket.vue';
   import CashDeskIva from 'src/components/IVA/CashDesk.vue';
+  import { assist } from "src/boot/axios";
 
   import { computed, ref } from 'vue';
 
@@ -64,8 +65,10 @@
   const inc = ref(0.00);
   const iva = ref(0.00);
   const wndPayment = ref({ state:false });
+  const impresoras = ref(null);
 
   const cansearch = computed(() => (cashdesk.value&&folio.value.length));
+
 
   const search = async () => {
     ticket.value = null;
@@ -96,8 +99,9 @@
       });
   }
 
-  const openCashDesk = ({_inc, _iva}) => {
-    console.log(_inc, _iva);
+  const openCashDesk = ({_inc, _iva, impresora}) => {
+    console.log(_inc, _iva, impresora);
+    impresoras.value = impresora
     inc.value=parseFloat(_inc);
     iva.value=parseFloat(_iva);
     wndPayment.value.state = true;
@@ -113,9 +117,10 @@
     let data = {
       modes, by,
       ticket:ticket.value.ticket,
-      iva:iva.value
+      iva:iva.value,
+      impresora: impresoras.value
     }
-
+    console.log(data);
     $q.loading.show({ message:"Imprimiendo..." });
     console.log(data);
 
