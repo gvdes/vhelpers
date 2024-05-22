@@ -766,20 +766,20 @@
   },
   {
     "id": 54,
-    "name": "Angel Sulivan Ceron Arroyo",
+    "name": "Eliuth Huerta Izalde",
     "credentials": {
-      "nick": "AngelSu",
+      "nick": "EliuthHu",
       "pass": "d680",
       "hash": "c7862693c953ca8d6a00494edf1b2d7b"
     },
     "store": {
-      "id": 5,
-      "name": "San Pablo 3",
-      "alias": "SP3",
-      "ip": "192.168.62.250:1619",
-      "id_viz":17
+      "id": 9,
+      "name": "Correo 2",
+      "alias": "CR2",
+      "ip": "192.168.50.253:1619",
+      "id_viz":6
     },
-    "rol": "caj"
+    "rol": "gen"
   },
   {
     "id": 7,
