@@ -41,7 +41,7 @@
         </q-item-section>
       </q-item>
 
-      <q-item class="bg-deep-purple-1" v-if="inc">
+      <q-item class="bg-deep-purple-1" v-if="inc && !mayor">
         <q-item-section>Total</q-item-section>
         <q-item-section>
           <q-item-label class="fc-bluegrey  text-h4 fw-sbold">$ {{ inc }}</q-item-label>
@@ -50,7 +50,7 @@
       </q-item>
     </q-list>
 
-    <q-card-actions v-if="iva" align="between">
+    <q-card-actions v-if="iva && !mayor" align="between">
       <q-btn color="primary" label="Cancelar" flat no-caps/>
       <q-btn color="primary" label="Cobrar" @click="openCashDesk"/>
     </q-card-actions>
