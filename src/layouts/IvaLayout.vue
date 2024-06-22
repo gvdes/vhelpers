@@ -64,6 +64,7 @@
   const ticket = ref(null);
   const inc = ref(0.00);
   const iva = ref(0.00);
+  const monto = ref(0.00);
   const wndPayment = ref({ state:false });
   const impresoras = ref(null);
 
@@ -99,25 +100,29 @@
       });
   }
 
-  const openCashDesk = ({_inc, _iva, impresora}) => {
-    console.log(_inc, _iva, impresora);
+  const openCashDesk = ({_inc, _iva, impresora, _monto}) => {
+    console.log(_inc, _iva, impresora,_monto);
     impresoras.value = impresora
     inc.value=parseFloat(_inc);
     iva.value=parseFloat(_iva);
+    monto.value = parseFloat(_monto)
     wndPayment.value.state = true;
   }
 
   const pay = (modes) => {
     console.log("pagando...");
+    console.log(modes);
 
     let host = VDB.session.store.ip;
     let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
     let url = `http://${host}/access/public/iva/create`;
+    // console.log(url)
 
     let data = {
       modes, by,
       ticket:ticket.value.ticket,
       iva:iva.value,
+      monto:monto.value,
       impresora: impresoras.value
     }
     console.log(data);

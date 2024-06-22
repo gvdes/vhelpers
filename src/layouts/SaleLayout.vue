@@ -18,6 +18,8 @@
             <q-card-section>
               <div class="text-h6 text-center">Ventas 2023</div>
               <div class="text-h4 text-center">{{ Number(report.salesant / report.salesant * 100) + '%' }}</div>
+              <!-- <div class="text-caption text-white text-center">{{ Number(report.salesant * 1.10).toFixed(2) }}</div> -->
+
 
             </q-card-section>
 
@@ -32,6 +34,7 @@
             <q-card-section>
               <div class="text-h6 text-center">Ventas 2024</div>
               <div class="text-h4 text-center">{{  Number(report.salesact / report.salesant * 100).toFixed(2) + '%' }}</div>
+
             </q-card-section>
 
             <q-card-section>

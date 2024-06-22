@@ -27,7 +27,14 @@
         </q-item-section>
       </q-item>
       <q-separator />
-      <q-item class="bg-deep-purple-1" v-if="impresoras.val">
+      <q-item >
+        <q-item-section>Monto</q-item-section>
+        <q-item-section>
+            <q-input dense v-model="monto" type="number" label="Monto" filled autofocus error-message="El Monto a facturar es mayor que el total de el ticket :x" :error="mayor" />
+        </q-item-section>
+      </q-item>
+      <q-separator />
+      <q-item class="bg-deep-purple-1" v-if="impresoras.val && !mayor">
         <q-item-section>IVA</q-item-section>
         <q-item-section>
           <q-select dense v-model="iva" :options="ivas" label="Seleccione" filled autofocus/>
@@ -70,19 +77,28 @@ import { assist } from "src/boot/axios";
     body:null,
     val:null
   })
+  const monto = ref($props.data.total)
 
   const inc = computed(() => {
     if(iva.value && ticket.value){
 
         let _inc = incops[iva.value];
-        let _total = parseFloat(ticket.value.total).toFixed(2);
-
+        let _total = parseFloat(monto.value).toFixed(2);
         return parseFloat((_total*_inc).toFixed(2));
     } return 0;
   });
 
+  const mayor = computed(() => {
+    if(monto.value > $props.data.total){
+      return true
+    }else{
+      return false
+    }
+  })
+
   const openCashDesk = () => {
-    $emit('openCashDesk', { _inc:inc.value, _iva:incops[iva.value], impresora:impresoras.value.val.ip_address });
+    $emit('openCashDesk', { _inc:inc.value, _iva:incops[iva.value], impresora:impresoras.value.val.ip_address, _monto:monto.value });
+    console.log(monto.value);
   }
 
   onUnmounted(() => {
