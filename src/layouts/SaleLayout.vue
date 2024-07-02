@@ -115,6 +115,8 @@ import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import axios from 'axios';//para dirigirme bro
 import { useQuasar } from 'quasar';
 import { computed, ref } from 'vue';
+import { useRoute, useRouter } from "vue-router";
+const $router = useRouter();
 
 const VDB = useVDBStore();
 const $q = useQuasar();
@@ -157,5 +159,12 @@ const mosant = () => {
   barrashoy.value = false
 }
 
-index()
+if(VDB.session.rol == 'root'){
+  index()
+}else{
+  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+  $router.replace('/');
+
+}
+
 </script>

@@ -292,17 +292,19 @@ import UserToolbar from "src/components/UserToolbar.vue";
 import ApiAssist from "src/API/assistApi";
 import { useVDBStore } from "src/stores/VDB";
 import axios from "axios"; //para dirigirme bro
-
 const $q = useQuasar();
 const $route = useRoute();
 const $router = useRouter();
 const $user = useVDBStore();
+
 
 const stores = ref([]);
 const table = ref({
   pagination: { rowsPerPage: 0 },
   filter: "",
 });
+
+
 
 const ismobile = computed(() => $q.platform.is.mobile);
 
@@ -316,6 +318,7 @@ const init = async () => {
     console.log(resp);
     stores.value = resp;
     getSale(stores.value);
+
   }
 };
 
@@ -335,10 +338,14 @@ const getSale = async (sucursales) => {
   });
   $q.loading.hide();
 };
+if($user.session.rol == 'root'){
+  init()
+}else{
+  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+  $router.replace('/');
 
+}
 
-
-init();
 </script>
 <!-- <style scoped>
 .q-item {
