@@ -59,6 +59,8 @@
       return VDB.authsCashiers
     }else if(user.rol == 'aux'){
       return VDB.authsAux
+    }else if(user.rol == 'root'){
+      return VDB.autRoot
     }else{
       return VDB.modules
     }

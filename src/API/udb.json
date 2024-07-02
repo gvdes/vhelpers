@@ -831,5 +831,22 @@
       "id_viz":17
     },
     "rol": "gen"
+  },
+  {
+    "id": 1,
+    "name": "Ricardo Rodriguez",
+    "credentials": {
+      "nick": "richard",
+      "pass": "3abd",
+      "hash": "4ae1600c46ced06fb566fc1403b1b262"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS",
+      "alias": "CDISAP",
+      "ip": "192.168.10.112:1619",
+      "id_viz":1
+    },
+    "rol": "root"
   }
 ]
