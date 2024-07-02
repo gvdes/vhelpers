@@ -31,6 +31,9 @@ export const useVDBStore = defineStore('vdb', {
     },
     autRoot(state){
       return state.modules.filter((m) => m.id >= 7)
+    },
+    authGen(state){
+      return state.modules.filter((m) => m.id <= 6)
     }
   },
 
