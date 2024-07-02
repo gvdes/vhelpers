@@ -159,7 +159,7 @@ const mosant = () => {
   barrashoy.value = false
 }
 
-if(VDB.session.rol == 'root' || VDB.session.rol == 'root' ){
+if(VDB.session.rol == 'root' || VDB.session.rol == 'gen' ){
   index()
 }else{
   $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
