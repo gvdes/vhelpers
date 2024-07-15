@@ -301,11 +301,11 @@
                   <q-card-section v-if="valecli.val == 'SI'">
                     <div class="row items-center">
                       <div class="col-3">No. Vale</div>
-                      <q-select v-model="enval.val" :options="enval.body" option-label="CODANT" label="Descontar Vale"
-                        filled style="width: 250px" @update:model-value="val1 = enval.val.IMPANT" />
+                      <q-select v-model="enval.prc" :options="enval.body" option-label="CODANT" label="Descontar Vale"
+                        filled style="width: 250px" @update:model-value="val1 = enval.prc.IMPANT" />
                       <q-separator spaced inset vertical dark />
-                      <div class="col-3 bg-blue-grey-2" v-if="enval.val"> $ {{
-                        Number.parseFloat(enval.val.IMPANT).toFixed(2) }}</div>
+                      <div class="col-3 bg-blue-grey-2" v-if="enval.prc"> $ {{
+                        Number.parseFloat(enval.prc.IMPANT).toFixed(2) }}</div>
                     </div>
                   </q-card-section>
                   <q-card-section v-if="retirada">
@@ -404,16 +404,16 @@ const climod = ref({
   body: null
 })
 const recl = ref(null)
-let totm = ref(null)
-let valecli = ref({
+const totm = ref(null)
+const valecli = ref({
   val: null,
   opts: ["SI", "NO"]
 })
-let enval = ref({
-  val: null,
+const enval = ref({
+  prc: null,
   body: null,
 })
-let val1 = ref(0)
+const val1 = ref(0)
 const motivo = ref('');
 const datenv = ref(null);
 
@@ -801,7 +801,7 @@ const terminar = async () => {
     foldev: folio.value,
     fdp: {
       efedig: modes.value,
-      vale: enval.value.val,
+      vale: enval.value.prc,
     },
     total: totm.value,
     create: by,
@@ -811,8 +811,8 @@ const terminar = async () => {
   }
 
 
-
-  console.log(tickdev);
+  console.log(enval.value.prc)
+  console.log(ticknw);
   let url = `http://${host}/access/public/modify/modificacion`;
   axios.post(url, tickdev)
     .then(r => {
@@ -846,9 +846,10 @@ const terminar = async () => {
               nota: p.data.mssg,
               retiro: cambio.value,
               serdev: cashdesk.value,
-              print: impresoras.value.val.ip,
+              print: impresoras.value.val.ip_address,
               create: by,
             }
+            console.log(retiro);
             axios.post(ret, retiro)
               .then(p => {
                 console.log(p);
@@ -862,7 +863,7 @@ const terminar = async () => {
                 cashdesk.value = null;
                 checkretirada.value = false;
                 modes.value = { "EFE": 0, "DIG": { id: null, val: 0 } };
-                enval.value.val = { val: null, body: null }
+                enval.value = { prc: null, body: null }
               })
               .catch(p => {
                 console.log(p);
