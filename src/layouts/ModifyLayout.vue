@@ -875,6 +875,11 @@ const terminar = async () => {
                 })
               })
           }
+          impresoras.value.val = null;
+          cashdesk.value = null;
+          checkretirada.value = false;
+          modes.value = { "EFE": 0, "DIG": { id: null, val: 0 } };
+          enval.value = { prc: null, body: null }
         })
         .catch(p => {
           console.log(p);
