@@ -34,6 +34,10 @@ const routes = [
     component: () => import('layouts/OpenLayout.vue'),
   },
   {
+    path: '/vale',
+    component: () => import('layouts/ValeLYT.vue'),
+  },
+  {
     path: '/stores',
     component: () => import('layouts/SaleStore.vue'),
   },

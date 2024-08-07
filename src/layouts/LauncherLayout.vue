@@ -55,14 +55,15 @@
 
   const appmodules = computed(() => {
     // return  user.rol == 'caj' ? VDB.authsCashiers : VDB.modules
-    if(user.rol == 'caj'){
+    if(user.rol == 'caj' ){
       return VDB.authsCashiers
     }else if(user.rol == 'aux'){
       return VDB.authsAux
-    }else if(user.rol == 'root'){
-      return VDB.autRoot
     }else if(user.rol == 'gen'){
       return VDB.authGen
+    }else if(user.rol == 'root'){
+      return VDB.autRoot
+
     }
   })
 

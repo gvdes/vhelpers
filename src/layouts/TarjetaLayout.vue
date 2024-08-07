@@ -85,6 +85,7 @@
             <q-card-actions align="center">
               <q-btn flat color="negative" v-close-popup icon="close" />
               <q-btn flat color="primary" icon="print" @click="impresoras.state = !impresoras.state" />
+              <q-btn flat color="primary" icon="picture_as_pdf"  @click="pdfFormat.state = !pdfExport.state" />
 
             </q-card-actions>
           </q-card>
@@ -130,7 +131,21 @@
         </q-dialog>
 
 
-
+        <q-dialog v-model="pdfFormat.state" persistent>
+          <q-card>
+            <q-card-section class="row items-center">
+              <q-avatar  icon="picture_as_pdf" color="primary" text-color="white" />
+              <span class="text-bold text-h6">Selecciona el Formato 😊</span>
+            </q-card-section>
+            <q-card-section>
+              <q-select v-model="pdfFormat.val" :options="pdfFormat.opts" label="Formatos" filled />
+            </q-card-section>
+            <q-card-actions align="right">
+              <q-btn flat label="Cancel" color="negative" v-close-popup />
+              <q-btn flat label="Seleccionar" color="positive" @click="pdfExport" :disable="!pdfFormat.val" />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
 
       </q-page>
     </q-page-container>
@@ -142,6 +157,8 @@ import { useVDBStore } from 'stores/VDB';
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import axios from 'axios';//para dirigirme bro
 import {exportFile ,useQuasar } from 'quasar';
+import { jsPDF } from "jspdf";
+import autoTable from 'jspdf-autotable'
 import { computed, ref } from 'vue';
 import { assist } from "src/boot/axios";
 
@@ -193,7 +210,14 @@ const date = ref(false);
 
 const fechas = ref(null);
 
-
+const pdfFormat = ref({
+  state:false,
+  val:null,
+  opts:[
+    {id:1,label:'Factura'},
+    {id:2,label:'Ticket'}
+  ]
+})
 const imptck = () => {
   let split = otckopt.value.body.TICKET.split('-')
   let impdat = {
@@ -342,6 +366,293 @@ const mostck = (a, row) => {
   otckopt.value.state = true
   otckopt.value.body = row
 }
+
+const pdfExport = () => {
+  $q.loading.show({message:'Importando Ticket'})
+  let host = VDB.session.store.ip;
+  let ticket = otckopt.value.body.TICKET
+  const dat  = `http://${host}/access/public/modify/getTicket/${ticket}`;
+  axios.get(dat)
+  .then(r => {
+    if(pdfFormat.value.val.id == 1){
+    pdfFactura(r.data)
+    .then(r => {
+      $q.notify({
+        message:`El ticket ${ticket} se descargo correctamente`,
+        type:`positive`,
+        position:`center`,
+      })
+      pdfFormat.value.state = false
+      pdfFormat.value.val = null
+
+      $q.loading.hide()
+    })
+    .catch(f => {
+      $q.notify({
+        message:`El ticket ${ticket} no se descargo correctamente`,
+        type:`negative`,
+        position:`center`,
+      })
+    })
+  }else if(pdfFormat.value.val.id == 2){
+    pdfTicket(r.data)
+    .then(r => {
+      $q.notify({
+        message:`El ticket ${ticket} se descargo correctamente`,
+        type:`positive`,
+        position:`center`,
+      })
+      pdfFormat.value.state = false
+      pdfFormat.value.val = null
+
+      $q.loading.hide()
+    })
+    .catch(f => {
+      $q.notify({
+        message:`El ticket ${ticket} no se descargo correctamente`,
+        type:`negative`,
+        position:`center`,
+      })
+    })
+  }
+  })  
+  .catch(f => 
+    console.log(f)
+  )
+
+}
+
+const calcularEspacio = (products, pagos) => {
+    let spaced = 70;
+    products.forEach((e) => {
+        spaced += 7;
+    });
+    spaced += 10;
+    pagos.forEach((p) => {
+        spaced += 4;
+    });
+    spaced += 41
+    return spaced;
+}
+
+const pdfTicket = (ticket) => {
+  return new Promise((resolve, reject) => {
+    try {
+  let products = ticket.products
+  let pagos = ticket.payments
+
+  let spaced = calcularEspacio(products, pagos);
+  console.log(ticket.products[0].ARTICULO)
+  const doc = new jsPDF({format: [80, spaced]
+  });
+  spaced = 62
+  doc.setFontSize(8)
+  doc.text("----------------------------------------------------------------------------",2,10)
+  doc.text(ticket.empresa.CTT1TPV,2,13)
+  doc.text(ticket.empresa.CTT2TPV,2,16)
+  doc.text(ticket.empresa.CTT3TPV,2,19)
+  doc.text(ticket.empresa.CTT4TPV,2,22)
+  doc.text(ticket.empresa.CTT5TPV,2,25)
+  doc.text(ticket.header.TERMINAL,2,34)
+  doc.text(`Nº ${ticket.header.TICKET}`,2,37)
+  doc.text(`FECHA ${ticket.header.FECHA}`,20,37)
+  doc.text(ticket.header.HORA,50,37)
+  doc.text(`Forma de Pago: ${ticket.header.PAGOPRINCIPAL}`,2,40)
+  doc.text(ticket.header.NOMBRECLIENTE,2,43)
+  doc.text(ticket.header.DOMICILIO,2,46)
+  doc.text(ticket.header.POBALCION + ticket.header.CODIGOPOSTAL,2,49)
+  doc.text(ticket.header.PROVINCIA,2,52)
+  // doc.text("",2,55)
+  doc.text("_________________________________________________",2,58)
+  doc.text("ARTICULO",2,61)
+  doc.text("UD.",25,61)
+  doc.text("PRECIO",40,61)
+  doc.text("TOTAL",57,61)
+  doc.text("_________________________________________________",2,62)
+  let cantidadtotal = 0
+  products.forEach((e) => {
+    doc.setFontSize(6)
+    spaced += 3;
+    doc.text(e.ARTICULO + '   ' + e.DESCRIPCION.substring(0, 47),2,spaced)
+    spaced += 4;
+    doc.text( Number(e.CANTIDAD).toFixed(2),25,spaced)
+    doc.text(Number(e.PRECIO).toFixed(2),40,spaced)
+    doc.text(Number(e.TOTAL).toFixed(2),57,spaced)
+    cantidadtotal += Number(e.CANTIDAD)
+  })
+  spaced += 10;
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'bold')
+  doc.text("TOTAL",54,spaced,'right')
+  doc.text(`$ ${Number(ticket.header.TOTAL).toFixed(2)}`,56,spaced,'left')
+  doc.setFont('helvetica','normal')
+  pagos.forEach((p) => {
+    spaced += 4
+    doc.text(p.CONCEPTOPAGO,54,spaced,'right')
+    doc.text(`$ ${Number(p.IMPORTE).toFixed(2)}`,56,spaced,'left')
+  })
+  spaced += 5
+  doc.text(`N Articulos: ${cantidadtotal}`,2,spaced)//total cantidad
+  spaced += 5
+  doc.setFontSize(6)
+  doc.text(`Le Atendio: ${ticket.header.DEPENDIENTE}`,2,spaced)
+  spaced += 5
+  doc.setFontSize(8)
+  doc.text('---------------------------------Grupo-Vizcarra----------------------------',2,spaced)
+  spaced += 5
+  doc.text(ticket.empresa.PTT1TPV,2,spaced)
+  spaced += 3
+  doc.text(ticket.empresa.PTT2TPV,2,spaced)
+  spaced += 3
+  doc.text(ticket.empresa.PTT3TPV,2,spaced)
+  spaced += 3
+  doc.text(ticket.empresa.PTT4TPV,2,spaced)
+  spaced += 3
+  doc.text(ticket.empresa.PTT5TPV,2,spaced)
+  spaced += 3
+  doc.text(ticket.empresa.PTT6TPV,2,spaced)
+  spaced += 3
+  doc.text(ticket.empresa.PTT7TPV,2,spaced)
+  spaced += 3
+  doc.text(ticket.empresa.PTT8TPV,2,spaced)
+  doc.save(`Ticket ${ticket.header.TICKET}`)
+  resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+const pdfFactura = (ticket) => {
+  return new Promise((resolve, reject) => {
+    try {
+  let products = ticket.products
+  let pagos = ticket.payments
+  const doc = new jsPDF();
+  let chunks = [];
+  const arreglo = products.map(producto => Object.values(producto));
+  const paginas = Math.ceil(arreglo.length / 20);
+  for (var i = 0; i < arreglo.length; i += 20) {
+    chunks.push(arreglo.slice(i, i + 20));
+  }
+  console.log(chunks);
+  for (let i = 0; i < 1; i++) {
+
+    
+    chunks.forEach(function (chunk, index) {
+      if (index > 0) {
+        doc.addPage();
+      }
+
+      let totcan = 0;
+      let total  = 0 
+      for (let i = 0; i < chunk.length; i++) {
+        chunk[i][1] = chunk[i][1].replace(/\n/g, " ");//descripcion
+        chunk[i][2] = parseFloat(chunk[i][2]);//cantidad
+        chunk[i][3] = Number(chunk[i][3]).toFixed(2);//precio
+        chunk[i][4] = Number(chunk[i][4]).toFixed(2);//total
+        totcan += parseFloat(chunk[i][2]);
+        total += parseFloat(chunk[i][4]);
+
+      }
+
+      doc.setFontSize(25)
+      doc.setFont('helvetica', 'bold')
+      doc.text("GRUPO VIZCARRA", 105, 10, "center");
+      doc.setFontSize(8)
+      doc.text('Hora Ticket:', 10, 10, 'left')
+      doc.text(ticket.header.HORA, 10, 15, 'left');//HORA DE EL TICKET
+      doc.setFontSize(12)
+      doc.text(`${ticket.header.NOMBRECLIENTE} ${ticket.header.CLIENTE}`, 10, 25, 'left')//NOMBRE DE CLEINTE
+      doc.text(`SUCURSAL ${ticket.empresa.DESTPV}`, 120, 25, 'left')// NOMBRE DE LA EMPRESA
+      doc.setFontSize(8)
+      doc.text(ticket.header.DOMICILIO, 10, 30, 'left')//DOMICILIO DE EL CLIENTE
+      doc.text(ticket.header.CODIGOPOSTAL, 10, 35, 'left')// CODIGO POSTAL DE EL CLIENTE
+      doc.text(ticket.header.POBALCION + ticket.header.PROVINCIA, 10, 40, 'left')//DELEGACION DE EL CLIENT4E
+
+      doc.text(ticket.empresa.CTT3TPV, 120, 30, 'left')//DOMICILIO DE LA EMPRESA
+      // doc.text('06090', 120, 35, 'left')// CODIGO POSTAL DE  LA EMPRESA
+      // doc.text('DELEG, CUAUHTEMOC CDMX       CENTRO', 120, 40, 'left')//DELEGACION DE LA EMPRESA
+      doc.text('LLI1210184G8', 120, 45, 'left')//RFC DE LA EMPRESA
+      doc.rect(120, 51, 80, 5);
+      doc.text('DOCUMENTO', 121, 55, 'left')
+      doc.text('FACTURA', 121, 60, 'left')
+      doc.text('NUMERO', 143, 55, 'left')
+      doc.text(ticket.header.TICKET, 143, 60, 'left')//factura
+      doc.text('PAGINA', 165, 55, 'left')
+      doc.text(`${index + 1} de ${paginas}`, 165, 60, 'left')
+      doc.text('FECHA', 185, 55, 'left')
+      const fecha = ticket.header.FECHA
+      doc.text(fecha, 185, 60, 'left')
+      autoTable(doc, {
+        startX: 10,
+        startY: 65,
+        theme: 'grid',
+        styles: { cellPadding: 1, fontSize: 8, halign: 'center' },
+        head: [['CREADOR DOC', 'ALMACEN', 'AGENTE', 'FORMA DE PAGO']],
+        body: [
+          ['APP','GEN', ticket.header.DEPENDIENTE, pagos[0].CONCEPTOPAGO],//forma de pago primero
+        ],
+      })
+
+      autoTable(doc, {
+        startX: 10,
+        startY: 80,
+        theme: 'striped',
+        styles: { cellPadding: .6, fontSize: 8, halign: 'left' },
+        head: [['ARTICULO', 'DESCRIPCION','CANTIDAD', 'PRECIO', 'TOTAL']],
+        body: chunk,
+        columnStyles: {
+          0: { fontStyle: 'bold', halign: 'left' },
+          1: { fontStyle: 'bold', halign: 'left' },
+          2: { halign: 'center' },
+          3: { halign: 'center' },
+          4: { halign: 'center' },
+        },
+
+      })
+
+      doc.setFontSize(11)
+      doc.text('TOTAL UNIDADES:', 60, 200, 'left')
+      doc.text(Number(totcan).toFixed(2), 100, 200, 'left')
+      doc.setFont('helvetica', 'bold')
+      doc.text('TOTAL:',140, 200, 'left')
+      doc.text(`$ ${Number(total).toFixed(2)}`, 160, 200, 'left')//TOTAL TICKET
+      doc.setFontSize(8)
+      doc.text('Debo(emos) y pagare(mos) incondicionalmente por este pagare a la order de GRUPO VIZCARRA, en la ciudad de Mexico,', 5, 210, 'left')
+      doc.text('la cantidad de el valor recibido a mi(nuestra) entera satisfaccion', 5, 215, 'left')
+      doc.text('Este pagare forma parte de una serie numerica del 1 al y 9 y todos estos estan sujetos a la condicion, de que al no pagarse cualquiera de ellos a su', 5, 220, 'left')
+      doc.text('vencimiento sean exigibles todos los que le sigan en numero, ademas de los ya vencidosm desde la fecha de su vencimiento de el presente documento', 5, 225, 'left')
+      doc.text('hasta el dia de su liquidacion, causaran intereses moratorios al tipo del % mensual en esta ciudad justamente con el principal', 5, 230, 'left')
+      doc.setFontSize(15)
+      doc.text('______________', 31, 248, 'center')
+      doc.text('AUTORIZO', 20, 254, 'left')
+      doc.text('______________', 85, 248, 'center')
+      doc.text('CHOFER', 75, 254, 'left')
+      doc.text('______________', 140, 248, 'center')
+      doc.text('RECIBIO', 130, 254, 'left')
+      doc.text('______________', 168, 248, 'left')
+      doc.text('FECHA Y HORA', 168, 254, 'left')
+      doc.setFontSize(9)
+      doc.text('UNA VEZ ENTREGADA LA MERCANCIA EN LA FLETERA O DOMICILIO QUE INDIQUE EL CLIENTE ', 5, 260, 'left')
+      doc.text('LLUVIA LIGHT SA DE CV NO ES RESPONSABLE POR PEDIDAS TOTALES, PARCIALES ', 5, 265, 'left')
+      doc.text('O CUALQUIER TIPO DE DANO EN LA MERCANCIA DE ESTE DOCUMENTO ', 5, 270, 'left')
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(12)
+      doc.text('NO SE ACEPTAN CAMBIOS NI DEVOLUCIONES', 5, 275, 'left')
+      doc.setFontSize(25)
+      doc.setFont('helvetica', 'bold')
+      doc.text("GRUPO VIZCARRA", 105, 10, "center");
+    })
+  }
+  doc.save(`Factura ${ticket.header.TICKET}`)
+  resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 index();
 // impre();
 </script>

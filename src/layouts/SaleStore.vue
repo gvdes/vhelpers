@@ -10,9 +10,16 @@
             <q-icon name="navigate_next" color="primary" />
             <span class="text-h6">Ventas Sucursales</span>
           </div>
-          <q-btn dense flat color="primary" icon="autorenew" @click="init" />
+          <div class="row">
+            <q-select v-model="smonth.val" :options="meses" label="mes" outlined dense
+              @update:model-value="ObtReport" v-if="!ismobile"/>
+            <q-btn dense flat color="primary" icon="autorenew" @click="init" />
+          </div>
+
         </q-toolbar>
       </q-header>
+      <q-separator spaced inset vertical dark />
+      <div class="text-bold text-h6">{{ smonth.val.label }}</div>
       <q-separator spaced inset vertical dark />
 
       <div :class="ismobile ? '' : 'row'">
@@ -132,7 +139,8 @@
             <div class="text-h6 text-center">VENTAS HOY</div>
             <div class="text-h4 text-center">
               {{
-                Number(stores.reduce((accumulator, store) => {return accumulator + Number(store.sales?.saleshoy || 0);}, 0)).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
+                Number(stores.reduce((accumulator, store) => { return accumulator + Number(store.sales?.saleshoy || 0); },
+                  0)).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
               }}
             </div>
           </q-card-section>
@@ -151,22 +159,10 @@
 
       <q-separator spaced inset vertical dark />
 
-      <q-table
-        title="Sucursales"
-        :rows="stores"
-        row-key="id"
-        :pagination="table.pagination"
-        :filter="table.filter"
-        hide-header
-      >
+      <q-table title="Sucursales" :rows="stores" row-key="id" :pagination="table.pagination" :filter="table.filter"
+        hide-header>
         <template v-slot:top-right>
-          <q-input
-            borderless
-            dense
-            debounce="300"
-            v-model="table.filter"
-            placeholder="Buscar"
-          >
+          <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Buscar">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -174,40 +170,39 @@
         </template>
 
         <template v-slot:body="props">
-          <div
-            class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
-          >
-            <q-list bordered dense >
+          <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
+            <q-list bordered dense>
               <q-item>
                 <q-item-section>
 
                   <q-item-label overline>{{ props.row.name }}</q-item-label>
                   <q-item-label caption>{{ props.row.alias }}</q-item-label>
-                  <div ></div>
+                  <div></div>
+
                 </q-item-section>
+
                 <q-item-section class="text-right" v-if="!props.expand">
-                  <q-item-label overline
-                    >$
-                    {{
-                      Number(props.row.sales?.saleshoy)
-                        .toFixed(2)
-                        .replace(/\d(?=(\d{3})+\.)/g, "$&,")
-                    }}</q-item-label
-                  >
-                  <q-item-label caption
-                    >tickets: {{ props.row.sales?.hoytck }}</q-item-label
-                  >
+                  <div v-if="props.row.sales">
+                    <q-item-label overline>$
+                      {{
+                        Number(props.row.sales?.saleshoy)
+                          .toFixed(2)
+                          .replace(/\d(?=(\d{3})+\.)/g, "$&,")
+                      }}
+                    </q-item-label>
+                    <q-item-label caption>tickets: {{ props.row.sales?.hoytck }}</q-item-label>
+                  </div>
+                  <div v-else>
+                    <q-item-label caption> <q-circular-progress indeterminate rounded size="20px" color="primary"
+                        class="q-ma-md" /></q-item-label>
+                  </div>
+
+
+
                 </q-item-section>
                 <q-item-section avatar v-if="!ismobile">
-                  <q-btn
-                    color="grey"
-                    flat
-                    dense
-                    :icon="
-                      props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                    "
-                    @click="props.expand = !props.expand"
-                  />
+                  <q-btn color="grey" flat dense :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                    " @click="props.expand = !props.expand" />
                 </q-item-section>
               </q-item>
               <q-slide-transition>
@@ -283,7 +278,7 @@
   </q-layout>
 </template>
 
-<script setup >
+<script setup>
 import { ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { AppFullscreen, useQuasar } from "quasar";
@@ -304,11 +299,33 @@ const table = ref({
   filter: "",
 });
 
+const smonth = ref({
+  val: null
+})
+
+const meses = [
+  { id: 1, label: 'Enero' },
+  { id: 2, label: 'Febrero' },
+  { id: 3, label: 'Marzo' },
+  { id: 4, label: 'Abril' },
+  { id: 5, label: 'Mayo' },
+  { id: 6, label: 'Junio' },
+  { id: 7, label: 'Julio' },
+  { id: 8, label: 'Agosto' },
+  { id: 9, label: 'Septiembre' },
+  { id: 10, label: 'Octubre' },
+  { id: 11, label: 'Noviembre' },
+  { id: 12, label: 'Diciembre' },
+]
+
 
 
 const ismobile = computed(() => $q.platform.is.mobile);
 
 const init = async () => {
+  const date = new Date();
+  const mes = date.getMonth() + 1
+  smonth.value.val = meses.filter(e => e.id === mes)[0]
   $q.loading.show({ message: "Cargando Informacion" });
   console.log("se inicia el init");
   const resp = await ApiAssist.index();
@@ -317,38 +334,41 @@ const init = async () => {
   } else {
     console.log(resp);
     stores.value = resp;
-    getSale(stores.value);
+    getSale(stores.value, mes);
 
   }
 };
 
-const getSale = async (sucursales) => {
-  sucursales.forEach((e) => {
+const getSale = async (sucursales, mes) => {
+
+  sucursales.forEach((e, index) => {
+    setTimeout(() => { 
     let host = e.ip_address;
-    let sale = `http://${host}/access/public/reports/getSales`;
+    let sale = `http://${host}/access/public/reports/getSalesPerMonth/${mes}`;
     axios
       .get(sale)
       .then((done) => {
         e.sales = done.data == undefined ? null : done.data;
-        // console.log(e);
+        console.log(done);
       })
       .catch((fail) => {
         console.log(fail.response.data.message);
-      });
+      });},index * 1000)
   });
   $q.loading.hide();
 };
-if($user.session.rol == 'root'){
-  init()
-}else{
-  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
-  $router.replace('/');
 
+
+if ($user.session.rol == 'root') {
+  init()
+} else {
+  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+  $router.replace('/');
+}
+
+const ObtReport = () => {
+  stores.value.map(e => e.sales = null);
+  getSale(stores.value, smonth.value.val.id)
 }
 
 </script>
-<!-- <style scoped>
-.q-item {
-  transition: background-color 0.3s ease;
-}
-</style> -->

@@ -13,8 +13,9 @@ export const useVDBStore = defineStore('vdb', {
       { id:3, name:"Tickets", alias:"MOD", desc:"Moviemientos para  Tickets", path:"modificaciones"},
       { id:4, name:"Pagos", alias:"PAG", desc:"Consulta de pagos", path:"pagos"},
       { id:5, name:"Apertura", alias:"APC", desc:"Apertura de cajas", path:"apertura"},
-      { id:6, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
-      { id:7, name:"Ventas", alias:"VS", desc:"Ventas Sucursales", path:"stores"},
+      { id:6, name:"Vales", alias:"VL", desc:"Creacion de Vales", path:"vale"},
+      { id:7, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
+      { id:8, name:"Ventas", alias:"VS", desc:"Ventas Sucursales", path:"stores"},
 
     ]
   }),
@@ -27,13 +28,13 @@ export const useVDBStore = defineStore('vdb', {
       return state.modules.filter((m) => m.id <= 2)
     },
     authsAux (state) {
-      return state.modules.filter((m) => m.id <= 5)
+      return state.modules.filter((m) => m.id <= 6)
     },
     autRoot(state){
-      return state.modules.filter((m) => m.id >= 7)
+      return state.modules.filter((m) => m.id >= 8)
     },
     authGen(state){
-      return state.modules.filter((m) => m.id <= 6)
+      return state.modules.filter((m) => m.id <= 7)
     }
   },
 
