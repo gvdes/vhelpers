@@ -26,6 +26,10 @@ const routes = [
     component: () => import('layouts/TarjetaLayout.vue'),
   },
   {
+    path: '/tarjetas',
+    component: () => import('layouts/PagosTarjetas.vue'),
+  },
+  {
     path: '/sales',
     component: () => import('layouts/SaleLayout.vue'),
   },

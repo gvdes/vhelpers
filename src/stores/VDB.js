@@ -10,12 +10,13 @@ export const useVDBStore = defineStore('vdb', {
     modules:[
       { id:1, name:"IVA", alias:"IVA", desc:"Agregue iva a tickets cobrados", path:"iva" },
       { id:2, name:"Ciclicos", alias:"CIC", desc:"Visor de Inventarios Ciclicos", path:"ciclicos" },
-      { id:3, name:"Tickets", alias:"MOD", desc:"Moviemientos para  Tickets", path:"modificaciones"},
-      { id:4, name:"Pagos", alias:"PAG", desc:"Consulta de pagos", path:"pagos"},
-      { id:5, name:"Apertura", alias:"APC", desc:"Apertura de cajas", path:"apertura"},
-      { id:6, name:"Vales", alias:"VL", desc:"Creacion de Vales", path:"vale"},
-      { id:7, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
-      { id:8, name:"Ventas", alias:"VS", desc:"Ventas Sucursales", path:"stores"},
+      { id:3, name:"Tarjetas", alias:"TRJ", desc:"Visor de Tarjetas", path:"tarjetas" },
+      { id:4, name:"Tickets", alias:"MOD", desc:"Moviemientos para  Tickets", path:"modificaciones"},
+      { id:5, name:"Pagos", alias:"PAG", desc:"Consulta de pagos", path:"pagos"},
+      { id:6, name:"Apertura", alias:"APC", desc:"Apertura de cajas", path:"apertura"},
+      // { id:7, name:"Vales", alias:"VL", desc:"Creacion de Vales", path:"vale"},
+      { id:8, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
+      { id:9, name:"Ventas", alias:"VS", desc:"Ventas Sucursales", path:"stores"},
 
     ]
   }),
@@ -25,16 +26,16 @@ export const useVDBStore = defineStore('vdb', {
       return (nick) => state.users.find( u => u.credentials.nick==nick );
     },
     authsCashiers (state) {
-      return state.modules.filter((m) => m.id <= 2)
+      return state.modules.filter((m) => m.id <= 3)
     },
     authsAux (state) {
-      return state.modules.filter((m) => m.id <= 6)
+      return state.modules.filter((m) => m.id <= 7)
     },
     autRoot(state){
-      return state.modules.filter((m) => m.id >= 8)
+      return state.modules.filter((m) => m.id >= 9)
     },
     authGen(state){
-      return state.modules.filter((m) => m.id <= 7)
+      return state.modules.filter((m) => m.id <= 8)
     }
   },
 
