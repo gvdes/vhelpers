@@ -175,6 +175,7 @@ const onSubmit = () => {
 
 const index = async () => {
   console.log("Recibiendo Datos :)")
+  $q.loading.show({message:'Obteniendo datos'});
   let host = VDB.session.store.ip;
   let riwo = `http://${host}/access/public/reports/getCashCard`;
   axios.get(riwo)
@@ -182,6 +183,7 @@ const index = async () => {
       console.log(r)
       tarjetas.value = r.data.formaspagos
       terminales.value.opts = r.data.terminales
+      $q.loading.hide()
 
     })
     .catch(r => console.log(r))
