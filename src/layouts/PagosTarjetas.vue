@@ -3,26 +3,27 @@
 
     <q-page-container>
       <q-page padding>
-      <q-header class="bg-grey-3 text-dark " bordered>
-        <UserToolbar />
-        <q-separator />
-        <q-toolbar class="justify-between">
-          <div>
-            <span class="text-grey">Helpers</span>
-            <q-icon name="navigate_next" color="primary" />
-            <span class="text-h6">Tarjetas</span>
-          </div>
-          <div class="row">
-            <q-select v-model="terminales.val" :options="terminales.opts" option-label="DESTER" label="Caja" outlined
-              dense />
-          </div>
-        </q-toolbar>
+        <q-header class="bg-grey-3 text-dark " bordered>
+          <UserToolbar />
+          <q-separator />
+          <q-toolbar class="justify-between">
+            <div>
+              <span class="text-grey">Helpers</span>
+              <q-icon name="navigate_next" color="primary" />
+              <span class="text-h6">Tarjetas</span>
+            </div>
+            <div class="row">
+              <q-select v-model="terminales.val" :options="terminales.opts" option-label="DESTER" label="Caja" outlined
+                dense />
+            </div>
+          </q-toolbar>
 
-      </q-header>
+        </q-header>
 
-          <q-separator spaced inset vertical dark />
+        <q-separator spaced inset vertical dark />
         <q-form @submit="onSubmit" class="q-gutter-md">
-          <q-input v-model="text" type="number" label="IMPORTE" outlined />
+          <q-input v-model="text" type="number" label="IMPORTE" outlined autofocus :min="0.00" step="any" dense
+            input-class="q-pl-md" :disable="terminales.val == 'SELECCIONA CAJA'" />
         </q-form>
 
         <q-separator spaced inset vertical dark />
@@ -78,10 +79,6 @@ import { exportFile, useQuasar } from 'quasar';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
 import { computed, ref } from 'vue';
-import { assist } from "src/boot/axios";
-import { enc } from 'crypto-js';
-
-
 const VDB = useVDBStore();
 const $q = useQuasar();
 
@@ -106,6 +103,8 @@ const tables = ref([
 
 ])
 
+
+
 const tertar = computed(() => {
   if (terminales.value.val) {
     return tarjetas.value.filter(e => e.TERMINAL == terminales.value.val.DESTER)
@@ -113,6 +112,8 @@ const tertar = computed(() => {
     return []
   }
 })
+
+
 
 const encontrar = computed(() => {
   if (tarjSuc.value.length > 0) {
@@ -151,6 +152,8 @@ const faltantes = computed(() => {
 
 })
 
+
+
 const sobrantes = computed(() => {
   let copiaTertar = [...tertar.value]; // Copia del arreglo original
 
@@ -165,17 +168,31 @@ const sobrantes = computed(() => {
   });
 })
 
+
 const onSubmit = () => {
+
   if (text.value) {
     tarjSuc.value.push(text.value)
     text.value = null
+    const resultado = verificarCoincidencias(sobrantes.value, faltantes.value);
+
+    if (resultado.length > 0) {
+      console.log('Se encontraron coincidencias con las siguientes combinaciones:');
+      resultado.forEach(coincidencia => {
+        console.log(`Combinación: ${coincidencia.combinacion.join(' + ')} = ${coincidencia.monto}, Ticket: ${coincidencia.ticket}`);
+      });
+    } else {
+      console.log('No se encontraron coincidencias.');
+    }
   }
 
 }
 
+
+
 const index = async () => {
   console.log("Recibiendo Datos :)")
-  $q.loading.show({message:'Obteniendo datos'});
+  $q.loading.show({ message: 'Obteniendo datos' });
   let host = VDB.session.store.ip;
   let riwo = `http://${host}/access/public/reports/getCashCard`;
   axios.get(riwo)
@@ -188,7 +205,6 @@ const index = async () => {
     })
     .catch(r => console.log(r))
 }
-
 
 const exportTable = () => {
   // naive encoding to csv format
@@ -223,7 +239,6 @@ const exportTable = () => {
     })
   }
 }
-
 
 const exportFaltantes = () => {
   // naive encoding to csv format
@@ -314,6 +329,53 @@ const wrapCsvValue = (val, formatFn, row) => {
   // .split('\r').join('\\r')
 
   return `"${formatted}"`
+}
+
+
+
+const verificarCoincidencias = (bouchers, cobros) => {
+  const combinaciones = generarCombinaciones(bouchers);
+  console.log(combinaciones);
+
+  const coincidencias = [];
+
+  combinaciones.forEach(combinacion => {
+    const sumaCombinacion = combinacion.reduce((a, b) => Number(a) + Number(b), 0);
+
+    cobros.forEach(cobro => {
+      if (cobro.TARJETAS == sumaCombinacion) {
+        coincidencias.push({
+          combinacion: combinacion,
+          ticket: cobro.TICKET,
+          monto: cobro.TARJETAS
+        });
+      }
+    });
+  });
+
+  return coincidencias;
+}
+
+
+
+
+
+const generarCombinaciones = (array) => {
+  const resultado = [];
+
+  for (let i = 0; i < (1 << array.length); i++) {
+    const combinacion = [];
+    for (let j = 0; j < array.length; j++) {
+      if (i & (1 << j)) {
+        combinacion.push(array[j]);
+      }
+    }
+    if (combinacion.length > 0) {
+      resultado.push(combinacion);
+    }
+  }
+
+  return resultado;
 }
 
 index()

@@ -86,9 +86,9 @@
   },
   {
     "id": 99,
-    "name": "TANIA FLORES RIOS",
+    "name": "ANA PAULINA RODRIGUEZ FLORES",
     "credentials": {
-      "nick": "TaniaFl",
+      "nick": "AnaPau",
       "pass": "8083",
       "hash": "20ef119e812e178ecb44efa448b57ebc"
     },
@@ -596,9 +596,9 @@
   },
   {
     "id": 40,
-    "name": "MIRNA ANGELICA AGUILAR ZUÑIGA",
+    "name": "PRISCILA CITLALI SANCHEZ RODRIGUEZ",
     "credentials": {
-      "nick": "MirnaAg",
+      "nick": "PricilaC",
       "pass": "36e0",
       "hash": "127104ccc98603ecd6df2cd729a71de2"
     },
@@ -773,11 +773,11 @@
       "hash": "c7862693c953ca8d6a00494edf1b2d7b"
     },
     "store": {
-      "id": 9,
-      "name": "Correo 2",
-      "alias": "CR2",
-      "ip": "192.168.50.253:1619",
-      "id_viz":6
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.62.182:1619",
+      "id_viz":4
     },
     "rol": "gen"
   },
@@ -800,9 +800,9 @@
   },
   {
     "id": 103,
-    "name": "LUZ ANGELES CARRERA ESPERON",
+    "name": "FABIOLA BARRERA TOLENTINO",
     "credentials": {
-      "nick": "LuzA",
+      "nick": "FabiolaB",
       "pass": "08f4",
       "hash": "b69b00de20339de7d9356ff6134f86dd"
     },
@@ -848,5 +848,22 @@
       "id_viz":1
     },
     "rol": "root"
+  },
+  {
+    "id": 304,
+    "name": "SONIA DIEGO FRANCISCO",
+    "credentials": {
+      "nick": "SoniaF",
+      "pass": "0a9b",
+      "hash": "0b8a3c958f6b3c3f777cda30d694e259"
+    },
+    "store": {
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.62.182:1619",
+      "id_viz":4
+    },
+    "rol": "aux"
   }
 ]

@@ -268,32 +268,56 @@
                 <div class="fw-bold text-h4">$ {{ totm }}</div>
               </div>
             </div>
-
-
-
             <div>
               <q-form @submit="mosimp" class="q-gutter-md">
                 <q-card-section>
-                  <div class="row items-center">
-                    <div class="col-3">Efectivo</div>
-                    <q-input class="col" v-model="modes.EFE" type="number" autofocus :min="0.00" step="any" dense
-                      input-class="q-pl-md fw-sbold fs-inc4" />
-                    <q-btn color="primary" icon="backspace" flat dense round v-if="parseFloat(modes.EFE)"
-                      @click="modes.EFE = 0" />
+                  <div class="row text-center items-center">
+                    <div class="col"> Forma de pago: </div>
+                    <div class="col"> <q-select class="col-3" v-model="modes.EFE.id" :options="paymeths"
+                        option-value="id" option-label="desc" dense filled label="Forma de pago" :option-disable="(val) => optionDisabled(val)">
+                      </q-select> </div>
+                  </div>
+                  <q-separator spaced inset vertical dark />
+                  <div class="row text-center items-center ">
+                    <div class="col"> {{ modes.EFE.id?.id == 'EFE' ? 'Efectivo' : 'Importe Cobrado' }}</div>
+                    <div class="col"> <q-input class="col" v-model="modes.EFE.val" type="number" autofocus :min="0.00"
+                        step="any" dense input-class="q-pl-md fw-sbold fs-inc4" filled>
+                        <template v-slot:after>
+                          <q-btn color="primary" icon="backspace" flat dense round v-if="parseFloat(modes.EFE.val)"
+                            @click="modes.EFE.val = 0" />
+                        </template>
+                      </q-input>
+
+                    </div>
+                  </div>
+                </q-card-section>
+                <q-card-section>
+                  <div class="row flex justify-center ">
+                    <div  class="col flex justify-center">
+                      <q-btn  color="primary" label="2ª Forma de pago" @click="()=> {dafpa = !dafpa; modes.DIG.val = 0; modes.DIG.id = null;  }" outline rounded dense size="md" style="width: 70%;"  />
+                    </div>
+                    <div class="col" v-if="dafpa">
+                      <q-select class="col-3" v-model="modes.DIG.id" :options="paymeths" label="Forma Pago"
+                        option-value="id" option-label="desc" dense filled :option-disable="(val) => optionDisable(val)">
+                      </q-select> 
+                    </div>
+                  </div>
+                  <q-separator spaced inset vertical dark />
+                  <div class="row flex justify-center text-center" v-if="dafpa">
+                    <div class="col"> {{ modes.DIG.id?.id == 'EFE' ? 'Efectivo' : 'Importe Cobrado' }}</div>
+                    <div class="col"> <q-input class="col" v-model="modes.DIG.val" type="number" autofocus :min="0.00"
+                        step="any" dense input-class="q-pl-md fw-sbold fs-inc4" filled>
+                        <template v-slot:after>
+                          <q-btn color="primary" icon="backspace" flat dense round v-if="parseFloat(modes.DIG.val)"
+                            @click="modes.DIG.val = 0" />
+                        </template>
+                      </q-input>
+
+                    </div>
                   </div>
                 </q-card-section>
                 <div>
-                  <q-card-section>
-                    <div class="row">
-                      <q-select class="col-3" v-model="modes.DIG.id" :options="paymeths" label="Terminal"
-                        option-value="id" option-label="desc" dense>
-                      </q-select>
-                      <q-input class="col" v-model="modes.DIG.val" type="number" :min="0.00" step="any" dense
-                        input-class="q-pl-md fw-sbold fs-inc4" :disable="!modes.DIG.id" />
-                      <q-btn color="primary" icon="backspace" flat dense round v-if="parseFloat(modes.DIG.val)"
-                        @click="modes.DIG.val = 0; modes.DIG.id = null" />
-                    </div>
-                  </q-card-section>
+
                   <q-card-section>
                     <q-select v-model="valecli.val" :options="valecli.opts" label="Descontar Vale" filled
                       @update:model-value="buscarvales" />
@@ -316,7 +340,6 @@
                 </div>
               </q-form>
             </div>
-
             <div class="bg-deep-purple-3 row items-center justify-between q-pa-md text-black">
               <div>
                 <div class="fs-dec3">Cambio</div>
@@ -344,8 +367,6 @@
             </q-dialog>
           </q-card>
         </q-dialog>
-
-
       </q-page>
     </q-page-container>
   </q-layout>
@@ -418,26 +439,26 @@ const motivo = ref('');
 const datenv = ref(null);
 
 
-const modes = ref({ "EFE": 0, "DIG": { id: null, val: 0 } });
+const modes = ref({ "EFE": { id: null, val: 0 }, "DIG": { id: null, val: 0 } });
 const paymeths = [
+  { id: "EFE", desc: "CONTADO EFECTIVO" },
   { id: "TBA", desc: "TARJETA C/D BANCOMER" },
   { id: "TSA", desc: "TARJETA C/D SANTANDER" },
   { id: "TDB", desc: "TRA/DEP BANCOMER" },
   { id: "TDA", desc: "TRA/DEP Santander" },
   { id: "TDS", desc: "TRA/DEP Scotiabank" },
   { id: "C30", desc: "CREDITO" },
+]
 
-];
-
-
+const dafpa = ref(false);
 const mod = ref(null);//guarda el movimiento
 const listmod = ["Devolucion", "Modificacion", "Reimpresion"]//listado de movimiento
 const cansearch = computed(() => (cashdesk.value && folio.value.length));//para enviar a buscar
 const productos = computed(() => tickmod.value.body.product)
 const ala = computed(() => (((impresoras.value.val) && ((mod.value == "Devolucion" && motivo.value.length > 10) || (mod.value == "Reimpresion"))) || mod.value == "Modificacion"))
-const cambio = computed(() => (Number.parseFloat(modes.value.DIG.val) + Number.parseFloat(modes.value.EFE) + Number.parseFloat(val1.value)) - totm.value)
+const cambio = computed(() => (Number.parseFloat(modes.value.DIG.val) + Number.parseFloat(modes.value.EFE.val) + Number.parseFloat(val1.value)) - totm.value)
 const retirada = computed(() => {
-  if (Number.parseFloat(modes.value.DIG.val) && (Number.parseFloat(modes.value.DIG.val) > totm.value) && Number.parseFloat(modes.value.EFE) == 0) {
+  if (Number.parseFloat(modes.value.DIG.val) && (Number.parseFloat(modes.value.DIG.val) > totm.value) && Number.parseFloat(modes.value.EFE.val) == 0) {
     return true
   } else {
     return false
@@ -450,20 +471,20 @@ const index = async () => {
   console.log(idstore)
   // console.log(host);
   // let impr = `http://${host}/access/public/modify/getPrinter`;
-  try{
+  try {
     let resp = await assist.get(`/cashier/getPrinters/${idstore}`)
-    if(resp.status == 200){
+    if (resp.status == 200) {
       impresoras.value.body = resp.data
-    console.log("Impresoras listas :)")
+      console.log("Impresoras listas :)")
     }
 
-  }catch (err){
+  } catch (err) {
     console.log(err);
     $q.notify({
       message: 'No se pudiron obtener las impresoras',
-      type:'negative',
-      position:'center',
-      icon:'error'
+      type: 'negative',
+      position: 'center',
+      icon: 'error'
     })
   }
 }
@@ -512,23 +533,23 @@ const envia = async () => {
 
         ticket.value.state = false
         console.log(r)
-        if(r.status == 200){
+        if (r.status == 200) {
 
-        $q.notify({
-          html: true,
-          message: r.data.original.mssg,
-          color: "positive",
-          position: "center"
-
-        });
-        } else{
           $q.notify({
-          html: true,
-          message: r.data.original.message,
-          color: "negative",
-          position: "center"
+            html: true,
+            message: r.data.original.mssg,
+            color: "positive",
+            position: "center"
 
-        });
+          });
+        } else {
+          $q.notify({
+            html: true,
+            message: r.data.original.message,
+            color: "negative",
+            position: "center"
+
+          });
         }
 
         mod.value = null;
@@ -807,14 +828,14 @@ const terminar = async () => {
     create: by,
     productos: tickmod.value.body.product,
     print: impresoras.value.val.ip_address,
-    cliente: clifac.value
+    cliente: clifac.value,
+    cambio: cambio.value
   }
-
-
   console.log(enval.value.prc)
   console.log(ticknw);
   let url = `http://${host}/access/public/modify/modificacion`;
   axios.post(url, tickdev)
+
     .then(r => {
       ticket.value.state = false
       console.log(r)
@@ -833,6 +854,7 @@ const terminar = async () => {
       });
       let nwtck = `http://${host}/access/public/modify/nwtck`;
       axios.post(nwtck, ticknw)
+      // .then(r=> console.log(r));
         .then(p => {
           $q.notify({
             html: true,
@@ -862,8 +884,9 @@ const terminar = async () => {
                 impresoras.value.val = null;
                 cashdesk.value = null;
                 checkretirada.value = false;
-                modes.value = { "EFE": 0, "DIG": { id: null, val: 0 } };
+                modes.value = { "EFE": { id: null, val: 0 }, "DIG": { id: null, val: 0 } };
                 enval.value = { prc: null, body: null }
+                dafpa.value = false;
               })
               .catch(p => {
                 console.log(p);
@@ -878,8 +901,10 @@ const terminar = async () => {
           impresoras.value.val = null;
           cashdesk.value = null;
           checkretirada.value = false;
-          modes.value = { "EFE": 0, "DIG": { id: null, val: 0 } };
+          modes.value = { "EFE": { id: null, val: 0 }, "DIG": { id: null, val: 0 } };
           enval.value = { prc: null, body: null }
+          dafpa.value = false;
+
         })
         .catch(p => {
           console.log(p);
@@ -900,6 +925,20 @@ const terminar = async () => {
       });
     })
 
+}
+
+const optionDisable = (val) => {
+  if(val.id == modes.value.EFE.id?.id){
+    return true
+  }
+  return false
+}
+
+const optionDisabled = (val) => {
+  if(val.id == modes.value.DIG.id?.id){
+    return true
+  }
+  return false
 }
 
 
