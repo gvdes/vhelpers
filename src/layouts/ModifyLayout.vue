@@ -806,6 +806,7 @@ const mosimp = () => stateimp.value = true
 
 
 const terminar = async () => {
+  $q.loading.show({message:'Realizando Devolucion'})
   let host = VDB.session.store.ip;
   let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
   console.log("Realizando proceso de modificacion de tickeet");
@@ -852,10 +853,13 @@ const terminar = async () => {
         color: "positive",
         position: "center"
       });
+  $q.loading.hide()
+  $q.loading.show({message:'Realizando Factura'})
       let nwtck = `http://${host}/access/public/modify/nwtck`;
       axios.post(nwtck, ticknw)
       // .then(r=> console.log(r));
         .then(p => {
+          
           $q.notify({
             html: true,
             message: p.data.mssg,
@@ -904,6 +908,7 @@ const terminar = async () => {
           modes.value = { "EFE": { id: null, val: 0 }, "DIG": { id: null, val: 0 } };
           enval.value = { prc: null, body: null }
           dafpa.value = false;
+          $q.loading.hide()
 
         })
         .catch(p => {
