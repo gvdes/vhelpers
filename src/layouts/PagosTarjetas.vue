@@ -20,7 +20,39 @@
 
         </q-header>
 
-        <q-separator spaced inset vertical dark />
+        <div class="q-mb-lg row">
+          <q-card class="my-card col" bordered>
+            <q-card-section>
+              <div class="text-h6">Bauchers</div>
+            </q-card-section>
+            <q-card-section>
+              <div class="text-center text-h6">$ {{ tarjSuc.reduce((a, b) => Number(Number(a) + Number(b)).toFixed(2), 0)
+                }}</div>
+            </q-card-section>
+          </q-card>
+          <q-separator spaced inset vertical dark />
+          <q-card class="my-card col">
+            <q-card-section>
+              <div class="text-h6">Cobros</div>
+            </q-card-section>
+            <q-card-section>
+              <div class="text-center text-h6">$ {{ tertar.reduce((a, b) =>
+                Number(Number(a) + Number(b.TARJETAS)).toFixed(2), 0) }}</div>
+            </q-card-section>
+          </q-card>
+          <q-separator spaced inset vertical dark />
+          <q-card class="my-card col">
+            <q-card-section>
+              <div class="text-h6">Diferencia</div>
+            </q-card-section>
+            <q-card-section>
+              <div class="text-center text-h6">$ {{ Number(Number(tarjSuc.reduce((a, b) =>
+                Number(Number(a) + Number(b)).toFixed(2), 0)) - Number(tertar.reduce((a, b) =>
+                  Number(Number(a) + Number(b.TARJETAS)).toFixed(2), 0))).toFixed(2) }}</div>
+            </q-card-section>
+          </q-card>
+        </div>
+
         <q-form @submit="onSubmit" class="q-gutter-md">
           <q-input v-model="text" type="number" label="IMPORTE" outlined autofocus :min="0.00" step="any" dense
             input-class="q-pl-md" :disable="terminales.val == 'SELECCIONA CAJA'" />
@@ -28,44 +60,53 @@
 
         <q-separator spaced inset vertical dark />
         <div class="row">
-          <q-table title="Bauchers Faltantes" :rows="sobrantes" row-key="name" class="col" :columns="columns">
-            <template v-slot:top-right>
-              <div class="row">
-                <q-separator spaced inset vertical dark />
-                <div class="col"> <q-btn color="primary" icon="archive" dense no-caps flat round @click="exportTable"
-                    :disable="sobrantes.length > 0 ? false : true" />
-                </div>
-              </div>
-            </template>
-          </q-table>
-
+          <div>
+            <q-table title="LISTA" :rows="tarjSuc" row-key="name" :columns="columns" :pagination="{ rowsPerPage: 9 }" hide-bottom />
+          </div>
           <q-separator spaced inset vertical dark />
-          <q-table title="Cobros Faltantes" :rows="faltantes" row-key="name" class="col" :columns="tables">
-            <template v-slot:top-right>
-              <div class="row">
-                <q-separator spaced inset vertical dark />
-                <div class="col"> <q-btn color="primary" icon="archive" dense no-caps flat round
-                    @click="exportFaltantes" :disable="faltantes.length > 0 ? false : true" />
-                </div>
-              </div>
-
-            </template>
-          </q-table>
-        </div>
-
-        <q-separator spaced inset vertical dark />
-
-        <q-table title="Cobros Encontrados" :rows="encontrar" row-key="name" :columns="tables">
-          <template v-slot:top-right>
+          <div class="col">
             <div class="row">
+              <q-table title="Bauchers Faltantes" :rows="sobrantes" row-key="name" class="col" :columns="columns">
+                <template v-slot:top-right>
+                  <div class="row">
+                    <q-separator spaced inset vertical dark />
+                    <div class="col"> <q-btn color="primary" icon="archive" dense no-caps flat round
+                        @click="exportTable" :disable="sobrantes.length > 0 ? false : true" />
+                    </div>
+                  </div>
+                </template>
+              </q-table>
+
               <q-separator spaced inset vertical dark />
-              <div class="col"> <q-btn color="primary" icon="archive" dense no-caps flat round
-                  @click="exportEncontrados" :disable="encontrar.length > 0 ? false : true" />
-              </div>
+              <q-table title="Cobros Faltantes" :rows="faltantes" row-key="name" class="col" :columns="tables">
+                <template v-slot:top-right>
+                  <div class="row">
+                    <q-separator spaced inset vertical dark />
+                    <div class="col"> <q-btn color="primary" icon="archive" dense no-caps flat round
+                        @click="exportFaltantes" :disable="faltantes.length > 0 ? false : true" />
+                    </div>
+                  </div>
+
+                </template>
+              </q-table>
             </div>
 
-          </template>
-        </q-table>
+            <q-separator spaced inset vertical dark />
+
+            <q-table title="Cobros Encontrados" :rows="encontrar" row-key="name" :columns="tables">
+              <template v-slot:top-right>
+                <div class="row">
+                  <q-separator spaced inset vertical dark />
+                  <div class="col"> <q-btn color="primary" icon="archive" dense no-caps flat round
+                      @click="exportEncontrados" :disable="encontrar.length > 0 ? false : true" />
+                  </div>
+                </div>
+              </template>
+            </q-table>
+          </div>
+        </div>
+
+
       </q-page>
     </q-page-container>
   </q-layout>
@@ -169,26 +210,54 @@ const sobrantes = computed(() => {
 })
 
 
+// const onSubmit = () => {
+
+//   if (text.value) {
+//     tarjSuc.value.push(text.value)
+//     text.value = null
+//     const resultado = verificarCoincidencias(sobrantes.value, faltantes.value);
+
+//     if (resultado.length > 0) {
+//       console.log('Se encontraron coincidencias con las siguientes combinaciones:');
+//       resultado.forEach(coincidencia => {
+//         console.log(`Combinación: ${coincidencia.combinacion.join(' + ')} = ${coincidencia.monto}, Ticket: ${coincidencia.ticket}`);
+//       });
+//     } else {
+//       console.log('No se encontraron coincidencias.');
+//     }
+//   }
+
+// }
 const onSubmit = () => {
-
   if (text.value) {
-    tarjSuc.value.push(text.value)
-    text.value = null
-    const resultado = verificarCoincidencias(sobrantes.value, faltantes.value);
+    tarjSuc.value.unshift(text.value); // Agregar el nuevo baucher a tarjSuc
+    text.value = null; // Limpiar el input
 
-    if (resultado.length > 0) {
-      console.log('Se encontraron coincidencias con las siguientes combinaciones:');
-      resultado.forEach(coincidencia => {
-        console.log(`Combinación: ${coincidencia.combinacion.join(' + ')} = ${coincidencia.monto}, Ticket: ${coincidencia.ticket}`);
+    // Encontrar coincidencias
+    const coincidencia = verificarCoincidencias(sobrantes.value, faltantes.value);
+
+    if (coincidencia.length > 0) {
+      // coincidencias.forEach(coincidencia => {
+      // console.log(`Se encontró una coincidencia: Combinación: ${coincidencia[0].combinacion.map(obj => obj).join(' + ')} = ${coincidencia[0].monto}, Ticket: ${coincidencia[0].ticket}`);
+      $q.notify({
+        message: `Se encontró una coincidencia: Combinación: ${coincidencia[0].combinacion.map(obj => obj).join(' + ')} = ${coincidencia[0].monto}, Ticket: ${coincidencia[0].ticket}`,
+        type: 'positive',
+        position: 'center'
+      })
+      tarjSuc.value.unshift(coincidencia[0].monto)
+
+      coincidencia[0].combinacion.forEach(baucher => {
+        const indexSobrantes = tarjSuc.value.findIndex(s => s == baucher);
+        if (indexSobrantes !== -1) {
+          tarjSuc.value.splice(indexSobrantes, 1);
+        }
       });
+      // });
     } else {
       console.log('No se encontraron coincidencias.');
     }
   }
-
-}
-
-
+};
 
 const index = async () => {
   console.log("Recibiendo Datos :)")
@@ -333,19 +402,42 @@ const wrapCsvValue = (val, formatFn, row) => {
 
 
 
+// const verificarCoincidencias = (bouchers, cobros) => {
+//   const combinaciones = generarCombinaciones(bouchers);
+//   console.log(combinaciones);
+
+//   const coincidencias = [];
+
+//   combinaciones.forEach(combinacion => {
+//     const sumaCombinacion = combinacion.reduce((a, b) => Number(a) + Number(b), 0);
+
+//     cobros.forEach(cobro => {
+//       if (cobro.TARJETAS == sumaCombinacion) {
+//         coincidencias.push({
+//           combinacion: combinacion,
+//           ticket: cobro.TICKET,
+//           monto: cobro.TARJETAS
+//         });
+//       }
+//     });
+//   });
+
+//   return coincidencias;
+// }
+
+
+
 const verificarCoincidencias = (bouchers, cobros) => {
   const combinaciones = generarCombinaciones(bouchers);
-  console.log(combinaciones);
-
   const coincidencias = [];
 
   combinaciones.forEach(combinacion => {
-    const sumaCombinacion = combinacion.reduce((a, b) => Number(a) + Number(b), 0);
+    const sumaCombinacion = combinacion.reduce((a, b) => Number(a) + Number(b), 0); // Sumamos las propiedades TARJETAS
 
     cobros.forEach(cobro => {
       if (cobro.TARJETAS == sumaCombinacion) {
         coincidencias.push({
-          combinacion: combinacion,
+          combinacion: combinacion, // La combinación de objetos completos
           ticket: cobro.TICKET,
           monto: cobro.TARJETAS
         });
@@ -354,11 +446,7 @@ const verificarCoincidencias = (bouchers, cobros) => {
   });
 
   return coincidencias;
-}
-
-
-
-
+};
 
 const generarCombinaciones = (array) => {
   const resultado = [];
