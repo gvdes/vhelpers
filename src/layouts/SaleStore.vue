@@ -11,8 +11,8 @@
             <span class="text-h6">Ventas Sucursales</span>
           </div>
           <div class="row">
-            <q-select v-model="smonth.val" :options="meses" label="mes" outlined dense
-              @update:model-value="ObtReport" v-if="!ismobile"/>
+            <q-select v-model="smonth.val" :options="meses" label="mes" outlined dense @update:model-value="ObtReport"
+              v-if="!ismobile" />
             <q-btn dense flat color="primary" icon="autorenew" @click="init" />
           </div>
 
@@ -222,6 +222,15 @@
                         props.row.sales.tiketsant
                       }}</q-item-label>
                     </q-item-section>
+                    
+                    <q-item-section>
+                      <q-item-label overline>Promedio 2023</q-item-label>
+                      <q-item-label caption>{{
+                        Number(Number(props.row.sales.salesant * 1.1) / Number(props.row.sales.tiketsant)).toFixed(2)
+                      }} </q-item-label>
+                      <q-separator spaced inset vertical dark />
+                    </q-item-section>
+
                     <q-item-section>
                       <q-item-label overline>VENTAS 2024</q-item-label>
                       <q-item-label caption>{{
@@ -235,6 +244,18 @@
                         props.row.sales.tiketsact
                       }}</q-item-label>
                     </q-item-section>
+
+                    <q-item-section>
+                      <q-item-label overline>Promedio 2024
+                      </q-item-label>
+                      <q-item-label caption>{{
+                        Number(Number(props.row.sales.salesact) / Number(props.row.sales.tiketsact)).toFixed(2)
+                      }} </q-item-label>
+                      <q-separator spaced inset vertical dark />
+                    </q-item-section>
+
+
+
                     <q-item-section>
                       <q-item-label overline>DIFERENCIA</q-item-label>
                       <q-item-label caption>{{
@@ -342,18 +363,19 @@ const init = async () => {
 const getSale = async (sucursales, mes) => {
 
   sucursales.forEach((e, index) => {
-    setTimeout(() => { 
-    let host = e.ip_address;
-    let sale = `http://${host}/access/public/reports/getSalesPerMonth/${mes}`;
-    axios
-      .get(sale)
-      .then((done) => {
-        e.sales = done.data == undefined ? null : done.data;
-        console.log(done);
-      })
-      .catch((fail) => {
-        console.log(fail.response.data.message);
-      });},index * 1000)
+    setTimeout(() => {
+      let host = e.ip_address;
+      let sale = `http://${host}/access/public/reports/getSalesPerMonth/${mes}`;
+      axios
+        .get(sale)
+        .then((done) => {
+          e.sales = done.data == undefined ? null : done.data;
+          console.log(done);
+        })
+        .catch((fail) => {
+          console.log(fail.response.data.message);
+        });
+    }, index * 1000)
   });
   $q.loading.hide();
 };
