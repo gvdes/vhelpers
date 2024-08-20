@@ -478,8 +478,8 @@ const getSale = async (sucursales, mes) => {
   sucursales.forEach((e, index) => {
     setTimeout(() => {
       let host = e.ip_address;
-      // let sale = `http://${host}/access/public/reports/getSalesPerMonth/${mes}`;
-      let sale = `http://192.168.10.160:1619/access/public/reports/getSalesPerMonth/${mes}`;
+      let sale = `http://${host}/access/public/reports/getSalesPerMonth/${mes}`;
+      // let sale = `http://192.168.10.160:1619/access/public/reports/getSalesPerMonth/${mes}`;
 
       axios
         .get(sale)
