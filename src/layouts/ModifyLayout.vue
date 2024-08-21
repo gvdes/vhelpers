@@ -299,7 +299,7 @@
                     <div class="col" v-if="dafpa">
                       <q-select class="col-3" v-model="modes.DIG.id" :options="paymeths" label="Forma Pago"
                         option-value="id" option-label="desc" dense filled :option-disable="(val) => optionDisable(val)">
-                      </q-select> 
+                      </q-select>
                     </div>
                   </div>
                   <q-separator spaced inset vertical dark />
@@ -345,7 +345,7 @@
                 <div class="fs-dec3">Cambio</div>
                 <div class="text-h5"> $ {{ cambio }}</div>
               </div>
-              <div class="text-center" v-if="cambio >= 0">
+              <div class="text-center" v-if="valpag">
                 <q-btn color="primary" icon="payment" label="Pagar" @click="mosimp" />
               </div>
             </div>
@@ -458,12 +458,14 @@ const productos = computed(() => tickmod.value.body.product)
 const ala = computed(() => (((impresoras.value.val) && ((mod.value == "Devolucion" && motivo.value.length > 10) || (mod.value == "Reimpresion"))) || mod.value == "Modificacion"))
 const cambio = computed(() => (Number.parseFloat(modes.value.DIG.val) + Number.parseFloat(modes.value.EFE.val) + Number.parseFloat(val1.value)) - totm.value)
 const retirada = computed(() => {
-  if (Number.parseFloat(modes.value.DIG.val) && (Number.parseFloat(modes.value.DIG.val) > totm.value) && Number.parseFloat(modes.value.EFE.val) == 0) {
+  if ((modes.value.DIG.id?.id != 'EFE' && Number.parseFloat(modes.value.DIG.val) && (Number.parseFloat(modes.value.DIG.val) > totm.value) && Number.parseFloat(modes.value.EFE.val) == 0) || (modes.value.EFE.id?.id != 'EFE' &&  Number.parseFloat(modes.value.EFE.val) && (Number.parseFloat(modes.value.EFE.val) > totm.value) && Number.parseFloat(modes.value.DIG.val) == 0)) {
     return true
   } else {
     return false
   }
 })
+
+const valpag = computed(() => cambio.value >= 0 && ((modes.value.EFE.id?.id && modes.value.EFE.val > 0 )|| (modes.value.DIG.id?.id  && modes.value.DIG.val > 0)) )
 
 
 const index = async () => {
@@ -859,7 +861,7 @@ const terminar = async () => {
       axios.post(nwtck, ticknw)
       // .then(r=> console.log(r));
         .then(p => {
-          
+
           $q.notify({
             html: true,
             message: p.data.mssg,
