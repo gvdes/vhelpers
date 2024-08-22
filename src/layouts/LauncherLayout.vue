@@ -61,9 +61,10 @@
       return VDB.authsAux
     }else if(user.rol == 'gen'){
       return VDB.authGen
+    }else if(user.rol == 'adm'){
+      return VDB.authAdm
     }else if(user.rol == 'root'){
       return VDB.autRoot
-
     }
   })
 

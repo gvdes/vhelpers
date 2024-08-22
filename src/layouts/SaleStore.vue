@@ -495,7 +495,7 @@ const getSale = async (sucursales, mes) => {
   $q.loading.hide();
 };
 
-if ($user.session.rol == 'root') {
+if ($user.session.rol === 'root') {
   init()
 } else {
   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })

@@ -43,9 +43,15 @@
 <script setup>
 import { ref } from 'vue';
 import { useVDBStore } from 'src/stores/VDB';
+import { loadRouteLocation, useRoute, useRouter } from "vue-router";
 import { v4 as uuid } from 'uuid';
 import CryptoJS  from 'crypto-js';
 import { copyToClipboard as ctc } from 'quasar'
+import { AppFullscreen, useQuasar } from "quasar";
+const $user = useVDBStore();
+const $q = useQuasar();
+const $router = useRouter();
+
 
 const VDB = useVDBStore();
 const nusers = ref([]);
@@ -101,6 +107,13 @@ const init = () => {
 
   nusers.value = VDB.users;
 
+}
+
+if ($user.session.rol == 'root') {
+  init()
+} else {
+  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+  $router.replace('/');
 }
 
 init();

@@ -46,6 +46,10 @@ const routes = [
     component: () => import('layouts/SaleStore.vue'),
   },
   {
+    path: '/cardStores',
+    component: () => import('layouts/cardStores.vue'),
+  },
+  {
     path:'/__set1',
     component: () => import('layouts/Setter1.vue')
   },
