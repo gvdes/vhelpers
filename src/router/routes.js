@@ -50,6 +50,10 @@ const routes = [
     component: () => import('layouts/cardStores.vue'),
   },
   {
+    path: '/labels',
+    component: () => import('layouts/LabelsLayout.vue'),
+  },
+  {
     path:'/__set1',
     component: () => import('layouts/Setter1.vue')
   },

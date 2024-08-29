@@ -51,7 +51,7 @@
                     <q-item-section class="text-right" v-if="!ismobile">TOTAL</q-item-section>
                     <q-item-section> SELECT </q-item-section>
                     <q-item-section > PIEZAS A DEV</q-item-section>
-                  
+
                     <q-separator spaced inset vertical dark />
                   </q-item>
                 </q-list>
@@ -66,7 +66,7 @@
                     <q-item-section class="text-right" v-if="!ismobile">{{ Number(product.TOTAL).toFixed(2) }}</q-item-section>
                     <q-item-section> <q-checkbox v-model="products" :val="product" /> </q-item-section>
                     <q-item-section > <q-input v-model="product.change" type="number" label="PZ" outlined :error="product.change >  Number(product.CANTIDAD)" error-message="es mayor que la cantidad X(" :disable="!products.some(e => e.ARTICULO === product.ARTICULO)" /></q-item-section>
-                  
+
                     <q-separator spaced inset vertical dark />
                   </q-item>
                 </q-list>
@@ -138,7 +138,7 @@ const products = ref([])
 const cansearch = computed(() => (cashdesk.value && folio.value.length));//para enviar a buscar
 const bascket = computed(() => {
   if(filter.value){
-    return ticket.value.body.product.filter(e => e.ARTICULO.includes(filter.value)) 
+    return ticket.value.body.product.filter(e => e.ARTICULO.includes(filter.value))
   }else{
     return ticket.value.body.product
   }
@@ -147,7 +147,8 @@ const bascket = computed(() => {
 const ismobile = computed(() => $q.platform.is.mobile);
 const valid = computed(() => {
   if(products.value.length > 0){
-    return  products.value.every(e => e.change > 0) && products.value.every(e => e.change <= (e.CANTIDAD))
+    // console.log(products.value)
+    return  products.value.every(e => Number(e.change) > 0) && products.value.every(e => Number(e.change) <= Number(e.CANTIDAD))
   }else{
     return false
   }
@@ -264,7 +265,7 @@ const crear = () => {
 }
 
 const reset = () => {
-  
+
   cashdesk.value = null;
       folio.value = "";
       ticket.value = {

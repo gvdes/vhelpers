@@ -55,6 +55,14 @@ module.exports = configure(function (/* ctx */) {
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
+
+      extendWebpack(cfg) {
+        // Agregar fallback para stream y buffer
+        cfg.resolve.fallback = {
+          stream: require.resolve('stream-browserify'),
+          buffer: require.resolve('buffer/')
+        };
+      },
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
