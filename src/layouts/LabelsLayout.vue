@@ -16,8 +16,8 @@
       <q-page padding>
         <q-card class="my-card">
 
-          <ProductAutocomplete :checkState="false" @input="add" with_prices with_image @agregar="agregar"
-            with_locations />
+          <!-- <ProductAutocomplete :checkState="false" @input="add" with_prices with_image @agregar="agregar"
+            with_locations /> -->
         </q-card>
 
         <q-separator spaced inset vertical dark />
@@ -203,7 +203,7 @@
 <script setup>
 import { useVDBStore } from 'stores/VDB';
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
-import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
+// import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
 import dbproduct from 'src/API/Product'
 import axios from 'axios';//para dirigirme bro
 import { exportFile, useQuasar } from 'quasar';
