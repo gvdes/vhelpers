@@ -19,7 +19,7 @@
         popup-content-class="bg-darkl1">
         <template v-slot:no-option>
           <q-item>
-            <q-item-section avatar><q-img src="~/assets/chihuacry.png" width="50px" /></q-item-section>
+            <!-- <q-item-section avatar><q-img src="~/assets/chihuacry.png" width="50px" /></q-item-section> -->
             <q-item-section class="text-grey QuickRegular">Nada por aqui...</q-item-section>
           </q-item>
         </template>
@@ -37,9 +37,9 @@
           v-bind="scope.itemProps"
           @click="emite(scope.opt)"
            :disable="block(scope.opt.stateToVal)">
-            <q-item-section avatar v-if="with_image">
+            <!-- <q-item-section avatar v-if="with_image">
               <q-img src="~/assets/_boxprod.png" width="35px" />
-            </q-item-section>
+            </q-item-section> -->
 
             <q-item-section>
               <div class="row items-center justify-between no-wrap QuickRegular">
