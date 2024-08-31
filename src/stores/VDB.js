@@ -11,7 +11,7 @@ export const useVDBStore = defineStore('vdb', {
       { id:1, name:"IVA", alias:"IVA", desc:"Agregue iva a tickets cobrados", path:"iva" },
       { id:2, name:"Ciclicos", alias:"CIC", desc:"Visor de Inventarios Ciclicos", path:"ciclicos" },
       { id:3, name:"Tarjetas", alias:"TRJ", desc:"Visor de Tarjetas", path:"tarjetas" },
-      // { id:4, name:"Etiquetas", alias:"ETQ", desc:"Creacion de etiquetas", path:"labels" },
+      { id:4, name:"Etiquetas", alias:"ETQ", desc:"Creacion de etiquetas", path:"labels" },
       { id:5, name:"Tickets", alias:"MOD", desc:"Moviemientos para  Tickets", path:"modificaciones"},
       { id:6, name:"Pagos", alias:"PAG", desc:"Consulta de pagos", path:"pagos"},
       { id:7, name:"Apertura", alias:"APC", desc:"Apertura de cajas", path:"apertura"},
