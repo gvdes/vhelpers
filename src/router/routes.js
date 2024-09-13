@@ -54,6 +54,17 @@ const routes = [
     component: () => import('layouts/LabelsLayout.vue'),
   },
   {
+    path: '/transfers',
+    children: [
+      { path:'', name: 'trns', component: () => import('layouts/Transfers.vue') },
+      { path:'/:oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue') },
+    ],
+  },
+  {
+    path: '/deposits',
+    component: () => import('layouts/Deposits.vue'),
+  },
+  {
     path:'/__set1',
     component: () => import('layouts/Setter1.vue')
   },
