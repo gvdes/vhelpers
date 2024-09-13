@@ -698,7 +698,7 @@ const mediumLabel = (data) => {
         // //CONTINUA CODIGO
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
-        doc.text(`${product.code}`, x + 6, y + 20); // codigo de el producto
+        doc.text(`${product.code}`, x + 25, y + 20); // codigo de el producto
         doc.text(product.large, x + 18, y + 77); // largo de el producto
         doc.text(`${product.pieces} PZS`, x + 20, y + 73); // piezas por caja
         doc.setFontSize(4)
