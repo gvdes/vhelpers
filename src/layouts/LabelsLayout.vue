@@ -723,7 +723,7 @@ const smallLabel = (data) => {
           expandedProducts.push(product);
         }
       });
-      const image = "/icons/Navidad/santaclaus.png";
+      const image = "/icons/Navidad/NaviSan(1).png";
       const type = "PNG";
       const doc = new jsPDF({ format: 'letter' });
       const pageWidth = doc.internal.pageSize.getWidth();
