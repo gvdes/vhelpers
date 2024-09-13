@@ -554,7 +554,7 @@ const largeLabel = (data) => {
           expandedProducts.push(product);
         }
       });
-      const image = "../../public/icons/Navidad/Navidad6(1).png";
+      const image = "/icons/Navidad/Navidad6(1).png";
       const type = "PNG";
       const doc = new jsPDF({ format: 'letter' });
       const pageWidth = doc.internal.pageSize.getWidth();
@@ -638,7 +638,7 @@ const mediumLabel = (data) => {
           expandedProducts.push(product);
         }
       });
-      const image = "../../public/icons/Navidad/Navidad9(1).png";
+      const image = "/icons/Navidad/Navidad9(1).png";
       const type = "PNG";
       const doc = new jsPDF({ format: 'letter' });
       const pageWidth = doc.internal.pageSize.getWidth();
@@ -723,7 +723,7 @@ const smallLabel = (data) => {
           expandedProducts.push(product);
         }
       });
-      const image = "../../public/icons/Navidad/santaclaus.png";
+      const image = "/icons/Navidad/santaclaus.png";
       const type = "PNG";
       const doc = new jsPDF({ format: 'letter' });
       const pageWidth = doc.internal.pageSize.getWidth();
@@ -806,7 +806,7 @@ const toyBoys = (data) => {
           expandedProducts.push(product);
         }
       });
-      const image = "../../public/icons/Juguete/Ninio.png";
+      const image = "/icons/Juguete/Ninio.png";
       const type = "PNG";
       const doc = new jsPDF({ format: 'letter' });
       const pageWidth = doc.internal.pageSize.getWidth();
@@ -891,7 +891,7 @@ const toyGirls = (data) => {
           expandedProducts.push(product);
         }
       });
-      const image = "../../public/icons/Juguete/Ninia.png";
+      const image = "/icons/Juguete/Ninia.png";
       const type = "PNG";
       const doc = new jsPDF({ format: 'letter' });
       const pageWidth = doc.internal.pageSize.getWidth();
