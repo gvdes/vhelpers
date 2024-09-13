@@ -949,11 +949,12 @@ const toyGirls = (data) => {
           }
         })
         // //CONTINUA CODIGO
-        doc.setFontSize(8);
+        doc.setFontSize(13);
         doc.setFont('helvetica', 'bold');
-        doc.text(`${product.code}`, x + 15, y + 60); // codigo de el producto
-        doc.text(product.large, x + 15, y + 70); // largo de el producto
-        doc.text(`${product.pieces} PZS`, x + 15, y + 65); // piezas por caja
+        doc.text(`${product.code}`, x + 62, y + 70, {align:'right'}); // codigo de el producto
+        doc.setFont('helvetica', 'normal');
+        doc.text(product.large, x + 15, y + 65); // largo de el producto
+        doc.text(`${product.pieces} PZS`, x + 15, y + 70); // piezas por caja
         doc.setFontSize(4)
         doc.setFont('helvetica', 'normal');
         doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 18, y + 84); //ubicacion de exhibicion de el producto

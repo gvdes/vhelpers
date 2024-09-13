@@ -1,0 +1,1 @@
+import{Q as a,a as e}from"./QLayout.4f63a3f8.js";import{a_ as r,o as t,a as o,w as s,e as c}from"./index.d879765d.js";const f={};function n(_,i){return t(),o(a,{view:"hHh Lpr fFf"},{default:s(()=>[c(e)]),_:1})}var m=r(f,[["render",n]]);export{m as default};
