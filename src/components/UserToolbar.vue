@@ -11,7 +11,7 @@
   <q-dialog v-model="WSD.state" persistent>
     <q-card>
       <q-card-section class="row items-center">
-        <q-avatar icon="signal_wifi_off" color="primary" text-color="white" />
+        <q-avatar icon="logout" color="primary" text-color="white" />
         <span class="q-ml-sm">Estas por cerrar sesion</span>
       </q-card-section>
       <q-card-actions align="right">

@@ -55,9 +55,10 @@ const routes = [
   },
   {
     path: '/transfers',
+    component: () => import('layouts/Transfers.vue'),
     children: [
-      { path:'', name: 'trns', component: () => import('layouts/Transfers.vue') },
-      { path:'/:oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue') },
+      { path:'', name: 'trns', component: () => import('pages/Tranfers/Index.vue') },
+      { path:':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue') },
     ],
   },
   {
