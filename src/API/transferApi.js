@@ -5,6 +5,9 @@ export default{
   index(data){
     return assist.get(`/transfer/getTransfers/${data}`).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  getDate(data){
+    return assist.post(`/transfer/getTransfersDate`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
   addTransfer(data){
     return assist.post(`/transfer/addTransfer`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },

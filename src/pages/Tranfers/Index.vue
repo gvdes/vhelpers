@@ -1,15 +1,51 @@
 <template>
   <q-page padding>
-    <div class=" row justify-between">
-      <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Traspasos entre
-          Almacenes</span>
+    <q-header class="transparent text-dark" bordered>
+      <UserToolbar />
+      <q-separator />
+      <div class=" row justify-between">
+        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Traspasos entre
+            Almacenes</span>
+        </div>
+        <div>
+          <q-btn color="primary" icon="add" flat @click="addTransfer = !addTransfer" round />
+          <q-btn color="primary" icon="event" @click="date = !date" flat round />
+        </div>
       </div>
-      <div>
-        <q-btn color="primary" icon="add" flat @click="addTransfer = !addTransfer" round />
-        <q-btn color="primary" icon="event" @click="date = !date" flat round />
-      </div>
-    </div>
-    <q-separator />
+      <q-separator />
+    </q-header>
+
+    <q-list>
+      <q-item>
+        <q-item-section class="text-center">ID</q-item-section>
+        <q-item-section class="text-center">CREADO</q-item-section>
+        <q-item-section class="text-center">CREADO POR</q-item-section>
+        <q-item-section class="text-center">NOTAS</q-item-section>
+        <q-item-section class="text-center">ORIGEN</q-item-section>
+        <q-item-section class="text-center">DESTINO</q-item-section>
+        <q-item-section class="text-center" >FACTUSOL</q-item-section>
+        <q-item-section class="text-center">ARTICULOS</q-item-section>
+
+
+      </q-item>
+    </q-list>
+    <q-separator spaced inset vertical dark />
+    <q-list bordered v-for="(transfer, index) in (transfers)" :key="index">
+      <q-item clickable v-ripple @click="direct(transfer.id)">
+        <q-item-section class="text-center">{{ transfer.id }}</q-item-section>
+        <q-item-section class="text-center">{{ dayjs(transfer.created_at).format('YYYY-MM-D') }}</q-item-section>
+        <q-item-section class="text-center">{{ transfer.created_by }}</q-item-section>
+        <q-item-section class="text-center">{{ transfer.notes }}</q-item-section>
+        <q-item-section class="text-center">{{ transfer.origin.alias }}</q-item-section>
+        <q-item-section class="text-center">{{ transfer.destiny.alias }}</q-item-section>
+        <q-item-section class="text-center">{{ transfer.code_fs }}</q-item-section>
+        <q-item-section class="text-center">{{ transfer.bodie.length }}</q-item-section>
+
+
+      </q-item>
+    </q-list>
+
+
 
     <q-dialog v-model="date">
       <q-card class="my-card">
@@ -67,6 +103,8 @@ import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
 import { useRoute, useRouter } from "vue-router";
+import dayjs from 'dayjs';
+import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 const $router = useRouter();
 
 const VDB = useVDBStore();
@@ -79,63 +117,91 @@ const transfers = ref([]);
 const warehouses = ref([]);
 
 const nwTransfer = ref({
-_origin: null,
-_destiny: null,
-notes: null
+  _origin: null,
+  _destiny: null,
+  notes: null
 })
 
 
 const validTransfer = computed(() => nwTransfer.value._origin && nwTransfer.value._destiny && nwTransfer.value.notes)
 
 const index = async () => {
-console.log("Recibiendo Datos :)")
-$q.loading.show({message:'Obteniendo Datos'})
-let sid = VDB.session.store.id;
-const resp = await tranApi.index(sid)
-if (resp.error) {
-  console.log(resp)
-} else {
-  transfers.value = resp.transfer
-  warehouses.value = resp.warehouses
-  $q.loading.hide()
-}
+  console.log("Recibiendo Datos :)")
+  $q.loading.show({ message: 'Obteniendo Datos' })
+  let sid = VDB.session.store.id;
+  const resp = await tranApi.index(sid)
+  if (resp.error) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    transfers.value = resp.transfer
+    warehouses.value = resp.warehouses
+    $q.loading.hide()
+  }
 }
 
 
 const adding = async () => {
-$q.loading.show({message:'Creando Traspaso'})
-nwTransfer.value.created_by = VDB.session.name;
-nwTransfer.value._store = VDB.session.store.id;
-console.log(nwTransfer.value)
-const resp = await tranApi.addTransfer(nwTransfer.value)
-if(resp.error){
-  console.log(resp)
-  $q.notify({message:`No se logro crear el traspaso`, position:'center', type:'negative'})
-}else{
-  $q.loading.hide();
-  $q.notify({message:`Traspaso ${resp.code_fs} creada`, position:'center', type:'positive'})
-  $router.push(`transfers/${resp.id}`);
-}
+  $q.loading.show({ message: 'Creando Traspaso' })
+  nwTransfer.value.created_by = VDB.session.name;
+  nwTransfer.value._store = VDB.session.store.id;
+  console.log(nwTransfer.value)
+  const resp = await tranApi.addTransfer(nwTransfer.value)
+  if (resp.error) {
+    console.log(resp)
+    $q.notify({ message: `No se logro crear el traspaso`, position: 'center', type: 'negative' })
+  } else {
+    $q.loading.hide();
+    $q.notify({ message: `Traspaso ${resp.code_fs} creada`, position: 'center', type: 'positive' })
+    $router.push(`transfers/${resp.id}`);
+  }
 
 }
 
 const reset = () => {
-addTransfer.value = false
-nwTransfer.value = {
-  _origin: null,
-  _destiny: null,
-  notes: null
-}
+  addTransfer.value = false
+  nwTransfer.value = {
+    _origin: null,
+    _destiny: null,
+    notes: null
+  }
 
 }
 
 const optionDisable = (val) => {
-if (val.id == nwTransfer.value._origin.id) {
-  return true
-}
-return false
+  if (val.id == nwTransfer.value._origin.id) {
+    return true
+  }
+  return false
 }
 
+
+const buscas = async () => {
+  console.log(fechas.value);
+  $q.loading.show({ message: 'Obteniendo Datos' })
+  let sid = VDB.session.store.id;
+  let data = {
+    store: sid,
+    date: fechas.value
+  }
+
+  console.log("Recibiendo Datos :)")
+  const resp = await tranApi.getDate(data)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    transfers.value = resp
+    $q.loading.hide();
+    fechas.value = null
+    date.value = false
+
+  }
+}
+
+const direct = (oid) => {
+  $router.push(`transfers/${oid}`)
+}
 
 index();
 

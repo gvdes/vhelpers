@@ -73,13 +73,12 @@
     </q-dialog>
 
     <q-footer reveal elevated bordered class="bg-white">
-      <q-card class="q-mb-md" flat bordered>
+      <q-card class="q-mb-md" flat bordered dense>
         <q-card-section class="row">
           <ProductAutocomplete class="col" :checkState="false" @input="add" @agregar="agregar" />
-          <q-btn v-if="products.length > 0" color="primary" flat icon="east" @click="endTransfer" />
+          <q-btn v-if="products.length > 0" color="primary" flat icon="east" @click="endTransfer" round/>
         </q-card-section>
       </q-card>
-
     </q-footer>
   </q-page>
 </template>
@@ -232,8 +231,10 @@ const endTransfer = async () => {
   if(resp.fail){
     console.log(resp)
   }else{
+    $q.notify({message:resp,position:'center',type:'positive'})
     console.log(resp)
     $q.loading.hide();
+    $router.push('/transfers')
   }
 }
 
