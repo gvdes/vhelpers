@@ -1,0 +1,1 @@
+import{Q as a,a as e}from"./QLayout.89ff938c.js";import{a_ as r,o as t,a as o,w as s,e as c}from"./index.49693f1b.js";import"./QResizeObserver.a0135d43.js";const f={};function n(_,i){return t(),o(a,{view:"hHh Lpr fFf"},{default:s(()=>[c(e)]),_:1})}var u=r(f,[["render",n]]);export{u as default};

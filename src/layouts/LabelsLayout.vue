@@ -232,11 +232,12 @@ const mosPDF = ref({
   state: false,
   val: null,
   opts: [
-    { id: 1, label: 'Navidad Grande' },
-    { id: 2, label: 'Navidad Mediano' },
-    { id: 3, label: 'Navidad Pequeno' },
-    { id: 4, label: 'Juguete Niño' },
-    { id: 5, label: 'Juguete Niña' },
+    { id: 1, label: 'Navidad Extra Grande' },
+    { id: 2, label: 'Navidad Grande' },
+    { id: 3, label: 'Navidad Mediano' },
+    { id: 4, label: 'Navidad Pequeno' },
+    { id: 5, label: 'Juguete Niño' },
+    { id: 6, label: 'Juguete Niña' },
 
   ]
 })
@@ -466,7 +467,7 @@ const colorLabel = (type) => {
 const pdf = () => {
   $q.loading.show({ message:'Generando Etiquetas' })
   if (mosPDF.value.val.id == 1) {
-    largeLabel(products.value)
+    xtralargeLabel(products.value)
     .then(r => {
       $q.notify({
         message:`Se Descargo las etiquetas Correctamente`,
@@ -482,7 +483,7 @@ const pdf = () => {
     })
 
   } else if (mosPDF.value.val.id == 2) {
-    mediumLabel(products.value)
+    largeLabel(products.value)
     .then(r => {
       $q.notify({
         message:`Se Descargo las etiquetas Correctamente`,
@@ -497,7 +498,7 @@ const pdf = () => {
       alert('Hubo un error al descargar las etiquetas')
     })
   } else if (mosPDF.value.val.id == 3) {
-    smallLabel(products.value)
+    mediumLabel(products.value)
     .then(r => {
       $q.notify({
         message:`Se Descargo las etiquetas Correctamente`,
@@ -512,7 +513,7 @@ const pdf = () => {
       alert('Hubo un error al descargar las etiquetas')
     })
   } else if (mosPDF.value.val.id == 4) {
-    toyBoys(products.value)
+    smallLabel(products.value)
     .then(r => {
       $q.notify({
         message:`Se Descargo las etiquetas Correctamente`,
@@ -527,6 +528,21 @@ const pdf = () => {
       alert('Hubo un error al descargar las etiquetas')
     })
   } else if (mosPDF.value.val.id == 5) {
+    toyBoys(products.value)
+    .then(r => {
+      $q.notify({
+        message:`Se Descargo las etiquetas Correctamente`,
+        type:`positive`,
+        position:`center`,
+      })
+     mosPDF.value.state= false,
+     mosPDF.value.val =  null,
+      $q.loading.hide()
+    })
+    .catch(r => {
+      alert('Hubo un error al descargar las etiquetas')
+    })
+  } else if (mosPDF.value.val.id == 6) {
     toyGirls(products.value)
     .then(r => {
       $q.notify({
@@ -619,6 +635,90 @@ const largeLabel = (data) => {
         doc.setFontSize(6)
         doc.setFont('helvetica', 'normal');
         doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 19, y + 77); //ubicacion de exhibicion de el producto
+      });
+      doc.save(`${VDB.session.credentials.nick} etiquetas ${mosPDF.value.val.label}`);
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+const xtralargeLabel = (data) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const products = data
+      const expandedProducts = [];
+      products.forEach(product => {
+        for (let i = 0; i < product._copies; i++) {
+          expandedProducts.push(product);
+        }
+      });
+      const image = "/icons/Navidad/Navidad6(1).png";
+      const type = "PNG";
+      const doc = new jsPDF({ format: 'letter' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const marginX = 5; // Margen izquierdo
+      const marginY = 10; // Margen superior
+      const labelWidth = 205; // Ancho de cada etiqueta
+      const labelHeight = 125; // Alto de cada etiqueta
+      const spacingX = 5; // Espaciado horizontal entre etiquetas
+      const spacingY = 5; // Espaciado vertical entre etiquetas
+      const labelsPerRow = 1; // Número de etiquetas por fila
+      const labelsPerColumn = 2; // Número de etiquetas por columna
+      const totalLabelsPerPage = labelsPerRow * labelsPerColumn;
+      expandedProducts.forEach((product, index) => {
+        const currentPageIndex = Math.floor(index / totalLabelsPerPage); // Página actual
+        const indexInPage = index % totalLabelsPerPage; // Índice dentro de la página
+        const row = Math.floor(indexInPage / labelsPerRow); // Calcula la fila
+        const col = indexInPage % labelsPerRow; // Calcula la columna
+        const x = marginX + col * (labelWidth + spacingX); // Calcula la posición X
+        const y = marginY + row * (labelHeight + spacingY); // Calcula la posición Y
+        // Si el índice es un múltiplo del totalLabelsPerPage, agrega una nueva página
+        if (index > 0 && indexInPage === 0) {
+          doc.addPage(); // Agrega una nueva página cuando el índice es un múltiplo de totalLabelsPerPage
+        }
+        doc.addImage(image, type, x, y, labelWidth, labelHeight); // Agrega la imagen
+        // doc.addImage(barcode(product.name), type, x + 75, y + 8, 15, 15); // Agrega el código de barras
+        doc.setFontSize(70);
+        doc.setFont('helvetica', 'bold');
+        // doc.text(product.name, x + 10, y + 22); // se agrega codigo corto
+        doc.text(product.name, x + 120, y + 112); // se agrega codigo corto
+
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'normal');
+        const maxLineWidth = labelWidth - 20; // Ancho máximo para el texto
+        const textLines = doc.splitTextToSize(product.label, maxLineWidth); // Divide el texto en líneas
+        doc.text(textLines, x + 18, y + 31); // Dibuja el texto dividido en la etiqueta
+        // doc.text(product.label.substring(0, 34), x + 10, y + 25); // descripcion de el producto
+        doc.setFontSize(12);
+        let ypri = y + 39
+        let yprincrement = 12
+        product.usedPrices.filter(item => prices.value.val.includes(item.id)).forEach((e, i) => {
+          if (e.alias == "OFERTA") {
+            doc.setFontSize(35);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Unico Precio', x + 60, ypri + i * yprincrement + 10);// alias de el precio
+            doc.setFontSize(50);
+            doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 64, ypri + i * yprincrement + 35);// valor de el precio
+          } else {
+            doc.setFontSize(35);
+            doc.setFont('helvetica', 'bold');
+            doc.text(e.alias, x + 60, ypri + i * yprincrement + 15);// alias de el precio
+            doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 93, ypri + i * yprincrement + 15);// valor de el precio
+          }
+        })
+        //CONTINUA CODIGO
+        doc.setFontSize(45);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${product.code}`, x + 18, y + 23); // codigo de el producto
+        doc.text(product.large, x + 35, y + 112); // largo de el producto
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${product.pieces} PZS`, x + 185, y + 23,{align:'right'} ); // piezas por caja
+        doc.setFontSize(6)
+        doc.setFont('helvetica', 'normal');
+        doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 38, y + 114); //ubicacion de exhibicion de el producto
       });
       doc.save(`${VDB.session.credentials.nick} etiquetas ${mosPDF.value.val.label}`);
       resolve();
