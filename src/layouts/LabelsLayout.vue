@@ -845,7 +845,7 @@ const smallLabel = (data) => {
         const x = marginX + col * (labelWidth + spacingX); // Calcula la posición X
         const y = marginY + row * (labelHeight + spacingY); // Calcula la posición Y
         // Si el índice es un múltiplo del totalLabelsPerPage, agrega una nueva página
-        doc.setTextColor(255, 51, 97);
+        // doc.setTextColor(255, 51, 97);
         if (index > 0 && indexInPage === 0) {
           doc.addPage(); // Agrega una nueva página cuando el índice es un múltiplo de totalLabelsPerPage
         }
