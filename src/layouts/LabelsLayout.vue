@@ -570,7 +570,7 @@ const largeLabel = (data) => {
           expandedProducts.push(product);
         }
       });
-      const image = "/icons/Navidad/Navidad6(1).png";
+      const image = "/icons/Navidad/Navidad6(2).png";
       const type = "PNG";
       const doc = new jsPDF({ format: 'letter' });
       const pageWidth = doc.internal.pageSize.getWidth();
