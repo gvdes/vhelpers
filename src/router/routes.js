@@ -54,6 +54,10 @@ const routes = [
     component: () => import('layouts/LabelsLayout.vue'),
   },
   {
+    path: '/compare',
+    component: () => import('layouts/CompareLayout.vue'),
+  },
+  {
     path: '/transfers',
     component: () => import('layouts/Transfers.vue'),
     children: [

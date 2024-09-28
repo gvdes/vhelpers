@@ -19,6 +19,7 @@ export const useVDBStore = defineStore('vdb', {
       // { id:9, name:"Depositos", alias:"DPTS", desc:"Aprobacion de Depositos", path:"deposits"},
       { id:9, name:"Traspasos", alias:"TRP", desc:"Traspasos entre almacenes", path:"transfers"},
       { id:10, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
+      { id:11, name:"Comparativos", alias:"Com", desc:"Comparativos", path:"compare"},
       { id:50, name:"Tarjetas", alias:"TRJS", desc:"Consulta Tarjetas Sucursales", path:"cardStores"},
       // { id:51, name:"Depositos", alias:"DPTS", desc:"Aprovacion de Depositos", path:"depositsap"},
       { id:100, name:"Ventas", alias:"VS", desc:"Ventas Sucursales", path:"stores"},
@@ -39,7 +40,7 @@ export const useVDBStore = defineStore('vdb', {
       return state.modules.filter((m) => m.id >= 100)
     },
     authGen(state){
-      return state.modules.filter((m) => m.id <= 10)
+      return state.modules.filter((m) => m.id <= 11)
     },
     authAdm(state){
       return state.modules.filter((m) => m.id >= 50 && m.id < 100)
