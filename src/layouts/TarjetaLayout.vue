@@ -415,8 +415,8 @@ const pdfExport = () => {
       })
     })
   }
-  })  
-  .catch(f => 
+  })
+  .catch(f =>
     console.log(f)
   )
 
@@ -538,14 +538,14 @@ const pdfFactura = (ticket) => {
   console.log(chunks);
   for (let i = 0; i < 1; i++) {
 
-    
+
     chunks.forEach(function (chunk, index) {
       if (index > 0) {
         doc.addPage();
       }
 
       let totcan = 0;
-      let total  = 0 
+      let total  = 0
       for (let i = 0; i < chunk.length; i++) {
         chunk[i][1] = chunk[i][1].replace(/\n/g, " ");//descripcion
         chunk[i][2] = parseFloat(chunk[i][2]);//cantidad
@@ -651,6 +651,14 @@ const pdfFactura = (ticket) => {
       reject(error);
     }
   });
+}
+
+if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
+  index()
+}else{
+  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+  $router.replace('/');
+
 }
 
 index();

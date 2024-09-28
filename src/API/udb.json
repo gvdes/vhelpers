@@ -422,7 +422,7 @@
       "ip": "192.168.10.160:1619",
       "id_viz":5
     },
-    "rol": "gen"
+    "rol": "aud"
   },
   {
     "id": 2,
@@ -714,23 +714,6 @@
     "rol": "caj"
   },
   {
-    "id": 7,
-    "name": "Jose Adrian Martinez Escobar ",
-    "credentials": {
-      "nick": "JoseMar",
-      "pass": "0f93",
-      "hash": "4237fcbbd0e1a6102d7a805d043ff71a"
-    },
-    "store": {
-      "id": 4,
-      "name": "San Pablo 2",
-      "alias": "SP2",
-      "ip": "192.168.60.253:1619",
-      "id_viz":4
-    },
-    "rol": "gen"
-  },
-  {
     "id": 161,
     "name": "Gloria Itzel Perez Ramos",
     "credentials": {
@@ -850,7 +833,24 @@
     "rol": "root"
   },
   {
-    "id": 304,
+    "id": 1000,
+    "name": "Jose Adrian Martinez Escobar ",
+    "credentials": {
+      "nick": "JoseMar",
+      "pass": "0f93",
+      "hash": "4237fcbbd0e1a6102d7a805d043ff71a"
+    },
+    "store": {
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.60.253:1619",
+      "id_viz":4
+    },
+    "rol": "aud"
+  },
+  {
+    "id": 1001,
     "name": "SONIA DIEGO FRANCISCO",
     "credentials": {
       "nick": "SoniaF",
@@ -864,7 +864,58 @@
       "ip": "192.168.60.253:1619",
       "id_viz":4
     },
-    "rol": "aux"
+    "rol": "aud"
+  },
+  {
+    "id": 1002,
+    "name": "FERNANDO ALBERTO MOGUEL CRUZ",
+    "credentials": {
+      "nick": "FernandoMo",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 3,
+      "name": "San Pablo 1",
+      "alias": "SP1",
+      "ip": "192.168.100.250:1619",
+      "id_viz":3
+    },
+    "rol": "aud"
+  },
+  {
+    "id": 1003,
+    "name": "JONATHAN SERRANO VIZCARRA",
+    "credentials": {
+      "nick": "JonathanSe",
+      "pass": "d680",
+      "hash": "c7862693c953ca8d6a00494edf1b2d7b"
+    },
+    "store": {
+      "id": 3,
+      "name": "San Pablo 1",
+      "alias": "SP1",
+      "ip": "192.168.100.250:1619",
+      "id_viz":3
+    },
+    "rol": "aud"
+  },
+  {
+    "id": 1004,
+    "name": "RUBEN MENDEZ JUAREZ",
+    "credentials": {
+      "nick": "RubenMe",
+      "pass": "c4a4",
+      "hash": "3e0ac4b9dddada2ec77d34d70ed0ad5c"
+    },
+    "store": {
+      "id": 3,
+      "name": "San Pablo 1",
+      "alias": "SP1",
+      "ip": "192.168.100.250:1619",
+      "id_viz":3
+    },
+    "rol": "aud"
   },
   {
     "id": 304,

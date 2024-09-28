@@ -281,5 +281,13 @@ const reset = () => {
       products.value = []
 }
 
+if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
+  index()
+}else{
+  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+  $router.replace('/');
+
+}
+
 index();
 </script>

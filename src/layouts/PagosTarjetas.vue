@@ -466,5 +466,6 @@ const generarCombinaciones = (array) => {
   return resultado;
 }
 
+
 index()
 </script>

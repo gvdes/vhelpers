@@ -36,11 +36,14 @@ export const useVDBStore = defineStore('vdb', {
     authsAux (state) {
       return state.modules.filter((m) => m.id <= 10)
     },
-    autRoot(state){
-      return state.modules.filter((m) => m.id >= 100)
-    },
     authGen(state){
       return state.modules.filter((m) => m.id <= 11)
+    },
+    autAud(state){
+      return state.modules.filter((m) => m.id <= 11)
+    },
+    autRoot(state){
+      return state.modules.filter((m) => m.id >= 100)
     },
     authAdm(state){
       return state.modules.filter((m) => m.id >= 50 && m.id < 100)
@@ -48,7 +51,10 @@ export const useVDBStore = defineStore('vdb', {
   },
 
   actions: {
-    setSession (data) { this.session = data; },
+    setSession (data) {
+      this.session = data;
+      LocalStorage.set("auth", data);
+     },
     sessionDestroy () { this.session = null; LocalStorage.remove("auth"); }
   }
 })

@@ -221,6 +221,13 @@ const exportTable = () => {
   downloadExcel();
 }
 
+if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
+  init()
+}else{
+  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+  $router.replace('/');
+
+}
 init()
 
 
