@@ -179,12 +179,9 @@ const reset = () => {
   secciones.value.val = null
 }
 
-const exportTable = () => {
-  // Crear un nuevo libro de trabajo
+const exportTable = async () => {
   const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('Hoja 1');
-
-  // Agregar datos a la hoja
+  const worksheet = workbook.addWorksheet('Comparativo');
   worksheet.addRow(table.value.columns.map(e => e.label));
   bascket.value.forEach(row =>
     worksheet.addRow([
@@ -200,10 +197,8 @@ const exportTable = () => {
       Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)),
       row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)[0]
     ])
-  )
-    ;
+  );
 
-  // Función para descargar el archivo
   const downloadExcel = async () => {
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/octet-stream' });
@@ -211,13 +206,12 @@ const exportTable = () => {
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Comparativo${VDB.session.store.alias}.xlsx`; // Nombre del archivo
+    a.download = `Comparativo${VDB.session.store.alias}.xlsx`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
   };
 
-  // Llama a esta función para descargar el archivo
   downloadExcel();
 }
 

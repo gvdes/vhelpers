@@ -84,9 +84,9 @@
 
             <q-card-actions align="center">
               <q-btn flat color="negative" v-close-popup icon="close" />
-              <q-btn flat color="primary" icon="print" @click="impresoras.state = !impresoras.state" />
-              <q-btn flat color="primary" icon="picture_as_pdf"  @click="pdfFormat.state = !pdfExport.state" />
-
+              <q-btn flat color="primary" icon="print" @click="impresoras.state = !impresoras.state" title="Imprimir"/>
+              <q-btn flat color="primary" icon="picture_as_pdf"  @click="pdfFormat.state = !pdfExport.state" title="exportar pdf" />
+              <q-btn flat color="primary" icon="sim_card_download"  @click="exportTck" title="exportarexcel" />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -158,6 +158,7 @@ import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import axios from 'axios';//para dirigirme bro
 import {exportFile ,useQuasar } from 'quasar';
 import { jsPDF } from "jspdf";
+import ExcelJS from 'exceljs';
 import autoTable from 'jspdf-autotable'
 import { computed, ref } from 'vue';
 import { assist } from "src/boot/axios";
@@ -651,6 +652,62 @@ const pdfFactura = (ticket) => {
       reject(error);
     }
   });
+}
+
+const exportTck = async () => {
+  $q.loading.show({message:'Importando Ticket'})
+  let host = VDB.session.store.ip;
+  let ticket = otckopt.value.body.TICKET
+  const dat  = `http://${host}/access/public/modify/getTicket/${ticket}`;
+  axios.get(dat)
+  .then(r => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Comparativo');
+  worksheet.addRow([r.data.empresa.DESTPV]).eachCell(c => c.font = { bold:true})
+  worksheet.addRow()
+  worksheet.addRow(["Ticket","Fecha","Cliente","Alm.","Est.","For. pag.","Total"]).eachCell(c => c.font = { bold:true})
+  let head = r.data.header
+  worksheet.addRow([head.TICKET, head.FECHA, `${head.CLIENTE}-${head.NOMBRECLIENTE}`,'GEN','Cobra',r.data.payments[0].CONCEPTOPAGO,Number(head.TOTAL)])
+  worksheet.addRow()
+  worksheet.addRow(['',"Código","Descripción","Doc. Origen","Cantidad","P.Unidad","Total"]).eachCell(c => c.font = { bold:true})
+  let products = r.data.products
+  products.forEach(row => {
+    worksheet.addRow(['',row.ARTICULO,row.DESCRIPCION,'',Number(row.CANTIDAD),Number(row.PRECIO), Number(row.TOTAL)])
+  })
+
+  worksheet.columns.forEach(column => {
+  let maxLength = 0;
+  column.eachCell({ includeEmpty: true }, cell => {
+    const columnLength = cell.value ? cell.value.toString().length : 10;
+    if (columnLength > maxLength) {
+      maxLength = columnLength;
+    }
+  });
+  column.width = maxLength < 10 ? 10 : maxLength;  // Establecer un ancho mínimo de 10
+});
+
+  const downloadExcel = async () => {
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Ticket${r.data.header.TICKET}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  downloadExcel();
+  $q.loading.hide()
+    console.log(r)
+  })
+  .catch(r => {
+    console.log(r)
+  })
+
+
 }
 
 if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
