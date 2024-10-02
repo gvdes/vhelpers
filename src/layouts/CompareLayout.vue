@@ -105,7 +105,9 @@ const table = ref({
     { name: 'texcoco', label: 'Texcoco', align: 'center', field: row => row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock) },
     { name: 'total', label: 'Total', align: 'center', field: row => Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) },
     { name: 'totalcj', label: 'Total Cajas', align: 'center', sortable: true, field: row => Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)) },
-    { name: 'Sucursal', label: `${VDB.session.store.name}`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock) }
+    { name: 'Sucursal', label: `${VDB.session.store.name}`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock) },
+    { name: 'Sucursal', label: `Surtir En`, align: 'center', field: row => row.stocks.filter(e => e.id == 1 ).map(e => e.pivot.stock) > 0 ? "Cedis" : "Texcoco" },
+
   ],
   pagination: {
     rowsPerPage: 20
@@ -195,7 +197,8 @@ const exportTable = async () => {
       row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)[0],
       Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)),
       Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)),
-      row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)[0]
+      row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)[0],
+      row.stocks.filter(e => e.id == 1 ).map(e => e.pivot.stock)[0] > 0 ? "Cedis" : "Texcoco"
     ])
   );
 
