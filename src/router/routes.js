@@ -68,6 +68,10 @@ const routes = [
   {
     path: '/deposits',
     component: () => import('layouts/Deposits.vue'),
+    children: [
+      { path:'forms', name: 'fdp', component: () => import('pages/Deposits/Form.vue') },
+      { path:'verified', name: 'vrdp', component: () => import('pages/Deposits/Validate.vue') },
+    ],
   },
   {
     path:'/__set1',

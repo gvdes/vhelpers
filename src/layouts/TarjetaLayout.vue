@@ -476,21 +476,21 @@ const pdfTicket = (ticket) => {
     spaced += 3;
     doc.text(e.ARTICULO + '   ' + e.DESCRIPCION.substring(0, 47),2,spaced)
     spaced += 4;
-    doc.text( Number(e.CANTIDAD).toFixed(2),25,spaced)
-    doc.text(Number(e.PRECIO).toFixed(2),40,spaced)
-    doc.text(Number(e.TOTAL).toFixed(2),57,spaced)
+    doc.text( Number(e.CANTIDAD).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),25,spaced)
+    doc.text(Number(e.PRECIO).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),40,spaced)
+    doc.text(Number(e.TOTAL).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),57,spaced)
     cantidadtotal += Number(e.CANTIDAD)
   })
   spaced += 10;
   doc.setFontSize(8)
   doc.setFont('helvetica', 'bold')
   doc.text("TOTAL",54,spaced,'right')
-  doc.text(`$ ${Number(ticket.header.TOTAL).toFixed(2)}`,56,spaced,'left')
+  doc.text(`$ ${Number(ticket.header.TOTAL).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,56,spaced,'left')
   doc.setFont('helvetica','normal')
   pagos.forEach((p) => {
     spaced += 4
     doc.text(p.CONCEPTOPAGO,54,spaced,'right')
-    doc.text(`$ ${Number(p.IMPORTE).toFixed(2)}`,56,spaced,'left')
+    doc.text(`$ ${Number(p.IMPORTE).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,56,spaced,'left')
   })
   spaced += 5
   doc.text(`N Articulos: ${cantidadtotal}`,2,spaced)//total cantidad
@@ -550,10 +550,10 @@ const pdfFactura = (ticket) => {
       for (let i = 0; i < chunk.length; i++) {
         chunk[i][1] = chunk[i][1].replace(/\n/g, " ");//descripcion
         chunk[i][2] = parseFloat(chunk[i][2]);//cantidad
-        chunk[i][3] = Number(chunk[i][3]).toFixed(2);//precio
-        chunk[i][4] = Number(chunk[i][4]).toFixed(2);//total
+        chunk[i][3] = Number(chunk[i][3]).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });//precio
+        chunk[i][4] = Number(chunk[i][4]).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });//total
         totcan += parseFloat(chunk[i][2]);
-        total += parseFloat(chunk[i][4]);
+        total += parseFloat(chunk[i][4].replace(/,/g, ''));
 
       }
 
@@ -615,10 +615,10 @@ const pdfFactura = (ticket) => {
 
       doc.setFontSize(11)
       doc.text('TOTAL UNIDADES:', 60, 200, 'left')
-      doc.text(Number(totcan).toFixed(2), 100, 200, 'left')
+      doc.text(Number(totcan).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 100, 200, 'left')
       doc.setFont('helvetica', 'bold')
       doc.text('TOTAL:',140, 200, 'left')
-      doc.text(`$ ${Number(total).toFixed(2)}`, 160, 200, 'left')//TOTAL TICKET
+      doc.text(`$ ${Number(total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 160, 200, 'left')//TOTAL TICKET
       doc.setFontSize(8)
       doc.text('Debo(emos) y pagare(mos) incondicionalmente por este pagare a la order de GRUPO VIZCARRA, en la ciudad de Mexico,', 5, 210, 'left')
       doc.text('la cantidad de el valor recibido a mi(nuestra) entera satisfaccion', 5, 215, 'left')
