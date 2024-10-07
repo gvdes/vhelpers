@@ -184,6 +184,7 @@ const getSale = async (sucursales, date) => {
   const promises = sucursales.map((e, index) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
+        e.sale = null;
         let host = e.ip_address;
         let sale = `http://${host}/access/public/reports/OpenCash`;
         //let sale = `http://192.168.10.160:1619/access/public/reports/OpenCash`;
