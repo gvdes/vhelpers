@@ -5,7 +5,18 @@
       <q-form @submit="submitForm" @reset="onReset" class="q-gutter-md">
 
         <q-input v-model="values.origin" type="number" label="Cuenta Origen" filled dense />
-        <q-input v-model="values.destiny" type="number" label="Cuenta Destino" filled dense />
+        <!-- <q-input v-model="values.destiny" type="number" label="Cuenta Destino" filled dense /> -->
+        <q-select v-model="values.destiny" :options="accounts" label="Cuenta Destino" filled dense option-label="name"
+          option-value="name">
+          <template v-slot:option="scope">
+            <q-item v-bind="scope.itemProps">
+              <q-item-section>
+                <q-item-label>{{ scope.opt.name }}</q-item-label>
+                <q-item-label caption>{{ scope.opt.bank }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
         <q-input v-model="values.concepto" type="text" label="Referencia" filled dense />
         <q-input v-model="values.reference" type="number" label="Referencia Numerica / Folio" filled dense />
         <q-input v-model="values.amount" type="number" label="Monto" filled dense />
@@ -40,7 +51,6 @@
             </div>
           </template>
         </q-uploader>
-
         <div class="flex justify-center">
           <q-btn label="Cancelar" type="reset" color="primary" flat class="q-ml-sm" />
           <q-btn label="Enviar" type="submit" color="primary" flat :disable="!validform" />
@@ -70,17 +80,29 @@ const VDB = useVDBStore();
 const $q = useQuasar();
 
 const soc = $socket.connect();
-if(soc.connected){
+if (soc.connected) {
   // console.log(`Connect ${soc.id}`)
   console.log(`%c Connect ${soc.id} `, 'background: #222; color: #bada55');
-}else{
+} else {
   console.log(`%c No hay conexion en el socket `, 'background: #222; color: #bada55');
 };
 
 $socket.emit('Conexion', (VDB))
-$socket.on('Room',(param) => {console.log(param)})
+$socket.on('Room', (param) => { console.log(param) })
 
 console.log(VDB.session.name)
+
+const accounts = ref([
+  { id: 1, name: '0110292745', bank: 'BBVA' },
+  { id: 2, name: '0110292974', bank: 'BBVA' },
+  { id: 3, name: '0110292834', bank: 'BBVA' },
+  { id: 4, name: '0110292761', bank: 'BBVA' },
+  { id: 5, name: '0110292982', bank: 'BBVA' },
+  { id: 6, name: '0110293040', bank: 'BBVA' },
+  { id: 7, name: '0473998967', bank: 'BBVA' },
+  { id: 8, name: '0110292729', bank: 'BBVA' },
+
+])
 
 const refe = ref(null);
 
@@ -118,7 +140,7 @@ const submitForm = async () => {
   $q.loading.show({ message: 'Enviando Formulario' })
   const formData = new FormData();
   formData.append('origin', values.value.origin);
-  formData.append('destiny', values.value.destiny);
+  formData.append('destiny', values.value.destiny.name);
   formData.append('reference', values.value.reference);
   formData.append('concepto', values.value.concepto);
   formData.append('amount', values.value.amount);

@@ -34,6 +34,12 @@
           <q-td key="store" :props="props">
             <div class="text-bold text-center">{{ props.row.store.name }}</div>
           </q-td>
+          <q-td key="origin" :props="props">
+            <div class="text-bold text-center">{{ props.row.origin }}</div>
+          </q-td>
+          <q-td key="destiny" :props="props">
+            <div class="text-bold text-center">{{ props.row.destiny }}</div>
+          </q-td>
           <q-td key="concept" :props="props">
             <div class="text-bold text-left">{{ props.row.concept }}</div>
           </q-td>
@@ -51,15 +57,10 @@
               dense :disable=true />
           </q-td>
           <q-td key="ticket" :props="props">
-            <!-- <q-form
-              @submit="onSubmit"
-              @reset="onReset"
-              class="q-gutter-md"
-            > -->
-            <q-input v-model="props.row.ticket" type="text" label="Ticket"  filled  />
-            <!-- </q-form> -->
-
-            <!-- <div class="text-bold text-left">{{ props.row.ticket }}</div> -->
+            {{ props.row.ticket }}
+            <q-popup-edit v-if="props.row.ticket == null" v-model="props.row.ticket" title="Ticket" buttons v-slot="scope" label-set="Guardar" label-cancel="Cancelar" @save="updateTicket(props.row)">
+            <q-input v-model="scope.value" dense autofocus @keyup.enter="scope.set" mask="#-######"  />
+          </q-popup-edit>
           </q-td>
           <q-td key="picture" :props="props" @click="mosimage(props.row)">
             <q-img v-if="props.row.picture != null"
@@ -177,10 +178,11 @@ const table = ref({
     { name: 'id', label: 'Id', align: 'center', field: row => row.id },
     { name: 'created', label: 'Creado por', align: 'center', field: row => row.send_by },
     { name: 'store', label: 'Sucursal', align: 'center', field: row => row.store.name },
+    { name: 'origin', label: 'Origen', align: 'center', field: row => row.origin},
+    { name: 'destiny', label: 'Destino', align: 'center', field: row => row.destiny},
     { name: 'concept', label: 'Concepto', align: 'left', field: row => row.concept },
     { name: 'reference', label: 'Referencia / Folio', align: 'center', field: row => row.refernce },
     { name: 'amount', label: 'Importe', align: 'center', field: row => row.amount },
-
     { name: 'status', label: 'Estado', align: 'left', field: row => row.status.name },
     { name: 'ticket', label: 'Ticket', align: 'center', field: row => row.ticket },
     { name: 'picture', label: 'Foto', align: 'center', field: row => row.picture },
@@ -231,6 +233,27 @@ const buscas = async () => {
     date.value = false
   }
 
+}
+
+const updateTicket = async(row ) => {
+  console.log(row)
+
+  $q.loading.show({message:'Poniendo Ticket'})
+  let data = {
+    id:row.id,
+    ticket:row.ticket
+  }
+  console.log(data)
+  const resp =  await depoApi.changeTicket(data)
+  console.log(resp)
+  if(resp.fail){
+    console.log(resp)
+  }else{
+    $q.loading.hide()
+    row._status = row.status.id
+    // $socket.emit('ChangeStatus',resp)
+    $q.notify({message:'Se cambio de estado', type:'positive'})
+  }
 }
 
 

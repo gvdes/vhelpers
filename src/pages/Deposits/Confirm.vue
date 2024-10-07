@@ -46,6 +46,12 @@
           <q-td key="store" :props="props">
             <div class="text-bold text-center">{{ props.row.store.name }}</div>
           </q-td>
+          <q-td key="origin" :props="props">
+            <div class="text-bold text-center">{{ props.row.origin }}</div>
+          </q-td>
+          <q-td key="destiny" :props="props">
+            <div class="text-bold text-center">{{ props.row.destiny }}</div>
+          </q-td>
           <q-td key="concept" :props="props">
             <div class="text-bold text-left">{{ props.row.concept }}</div>
           </q-td>
@@ -173,6 +179,8 @@ const table = ref({
     {name:'id', label:'Id', align:'center' , field:row => row.id},
     {name:'created', label:'Creado por',align:'center', field:row => row.send_by},
     {name:'store', label:'Sucursal', align:'center', field:row => row.store.name},
+    { name: 'origin', label: 'Origen', align: 'center', field: row => row.origin},
+    { name: 'destiny', label: 'Destino', align: 'center', field: row => row.destiny},
     {name:'concept', label:'Concepto', align:'left',  field:row => row.concept},
     {name:'reference', label:'Referencia / Folio', align:'center', field:row => row.refernce},
     {name:'amount', label:'Importe', align:'center', field:row => row.amount},
