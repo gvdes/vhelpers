@@ -58,6 +58,10 @@ const routes = [
     component: () => import('layouts/CompareLayout.vue'),
   },
   {
+    path: '/openbox',
+    component: () => import('layouts/OpneBoxesLYT.vue'),
+  },
+  {
     path: '/transfers',
     component: () => import('layouts/Transfers.vue'),
     children: [
@@ -71,6 +75,14 @@ const routes = [
     children: [
       { path:'forms', name: 'fdp', component: () => import('pages/Deposits/Form.vue') },
       { path:'verified', name: 'vrdp', component: () => import('pages/Deposits/Validate.vue') },
+    ],
+  },
+  {
+    path: '/depositsap',
+    component: () => import('layouts/ValidationDepLYT.vue'),
+    children: [
+      { path:'confirm', name: 'cmf', component: () => import('pages/Deposits/Confirm.vue') },
+      // { path:'verified', name: 'vrdp', component: () => import('pages/Deposits/Validate.vue') },
     ],
   },
   {

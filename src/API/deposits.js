@@ -5,8 +5,14 @@ export default{
   newForm(data){
     return assist.post(`/deposits/forms`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
-  getFormStore(data){
-    return assist.get(`/deposits/getFormsStore/${data}`).then( done=>done.data ).catch( fail => { return {fail}} );
+  getFormStore(data,params){
+    return assist.post(`/deposits/getFormsStore/${data}`,params).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+  getForm(data){
+    return assist.post(`/deposits/getForms`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+  changeStatus(data){
+    return assist.post(`/deposits/changeStatus`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
 
   // getStores(){
