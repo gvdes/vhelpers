@@ -151,7 +151,9 @@ const init = async () => {
   let fecha =  dayjs(date).format("YYYY/MM/DD")
   fechas.value = fecha
   console.log(fecha);
-    getSale(stores.value, fechas.value);
+    getSale(stores.value, fechas.value).finally(()=> {
+    $q.loading.hide();
+  });
   }
 };
 
@@ -205,8 +207,6 @@ const getSale = async (sucursales, date) => {
   } catch (error) {
     console.error("Error en alguna de las solicitudes:", error);
   }
-
-  $q.loading.hide();
 };
 
 
