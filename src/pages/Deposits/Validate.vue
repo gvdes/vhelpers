@@ -131,7 +131,7 @@ const $q = useQuasar();
 
 $socket.connect();
 
-$socket.emit('Conexion', (VDB))
+$socket.emit('paramscon', (VDB))
 $socket.on('Room',(param) => {console.log(param)})
 $socket.on('StoreList', (param) => {
   console.log(param);

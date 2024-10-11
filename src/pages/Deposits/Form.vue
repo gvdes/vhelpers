@@ -80,7 +80,7 @@ const $q = useQuasar();
 
 $socket.connect();
 
-$socket.emit('Conexion', (VDB))
+$socket.emit('paramscon', (VDB))
 
 $socket.on('Room', (room) => {
   console.log(`Joined room ${room}`);
