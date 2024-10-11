@@ -82,7 +82,7 @@ const soc = $socket.connect();
 if (soc.connected) {
   // console.log(`Connect ${soc.id}`)
   console.log(`%c Connect ${soc.id} `, 'background: #222; color: #bada55');
-  $socket.emit('Conexion', (VDB))
+  soc.emit('Conexion', (VDB))
 } else {
   console.log(`%c No hay conexion en el socket `, 'background: #222; color: #bada55');
 };
