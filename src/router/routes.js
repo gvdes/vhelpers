@@ -78,7 +78,7 @@ const routes = [
     ],
   },
   {
-    path: '/depositsap',
+    path: '/deposits',
     component: () => import('layouts/ValidationDepLYT.vue'),
     children: [
       { path:'confirm', name: 'cmf', component: () => import('pages/Deposits/Confirm.vue') },

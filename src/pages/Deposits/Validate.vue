@@ -137,13 +137,13 @@ if(soc.connected){
   console.log(`%c No hay conexion en el socket `, 'background: #222; color: #bada55');
 };
 
-$socket.emit('Conexion', (VDB))
-$socket.on('Room',(param) => {console.log(param)})
-$socket.on('StoreList', (param) => {
+soc.emit('Conexion', (VDB))
+soc.on('Room',(param) => {console.log(param)})
+soc.on('StoreList', (param) => {
   console.log(param);
   depositos.value.push(param)
 })
-$socket.on('ChangeStatus', (param) => {
+soc.on('ChangeStatus', (param) => {
   let inx = depositos.value.findIndex( e => e.id == param.id);
   if(inx >= 0){
     depositos.value[inx].status = param.status
@@ -251,7 +251,7 @@ const updateTicket = async(ticket ) => {
   }else{
     $q.loading.hide()
     ticket.ticket = ticket.ticket
-    $socket.emit('ChangeTicket',resp)
+    soc.emit('ChangeTicket',resp)
     $q.notify({message:'Se agrego Ticket', type:'positive'})
   }
 }

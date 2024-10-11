@@ -153,13 +153,13 @@ if (soc.connected) {
 
 // $socket.emit('Conexion', (VDB))
 // $socket.on('Room',(param) => {console.log(param)})
-$socket.on('List', (param) => {
+soc.on('List', (param) => {
   // console.log('listo')
   console.log(param);
   depositos.value.push(param)
 })
 
-$socket.on('ChangeTicket', (param) => {
+soc.on('ChangeTicket', (param) => {
   let inx = depositos.value.findIndex(e => e.id == param.id);
   if (inx >= 0) {
     depositos.value[inx].ticket = param.ticket
@@ -265,7 +265,7 @@ const changeStatus = async (row) => {
   } else {
     $q.loading.hide()
     row._status = row.status.id
-    $socket.emit('ChangeStatus', resp)
+    soc.emit('ChangeStatus', resp)
     $q.notify({ message: 'Se cambio de estado', type: 'positive' })
   }
 }
