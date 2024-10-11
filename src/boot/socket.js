@@ -3,11 +3,11 @@ import { io } from "socket.io-client";
 
 
 // const URLSocket = 'http://localhost:7171/';
-const URLSocket = 'http://192.168.10.160:3000';
-// const URLSocket = 'http://192.168.10.238:1712/';
+// const URLSocket = 'http://192.168.10.160:3000';
+const URLSocket = 'http://192.168.10.238:1712/';
 
 
-const $socket = io(`${URLSocket}/deposits`, { autoConnect: true });
+const $socket = io(`${URLSocket}/deposits`, { autoConnect: false });
 
 // "async" is optional;
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
