@@ -58,7 +58,7 @@
           </q-td>
           <q-td key="ticket" :props="props">
             {{ props.row.ticket }}
-            <q-popup-edit v-if="props.row.ticket == null" v-model="props.row.ticket" title="Ticket" buttons v-slot="scope" label-set="Guardar" label-cancel="Cancelar" @save="updateTicket(props.row)">
+            <q-popup-edit v-if="props.row.ticket == null && props.row._status == 2" v-model="props.row.ticket" title="Ticket" buttons v-slot="scope" label-set="Guardar" label-cancel="Cancelar" @update:model-value="updateTicket(props.row)">
             <q-input v-model="scope.value" dense autofocus @keyup.enter="scope.set" mask="#-######"  />
           </q-popup-edit>
           </q-td>
@@ -235,13 +235,13 @@ const buscas = async () => {
 
 }
 
-const updateTicket = async(row ) => {
-  console.log(row)
+const updateTicket = async(ticket ) => {
+  console.log(ticket)
 
   $q.loading.show({message:'Poniendo Ticket'})
   let data = {
-    id:row.id,
-    ticket:row.ticket
+    id:ticket.id,
+    ticket:ticket.ticket
   }
   console.log(data)
   const resp =  await depoApi.changeTicket(data)
@@ -250,9 +250,9 @@ const updateTicket = async(row ) => {
     console.log(resp)
   }else{
     $q.loading.hide()
-    row._status = row.status.id
-    // $socket.emit('ChangeStatus',resp)
-    $q.notify({message:'Se cambio de estado', type:'positive'})
+    ticket.ticket = ticket.ticket
+    $socket.emit('ChangeTicket',resp)
+    $q.notify({message:'Se agrego Ticket', type:'positive'})
   }
 }
 

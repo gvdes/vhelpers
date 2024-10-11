@@ -17,6 +17,7 @@
     "dayjs": "^1.11.7",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
+    "firebase": "^10.14.0",
     "jsbarcode": "^3.11.6",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",

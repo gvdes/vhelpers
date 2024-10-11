@@ -239,8 +239,8 @@ const mosPDF = ref({
     { id: 5, label: 'Navidad Vertical' },
     { id: 6, label: 'Juguete Niño' },
     { id: 7, label: 'Juguete Niña' },
-    // { id: 8, label: 'Juguete Extra Niña' },
-    // { id: 9, label: 'Juguete Extra Niño' },
+    { id: 8, label: 'Juguete Extra Niña' },
+    { id: 9, label: 'Juguete Extra Niño' },
 
 
   ]
@@ -1211,7 +1211,7 @@ const xlargenina = (data) => {
           expandedProducts.push(product);
         }
       });
-      const image = "/icons/Juguete/xlargenina.png";
+      const image = "/icons/Juguete/xlargeninia.png";
       const type = "PNG";
       const doc = new jsPDF({ format: 'letter' });
       const pageWidth = doc.internal.pageSize.getWidth();
@@ -1295,7 +1295,7 @@ const xlargenino = (data) => {
           expandedProducts.push(product);
         }
       });
-      const image = "/icons/Juguete/xlargenino.png";
+      const image = "/icons/Juguete/xlargeninio.png";
       const type = "PNG";
       const doc = new jsPDF({ format: 'letter' });
       const pageWidth = doc.internal.pageSize.getWidth();

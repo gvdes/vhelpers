@@ -14,6 +14,9 @@ export default{
   changeStatus(data){
     return assist.post(`/deposits/changeStatus`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  changeTicket(data){
+    return assist.post(`/deposits/changeTicket`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 
   // getStores(){
   //   return assist.get(`/sal/getStores`).then( done=>done.data ).catch( fail => { return {fail}} );
