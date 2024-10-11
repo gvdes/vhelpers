@@ -74,7 +74,6 @@ import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
 import { $socket } from 'src/boot/socket';
 
-$socket.connect();
 
 const VDB = useVDBStore();
 const $q = useQuasar();
