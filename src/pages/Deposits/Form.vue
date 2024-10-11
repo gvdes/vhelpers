@@ -78,23 +78,16 @@ import { $socket } from 'src/boot/socket';
 const VDB = useVDBStore();
 const $q = useQuasar();
 
-const soc = $socket.connect();
-if (soc.connected) {
-  // console.log(`Connect ${soc.id}`)
-  console.log(`%c Connect ${soc.id} `, 'background: #222; color: #bada55');
+$socket.connect();
 
-} else {
-  console.log(`%c No hay conexion en el socket `, 'background: #222; color: #bada55');
-};
+$socket.emit('Conexion', (VDB))
 
-soc.emit('Conexion', (VDB))
-
-soc.on('Room', (room) => {
+$socket.on('Room', (room) => {
   console.log(`Joined room ${room}`);
   // Aquí evitar cualquier re-emisión de eventos en respuesta
 });
 
-soc.on('disconnect', () => {
+$socket.on('disconnect', () => {
   console.log('%c No hay conexion en el socket ', 'background: #222; color: #bada55');
 });
 
@@ -167,7 +160,7 @@ const submitForm = async () => {
   } else {
     console.log(response)
     $q.loading.hide()
-    soc.emit('Create', response.insert)
+    $socket.emit('Create', response.insert)
     $q.notify({ type: 'positive', message: response.message });
     onReset()
   }

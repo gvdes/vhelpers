@@ -129,21 +129,15 @@ const VDB = useVDBStore();
 const $q = useQuasar();
 
 
-const soc = $socket.connect();
-if(soc.connected){
-  // console.log(`Connect ${soc.id}`)
-  console.log(`%c Connect ${soc.id} `, 'background: #222; color: #bada55');
-}else{
-  console.log(`%c No hay conexion en el socket `, 'background: #222; color: #bada55');
-};
+$socket.connect();
 
-soc.emit('Conexion', (VDB))
-soc.on('Room',(param) => {console.log(param)})
-soc.on('StoreList', (param) => {
+$socket.emit('Conexion', (VDB))
+$socket.on('Room',(param) => {console.log(param)})
+$socket.on('StoreList', (param) => {
   console.log(param);
   depositos.value.push(param)
 })
-soc.on('ChangeStatus', (param) => {
+$socket.on('ChangeStatus', (param) => {
   let inx = depositos.value.findIndex( e => e.id == param.id);
   if(inx >= 0){
     depositos.value[inx].status = param.status
@@ -251,7 +245,7 @@ const updateTicket = async(ticket ) => {
   }else{
     $q.loading.hide()
     ticket.ticket = ticket.ticket
-    soc.emit('ChangeTicket',resp)
+    $socket.emit('ChangeTicket',resp)
     $q.notify({message:'Se agrego Ticket', type:'positive'})
   }
 }
