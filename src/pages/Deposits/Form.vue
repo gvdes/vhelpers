@@ -87,10 +87,19 @@ if (soc.connected) {
   console.log(`%c No hay conexion en el socket `, 'background: #222; color: #bada55');
 };
 
+soc.on('Room', (room) => {
+  console.log(`Joined room ${room}`);
+  // Aquí evitar cualquier re-emisión de eventos en respuesta
+});
 
-$socket.on('Room', (param) => { console.log(param) })
+soc.on('disconnect', () => {
+  console.log('%c No hay conexion en el socket ', 'background: #222; color: #bada55');
+});
 
-console.log(VDB.session.name)
+
+// $socket.on('Room', (param) => { console.log(param) })
+
+// console.log(VDB.session.name)
 
 const accounts = ref([
   { id: 1, name: '0110292745', bank: 'BBVA' },
@@ -156,7 +165,7 @@ const submitForm = async () => {
   } else {
     console.log(response)
     $q.loading.hide()
-    $socket.emit('Create', response.insert)
+    soc.emit('Create', response.insert)
     $q.notify({ type: 'positive', message: response.message });
     onReset()
   }
