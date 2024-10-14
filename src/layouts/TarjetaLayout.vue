@@ -84,9 +84,10 @@
 
             <q-card-actions align="center">
               <q-btn flat color="negative" v-close-popup icon="close" />
-              <q-btn flat color="primary" icon="print" @click="impresoras.state = !impresoras.state" title="Imprimir"/>
-              <q-btn flat color="primary" icon="picture_as_pdf"  @click="pdfFormat.state = !pdfExport.state" title="exportar pdf" />
-              <q-btn flat color="primary" icon="sim_card_download"  @click="exportTck" title="exportarexcel" />
+              <q-btn flat color="primary" icon="print" @click="impresoras.state = !impresoras.state" title="Imprimir" />
+              <q-btn flat color="primary" icon="picture_as_pdf" @click="pdfFormat.state = !pdfExport.state"
+                title="exportar pdf" />
+              <q-btn flat color="primary" icon="sim_card_download" @click="exportTck" title="exportarexcel" />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -134,7 +135,7 @@
         <q-dialog v-model="pdfFormat.state" persistent>
           <q-card>
             <q-card-section class="row items-center">
-              <q-avatar  icon="picture_as_pdf" color="primary" text-color="white" />
+              <q-avatar icon="picture_as_pdf" color="primary" text-color="white" />
               <span class="text-bold text-h6">Selecciona el Formato 😊</span>
             </q-card-section>
             <q-card-section>
@@ -156,7 +157,7 @@
 import { useVDBStore } from 'stores/VDB';
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import axios from 'axios';//para dirigirme bro
-import {exportFile ,useQuasar } from 'quasar';
+import { exportFile, useQuasar } from 'quasar';
 import { jsPDF } from "jspdf";
 import ExcelJS from 'exceljs';
 import autoTable from 'jspdf-autotable'
@@ -167,17 +168,17 @@ import { assist } from "src/boot/axios";
 const VDB = useVDBStore();
 const $q = useQuasar();
 
-const table =[
-  {name:'terminal', label:'TERMINAL',align:'center' , field: row => row.TERMINAL},
-  {name:'ticket', label:'TICKET' ,align:'center', field: row => row.TICKET},
-  {name:'cliente', label:'CLIENTE' ,align:'center', field: row => row.CLIENTE},
-  {name:'fecha', label:'FECHA' ,align:'center', field: row => row.FECHA},
-  {name:'hora', label:'HORA' ,align:'center', field: row => row.HORA},
-  {name:'efectivo', label:'EFECTIVO' ,align:'center', field: row => row.EFECTIVO},
-  {name:'tarjetas', label:'TARJETAS' ,align:'center', field: row => row.TARJETAS},
-  {name:'transferencias', label:'TRANSFERENCIAS' ,align:'center', field: row => row.TRANSFERENCIAS},
-  {name:'creditos', label:'CREDITOS' ,align:'center', field: row => row.CREDITOS},
-  {name:'vales', label:'VALES' ,align:'center', field: row => row.VALES},
+const table = [
+  { name: 'terminal', label: 'TERMINAL', align: 'center', field: row => row.TERMINAL },
+  { name: 'ticket', label: 'TICKET', align: 'center', field: row => row.TICKET },
+  { name: 'cliente', label: 'CLIENTE', align: 'center', field: row => row.CLIENTE },
+  { name: 'fecha', label: 'FECHA', align: 'center', field: row => row.FECHA },
+  { name: 'hora', label: 'HORA', align: 'center', field: row => row.HORA },
+  { name: 'efectivo', label: 'EFECTIVO', align: 'center', field: row => row.EFECTIVO },
+  { name: 'tarjetas', label: 'TARJETAS', align: 'center', field: row => row.TARJETAS },
+  { name: 'transferencias', label: 'TRANSFERENCIAS', align: 'center', field: row => row.TRANSFERENCIAS },
+  { name: 'creditos', label: 'CREDITOS', align: 'center', field: row => row.CREDITOS },
+  { name: 'vales', label: 'VALES', align: 'center', field: row => row.VALES },
 
 ]
 
@@ -212,11 +213,11 @@ const date = ref(false);
 const fechas = ref(null);
 
 const pdfFormat = ref({
-  state:false,
-  val:null,
-  opts:[
-    {id:1,label:'Factura'},
-    {id:2,label:'Ticket'}
+  state: false,
+  val: null,
+  opts: [
+    { id: 1, label: 'Factura' },
+    { id: 2, label: 'Ticket' }
   ]
 })
 const imptck = () => {
@@ -331,12 +332,12 @@ const exportTable = () => {
       color: 'negative',
       icon: 'warning'
     })
-  }else{
+  } else {
     $q.notify({
       message: 'Descarga Completa :)',
       color: 'positive',
       icon: 'check',
-      position:'center'
+      position: 'center'
     })
   }
 }
@@ -369,155 +370,156 @@ const mostck = (a, row) => {
 }
 
 const pdfExport = () => {
-  $q.loading.show({message:'Importando Ticket'})
+  $q.loading.show({ message: 'Importando Ticket' })
   let host = VDB.session.store.ip;
   let ticket = otckopt.value.body.TICKET
-  const dat  = `http://${host}/access/public/modify/getTicket/${ticket}`;
+  const dat = `http://${host}/access/public/modify/getTicket/${ticket}`;
   axios.get(dat)
-  .then(r => {
-    if(pdfFormat.value.val.id == 1){
-    pdfFactura(r.data)
     .then(r => {
-      $q.notify({
-        message:`El ticket ${ticket} se descargo correctamente`,
-        type:`positive`,
-        position:`center`,
-      })
-      pdfFormat.value.state = false
-      pdfFormat.value.val = null
+      if (pdfFormat.value.val.id == 1) {
+        pdfFactura(r.data)
+          .then(r => {
+            $q.notify({
+              message: `El ticket ${ticket} se descargo correctamente`,
+              type: `positive`,
+              position: `center`,
+            })
+            pdfFormat.value.state = false
+            pdfFormat.value.val = null
 
-      $q.loading.hide()
-    })
-    .catch(f => {
-      $q.notify({
-        message:`El ticket ${ticket} no se descargo correctamente`,
-        type:`negative`,
-        position:`center`,
-      })
-    })
-  }else if(pdfFormat.value.val.id == 2){
-    pdfTicket(r.data)
-    .then(r => {
-      $q.notify({
-        message:`El ticket ${ticket} se descargo correctamente`,
-        type:`positive`,
-        position:`center`,
-      })
-      pdfFormat.value.state = false
-      pdfFormat.value.val = null
+            $q.loading.hide()
+          })
+          .catch(f => {
+            $q.notify({
+              message: `El ticket ${ticket} no se descargo correctamente`,
+              type: `negative`,
+              position: `center`,
+            })
+          })
+      } else if (pdfFormat.value.val.id == 2) {
+        pdfTicket(r.data)
+          .then(r => {
+            $q.notify({
+              message: `El ticket ${ticket} se descargo correctamente`,
+              type: `positive`,
+              position: `center`,
+            })
+            pdfFormat.value.state = false
+            pdfFormat.value.val = null
 
-      $q.loading.hide()
+            $q.loading.hide()
+          })
+          .catch(f => {
+            $q.notify({
+              message: `El ticket ${ticket} no se descargo correctamente`,
+              type: `negative`,
+              position: `center`,
+            })
+          })
+      }
     })
-    .catch(f => {
-      $q.notify({
-        message:`El ticket ${ticket} no se descargo correctamente`,
-        type:`negative`,
-        position:`center`,
-      })
-    })
-  }
-  })
-  .catch(f =>
-    console.log(f)
-  )
+    .catch(f =>
+      console.log(f)
+    )
 
 }
 
 const calcularEspacio = (products, pagos) => {
-    let spaced = 70;
-    products.forEach((e) => {
-        spaced += 7;
-    });
-    spaced += 10;
-    pagos.forEach((p) => {
-        spaced += 4;
-    });
-    spaced += 41
-    return spaced;
+  let spaced = 70;
+  products.forEach((e) => {
+    spaced += 7;
+  });
+  spaced += 10;
+  pagos.forEach((p) => {
+    spaced += 4;
+  });
+  spaced += 41
+  return spaced;
 }
 
 const pdfTicket = (ticket) => {
   return new Promise((resolve, reject) => {
     try {
-  let products = ticket.products
-  let pagos = ticket.payments
+      let products = ticket.products
+      let pagos = ticket.payments
 
-  let spaced = calcularEspacio(products, pagos);
-  console.log(ticket.products[0].ARTICULO)
-  const doc = new jsPDF({format: [80, spaced]
-  });
-  spaced = 62
-  doc.setFontSize(8)
-  doc.text("----------------------------------------------------------------------------",2,10)
-  doc.text(ticket.empresa.CTT1TPV,2,13)
-  doc.text(ticket.empresa.CTT2TPV,2,16)
-  doc.text(ticket.empresa.CTT3TPV,2,19)
-  doc.text(ticket.empresa.CTT4TPV,2,22)
-  doc.text(ticket.empresa.CTT5TPV,2,25)
-  doc.text(ticket.header.TERMINAL,2,34)
-  doc.text(`Nº ${ticket.header.TICKET}`,2,37)
-  doc.text(`FECHA ${ticket.header.FECHA}`,20,37)
-  doc.text(ticket.header.HORA,50,37)
-  doc.text(`Forma de Pago: ${ticket.header.PAGOPRINCIPAL}`,2,40)
-  doc.text(ticket.header.NOMBRECLIENTE,2,43)
-  doc.text(ticket.header.DOMICILIO,2,46)
-  doc.text(ticket.header.POBALCION + ticket.header.CODIGOPOSTAL,2,49)
-  doc.text(ticket.header.PROVINCIA,2,52)
-  // doc.text("",2,55)
-  doc.text("_________________________________________________",2,58)
-  doc.text("ARTICULO",2,61)
-  doc.text("UD.",25,61)
-  doc.text("PRECIO",40,61)
-  doc.text("TOTAL",57,61)
-  doc.text("_________________________________________________",2,62)
-  let cantidadtotal = 0
-  products.forEach((e) => {
-    doc.setFontSize(6)
-    spaced += 3;
-    doc.text(e.ARTICULO + '   ' + e.DESCRIPCION.substring(0, 47),2,spaced)
-    spaced += 4;
-    doc.text( Number(e.CANTIDAD).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),25,spaced)
-    doc.text(Number(e.PRECIO).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),40,spaced)
-    doc.text(Number(e.TOTAL).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),57,spaced)
-    cantidadtotal += Number(e.CANTIDAD)
-  })
-  spaced += 10;
-  doc.setFontSize(8)
-  doc.setFont('helvetica', 'bold')
-  doc.text("TOTAL",54,spaced,'right')
-  doc.text(`$ ${Number(ticket.header.TOTAL).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,56,spaced,'left')
-  doc.setFont('helvetica','normal')
-  pagos.forEach((p) => {
-    spaced += 4
-    doc.text(p.CONCEPTOPAGO,54,spaced,'right')
-    doc.text(`$ ${Number(p.IMPORTE).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,56,spaced,'left')
-  })
-  spaced += 5
-  doc.text(`N Articulos: ${cantidadtotal}`,2,spaced)//total cantidad
-  spaced += 5
-  doc.setFontSize(6)
-  doc.text(`Le Atendio: ${ticket.header.DEPENDIENTE}`,2,spaced)
-  spaced += 5
-  doc.setFontSize(8)
-  doc.text('---------------------------------Grupo-Vizcarra----------------------------',2,spaced)
-  spaced += 5
-  doc.text(ticket.empresa.PTT1TPV,2,spaced)
-  spaced += 3
-  doc.text(ticket.empresa.PTT2TPV,2,spaced)
-  spaced += 3
-  doc.text(ticket.empresa.PTT3TPV,2,spaced)
-  spaced += 3
-  doc.text(ticket.empresa.PTT4TPV,2,spaced)
-  spaced += 3
-  doc.text(ticket.empresa.PTT5TPV,2,spaced)
-  spaced += 3
-  doc.text(ticket.empresa.PTT6TPV,2,spaced)
-  spaced += 3
-  doc.text(ticket.empresa.PTT7TPV,2,spaced)
-  spaced += 3
-  doc.text(ticket.empresa.PTT8TPV,2,spaced)
-  doc.save(`Ticket ${ticket.header.TICKET}`)
-  resolve();
+      let spaced = calcularEspacio(products, pagos);
+      console.log(ticket.products[0].ARTICULO)
+      const doc = new jsPDF({
+        format: [80, spaced]
+      });
+      spaced = 62
+      doc.setFontSize(8)
+      doc.text("----------------------------------------------------------------------------", 2, 10)
+      doc.text(ticket.empresa.CTT1TPV, 2, 13)
+      doc.text(ticket.empresa.CTT2TPV, 2, 16)
+      doc.text(ticket.empresa.CTT3TPV, 2, 19)
+      doc.text(ticket.empresa.CTT4TPV, 2, 22)
+      doc.text(ticket.empresa.CTT5TPV, 2, 25)
+      doc.text(ticket.header.TERMINAL, 2, 34)
+      doc.text(`Nº ${ticket.header.TICKET}`, 2, 37)
+      doc.text(`FECHA ${ticket.header.FECHA}`, 20, 37)
+      doc.text(ticket.header.HORA, 50, 37)
+      doc.text(`Forma de Pago: ${ticket.header.PAGOPRINCIPAL}`, 2, 40)
+      doc.text(ticket.header.NOMBRECLIENTE, 2, 43)
+      doc.text(ticket.header.DOMICILIO, 2, 46)
+      doc.text(ticket.header.POBALCION + ticket.header.CODIGOPOSTAL, 2, 49)
+      doc.text(ticket.header.PROVINCIA, 2, 52)
+      // doc.text("",2,55)
+      doc.text("_________________________________________________", 2, 58)
+      doc.text("ARTICULO", 2, 61)
+      doc.text("UD.", 25, 61)
+      doc.text("PRECIO", 40, 61)
+      doc.text("TOTAL", 57, 61)
+      doc.text("_________________________________________________", 2, 62)
+      let cantidadtotal = 0
+      products.forEach((e) => {
+        doc.setFontSize(6)
+        spaced += 3;
+        doc.text(e.ARTICULO + '   ' + e.DESCRIPCION.substring(0, 47), 2, spaced)
+        spaced += 4;
+        doc.text(Number(e.CANTIDAD).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 25, spaced)
+        doc.text(Number(e.PRECIO).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 40, spaced)
+        doc.text(Number(e.TOTAL).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 57, spaced)
+        cantidadtotal += Number(e.CANTIDAD)
+      })
+      spaced += 10;
+      doc.setFontSize(8)
+      doc.setFont('helvetica', 'bold')
+      doc.text("TOTAL", 54, spaced, 'right')
+      doc.text(`$ ${Number(ticket.header.TOTAL).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 56, spaced, 'left')
+      doc.setFont('helvetica', 'normal')
+      pagos.forEach((p) => {
+        spaced += 4
+        doc.text(p.CONCEPTOPAGO, 54, spaced, 'right')
+        doc.text(`$ ${Number(p.IMPORTE).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 56, spaced, 'left')
+      })
+      spaced += 5
+      doc.text(`N Articulos: ${cantidadtotal}`, 2, spaced)//total cantidad
+      spaced += 5
+      doc.setFontSize(6)
+      doc.text(`Le Atendio: ${ticket.header.DEPENDIENTE}`, 2, spaced)
+      spaced += 5
+      doc.setFontSize(8)
+      doc.text('---------------------------------Grupo-Vizcarra----------------------------', 2, spaced)
+      spaced += 5
+      doc.text(ticket.empresa.PTT1TPV, 2, spaced)
+      spaced += 3
+      doc.text(ticket.empresa.PTT2TPV, 2, spaced)
+      spaced += 3
+      doc.text(ticket.empresa.PTT3TPV, 2, spaced)
+      spaced += 3
+      doc.text(ticket.empresa.PTT4TPV, 2, spaced)
+      spaced += 3
+      doc.text(ticket.empresa.PTT5TPV, 2, spaced)
+      spaced += 3
+      doc.text(ticket.empresa.PTT6TPV, 2, spaced)
+      spaced += 3
+      doc.text(ticket.empresa.PTT7TPV, 2, spaced)
+      spaced += 3
+      doc.text(ticket.empresa.PTT8TPV, 2, spaced)
+      doc.save(`Ticket ${ticket.header.TICKET}`)
+      resolve();
     } catch (error) {
       reject(error);
     }
@@ -527,127 +529,130 @@ const pdfTicket = (ticket) => {
 const pdfFactura = (ticket) => {
   return new Promise((resolve, reject) => {
     try {
-  let products = ticket.products
-  let pagos = ticket.payments
-  const doc = new jsPDF();
-  let chunks = [];
-  const arreglo = products.map(producto => Object.values(producto));
-  const paginas = Math.ceil(arreglo.length / 20);
-  for (var i = 0; i < arreglo.length; i += 20) {
-    chunks.push(arreglo.slice(i, i + 20));
-  }
-  console.log(chunks);
-  for (let i = 0; i < 1; i++) {
-
-
-    chunks.forEach(function (chunk, index) {
-      if (index > 0) {
-        doc.addPage();
+      let products = ticket.products
+      let pagos = ticket.payments
+      const doc = new jsPDF();
+      let chunks = [];
+      const arreglo = products.map(producto => Object.values(producto));
+      const paginas = Math.ceil(arreglo.length / 20);
+      for (var i = 0; i < arreglo.length; i += 20) {
+        chunks.push(arreglo.slice(i, i + 20));
       }
+      console.log(chunks);
+      for (let i = 0; i < 1; i++) {
 
-      let totcan = 0;
-      let total  = 0
-      for (let i = 0; i < chunk.length; i++) {
-        chunk[i][1] = chunk[i][1].replace(/\n/g, " ");//descripcion
-        chunk[i][2] = parseFloat(chunk[i][2]);//cantidad
-        chunk[i][3] = Number(chunk[i][3]).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });//precio
-        chunk[i][4] = Number(chunk[i][4]).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });//total
-        totcan += parseFloat(chunk[i][2]);
-        total += parseFloat(chunk[i][4].replace(/,/g, ''));
 
+        chunks.forEach(function (chunk, index) {
+          if (index > 0) {
+            doc.addPage();
+          }
+
+          let totcan = 0;
+          let total = 0
+          for (let i = 0; i < chunk.length; i++) {
+            chunk[i][1] = chunk[i][1].replace(/\n/g, " ");//descripcion
+            chunk[i][2] = parseFloat(chunk[i][2]);//cantidad
+            chunk[i][3] = Number(chunk[i][3]).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });//precio
+            chunk[i][4] = Number(chunk[i][4]).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });//total
+            totcan += parseFloat(chunk[i][2]);
+            total += parseFloat(chunk[i][4].replace(/,/g, ''));
+
+          }
+
+          doc.setFontSize(25)
+          doc.setFont('helvetica', 'bold')
+          doc.text("GRUPO VIZCARRA", 105, 10, "center");
+          doc.setFontSize(8)
+          doc.text('Hora Ticket:', 10, 10, 'left')
+          doc.text(ticket.header.HORA, 10, 15, 'left');//HORA DE EL TICKET
+          doc.setFontSize(12)
+          doc.text(`${ticket.header.NOMBRECLIENTE} ${ticket.header.CLIENTE}`, 10, 25, 'left')//NOMBRE DE CLEINTE
+          doc.text(`SUCURSAL ${ticket.empresa.DESTPV}`, 120, 25, 'left')// NOMBRE DE LA EMPRESA
+          doc.setFontSize(8)
+          doc.text(ticket.header.DOMICILIO, 10, 30, 'left')//DOMICILIO DE EL CLIENTE
+          doc.text(ticket.header.CODIGOPOSTAL, 10, 35, 'left')// CODIGO POSTAL DE EL CLIENTE
+          doc.text(ticket.header.POBALCION + ticket.header.PROVINCIA, 10, 40, 'left')//DELEGACION DE EL CLIENT4E
+
+          doc.text(ticket.empresa.CTT3TPV, 120, 30, 'left')//DOMICILIO DE LA EMPRESA
+          // doc.text('06090', 120, 35, 'left')// CODIGO POSTAL DE  LA EMPRESA
+          // doc.text('DELEG, CUAUHTEMOC CDMX       CENTRO', 120, 40, 'left')//DELEGACION DE LA EMPRESA
+          doc.text('LLI1210184G8', 120, 45, 'left')//RFC DE LA EMPRESA
+          doc.rect(120, 51, 80, 5);
+          doc.text('DOCUMENTO', 121, 55, 'left')
+          doc.text('FACTURA', 121, 60, 'left')
+          doc.text('NUMERO', 143, 55, 'left')
+          doc.text(ticket.header.TICKET, 143, 60, 'left')//factura
+          doc.text('PAGINA', 165, 55, 'left')
+          doc.text(`${index + 1} de ${paginas}`, 165, 60, 'left')
+          doc.text('FECHA', 185, 55, 'left')
+          const fecha = ticket.header.FECHA
+          doc.text(fecha, 185, 60, 'left')
+          autoTable(doc, {
+            startX: 10,
+            startY: 65,
+            theme: 'grid',
+            styles: { cellPadding: 1, fontSize: 8, halign: 'center' },
+            head: [['CREADOR DOC', 'ALMACEN', 'AGENTE', 'FORMA DE PAGO']],
+            body: [
+              ['APP', 'GEN', ticket.header.DEPENDIENTE, pagos[0].CONCEPTOPAGO],//forma de pago primero
+            ],
+          })
+
+          autoTable(doc, {
+            alternateRowStyles: {
+              fillColor: [192, 192, 192],
+            },
+            startX: 10,
+            startY: 80,
+            theme: 'striped',
+            styles: { cellPadding: .6, fontSize: 8, halign: 'left' },
+            head: [['ARTICULO', 'DESCRIPCION', 'CANTIDAD', 'PRECIO', 'TOTAL']],
+            body: chunk,
+            columnStyles: {
+              0: { fontStyle: 'bold', halign: 'left' },
+              1: { fontStyle: 'bold', halign: 'left' },
+              2: { halign: 'center' },
+              3: { halign: 'center' },
+              4: { halign: 'center' },
+            },
+
+          })
+
+          doc.setFontSize(11)
+          doc.text('TOTAL UNIDADES:', 60, 200, 'left')
+          doc.text(Number(totcan).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 100, 200, 'left')
+          doc.setFont('helvetica', 'bold')
+          doc.text('TOTAL:', 140, 200, 'left')
+          doc.text(`$ ${Number(total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 160, 200, 'left')//TOTAL TICKET
+          doc.setFontSize(8)
+          doc.text('Debo(emos) y pagare(mos) incondicionalmente por este pagare a la order de GRUPO VIZCARRA, en la ciudad de Mexico,', 5, 210, 'left')
+          doc.text('la cantidad de el valor recibido a mi(nuestra) entera satisfaccion', 5, 215, 'left')
+          doc.text('Este pagare forma parte de una serie numerica del 1 al y 9 y todos estos estan sujetos a la condicion, de que al no pagarse cualquiera de ellos a su', 5, 220, 'left')
+          doc.text('vencimiento sean exigibles todos los que le sigan en numero, ademas de los ya vencidosm desde la fecha de su vencimiento de el presente documento', 5, 225, 'left')
+          doc.text('hasta el dia de su liquidacion, causaran intereses moratorios al tipo del % mensual en esta ciudad justamente con el principal', 5, 230, 'left')
+          doc.setFontSize(15)
+          doc.text('______________', 31, 248, 'center')
+          doc.text('AUTORIZO', 20, 254, 'left')
+          doc.text('______________', 85, 248, 'center')
+          doc.text('CHOFER', 75, 254, 'left')
+          doc.text('______________', 140, 248, 'center')
+          doc.text('RECIBIO', 130, 254, 'left')
+          doc.text('______________', 168, 248, 'left')
+          doc.text('FECHA Y HORA', 168, 254, 'left')
+          doc.setFontSize(9)
+          doc.text('UNA VEZ ENTREGADA LA MERCANCIA EN LA FLETERA O DOMICILIO QUE INDIQUE EL CLIENTE ', 5, 260, 'left')
+          doc.text('LLUVIA LIGHT SA DE CV NO ES RESPONSABLE POR PEDIDAS TOTALES, PARCIALES ', 5, 265, 'left')
+          doc.text('O CUALQUIER TIPO DE DANO EN LA MERCANCIA DE ESTE DOCUMENTO ', 5, 270, 'left')
+          doc.setFont('helvetica', 'bold')
+          doc.setFontSize(12)
+          doc.text('NO SE ACEPTAN CAMBIOS NI DEVOLUCIONES', 5, 275, 'left')
+          doc.setFontSize(25)
+          doc.setFont('helvetica', 'bold')
+          doc.text("GRUPO VIZCARRA", 105, 10, "center");
+        })
       }
-
-      doc.setFontSize(25)
-      doc.setFont('helvetica', 'bold')
-      doc.text("GRUPO VIZCARRA", 105, 10, "center");
-      doc.setFontSize(8)
-      doc.text('Hora Ticket:', 10, 10, 'left')
-      doc.text(ticket.header.HORA, 10, 15, 'left');//HORA DE EL TICKET
-      doc.setFontSize(12)
-      doc.text(`${ticket.header.NOMBRECLIENTE} ${ticket.header.CLIENTE}`, 10, 25, 'left')//NOMBRE DE CLEINTE
-      doc.text(`SUCURSAL ${ticket.empresa.DESTPV}`, 120, 25, 'left')// NOMBRE DE LA EMPRESA
-      doc.setFontSize(8)
-      doc.text(ticket.header.DOMICILIO, 10, 30, 'left')//DOMICILIO DE EL CLIENTE
-      doc.text(ticket.header.CODIGOPOSTAL, 10, 35, 'left')// CODIGO POSTAL DE EL CLIENTE
-      doc.text(ticket.header.POBALCION + ticket.header.PROVINCIA, 10, 40, 'left')//DELEGACION DE EL CLIENT4E
-
-      doc.text(ticket.empresa.CTT3TPV, 120, 30, 'left')//DOMICILIO DE LA EMPRESA
-      // doc.text('06090', 120, 35, 'left')// CODIGO POSTAL DE  LA EMPRESA
-      // doc.text('DELEG, CUAUHTEMOC CDMX       CENTRO', 120, 40, 'left')//DELEGACION DE LA EMPRESA
-      doc.text('LLI1210184G8', 120, 45, 'left')//RFC DE LA EMPRESA
-      doc.rect(120, 51, 80, 5);
-      doc.text('DOCUMENTO', 121, 55, 'left')
-      doc.text('FACTURA', 121, 60, 'left')
-      doc.text('NUMERO', 143, 55, 'left')
-      doc.text(ticket.header.TICKET, 143, 60, 'left')//factura
-      doc.text('PAGINA', 165, 55, 'left')
-      doc.text(`${index + 1} de ${paginas}`, 165, 60, 'left')
-      doc.text('FECHA', 185, 55, 'left')
-      const fecha = ticket.header.FECHA
-      doc.text(fecha, 185, 60, 'left')
-      autoTable(doc, {
-        startX: 10,
-        startY: 65,
-        theme: 'grid',
-        styles: { cellPadding: 1, fontSize: 8, halign: 'center' },
-        head: [['CREADOR DOC', 'ALMACEN', 'AGENTE', 'FORMA DE PAGO']],
-        body: [
-          ['APP','GEN', ticket.header.DEPENDIENTE, pagos[0].CONCEPTOPAGO],//forma de pago primero
-        ],
-      })
-
-      autoTable(doc, {
-        startX: 10,
-        startY: 80,
-        theme: 'striped',
-        styles: { cellPadding: .6, fontSize: 8, halign: 'left' },
-        head: [['ARTICULO', 'DESCRIPCION','CANTIDAD', 'PRECIO', 'TOTAL']],
-        body: chunk,
-        columnStyles: {
-          0: { fontStyle: 'bold', halign: 'left' },
-          1: { fontStyle: 'bold', halign: 'left' },
-          2: { halign: 'center' },
-          3: { halign: 'center' },
-          4: { halign: 'center' },
-        },
-
-      })
-
-      doc.setFontSize(11)
-      doc.text('TOTAL UNIDADES:', 60, 200, 'left')
-      doc.text(Number(totcan).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 100, 200, 'left')
-      doc.setFont('helvetica', 'bold')
-      doc.text('TOTAL:',140, 200, 'left')
-      doc.text(`$ ${Number(total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 160, 200, 'left')//TOTAL TICKET
-      doc.setFontSize(8)
-      doc.text('Debo(emos) y pagare(mos) incondicionalmente por este pagare a la order de GRUPO VIZCARRA, en la ciudad de Mexico,', 5, 210, 'left')
-      doc.text('la cantidad de el valor recibido a mi(nuestra) entera satisfaccion', 5, 215, 'left')
-      doc.text('Este pagare forma parte de una serie numerica del 1 al y 9 y todos estos estan sujetos a la condicion, de que al no pagarse cualquiera de ellos a su', 5, 220, 'left')
-      doc.text('vencimiento sean exigibles todos los que le sigan en numero, ademas de los ya vencidosm desde la fecha de su vencimiento de el presente documento', 5, 225, 'left')
-      doc.text('hasta el dia de su liquidacion, causaran intereses moratorios al tipo del % mensual en esta ciudad justamente con el principal', 5, 230, 'left')
-      doc.setFontSize(15)
-      doc.text('______________', 31, 248, 'center')
-      doc.text('AUTORIZO', 20, 254, 'left')
-      doc.text('______________', 85, 248, 'center')
-      doc.text('CHOFER', 75, 254, 'left')
-      doc.text('______________', 140, 248, 'center')
-      doc.text('RECIBIO', 130, 254, 'left')
-      doc.text('______________', 168, 248, 'left')
-      doc.text('FECHA Y HORA', 168, 254, 'left')
-      doc.setFontSize(9)
-      doc.text('UNA VEZ ENTREGADA LA MERCANCIA EN LA FLETERA O DOMICILIO QUE INDIQUE EL CLIENTE ', 5, 260, 'left')
-      doc.text('LLUVIA LIGHT SA DE CV NO ES RESPONSABLE POR PEDIDAS TOTALES, PARCIALES ', 5, 265, 'left')
-      doc.text('O CUALQUIER TIPO DE DANO EN LA MERCANCIA DE ESTE DOCUMENTO ', 5, 270, 'left')
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(12)
-      doc.text('NO SE ACEPTAN CAMBIOS NI DEVOLUCIONES', 5, 275, 'left')
-      doc.setFontSize(25)
-      doc.setFont('helvetica', 'bold')
-      doc.text("GRUPO VIZCARRA", 105, 10, "center");
-    })
-  }
-  doc.save(`Factura ${ticket.header.TICKET}`)
-  resolve();
+      doc.save(`Factura ${ticket.header.TICKET}`)
+      resolve();
     } catch (error) {
       reject(error);
     }
@@ -655,65 +660,65 @@ const pdfFactura = (ticket) => {
 }
 
 const exportTck = async () => {
-  $q.loading.show({message:'Importando Ticket'})
+  $q.loading.show({ message: 'Importando Ticket' })
   let host = VDB.session.store.ip;
   let ticket = otckopt.value.body.TICKET
-  const dat  = `http://${host}/access/public/modify/getTicket/${ticket}`;
+  const dat = `http://${host}/access/public/modify/getTicket/${ticket}`;
   axios.get(dat)
-  .then(r => {
-  const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('Comparativo');
-  worksheet.addRow([r.data.empresa.DESTPV]).eachCell(c => c.font = { bold:true})
-  worksheet.addRow()
-  worksheet.addRow(["Ticket","Fecha","Cliente","Alm.","Est.","For. pag.","Total"]).eachCell(c => c.font = { bold:true})
-  let head = r.data.header
-  worksheet.addRow([head.TICKET, head.FECHA, `${head.CLIENTE}-${head.NOMBRECLIENTE}`,'GEN','Cobra',r.data.payments[0].CONCEPTOPAGO,Number(head.TOTAL)])
-  worksheet.addRow()
-  worksheet.addRow(['',"Código","Descripción","Doc. Origen","Cantidad","P.Unidad","Total"]).eachCell(c => c.font = { bold:true})
-  let products = r.data.products
-  products.forEach(row => {
-    worksheet.addRow(['',row.ARTICULO,row.DESCRIPCION,'',Number(row.CANTIDAD),Number(row.PRECIO), Number(row.TOTAL)])
-  })
+    .then(r => {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Comparativo');
+      worksheet.addRow([r.data.empresa.DESTPV]).eachCell(c => c.font = { bold: true })
+      worksheet.addRow()
+      worksheet.addRow(["Ticket", "Fecha", "Cliente", "Alm.", "Est.", "For. pag.", "Total"]).eachCell(c => c.font = { bold: true })
+      let head = r.data.header
+      worksheet.addRow([head.TICKET, head.FECHA, `${head.CLIENTE}-${head.NOMBRECLIENTE}`, 'GEN', 'Cobra', r.data.payments[0].CONCEPTOPAGO, Number(head.TOTAL)])
+      worksheet.addRow()
+      worksheet.addRow(['', "Código", "Descripción", "Doc. Origen", "Cantidad", "P.Unidad", "Total"]).eachCell(c => c.font = { bold: true })
+      let products = r.data.products
+      products.forEach(row => {
+        worksheet.addRow(['', row.ARTICULO, row.DESCRIPCION, '', Number(row.CANTIDAD), Number(row.PRECIO), Number(row.TOTAL)])
+      })
 
-  worksheet.columns.forEach(column => {
-  let maxLength = 0;
-  column.eachCell({ includeEmpty: true }, cell => {
-    const columnLength = cell.value ? cell.value.toString().length : 10;
-    if (columnLength > maxLength) {
-      maxLength = columnLength;
-    }
-  });
-  column.width = maxLength < 10 ? 10 : maxLength;  // Establecer un ancho mínimo de 10
-});
+      worksheet.columns.forEach(column => {
+        let maxLength = 0;
+        column.eachCell({ includeEmpty: true }, cell => {
+          const columnLength = cell.value ? cell.value.toString().length : 10;
+          if (columnLength > maxLength) {
+            maxLength = columnLength;
+          }
+        });
+        column.width = maxLength < 10 ? 10 : maxLength;  // Establecer un ancho mínimo de 10
+      });
 
-  const downloadExcel = async () => {
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/octet-stream' });
-    const url = URL.createObjectURL(blob);
+      const downloadExcel = async () => {
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Ticket${r.data.header.TICKET}.xlsx`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Ticket${r.data.header.TICKET}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      };
 
-  downloadExcel();
-  $q.loading.hide()
-    console.log(r)
-  })
-  .catch(r => {
-    console.log(r)
-  })
+      downloadExcel();
+      $q.loading.hide()
+      console.log(r)
+    })
+    .catch(r => {
+      console.log(r)
+    })
 
 
 }
 
-if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
+if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
   index()
-}else{
-  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+} else {
+  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
   $router.replace('/');
 
 }
