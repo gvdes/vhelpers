@@ -12,7 +12,7 @@
 
       <q-page class="flex flex-center" padding>
         <q-list separator>
-          <q-select v-model="stores.val" :options="stores.opts" label="Selecciona Sucursal" option-label="name" filled @update:model-value="changeStore" v-if="VDB.session.rol == 'aud'" />
+          <q-select v-model="stores.val" :options="stores.opts" label="Selecciona Sucursal" option-label="name" filled @update:model-value="changeStore" v-if="VDB.session.rol == 'aud' || VDB.session.rol == 'root' " />
           <div class="q-py-md text-center">
             <div class="text-h4 text-indigo-10">Menu</div>
             <div class="text-grey-5">Herramientas rapiditas</div>
@@ -47,10 +47,15 @@ import { useVDBStore } from 'src/stores/VDB'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router';
 import UserToolbar from 'src/components/UserToolbar.vue';
+import { exportFile, useQuasar } from 'quasar';
 
 const VDB = useVDBStore();
 const $router = useRouter();
 const user = VDB.session;
+const $q = useQuasar();
+
+
+
 
 // const appmodules = VDB.modules;
 
@@ -187,6 +192,7 @@ if (appmodules.length > 1) {
 }
 
 const changeStore = () => {
+  $q.loading.show({message:'Cambiando sucursal'})
   VDB.session.store = stores.value.val
   VDB.setSession({
     ...VDB.session,
@@ -194,6 +200,8 @@ const changeStore = () => {
   })
 
   console.log(VDB.session)
+  $q.loading.hide()
+
 }
 
 </script>
