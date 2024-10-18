@@ -16,8 +16,8 @@
       <q-page padding>
         <q-card class="my-card">
           <q-card-section class="row">
-            <q-select class="col" v-model="secciones.val" :options="secciones.opts" label="Seccion" option-label="name"
-              filled @update:model-value="report" />
+            <q-select class="col" v-model="secciones.val" :options="secciones.opts" label="Seccion" option-label="name" multiple
+              filled @blur="report" />
             <q-separator spaced inset vertical dark />
             <q-select class="col" v-model="categories.familias.val" :options="categories.familias.opts" label="Familia"
               filled option-label="name" :disable="!secciones.val" @update:model-value="categorys" >
@@ -140,8 +140,10 @@ const report = async () => {
     }
   }
   let sid = VDB.session.store.id_viz
-  let seccion = secciones.value.val.name
-  const resp = await dbCompare.getData(sid, seccion)
+  let section = []
+  secciones.value.val.forEach(e => section.push(e.name))
+  console.log(Array.isArray(section))
+  const resp = await dbCompare.getData(sid, {sections:section})
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -226,9 +228,5 @@ if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'a
 
 }
 init()
-
-
-
-
 
 </script>
