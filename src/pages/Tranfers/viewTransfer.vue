@@ -118,7 +118,7 @@
               <q-item-section>{{ orderImport.faltantes }}</q-item-section>
             </q-item>
             <q-item>
-              <q-item-section>Productos Sin Encontrar</q-item-section>
+              <q-item-section>Productos Encontrados</q-item-section>
               <q-item-section>{{ orderImport.products }}</q-item-section>
             </q-item>
           </q-list>
@@ -435,7 +435,7 @@ workbook.xlsx.load(inputFile).then( async (data) => {
     if(resp.fail){
       alert(resp)
     }else{
-      orderImport.value.encontrados = resp.encontrados
+      orderImport.value.encontrados = resp.Encontrados
       orderImport.value.faltantes = resp.Faltantes
       orderImport.value.products = resp.products.length
       orderImport.value.state = !orderImport.value.state
