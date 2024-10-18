@@ -14,7 +14,17 @@
         </div>
       </q-toolbar>
       <q-separator />
-      <div class="text-center text-bold">{{ traspaso.notes }}</div>
+      <div class="text-center text-bold">{{ traspaso.notes }}
+      </div>
+      <q-separator />
+      <div class="text-center text-bold row ">
+        <div class="col"><q-btn color="primary" icon="publish" label="Importar Excel" flat @click="clickFile" /></div>
+        <div class="col"><q-btn color="primary" icon="apps" label="Preventas" flat @click="clickFilePreventa" /></div>
+        <input type="file" ref="inputFile" id="inputFile" @input="readFile" hidden accept=".xlsx,.xls" />
+        <input type="file" ref="inputFilePreventa" id="inputFilePreventa" @input="readFilePreventa" hidden accept=".xlsx,.xls" />
+
+
+      </div>
     </q-header>
 
     <q-separator spaced inset vertical dark />
@@ -72,11 +82,55 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="excelImport.state">
+      <q-card>
+        <q-card-section class="row text-bold text-overline text-center">
+          Resultados de la importacion :O
+        </q-card-section>
+        <q-card-section>
+          <q-list bordered>
+            <q-item>
+              <q-item-section>Productos Encontrados</q-item-section>
+              <q-item-section>{{ excelImport.wndGetRows }}</q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section>Productos Sin Datos</q-item-section>
+              <q-item-section>{{ excelImport.wndNotExist }}</q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="orderImport.state" >
+      <q-card>
+        <q-card-section class="row text-bold text-overline text-center">
+          Resultados de la importacion :O
+        </q-card-section>
+        <q-card-section>
+          <q-list bordered>
+            <q-item>
+              <q-item-section>Pedidos Encontrados</q-item-section>
+              <q-item-section>{{ orderImport.encontrados }}</q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section>Pedidos Sin Encontrar</q-item-section>
+              <q-item-section>{{ orderImport.faltantes }}</q-item-section>
+            </q-item>
+            <q-item>
+              <q-item-section>Productos Sin Encontrar</q-item-section>
+              <q-item-section>{{ orderImport.products }}</q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
     <q-footer reveal elevated bordered class="bg-white">
       <q-card class="q-mb-md" flat bordered dense>
         <q-card-section class="row">
           <ProductAutocomplete class="col" :checkState="false" @input="add" @agregar="agregar" />
-          <q-btn v-if="products.length > 0" color="primary" flat icon="east" @click="endTransfer" round/>
+          <q-btn v-if="products.length > 0" color="primary" flat icon="east" @click="endTransfer" round />
         </q-card-section>
       </q-card>
     </q-footer>
@@ -95,6 +149,7 @@ import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
 import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
+import dbproduct from 'src/API/Product'
 import { useRoute, useRouter } from "vue-router";
 const $router = useRouter();
 const $route = useRoute();
@@ -109,8 +164,32 @@ const product = ref({
 })
 const products = ref([]);
 
+const excelImport = ref({
+  state: false,
+  wndGetRows: [],
+  wndNoDataFound: [],
+  wndTotal: [],
+  wndGetAdded: [],
+  _supply_by: 0,
+  message: "",
+  messageRepeat: "",
+  wndNotExist: [],
+  repeat: []
+})
 
-const existProduct = computed(() => products.value?.filter(e => e.product ==  product.value.val?.product).length > 0)
+const orderImport = ref({
+  state:false,
+  encontrados:[],
+  faltantes:[],
+  products:null
+})
+
+const inputFile = ref(null)
+const inputFilePreventa = ref(null)
+
+
+
+const existProduct = computed(() => products.value?.filter(e => e.product == product.value.val?.product).length > 0)
 
 const init = async () => {
   const transfer = $route.params.oid;
@@ -146,7 +225,7 @@ const agregar = (ops) => {
 }
 
 const addProduct = async () => {
-  $q.loading.show({message:'Insertando Producto'})
+  $q.loading.show({ message: 'Insertando Producto' })
   console.log(product.value.val)
   product.value.val._transfer = $route.params.oid
   const resp = await tranApi.addProduct(product.value.val)
@@ -164,7 +243,7 @@ const addProduct = async () => {
 }
 
 const editProduct = async () => {
-  $q.loading.show({message:'Editando Producto'})
+  $q.loading.show({ message: 'Editando Producto' })
   console.log(product.value.val)
   product.value.val._transfer = $route.params.oid
   const resp = await tranApi.editProduct(product.value.val)
@@ -173,20 +252,20 @@ const editProduct = async () => {
   } else {
     console.log(resp);
     let inx = products.value.findIndex(e => e.product == product.value.val.product)
-    if(inx >= 0 ){
+    if (inx >= 0) {
       products.value[inx].amount = product.value.val.amount
-      $q.notify({type:'positive',position:'center'})
+      $q.notify({ type: 'positive', position: 'center' })
       product.value = {
-      val: null,
-      state: false
-    }
-    $q.loading.hide()
+        val: null,
+        state: false
+      }
+      $q.loading.hide()
     }
 
   }
 }
 const deleteProduct = async () => {
-  $q.loading.show({message:'Eliminando Producto'})
+  $q.loading.show({ message: 'Eliminando Producto' })
   console.log(product.value.val)
   product.value.val._transfer = $route.params.oid
   const resp = await tranApi.removeProduct(product.value.val)
@@ -195,14 +274,14 @@ const deleteProduct = async () => {
   } else {
     console.log(resp);
     let inx = products.value.findIndex(e => e.product == product.value.val.product)
-    if(inx >= 0 ){
+    if (inx >= 0) {
       products.value.splice(inx, 1)
-      $q.notify({type:'positive',position:'center'})
+      $q.notify({ type: 'positive', position: 'center' })
       product.value = {
-      val: null,
-      state: false
-    }
-    $q.loading.hide()
+        val: null,
+        state: false
+      }
+      $q.loading.hide()
     }
 
   }
@@ -221,23 +300,177 @@ const reset = () => {
 }
 
 const endTransfer = async () => {
-  $q.loading.show({message:'Terminando Traspaso'})
+  $q.loading.show({ message: 'Terminando Traspaso' })
   let data = {
-    user:VDB.session.name,
-    traspaso:traspaso.value,
-    products:products.value
+    user: VDB.session.name,
+    traspaso: traspaso.value,
+    products: products.value
   }
   const resp = await tranApi.endTransfer(data)
-  if(resp.fail){
+  if (resp.fail) {
     console.log(resp)
-  }else{
-    $q.notify({message:resp,position:'center',type:'positive'})
+  } else {
+    $q.notify({ message: resp, position: 'center', type: 'positive' })
     console.log(resp)
     $q.loading.hide();
     $router.push('/transfers')
   }
 }
 
+
+const clickFile = () => {
+  inputFile.value.click()
+}
+
+const readFile = async () => {
+
+  let inputFile = document.getElementById("inputFile").files[0];
+  // console.log(inputFile)
+  let workbook = new ExcelJS.Workbook();
+  let codesToSend = [];
+  let diference = [];
+  let convert = 0;
+  let datos = {};
+
+
+  workbook.xlsx.load(inputFile).then((data) => {
+    let worksheet = workbook.worksheets[0];
+    // console.log(worksheet.getColumn("A"))
+    // console.log(worksheet.getColumn("B"))
+    let codigos = worksheet.getColumn("A");
+    let cantidades = worksheet.getColumn("B");
+
+
+
+    codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
+      let codigo = cell.value;
+      let cantidadCell = worksheet.getCell(`B${rowNumber}`);
+      let cantidad = parseFloat(cantidadCell.value);
+      if (datos[codigo]) {
+        datos[codigo] += cantidad;
+      } else {
+        datos[codigo] = cantidad;
+      }
+    });
+    let Diferencia = Object.keys(datos).map(codigo => ({
+      codigo: codigo,
+      cantidad: datos[codigo]
+    }));
+    Diferencia.forEach(e => codesToSend.push(e.codigo))
+    // console.log(Diferencia)
+    // console.log(codesToSend.length)
+    if (codesToSend.length) {
+      let data = { codes: codesToSend, _workpoint: VDB.session.store.id_viz };
+      // console.log(data)
+      // wndImportJSON.wndTotal  = codesToSend.length;
+      $q.loading.show({ message: "Procesando archivo, espera.." });
+
+      dbproduct.getMassive(data)
+        .then((success) => {
+
+          let resp = success.data;
+          resp.fails.notFound.map(e => excelImport.value.wndNotExist.push(e))
+          resp.fails.repeat.map(e => excelImport.value.repeat.push(e))
+          let products = success.data.products
+          excelImport.value.wndGetRows = products.length;
+          excelImport.value.state = !excelImport.value.state;
+          console.log(products)
+          let dat = products.map(product => {
+            let cantidad = Diferencia.find(item => item.codigo === product.code);
+            return {
+              product: product.code,
+              description: product.description,
+              amount: cantidad ? cantidad.cantidad : 0,
+              "_transfer":$route.params.oid
+            };
+          });
+          addingMasive(dat)
+          $q.loading.hide();
+        })
+        .catch((fail) => {
+          console.log(fail);
+          $q.notify({
+            message: "Hay un problema con obtener los datos :/.",
+            icon: "fas fa-grin-beam-sweat",
+            color: "negative",
+          });
+        });
+    } else {
+      $q.notify({
+        message: "Vaya!! Al parecer este archivo esta vacio.",
+        icon: "fas fa-grin-beam-sweat",
+        color: "negative",
+      });
+    }
+
+  });
+}
+
+const clickFilePreventa = () => {
+  inputFilePreventa.value.click()
+}
+
+
+const readFilePreventa = async () => {
+
+let inputFile = document.getElementById("inputFilePreventa").files[0];
+// console.log(inputFile)
+let workbook = new ExcelJS.Workbook();
+let codesToSend = [];
+
+
+workbook.xlsx.load(inputFile).then( async (data) => {
+  let worksheet = workbook.worksheets[0];
+  let codigos = worksheet.getColumn("A");
+
+
+  $q.loading.show({ message: "Procesando archivo, espera.." });
+  codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
+    cell.value ? codesToSend.push(cell.value) : null
+  });
+  if (codesToSend.length) {
+    let data = { codes: codesToSend, _workpoint: VDB.session.store.id_viz };
+    console.log(data)
+    const resp = await tranApi.transferPreventa(data);
+    if(resp.fail){
+      alert(resp)
+    }else{
+      orderImport.value.encontrados = resp.encontrados
+      orderImport.value.faltantes = resp.Faltantes
+      orderImport.value.products = resp.products.length
+      orderImport.value.state = !orderImport.value.state
+      resp.products.forEach( e => e._transfer = $route.params.oid)
+      let dat = resp.products
+      console.log(dat);
+      addingMasive(dat)
+      $q.loading.hide()
+
+    }
+
+
+  } else {
+    $q.notify({
+      message: "Vaya!! Al parecer este archivo esta vacio.",
+      icon: "fas fa-grin-beam-sweat",
+      color: "negative",
+    });
+  }
+
+});
+}
+
+
+
+const addingMasive = async(prd) => {
+  const resp = await tranApi.addProductMasive(prd)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp);
+    prd.map(e => { products.value.push(e);})
+    $q.loading.hide()
+  }
+}
 
 
 init()

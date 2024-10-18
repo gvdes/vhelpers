@@ -17,6 +17,9 @@ export default{
   addProduct(data){
     return assist.post(`/transfer/addProduct`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  addProductMasive(data){
+    return assist.post(`/transfer/addProductMasive`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
   editProduct(data){
     return assist.post(`/transfer/editProduct`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
@@ -25,5 +28,8 @@ export default{
   },
   endTransfer(data){
     return assist.post(`/transfer/endTransfer`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+  transferPreventa(data){
+    return assist.post(`/transfer/transferPreventa`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
 }
