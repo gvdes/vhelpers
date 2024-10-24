@@ -34,6 +34,9 @@ export const useVDBStore = defineStore('vdb', {
     authsCashiers (state) {
       return state.modules.filter((m) => m.id <= 4)
     },
+    authsSeller (state) {
+      return state.modules.filter((m) => m.id == 4)
+    },
     authsAux (state) {
       return state.modules.filter((m) => m.id <= 10)
     },

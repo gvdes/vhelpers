@@ -933,5 +933,22 @@
       "id_viz":1
     },
     "rol": "adm"
+  },
+  {
+    "id": 1002,
+    "name": "Ventas SP2",
+    "credentials": {
+      "nick": "VentasSP2",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.60.253:1619",
+      "id_viz":4
+    },
+    "rol": "ven"
   }
 ]

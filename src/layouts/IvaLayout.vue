@@ -52,6 +52,8 @@
   import TicketIva from 'src/components/IVA/Ticket.vue';
   import CashDeskIva from 'src/components/IVA/CashDesk.vue';
   import { assist } from "src/boot/axios";
+  import { useRoute, useRouter } from "vue-router";
+  const $router = useRouter();
 
   import { computed, ref } from 'vue';
 
@@ -156,6 +158,14 @@
       }
     }).catch( fail => { console.log(fail); $q.loading.hide(); } );
   }
+
+  if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' || VDB.session.rol == 'caj' ){
+  index()
+}else{
+  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+  $router.replace('/');
+
+}
 
 </script>
 
