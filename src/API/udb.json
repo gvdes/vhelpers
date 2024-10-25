@@ -950,5 +950,226 @@
       "id_viz":4
     },
     "rol": "ven"
+  },
+  {
+    "id": 1003,
+    "name": "Ventas SP1",
+    "credentials": {
+      "nick": "VentasSP1",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 3,
+      "name": "San Pablo 1",
+      "alias": "SP1",
+      "ip": "192.168.100.250:1619",
+      "id_viz": 3
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1005,
+    "name": "Ventas CO1",
+    "credentials": {
+      "nick": "VentasCO1",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 8,
+      "name": "Correo 1",
+      "alias": "CR1",
+      "ip": "192.168.30.253:1619",
+      "id_viz": 5
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1006,
+    "name": "Ventas CO2",
+    "credentials": {
+      "nick": "VentasCO2",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 9,
+      "name": "Correo 2",
+      "alias": "CR2",
+      "ip": "192.168.50.253:1619",
+      "id_viz": 6
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1007,
+    "name": "Ventas AP1",
+    "credentials": {
+      "nick": "VentasAP1",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 16,
+      "name": "Apartado 1",
+      "alias": "AP1",
+      "ip": "192.168.10.55:1619",
+      "id_viz": 7
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1008,
+    "name": "Ventas AP2",
+    "credentials": {
+      "nick": "VentasAP2",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 17,
+      "name": "Apartado 2",
+      "alias": "AP2",
+      "ip": "192.168.20.249:1619",
+      "id_viz": 8
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1009,
+    "name": "Ventas RA1",
+    "credentials": {
+      "nick": "VentasRA1",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 10,
+      "name": "Ramon C 1",
+      "alias": "RA1",
+      "ip": "192.168.40.253:1619",
+      "id_viz": 9
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1010,
+    "name": "Ventas RA2",
+    "credentials": {
+      "nick": "VentasRA2",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 11,
+      "name": "Ramon C 2",
+      "alias": "RA2",
+      "ip": "192.168.40.249:1619",
+      "id_viz": 10
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1011,
+    "name": "Ventas BRA",
+    "credentials": {
+      "nick": "VentasBRA",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 13,
+      "name": "Brasil 1",
+      "alias": "BR1",
+      "ip": "192.168.80.253:1619",
+      "id_viz": 11
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1013,
+    "name": "Ventas BOL",
+    "credentials": {
+      "nick": "VentasBOL",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 12,
+      "name": "Bolivia",
+      "alias": "BOL",
+      "ip": "192.168.70.253:1619",
+      "id_viz": 13
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1017,
+    "name": "Ventas SPC",
+    "credentials": {
+      "nick": "VentasSPC",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 6,
+      "name": "San Pablo C",
+      "alias": "SPC",
+      "ip": "192.168.60.249:1619",
+      "id_viz": 17
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1019,
+    "name": "Ventas SOT",
+    "credentials": {
+      "nick": "VentasSOT",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 7,
+      "name": "Sotano",
+      "alias": "SOT",
+      "ip": "192.168.110.251:1619",
+      "id_viz": 19
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1023,
+    "name": "Ventas CRG",
+    "credentials": {
+      "nick": "VentasCRG",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 20,
+      "name": "Corregidora",
+      "alias": "CRG",
+      "ip": "192.168.130.2:1619",
+      "id_viz": 23
+    },
+    "rol": "ven"
+  },
+  {
+    "id": 1024,
+    "name": "ISRAEL LOPEZ POE",
+    "credentials": {
+      "nick": "IsraelLo",
+      "pass": "36ab",
+      "hash": "eda6a1ca88f9fdd0d38ac905b1fb494d"
+    },
+    "store": {
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.60.253:1619",
+      "id_viz": 4
+    },
+    "rol": "gen"
   }
 ]
