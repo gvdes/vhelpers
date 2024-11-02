@@ -1171,5 +1171,22 @@
       "id_viz": 4
     },
     "rol": "gen"
+  },
+  {
+    "id": 1025,
+    "name": "Hugo Martinez Montes De Oca",
+    "credentials": {
+      "nick": "HugoMa",
+      "pass": "0a9b",
+      "hash": "0b8a3c958f6b3c3f777cda30d694e259"
+    },
+    "store": {
+      "id": 17,
+      "name": "Apartado 2",
+      "alias": "AP2",
+      "ip": "192.168.20.249:1619",
+      "id_viz":8
+    },
+    "rol": "gen"
   }
 ]
