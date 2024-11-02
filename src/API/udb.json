@@ -59,11 +59,11 @@
       "hash": "a3b36cb25e2e0b93b5f334ffb4e4064e"
     },
     "store": {
-      "id": 17,
-      "name": "Apartado 2",
-      "alias": "AP2",
-      "ip": "192.168.20.249:1619",
-      "id_viz":8
+      "id": 13,
+      "name": "Brasil 1",
+      "alias": "BR1",
+      "ip": "192.168.80.253:1619",
+      "id_viz":11
     },
     "rol": "gen"
   },
@@ -76,11 +76,11 @@
       "hash": "2ee6ad3e37104f3dde6e1c5a3600ea81"
     },
     "store": {
-      "id": 17,
-      "name": "Apartado 2",
-      "alias": "AP2",
-      "ip": "192.168.20.249:1619",
-      "id_viz":8
+      "id": 13,
+      "name": "Brasil 1",
+      "alias": "BR1",
+      "ip": "192.168.80.253:1619",
+      "id_viz":11
     },
     "rol": "aux"
   },
@@ -246,11 +246,11 @@
       "hash": "a3b36cb25e2e0b93b5f334ffb4e4064e"
     },
     "store": {
-      "id": 13,
-      "name": "Brasil 1",
-      "alias": "BR1",
-      "ip": "192.168.80.253:1619",
-      "id_viz":11
+      "id": 17,
+      "name": "Apartado 2",
+      "alias": "AP2",
+      "ip": "192.168.20.249:1619",
+      "id_viz":8
     },
     "rol": "aux"
   },
