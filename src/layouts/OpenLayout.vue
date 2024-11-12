@@ -19,7 +19,7 @@
                 <div class="text-subtitle2 text-center">Movimientos en cajas despues de el corte</div>
               </q-card-section>
               <q-card-section>
-                <q-select v-model="form.cash" :options="[1, 2, 3, 4, 5, 6, 7, 8, 9]" label="Caja" outlined dense />
+                <q-select v-model="form.cash" :options="cash.opts" label="Caja" option-label="DESTER" option-value="CODTER" outlined dense />
               </q-card-section>
               <q-card-section>
                 <q-select v-model="form._cashier" :options="cashiers.opts" label="Cajero" option-label="complete_name"
@@ -111,7 +111,10 @@ const $q = useQuasar();
 
 const uploaderRef = ref(null);
 
-
+const cash = ref({
+  val:null,
+  opts:[]
+})
 const types = [
 {id:1, label:'Descuadre'},
 {id:2, label:'Mal Devolucion'},
@@ -168,12 +171,26 @@ const index = async () => {
     })
 }
 
+const init = async() => {
+  let host = VDB.session.store.ip;
+  let url = `http://${host}/access/public/modify/getCash`;
+  axios.get(url)
+  .then(r => {
+    console.log(r.data)
+    cash.value.opts = r.data
+  })
+  .catch(f => {
+    console.log(f)
+  })
+}
+
 const uploadFile = () => {
   uploaderRef.value.upload();
 }
 
 
 const envi = async() => {
+
   let cashierid = form.value._cashier.id;
   let type = form.value._type.id;
   let movement = form.value.movement_type_id.id != 0 ? form.value.movement_type_id.id : null;
@@ -182,6 +199,8 @@ const envi = async() => {
   form.value._cashier = cashierid;
   form.value._store = VDB.session.store.id;
   form.value._created_by = VDB.session.id;
+  form.value.cash = form.value.cash.CODTER;
+  console.log(form.value);
   let date = new Date();
   // console.log(date);
   const formattedDate = `${date.getFullYear()}_${date.getMonth() + 1}_${date.getDate()}_${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
@@ -277,7 +296,7 @@ if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'a
 }
 
 index();
-
+init();
 
 </script>
 
