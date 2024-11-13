@@ -12,14 +12,15 @@ export const useVDBStore = defineStore('vdb', {
       { id:2, name:"Ciclicos", alias:"CIC", desc:"Visor de Inventarios Ciclicos", path:"ciclicos" },
       { id:3, name:"Tarjetas", alias:"TRJ", desc:"Visor de Tarjetas", path:"tarjetas" },
       { id:4, name:"Etiquetas", alias:"ETQ", desc:"Creacion de etiquetas", path:"labels" },
-      { id:5, name:"Tickets", alias:"MOD", desc:"Moviemientos para  Tickets", path:"modificaciones"},
-      { id:6, name:"Pagos", alias:"PAG", desc:"Consulta de pagos", path:"pagos"},
-      { id:7, name:"Apertura", alias:"APC", desc:"Apertura de cajas", path:"apertura"},
-      { id:8, name:"Vales", alias:"VL", desc:"Creacion de Vales", path:"vale"},
+      { id:5, name:"Pedidos", alias:"PDT", desc:"Pedidos Automaticos por Familia", path:"requisition" },
+      { id:6, name:"Tickets", alias:"MOD", desc:"Moviemientos para  Tickets", path:"modificaciones"},
+      { id:7, name:"Pagos", alias:"PAG", desc:"Consulta de pagos", path:"pagos"},
+      { id:8, name:"Apertura", alias:"APC", desc:"Apertura de cajas", path:"apertura"},
+      { id:9, name:"Vales", alias:"VL", desc:"Creacion de Vales", path:"vale"},
       // { id:9, name:"Depositos", alias:"DPTS", desc:"Aprobacion de Depositos", path:"deposits/forms"},
-      { id:9, name:"Traspasos", alias:"TRP", desc:"Traspasos entre almacenes", path:"transfers"},
-      { id:10, name:"Comparativos", alias:"Com", desc:"Comparativos", path:"compare"},
-      { id:11, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
+      { id:10, name:"Traspasos", alias:"TRP", desc:"Traspasos entre almacenes", path:"transfers"},
+      { id:11, name:"Comparativos", alias:"Com", desc:"Comparativos", path:"compare"},
+      { id:12, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
       { id:50, name:"Tarjetas", alias:"TRJS", desc:"Consulta Tarjetas Sucursales", path:"cardStores"},
       // { id:51, name:"Depositos", alias:"DPTS", desc:"Aprovacion de Depositos", path:"deposits/confirm"},
       { id:52, name:"Revision de Cajas", alias:"RDC", desc:"Revision Cajas Abiertas", path:"openbox"},
@@ -37,14 +38,17 @@ export const useVDBStore = defineStore('vdb', {
     authsSeller (state) {
       return state.modules.filter((m) => m.id == 4)
     },
+    authsFloor (state) {
+      return state.modules.filter((m) => m.id == 4 || m.id == 5)
+    },
     authsAux (state) {
-      return state.modules.filter((m) => m.id <= 10)
+      return state.modules.filter((m) => m.id <= 11)
     },
     authGen(state){
-      return state.modules.filter((m) => m.id <= 11)
+      return state.modules.filter((m) => m.id <= 12)
     },
     autAud(state){
-      return state.modules.filter((m) => m.id <= 11)
+      return state.modules.filter((m) => m.id <= 12)
     },
     autRoot(state){
       return state.modules.filter((m) => m.id <= 1000)

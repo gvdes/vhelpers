@@ -62,6 +62,10 @@ const routes = [
     component: () => import('layouts/OpneBoxesLYT.vue'),
   },
   {
+    path: '/requisition',
+    component: () => import('layouts/RequisitionLYT.vue'),
+  },
+  {
     path: '/transfers',
     component: () => import('layouts/Transfers.vue'),
     children: [

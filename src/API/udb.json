@@ -1188,5 +1188,73 @@
       "id_viz":8
     },
     "rol": "gen"
+  },
+  {
+    "id": 165,
+    "name": "IRENE BERENICE ZAMORA GARCIA",
+    "credentials": {
+      "nick": "IreneBe",
+      "pass": "36ab",
+      "hash": "eda6a1ca88f9fdd0d38ac905b1fb494d"
+    },
+    "store": {
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.60.253:1619",
+      "id_viz": 4
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 470,
+    "name": "JENIFER FERNANDA MORENO PEREZ",
+    "credentials": {
+      "nick": "JeniferF",
+      "pass": "c6ce",
+      "hash": "1ae948310438f50fed1a1df4622c5774"
+    },
+    "store": {
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.60.253:1619",
+      "id_viz": 4
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 861,
+    "name": "LUIS ANGEL HUERTA CORTES",
+    "credentials": {
+      "nick": "LuisAng",
+      "pass": "0a9b",
+      "hash": "0b8a3c958f6b3c3f777cda30d694e259"
+    },
+    "store": {
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.60.253:1619",
+      "id_viz": 4
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 698,
+    "name": "HAZEL BELEN DIOSIDAD VENEGAS",
+    "credentials": {
+      "nick": "HazelBe",
+      "pass": "3abd",
+      "hash": "4ae1600c46ced06fb566fc1403b1b262"
+    },
+    "store": {
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.60.253:1619",
+      "id_viz": 4
+    },
+    "rol": "floor"
   }
 ]

@@ -179,6 +179,8 @@ const appmodules = computed(() => {
     return VDB.autAud
   } else if (user.rol == 'ven') {
     return VDB.authsSeller
+  } else if (user.rol == 'floor') {
+    return VDB.authsFloor
   }
 })
 
