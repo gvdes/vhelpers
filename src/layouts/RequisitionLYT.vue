@@ -13,12 +13,16 @@
 
     <q-page-container>
       <q-page padding>
-        <q-select v-model="families.val" :options="families.opts" label="Familia" option-label="name" filled multiple
+        <div class="row">
+          <q-select class="col" v-model="families.val" :options="families.opts" label="Familia" option-label="name" filled multiple
           use-chips @blur="report" />
+          <q-separator spaced inset vertical dark />
+          <q-select class="col" v-model="categories.val" :options="categories.opts" label="Categoria" filled :disable="!families.val" multiple use-chips />
+        </div>
 
         <q-separator spaced inset vertical dark />
 
-        <q-table :rows="suggested" :columns="table.columns" separator="cell" :filter="table.filter">
+        <q-table :rows="bascket" :columns="table.columns" separator="cell" :filter="table.filter">
           <template v-slot:top-right>
             <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Buscar">
               <template v-slot:append>
@@ -75,6 +79,10 @@ const families = ref({
   val: null,
   opts: []
 })
+const categories = ref({
+  val:[],
+  opts:[]
+})
 const products = ref([]);
 const notes = ref(null);
 
@@ -121,6 +129,14 @@ const suggested = computed(() => {
   }).filter(e => (e.cedis + e.texcoco) > 0 && e.percentage <= 20)
 })
 
+const bascket = computed(() => {
+  if(categories.value.val.length > 0){
+    return suggested.value.filter(e => categories.value.val.includes(e.categories.name))
+  }else{
+    return suggested.value
+  }
+})
+
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo secciones' })
   const resp = await dbCompare.getSeccion()
@@ -148,6 +164,12 @@ const report = async () => {
       $q.loading.hide()
       console.log(resp);
       products.value = resp
+      products.value.forEach(e => {
+      const categorias = e.categories.name
+      if (categorias && !categories.value.opts.includes(categorias)) {
+        categories.value.opts.push(categorias)
+      }
+    })
     }
   }
 }
@@ -157,7 +179,7 @@ const newRequsition = async () => {
   let dat = {
     workpoint_from: VDB.session.store.id_viz,
     workpoint_to: 1,
-    products: suggested.value,
+    products: bascket.value,
     notes: notes.value,
     id_userviz: VDB.session.id,
     type: 2
@@ -172,6 +194,7 @@ const newRequsition = async () => {
     products.value = []
     notes.value = []
     families.value.val = null
+    categories.value.val = []
     $q.loading.hide()
   }
 }
