@@ -10,5 +10,8 @@ export default{
   create(data){
     return vizapi.post(`/resources/create`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  preview(data){
+    return vizapi.post(`/resources/preview`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 
 }
