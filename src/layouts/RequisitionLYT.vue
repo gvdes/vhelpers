@@ -104,7 +104,7 @@
                 {{ props.row.sucursal }}
 
               </q-td>
-              <q-td key="min" :props="props">
+              <!-- <q-td key="min" :props="props">
 
                 {{ props.row.min }}
 
@@ -113,7 +113,7 @@
 
                 {{ props.row.max }}
 
-              </q-td>
+              </q-td> -->
               <!-- <q-td key="Percentge" :props="props">
 
                 {{ props.row.percentage }} %
@@ -203,8 +203,8 @@ const table = ref({
     { name: 'cedis', label: 'Ced CJ', align: 'center', sortable: true, field: row => row.cedis },
     { name: 'texcoco', label: 'Tex CJ', align: 'center', sortable: true, field: row => row.texcoco },
     { name: 'Sucursal', label: `${VDB.session.store.name}`, align: 'center', sortable: true, field: row => row.sucursal },
-    { name: 'min', label: `Minimo`, align: 'center', sortable: true, field: row => row.min },
-    { name: 'max', label: `Maximo`, align: 'center', sortable: true, field: row => row.max },
+    // { name: 'min', label: `Minimo`, align: 'center', sortable: true, field: row => row.min },
+    // { name: 'max', label: `Maximo`, align: 'center', sortable: true, field: row => row.max },
 
     // { name: 'Percentge', label: `${VDB.session.store.name} % `, align: 'center', sortable: true, field: row => row.percentage },
     { name: 'action', align: 'center' }
@@ -241,7 +241,7 @@ const suggested = computed(() => {
     if (VDB.session.store.id_viz == 4) {
       return (e.cedis + e.texcoco) > 0 && e.percentage <= 20
     } else {
-      return (e.cedis + e.texcoco) > 0 && (e.sucursal <= e.min && e.min > 0)
+      return (e.cedis + e.texcoco) > 0 && (e.percentage <= 20 && e.min > 0)
     }
 
   })
@@ -399,11 +399,11 @@ const download = async () => {
       { name: 'Cedis', filterButton: true },
       { name: 'Texcoco', filterButton: true },
       { name: 'Sucursal', filterButton: true },
-      { name: 'MIN', filterButton: true },
-      { name: 'MAX', filterButton: true },
+      // { name: 'MIN', filterButton: true },
+      // { name: 'MAX', filterButton: true },
       { name: 'Porcentaje', filterButton: true },
     ],
-    rows: bascket.value.map(e => { return [e.code, e.description, e.categories.familia.seccion.name, e.categories.familia.name, e.categories.name, e.pieces, e.cedis, e.texcoco, e.sucursal,e.min, e.max, e.percentage] }),
+    rows: bascket.value.map(e => { return [e.code, e.description, e.categories.familia.seccion.name, e.categories.familia.name, e.categories.name, e.pieces, e.cedis, e.texcoco, e.sucursal, e.percentage] }),
   });
 
   worksheet.columns.forEach(column => {
