@@ -12,29 +12,29 @@
     </q-header>
 
     <q-dialog v-model="printers.state">
-          <q-card class="my-card">
-            <q-card-section>
-              <div class="text-h6 text-center">Impresora</div>
-            </q-card-section>
-            <q-card-section>
-              <q-form @submit="print" class="q-gutter-md">
-                <q-select dense option-label="name" v-model="printers.val" :options="printers.body"
-                  label="Impresora" filled autofocus style="width: 200px" />
-                <div>
-                  <q-btn label="Enviar" type="submit" color="primary" style="width: 200px"
-                    :disable="printers.val === null" />
-                </div>
-              </q-form>
-            </q-card-section>
-          </q-card>
-        </q-dialog>
+      <q-card class="my-card">
+        <q-card-section>
+          <div class="text-h6 text-center">Impresora</div>
+        </q-card-section>
+        <q-card-section>
+          <q-form @submit="print" class="q-gutter-md">
+            <q-select dense option-label="name" v-model="printers.val" :options="printers.body" label="Impresora" filled
+              autofocus style="width: 200px" />
+            <div>
+              <q-btn label="Enviar" type="submit" color="primary" style="width: 200px"
+                :disable="printers.val === null" />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
 
     <q-page-container>
       <q-page padding>
         <div class="row">
           <q-select class="col" v-model="locations.val" :options="locations.opts" label="Ubicacion" option-label="name"
-          filled multiple use-chips @blur="reportLocations" :disable="families.val?.length > 0" />
+            filled multiple use-chips @blur="reportLocations" :disable="families.val?.length > 0" v-if=" VDB.session.store.id_viz == 4" />
           <q-separator spaced inset vertical dark />
           <q-select class="col" v-model="families.val" :options="families.opts" label="Familia" option-label="name"
             filled multiple use-chips @blur="report" :disable="locations.val?.length > 0" />
@@ -55,7 +55,7 @@
             <q-btn color="primary" icon-right="send" flat @click="newNotes.state = !newNotes.state"
               :disable="suggested.length == 0" />
             <q-btn color="primary" icon="print" flat @click="impre" :disable="suggested.length == 0" />
-            <q-btn color="primary" icon="download" flat  @click="download" :disable="suggested.length == 0" />
+            <q-btn color="primary" icon="download" flat @click="download" :disable="suggested.length == 0" />
           </template>
 
           <template v-slot:body="props">
@@ -102,6 +102,16 @@
               <q-td key="Sucursal" :props="props">
 
                 {{ props.row.sucursal }}
+
+              </q-td>
+              <q-td key="min" :props="props">
+
+                {{ props.row.min }}
+
+              </q-td>
+              <q-td key="max" :props="props">
+
+                {{ props.row.max }}
 
               </q-td>
               <!-- <q-td key="Percentge" :props="props">
@@ -172,13 +182,13 @@ const categories = ref({
 const products = ref([]);
 const notes = ref(null);
 const printers = ref({
-  state:false,
-  val:null,
-  body:[]
+  state: false,
+  val: null,
+  body: []
 })
-const locations =  ref({
-  val:null,
-  opts:[]
+const locations = ref({
+  val: null,
+  opts: []
 })
 
 const table = ref({
@@ -190,9 +200,12 @@ const table = ref({
     { name: 'Familia', label: 'Familia', align: 'left', sortable: true, field: row => row.categories.familia.name },
     { name: 'Categoria', label: 'Categoria', align: 'left', sortable: true, field: row => row.categories.name },
     { name: 'pieces', label: 'PXC', align: 'center', sortable: true, field: row => row.pieces },
-    { name: 'cedis', label: 'Cedis', align: 'center', sortable: true, field: row => row.cedis },
-    { name: 'texcoco', label: 'Texcoco', align: 'center', sortable: true, field: row => row.texcoco },
+    { name: 'cedis', label: 'Ced CJ', align: 'center', sortable: true, field: row => row.cedis },
+    { name: 'texcoco', label: 'Tex CJ', align: 'center', sortable: true, field: row => row.texcoco },
     { name: 'Sucursal', label: `${VDB.session.store.name}`, align: 'center', sortable: true, field: row => row.sucursal },
+    { name: 'min', label: `Minimo`, align: 'center', sortable: true, field: row => row.min },
+    { name: 'max', label: `Maximo`, align: 'center', sortable: true, field: row => row.max },
+
     // { name: 'Percentge', label: `${VDB.session.store.name} % `, align: 'center', sortable: true, field: row => row.percentage },
     { name: 'action', align: 'center' }
   ],
@@ -216,13 +229,22 @@ const suggested = computed(() => {
       description: product.description,
       categories: product.categories,
       pieces: product.pieces,
+      min: Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.min)),
+      max: Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)),
       cedis: CajasCedis,
       texcoco: CajasTexcoco,
       sucursal: Sucursal,
       percentage: Porcentaje
     }
 
-  }).filter(e => (e.cedis + e.texcoco) > 0 && e.percentage <= 20)
+  }).filter(e => {
+    if (VDB.session.store.id_viz == 4) {
+      return (e.cedis + e.texcoco) > 0 && e.percentage <= 20
+    } else {
+      return (e.cedis + e.texcoco) > 0 && (e.sucursal <= e.min && e.min > 0)
+    }
+
+  })
 })
 
 const bascket = computed(() => {
@@ -274,28 +296,28 @@ const report = async () => {
 
 const reportLocations = async () => {
 
-if (locations.value.val) {
-  console.log(locations.value.val)
-  $q.loading.show({ message: 'Obteniendo Reporte' })
-  console.log(locations.value.val.map(e => e.id))
-  let sid = VDB.session.store.id_viz
-  let data = locations.value.val.map(e => e.id)
-  const resp = await dbCompare.getProductsCompareLocation(sid, { data })
-  console.log(resp)
-  if (resp.fail) {
-    console.log(resp);
-  } else {
-    $q.loading.hide()
-    console.log(resp);
-    products.value = resp
-    products.value.forEach(e => {
-      const categorias = e.categories.name
-      if (categorias && !categories.value.opts.includes(categorias)) {
-        categories.value.opts.push(categorias)
-      }
-    })
+  if (locations.value.val) {
+    console.log(locations.value.val)
+    $q.loading.show({ message: 'Obteniendo Reporte' })
+    console.log(locations.value.val.map(e => e.id))
+    let sid = VDB.session.store.id_viz
+    let data = locations.value.val.map(e => e.id)
+    const resp = await dbCompare.getProductsCompareLocation(sid, { data })
+    console.log(resp)
+    if (resp.fail) {
+      console.log(resp);
+    } else {
+      $q.loading.hide()
+      console.log(resp);
+      products.value = resp
+      products.value.forEach(e => {
+        const categorias = e.categories.name
+        if (categorias && !categories.value.opts.includes(categorias)) {
+          categories.value.opts.push(categorias)
+        }
+      })
+    }
   }
-}
 }
 
 const newRequsition = async () => {
@@ -318,6 +340,7 @@ const newRequsition = async () => {
     products.value = []
     notes.value = []
     families.value.val = null
+    locations.value.val = null
     categories.value.val = []
     $q.loading.hide()
   }
@@ -327,26 +350,26 @@ const delProduct = (product) => {
   console.log(product)
   let inx = products.value.findIndex(e => e.id === product.id);
   console.log(inx)
-  if(inx >= 0 ){
+  if (inx >= 0) {
     products.value.splice(inx, 1);
   }
 }
 
-const print =  async () => {
+const print = async () => {
   console.log('aqui imprimo');
   let dat = {
-    products:bascket.value,
-    from:VDB.session.store,
-    ip_address:printers.value.val.ip_address
+    products: bascket.value,
+    from: VDB.session.store,
+    ip_address: printers.value.val.ip_address
   }
   const resp = await dbCompare.preview(dat);
-  if(resp.fail){
+  if (resp.fail) {
     console.log(resp);
-  }else{
+  } else {
     console.log(resp);
-    $q.notify({message:'Impresion Correcta',type:'positive',position:'center'})
+    $q.notify({ message: 'Impresion Correcta', type: 'positive', position: 'center' })
     printers.value.val = null,
-    printers.value.state = false
+      printers.value.state = false
   }
 }
 
@@ -367,30 +390,32 @@ const download = async () => {
       showRowStripes: true,
     },
     columns: [
-      {name:'Codigo', filterButton: true},
-      {name:'Descripcion', filterButton: true},
-      {name:'Seccion', filterButton: true},
-      {name:'Familia', filterButton: true},
-      {name:'Categoria', filterButton: true},
-      {name:'PXC', filterButton: true},
-      {name:'Cedis', filterButton: true},
-      {name:'Texcoco', filterButton: true},
-      {name:'Sucursal', filterButton: true},
-      {name:'Porcentaje', filterButton: true},
+      { name: 'Codigo', filterButton: true },
+      { name: 'Descripcion', filterButton: true },
+      { name: 'Seccion', filterButton: true },
+      { name: 'Familia', filterButton: true },
+      { name: 'Categoria', filterButton: true },
+      { name: 'PXC', filterButton: true },
+      { name: 'Cedis', filterButton: true },
+      { name: 'Texcoco', filterButton: true },
+      { name: 'Sucursal', filterButton: true },
+      { name: 'MIN', filterButton: true },
+      { name: 'MAX', filterButton: true },
+      { name: 'Porcentaje', filterButton: true },
     ],
-    rows: bascket.value.map(e =>{ return [e.code,e.description,e.categories.familia.seccion.name, e.categories.familia.name, e.categories.name,e.pieces, e.cedis, e.texcoco, e.sucursal, e.percentage] }),
+    rows: bascket.value.map(e => { return [e.code, e.description, e.categories.familia.seccion.name, e.categories.familia.name, e.categories.name, e.pieces, e.cedis, e.texcoco, e.sucursal,e.min, e.max, e.percentage] }),
   });
 
   worksheet.columns.forEach(column => {
-  let maxLength = 0;
-  column.eachCell({ includeEmpty: true }, (cell) => {
-    const columnLength = cell.value ? cell.value.toString().length : 10;
-    if (columnLength > maxLength) {
-      maxLength = columnLength;
-    }
+    let maxLength = 0;
+    column.eachCell({ includeEmpty: true }, (cell) => {
+      const columnLength = cell.value ? cell.value.toString().length : 10;
+      if (columnLength > maxLength) {
+        maxLength = columnLength;
+      }
+    });
+    column.width = maxLength < 10 ? 10 : maxLength; // Ajusta el ancho mínimo y máximo
   });
-  column.width = maxLength < 10 ? 10 : maxLength; // Ajusta el ancho mínimo y máximo
-});
 
 
 
