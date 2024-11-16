@@ -33,8 +33,11 @@
     <q-page-container>
       <q-page padding>
         <div class="row">
+          <q-select class="col" v-model="locations.val" :options="locations.opts" label="Ubicacion" option-label="name"
+          filled multiple use-chips @blur="reportLocations" :disable="families.val?.length > 0" />
+          <q-separator spaced inset vertical dark />
           <q-select class="col" v-model="families.val" :options="families.opts" label="Familia" option-label="name"
-            filled multiple use-chips @blur="report" />
+            filled multiple use-chips @blur="report" :disable="locations.val?.length > 0" />
           <q-separator spaced inset vertical dark />
           <q-select class="col" v-model="categories.val" :options="categories.opts" label="Categoria" filled
             :disable="!families.val" multiple use-chips />
@@ -173,6 +176,10 @@ const printers = ref({
   val:null,
   body:[]
 })
+const locations =  ref({
+  val:null,
+  opts:[]
+})
 
 const table = ref({
   columns: [
@@ -227,13 +234,15 @@ const bascket = computed(() => {
 })
 
 const init = async () => {
+  let sid = VDB.session.store.id_viz;
   $q.loading.show({ message: 'Obteniendo secciones' })
-  const resp = await dbCompare.getSeccion()
+  const resp = await dbCompare.getSeccion(sid)
   if (resp.fail) {
     console.log(resp)
   } else {
     console.log(resp)
-    families.value.opts = resp
+    families.value.opts = resp.families
+    locations.value.opts = resp.locations ? resp.locations[0].sections : null
     $q.loading.hide();
   }
   console.log(resp)
@@ -261,6 +270,32 @@ const report = async () => {
       })
     }
   }
+}
+
+const reportLocations = async () => {
+
+if (locations.value.val) {
+  console.log(locations.value.val)
+  $q.loading.show({ message: 'Obteniendo Reporte' })
+  console.log(locations.value.val.map(e => e.id))
+  let sid = VDB.session.store.id_viz
+  let data = locations.value.val.map(e => e.id)
+  const resp = await dbCompare.getProductsCompareLocation(sid, { data })
+  console.log(resp)
+  if (resp.fail) {
+    console.log(resp);
+  } else {
+    $q.loading.hide()
+    console.log(resp);
+    products.value = resp
+    products.value.forEach(e => {
+      const categorias = e.categories.name
+      if (categorias && !categories.value.opts.includes(categorias)) {
+        categories.value.opts.push(categorias)
+      }
+    })
+  }
+}
 }
 
 const newRequsition = async () => {
