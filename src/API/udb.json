@@ -1256,5 +1256,22 @@
       "id_viz": 4
     },
     "rol": "floor"
+  },
+  {
+    "id": 545,
+    "name": "ALICIA VELAZQUEZ",
+    "credentials": {
+      "nick": "AliciaV",
+      "pass": "d680",
+      "hash": "c7862693c953ca8d6a00494edf1b2d7b"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS SP",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
+    },
+    "rol": "floor"
   }
 ]
