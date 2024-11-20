@@ -1307,5 +1307,22 @@
       "id_viz": 1
     },
     "rol": "floor"
+  },
+  {
+    "id": 17,
+    "name": "VIVIANA CASTRO",
+    "credentials": {
+      "nick": "VivianaC",
+      "pass": "36ab",
+      "hash": "eda6a1ca88f9fdd0d38ac905b1fb494d"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS SP",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
+    },
+    "rol": "floor"
   }
 ]
