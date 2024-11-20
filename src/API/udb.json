@@ -732,9 +732,9 @@
   },
   {
     "id": 36,
-    "name": "Maritza Natalia Silva Gonzalez",
+    "name": "Jahleel Josafat Garcia Serrano",
     "credentials": {
-      "nick": "MaritzaNa",
+      "nick": "Jahleel",
       "pass": "e2c6",
       "hash": "6d7477f682202076df006da7e9ecb185"
     },
@@ -745,7 +745,7 @@
       "ip": "192.168.60.253:1619",
       "id_viz":4
     },
-    "rol": "aux"
+    "rol": "aud"
   },
   {
     "id": 54,
@@ -766,18 +766,18 @@
   },
   {
     "id": 7,
-    "name": "Gustavo Guillermo Rodriguez Cervantes",
+    "name": "Rogelio Franco Chavez ",
     "credentials": {
-      "nick": "GustavoGu",
+      "nick": "RogelioFr",
       "pass": "c6ce",
       "hash": "1ae948310438f50fed1a1df4622c5774"
     },
     "store": {
-      "id": 5,
-      "name": "San Pablo 3",
-      "alias": "SP3",
-      "ip": "192.168.62.250:1619",
-      "id_viz":17
+      "id": 12,
+      "name": "Bolivia",
+      "alias": "BOL",
+      "ip": "192.168.70.253:1619",
+      "id_viz":13
     },
     "rol": "gen"
   },
