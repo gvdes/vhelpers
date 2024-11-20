@@ -111,14 +111,15 @@
           <q-card-section>
             <div class="row">
               <q-item class="col">
-                <q-item-section><q-radio dense v-model="condition.state" val="percentage"
-                    label="Porcentaje" /></q-item-section>
+                <q-item-section><q-radio dense v-model="condition.state" val="percentage" label="Porcentaje"
+                    @update:model-value="processProduct" /></q-item-section>
                 <!-- <q-item-label><q-radio v-model="condition.state" val="percentage" label="Porcentaje" /></q-item-label> -->
                 <q-item-section caption v-if="condition.state == 'percentage'"> <q-input dense v-model="percentage.val"
                     type="number" filled label="Porcentaje" :disable="condition.state == 'minmax'" /></q-item-section>
                 <q-item-section></q-item-section>
               </q-item>
-              <q-radio dense class="col" v-model="condition.state" val="minmax" label="Minimo y Maximo" />
+              <q-radio dense class="col" v-model="condition.state" val="minmax" label="Minimo y Maximo"
+                @update:model-value="processProduct" />
             </div>
           </q-card-section>
         </q-card>
@@ -127,7 +128,7 @@
         <q-separator spaced inset vertical dark />
 
         <q-table :rows="bascket" :columns="table.columns" separator="cell" :filter="table.filter"
-          v-if="products.length > 0">
+          v-if="products.length > 0" flat bordered class="my-sticky-header-column-table" :visible-columns="table.visible">
           <template v-slot:top-right>
             <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Buscar">
               <template v-slot:append>
@@ -138,6 +139,9 @@
               :disable="bascket.length == 0" />
             <q-btn color="primary" icon="print" flat @click="impre" :disable="bascket.length == 0" />
             <q-btn color="primary" icon="download" flat @click="download" :disable="bascket.length == 0" />
+            <q-select v-model="table.visible" multiple outlined dense options-dense
+              :display-value="$q.lang.table.columns" emit-value map-options :options="table.columns" option-value="name"
+              options-cover style="min-width: 150px" />
           </template>
 
           <template v-slot:body="props">
@@ -332,7 +336,7 @@ const locations = ref({
 
 const table = ref({
   columns: [
-    { name: 'codigo', label: 'Codigo', align: 'left', sortable: true, field: row => row.code },
+    { name: 'codigo', required: true, label: 'Codigo', align: 'left', sortable: true, field: row => row.code },
     { name: 'description', label: 'Descripcion', align: 'left', sortable: true, field: row => row.description },
     { name: 'Seccion', label: 'Seccion', align: 'left', sortable: true, field: row => row.categories.familia.seccion.name },
     { name: 'Familia', label: 'Familia', align: 'left', sortable: true, field: row => row.categories.familia.name },
@@ -347,9 +351,10 @@ const table = ref({
     { name: 'max', label: `Maximo`, align: 'center', sortable: true, field: row => row.max },
     { name: 'Percentge', label: `${VDB.session.store.name} % `, align: 'center', sortable: true, field: row => row.percentage },
     { name: 'required', label: 'Solicitado CJ', align: 'center', sortable: true, field: row => row.required },
-    { name: 'action', align: 'center' }
+    { name: 'action',label:'Accion', align: 'center' }
   ],
-  filter: ''
+  filter: '',
+  visible: ['codigo','description','Seccion','Familia','Categoria','pieces','cedis','texcoco','Sucursal','required','action']
 })
 
 const sections = computed(() => categories.value.all.filter(e => e.deep == 0))
@@ -382,6 +387,7 @@ const locaciones = computed(() => {
     return res
   }
 })
+
 
 const suggested = computed(() => {
   return products.value.map((product) => {
@@ -459,6 +465,8 @@ const catyLocations = computed(() => {
   }
 })
 
+
+
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo secciones' })
   const resp = await dbCompare.getCedis()
@@ -535,16 +543,7 @@ const report = async () => {
     $q.loading.hide()
     console.log(resp);
     products.value = resp;
-    products.value.forEach(product => {
-      let CajasSucursal = Math.round(Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)) / Number(product.pieces));
-      let maxCajas = Math.round(Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(product.pieces))
-      if ((maxCajas - CajasSucursal) >= 1) {
-        product.required = Math.round(maxCajas - CajasSucursal);
-      } else {
-        product.required = 1
-      }
-    }
-    );
+    processProduct()
   }
 }
 
@@ -568,30 +567,23 @@ const reportLocations = async () => {
     $q.loading.hide()
     console.log(resp);
     products.value = resp
-    products.value.forEach(e => e.required = 1);
     products.value.forEach(e => {
-      let CajasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)) / Number(e.pieces));
-      let maxCajas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces))
-      if ((maxCajas - CajasSucursal) >= 1) {
-        e.required = Math.round(maxCajas - CajasSucursal);
-      } else {
-        e.required = 1
+      const seccion = e.categories.familia.seccion
+      if (seccion && !categoriesLocations.value.seccion.opts.map(e => e.id).includes(seccion.id)) {
+        categoriesLocations.value.seccion.opts.push(seccion)
       }
-    const seccion = e.categories.familia.seccion
-    if (seccion && !categoriesLocations.value.seccion.opts.map(e => e.id).includes(seccion.id)) {
-      categoriesLocations.value.seccion.opts.push(seccion)
-    }
-    const familia = e.categories.familia
-    if (familia && !categoriesLocations.value.familias.opts.map(e => e.id).includes(familia.id)) {
-      categoriesLocations.value.familias.opts.push(familia)
-    }
-    const categoria = e.categories
-    if (categoria && !categoriesLocations.value.categorias.opts.map(e => e.id).includes(categoria.id)) {
-      categoriesLocations.value.categorias.opts.push(categoria)
-    }
-  })
-  categoriesLocations.value.state = true;
-}
+      const familia = e.categories.familia
+      if (familia && !categoriesLocations.value.familias.opts.map(e => e.id).includes(familia.id)) {
+        categoriesLocations.value.familias.opts.push(familia)
+      }
+      const categoria = e.categories
+      if (categoria && !categoriesLocations.value.categorias.opts.map(e => e.id).includes(categoria.id)) {
+        categoriesLocations.value.categorias.opts.push(categoria)
+      }
+    })
+    categoriesLocations.value.state = true;
+    processProduct()
+  }
 
 }
 
@@ -747,6 +739,73 @@ const impre = async () => {
   }
 }
 
+const processProduct = async () => {
+  console.log(condition.value.state)
+  if (products.value.length > 0) {
+    if (condition.value.state == 'minmax') {
+      return products.value.forEach(e => {
+        let CajasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)) / Number(e.pieces));
+        let maxCajas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces))
+        if ((maxCajas - CajasSucursal) >= 1) {
+          e.required = Math.round(maxCajas - CajasSucursal);
+        } else {
+          e.required = 1
+        }
+      })
+    } else {
+      return products.value.forEach(e => e.required = 1)
+    }
+  }
+
+
+}
+
 init()
 
 </script>
+
+<style lang="sass">
+.my-sticky-header-column-table
+  /* height or max-height is important */
+  height: 500px
+
+  /* specifying max-width so the example can
+    highlight the sticky column on any browser window */
+
+
+  td:first-child
+    /* bg color is important for td; just specify one */
+    background-color: #FBFBFB
+
+  tr th
+    position: sticky
+    /* higher than z-index for td below */
+    z-index: 2
+    /* bg color is important; just specify one */
+    background: #FBFBFB
+
+  /* this will be the loading indicator */
+  thead tr:last-child th
+    /* height of all previous header rows */
+    top: 48px
+    /* highest z-index */
+    z-index: 3
+  thead tr:first-child th
+    top: 0
+    z-index: 1
+  tr:first-child th:first-child
+    /* highest z-index */
+    z-index: 3
+
+  td:first-child
+    z-index: 1
+
+  td:first-child, th:first-child
+    position: sticky
+    left: 0
+
+  /* prevent scrolling behind sticky top row on focus */
+  tbody
+    /* height of all previous header rows */
+    scroll-margin-top: 48px
+</style>
