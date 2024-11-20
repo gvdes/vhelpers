@@ -1273,5 +1273,39 @@
       "id_viz": 1
     },
     "rol": "floor"
+  },
+  {
+    "id": 893,
+    "name": "JULIO MORALES LUEVANO",
+    "credentials": {
+      "nick": "JulioM",
+      "pass": "0a9b",
+      "hash": "0b8a3c958f6b3c3f777cda30d694e259"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS SP",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 655,
+    "name": "GERSON EDUARDO REYES RAMOS",
+    "credentials": {
+      "nick": "GersonEd",
+      "pass": "3abd",
+      "hash": "4ae1600c46ced06fb566fc1403b1b262"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS SP",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
+    },
+    "rol": "floor"
   }
 ]
