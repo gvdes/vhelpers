@@ -120,9 +120,9 @@
   },
   {
     "id": 1,
-    "name": "GERSON EDUARDO REYES RAMOS",
+    "name": "VasioS",
     "credentials": {
-      "nick": "GersonEd",
+      "nick": "vacio",
       "pass": "dd2f",
       "hash": "3beddce06bf229bfd00df3b16bb85dbd"
     },
@@ -133,7 +133,7 @@
       "ip": "192.168.10.53:1619",
       "id_viz":1
     },
-    "rol": "gen"
+    "rol": "ven"
   },
   {
     "id": 87,
