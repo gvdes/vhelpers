@@ -5,7 +5,7 @@ export default{
   index(){
     return assist.get(`/sales/getSale`).then( done=>done.data ).catch( fail => { return {fail}} );
   },
-  // getStores(){
-  //   return assist.get(`/sal/getStores`).then( done=>done.data ).catch( fail => { return {fail}} );
-  // }
+  getReport(){
+    return assist.get(`/getResourses`).then( done=>done.data ).catch( fail => { return {fail}} );
+  }
 }

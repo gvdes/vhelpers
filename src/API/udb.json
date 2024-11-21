@@ -420,7 +420,7 @@
       "name": "CEDIS SP",
       "alias": "CDS",
       "ip": "192.168.10.160:1619",
-      "id_viz":4
+      "id_viz":1
     },
     "rol": "aud"
   },

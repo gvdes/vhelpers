@@ -66,6 +66,10 @@ const routes = [
     component: () => import('layouts/RequisitionLYT.vue'),
   },
   {
+    path: '/assist',
+    component: () => import('layouts/AsssitLYT.vue'),
+  },
+  {
     path: '/transfers',
     component: () => import('layouts/Transfers.vue'),
     children: [
