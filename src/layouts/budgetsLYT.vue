@@ -185,6 +185,9 @@ const updateType = () => {
 }
 
 const createBudget = () => {
+  $q.loading.show({
+    message:'Generando Presupuesto'
+  });
   presupuesto.value.factura.TOTAL = presupuesto.value.products.reduce((a, e) => Number(a) + Number(e.TOTAL), 0)
   console.log(presupuesto.value)
   let url = VDB.session.store.ip
