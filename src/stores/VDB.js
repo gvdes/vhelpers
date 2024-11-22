@@ -20,7 +20,7 @@ export const useVDBStore = defineStore('vdb', {
       // { id:9, name:"Depositos", alias:"DPTS", desc:"Aprobacion de Depositos", path:"deposits/forms"},
       { id:10, name:"Traspasos", alias:"TRP", desc:"Traspasos entre almacenes", path:"transfers"},
       { id:11, name:"Comparativos", alias:"Com", desc:"Comparativos", path:"compare"},
-      // { id:12, name:"Presupuestos", alias:"PRS", desc:"Creador Presupuestos", path:"budgets"},
+      { id:12, name:"Presupuestos", alias:"PRS", desc:"Creador Presupuestos", path:"budgets"},
       { id:13, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
       { id:14, name:"Asistencias", alias:"ASIS", desc:"Consulta de asistencias", path:"assist"},
       { id:50, name:"Tarjetas", alias:"TRJS", desc:"Consulta Tarjetas Sucursales", path:"cardStores"},
