@@ -20,8 +20,9 @@ export const useVDBStore = defineStore('vdb', {
       // { id:9, name:"Depositos", alias:"DPTS", desc:"Aprobacion de Depositos", path:"deposits/forms"},
       { id:10, name:"Traspasos", alias:"TRP", desc:"Traspasos entre almacenes", path:"transfers"},
       { id:11, name:"Comparativos", alias:"Com", desc:"Comparativos", path:"compare"},
-      { id:12, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
-      { id:13, name:"Asistencias", alias:"ASIS", desc:"Consulta de asistencias", path:"assist"},
+      // { id:12, name:"Presupuestos", alias:"PRS", desc:"Creador Presupuestos", path:"budgets"},
+      { id:13, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
+      { id:14, name:"Asistencias", alias:"ASIS", desc:"Consulta de asistencias", path:"assist"},
       { id:50, name:"Tarjetas", alias:"TRJS", desc:"Consulta Tarjetas Sucursales", path:"cardStores"},
       // { id:51, name:"Depositos", alias:"DPTS", desc:"Aprovacion de Depositos", path:"deposits/confirm"},
       { id:52, name:"Revision de Cajas", alias:"RDC", desc:"Revision Cajas Abiertas", path:"openbox"},
@@ -46,16 +47,19 @@ export const useVDBStore = defineStore('vdb', {
       return state.modules.filter((m) => m.id <= 11)
     },
     authGen(state){
-      return state.modules.filter((m) => m.id <= 13)
+      return state.modules.filter((m) => m.id <= 14)
     },
     autAud(state){
-      return state.modules.filter((m) => m.id <= 13)
+      return state.modules.filter((m) => m.id <= 14)
     },
     autRoot(state){
       return state.modules.filter((m) => m.id <= 1000)
     },
     authAdm(state){
       return state.modules.filter((m) => m.id >= 50 && m.id < 100)
+    },
+    authdir(state){
+      return state.modules.filter((m) => m.id == 100)
     }
   },
 

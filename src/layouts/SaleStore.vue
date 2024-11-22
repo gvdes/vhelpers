@@ -133,6 +133,7 @@
               <q-icon name="search" />
             </template>
           </q-input>
+          <q-btn color="primary" icon="ios_share" flat @click="download" />
         </template>
 
         <template v-slot:body="props">
@@ -176,14 +177,14 @@
                       <q-item-label overline>TICKETS 2023</q-item-label>
                       <q-item-label caption>{{
                         props.row.sales.tiketsant
-                      }}</q-item-label>
+                        }}</q-item-label>
                     </q-item-section>
 
                     <q-item-section>
                       <q-item-label overline>Promedio 2023</q-item-label>
                       <q-item-label caption>{{
                         Number(Number(props.row.sales.salesant * 1.1) / Number(props.row.sales.tiketsant)).toFixed(2)
-                      }} </q-item-label>
+                        }} </q-item-label>
                       <q-separator spaced inset vertical dark />
                     </q-item-section>
 
@@ -198,7 +199,7 @@
                       <q-item-label overline>TICKETS 2024</q-item-label>
                       <q-item-label caption>{{
                         props.row.sales.tiketsact
-                      }}</q-item-label>
+                        }}</q-item-label>
                     </q-item-section>
 
                     <q-item-section>
@@ -206,7 +207,7 @@
                       </q-item-label>
                       <q-item-label caption>{{
                         Number(Number(props.row.sales.salesact) / Number(props.row.sales.tiketsact)).toFixed(2)
-                      }} </q-item-label>
+                        }} </q-item-label>
                       <q-separator spaced inset vertical dark />
                     </q-item-section>
 
@@ -226,7 +227,7 @@
                       <q-item-label overline>DIFERENCIA TICKETS</q-item-label>
                       <q-item-label caption>{{
                         props.row.sales.tiketsact - props.row.sales.tiketsant
-                      }}</q-item-label>
+                        }}</q-item-label>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label overline>VENTA HOY </q-item-label>
@@ -239,7 +240,7 @@
                       <q-item-label overline>TICKETS HOY</q-item-label>
                       <q-item-label caption>{{
                         props.row.sales.hoytck
-                      }}</q-item-label>
+                        }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </div>
@@ -250,7 +251,7 @@
         </template>
       </q-table>
 
-      <q-dialog v-model="viewSaleSuc.state"  full-width>
+      <q-dialog v-model="viewSaleSuc.state" full-width>
         <q-card class="my-card">
           <q-card-section>
             <div class="text-h6">{{ viewSaleSuc.val.name }}</div>
@@ -274,7 +275,8 @@
               <q-card-section>
                 <div class="text-h6 text-center">Tickets Promedio 2023</div>
                 <div class="text-h5 text-center">
-                  {{ Number(viewSaleSuc.val.sales.salesant / viewSaleSuc.val.sales.tiketsant).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}
+                  {{ Number(viewSaleSuc.val.sales.salesant /
+                    viewSaleSuc.val.sales.tiketsant).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}
                 </div>
               </q-card-section>
             </q-card>
@@ -297,7 +299,8 @@
               <q-card-section>
                 <div class="text-h6 text-center">Tickets Promedio 2024</div>
                 <div class="text-h5 text-center">
-                  {{ Number(viewSaleSuc.val.sales.salesact / viewSaleSuc.val.sales.tiketsact).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}
+                  {{ Number(viewSaleSuc.val.sales.salesact /
+                    viewSaleSuc.val.sales.tiketsact).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}
                 </div>
               </q-card-section>
             </q-card>
@@ -308,13 +311,15 @@
               <q-card-section>
                 <div class="text-h6 text-center">Diferencias</div>
                 <div class="text-h5 text-center">
-                  {{ Number(viewSaleSuc.val.sales.salesact - viewSaleSuc.val.sales.salesant).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}
+                  {{ Number(viewSaleSuc.val.sales.salesact -
+                    viewSaleSuc.val.sales.salesant).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}
                 </div>
               </q-card-section>
               <q-card-section>
                 <div class="text-h6 text-center">Diferencia Tickts</div>
                 <div class="text-h5 text-center">
-                  {{ Number(viewSaleSuc.val.sales.tiketsact - viewSaleSuc.val.sales.tiketsant).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}
+                  {{ Number(viewSaleSuc.val.sales.tiketsact -
+                    viewSaleSuc.val.sales.tiketsant).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}
                 </div>
               </q-card-section>
             </q-card>
@@ -354,28 +359,32 @@
               <q-card-section>
                 <div class="text-h6">Resumen Dia</div>
                 <q-list bordered>
-                  <q-item v-for="(cajas,index) in viewSaleSuc.val.sales.ventasdepday" :key="index">
+                  <q-item v-for="(cajas, index) in viewSaleSuc.val.sales.ventasdepday" :key="index">
                     <q-item-section avatar>
                       <q-icon color="primary" name="point_of_sale" />
                     </q-item-section>
                     <q-item-section>{{ cajas.DESTER }}</q-item-section>
-                    <q-item-section>{{ Number(cajas.VENTA).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}</q-item-section>
+                    <q-item-section>{{ Number(cajas.VENTA).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
+                      }}</q-item-section>
                     <q-item-section>{{ cajas.TCK }}</q-item-section>
-                    <q-item-section>{{ Number(cajas.VENTA/ cajas.TCK).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}</q-item-section>
+                    <q-item-section>{{ Number(cajas.VENTA / cajas.TCK).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
+                      }}</q-item-section>
                   </q-item>
                 </q-list>
               </q-card-section>
               <q-card-section>
                 <div class="text-h6">Resumen Mensual</div>
                 <q-list bordered>
-                  <q-item v-for="(cajas,index) in viewSaleSuc.val.sales.ventasdepmonth" :key="index" >
+                  <q-item v-for="(cajas, index) in viewSaleSuc.val.sales.ventasdepmonth" :key="index">
                     <q-item-section avatar>
                       <q-icon color="primary" name="point_of_sale" />
                     </q-item-section>
                     <q-item-section>{{ cajas.DESTER }}</q-item-section>
-                    <q-item-section>{{ Number(cajas.VENTA).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}</q-item-section>
+                    <q-item-section>{{ Number(cajas.VENTA).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
+                      }}</q-item-section>
                     <q-item-section>{{ cajas.TCK }}</q-item-section>
-                    <q-item-section>{{ Number(cajas.VENTA/ cajas.TCK).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }}</q-item-section>
+                    <q-item-section>{{ Number(cajas.VENTA / cajas.TCK).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
+                      }}</q-item-section>
                   </q-item>
                 </q-list>
               </q-card-section>
@@ -395,6 +404,7 @@ import { loadRouteLocation, useRoute, useRouter } from "vue-router";
 import { AppFullscreen, useQuasar } from "quasar";
 import Chart from 'chart.js/auto';
 import dayjs from "dayjs";
+import ExcelJS from 'exceljs';
 import UserToolbar from "src/components/UserToolbar.vue";
 import ApiAssist from "src/API/assistApi";
 import { useVDBStore } from "src/stores/VDB";
@@ -453,22 +463,19 @@ const VentasHoy = computed(() => {
   return Number(stores.value.reduce((accumulator, store) => { return accumulator + Number(store.sales?.saleshoy || 0); }, 0)).toFixed(2)
 })
 
-
-
-
-
 const init = async () => {
   const date = new Date();
   const mes = date.getMonth() + 1
   smonth.value.val = meses.filter(e => e.id === mes)[0]
   $q.loading.show({ message: "Cargando Informacion" });
   console.log("se inicia el init");
-  const resp = await ApiAssist.index();
+  let url= `http://mx100-cedis-mkrqpwcczk.dynamic-m.com:3030/Assist/public/api/sales/getSale`
+  const resp = await axios.get(url);
   if (resp.error) {
     console.log(resp);
   } else {
     console.log(resp);
-    stores.value = resp;
+    stores.value = resp.data;
     getSale(stores.value, mes);
   }
 };
@@ -477,7 +484,7 @@ const getSale = async (sucursales, mes) => {
 
   sucursales.forEach((e, index) => {
     setTimeout(() => {
-      let host = e.ip_address;
+      let host = e.domain;
       let sale = `http://${host}/access/public/reports/getSalesPerMonth/${mes}`;
       // let sale = `http://192.168.10.160:1619/access/public/reports/getSalesPerMonth/${mes}`;
 
@@ -495,7 +502,7 @@ const getSale = async (sucursales, mes) => {
   $q.loading.hide();
 };
 
-if ($user.session.rol === 'root') {
+if ($user.session.rol === 'root' || $user.session.rol === 'dir') {
   init()
 } else {
   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
@@ -512,5 +519,96 @@ const mostInf = (rows) => {
   viewSaleSuc.value.val = rows
   console.log(rows)
 }
+
+const download = async () => {
+  const workbook = new ExcelJS.Workbook();
+
+
+  const worksheet = workbook.addWorksheet(`Venta`);
+  console.log()
+  worksheet.addTable({
+    name: 'Venta',
+    ref: 'A1',
+    headerRow: true,
+    totalsRow: true,
+    style: {
+      showRowStripes: true,
+    },
+    columns: [
+      { name: 'Sucursal', filterButton: true },
+      { name: 'Total', filterButton: true, totalsRowFunction: 'sum' },
+      { name: 'Tickets', filterButton: true, totalsRowFunction: 'sum' },
+    ],
+    rows: stores.value.map(e => {
+      return [e.name, Number(e.sales?.saleshoy), Number(e.sales?.hoytck)];
+    }),
+  });
+
+  // Ajustar el ancho de las columnas automáticamente
+  worksheet.columns.forEach(column => {
+    let maxLength = 0;
+    column.eachCell({ includeEmpty: true }, (cell) => {
+      const columnLength = cell.value ? cell.value.toString().length : 10;
+      if (columnLength > maxLength) {
+        maxLength = columnLength;
+      }
+    });
+    column.width = maxLength < 10 ? 10 : maxLength; // Ajusta el ancho mínimo y máximo
+  });
+
+  // Aplicar estilo negrita a los encabezados de las columnas
+  worksheet.getRow(1).eachCell(cell => {
+    cell.font = { bold: true }; // Negrita
+  });
+
+  // Aplicar estilo a las filas de datos
+  const startDataRowIndex = 2; // Primera fila de datos
+  const totalRowIndex = stores.value.length + 2; // Índice de la fila de totales
+  for (let i = startDataRowIndex; i < totalRowIndex; i++) {
+    worksheet.getRow(i).eachCell(cell => {
+      cell.font = { bold: true }; // Negrita para las celdas de la fila
+    });
+  }
+
+  // Aplicar estilo a la fila de totales
+  worksheet.getRow(totalRowIndex).eachCell(cell => {
+    cell.font = { size: 12, bold: true }; // Tamaño más grande y negrita
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFF00' }, // Fondo amarillo
+    };
+  });
+
+  // Opcional: Formato numérico para la columna "Total" y la celda de totales
+  const totalColumnIndex = 2; // Índice de la columna "Total" (basado en 1)
+  worksheet.getColumn(totalColumnIndex).numFmt = '"$"#,##0.00';
+  worksheet.getCell(`B${totalRowIndex}`).numFmt = '"$"#,##0.00';
+
+
+
+
+  const downloadExcel = async () => {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Ventas${formattedDate}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  downloadExcel();
+}
+
 
 </script>

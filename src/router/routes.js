@@ -2,12 +2,12 @@
 const routes = [
   { path: '/', redirect: '/launcher' },
   {
-    path:'/auth',
-    component: ()=>import('layouts/AuthLayout.vue'),
+    path: '/auth',
+    component: () => import('layouts/AuthLayout.vue'),
   },
   {
     path: '/launcher',
-    component:()=>import('layouts/LauncherLayout.vue')
+    component: () => import('layouts/LauncherLayout.vue')
   },
   {
     path: '/iva',
@@ -70,31 +70,35 @@ const routes = [
     component: () => import('layouts/AsssitLYT.vue'),
   },
   {
+    path: '/budgets',
+    component: () => import('layouts/budgetsLYT.vue'),
+  },
+  {
     path: '/transfers',
     component: () => import('layouts/Transfers.vue'),
     children: [
-      { path:'', name: 'trns', component: () => import('pages/Tranfers/Index.vue') },
-      { path:':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue') },
+      { path: '', name: 'trns', component: () => import('pages/Tranfers/Index.vue') },
+      { path: ':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue') },
     ],
   },
   {
     path: '/deposits',
     component: () => import('layouts/Deposits.vue'),
     children: [
-      { path:'forms', name: 'fdp', component: () => import('pages/Deposits/Form.vue') },
-      { path:'verified', name: 'vrdp', component: () => import('pages/Deposits/Validate.vue') },
+      { path: 'forms', name: 'fdp', component: () => import('pages/Deposits/Form.vue') },
+      { path: 'verified', name: 'vrdp', component: () => import('pages/Deposits/Validate.vue') },
     ],
   },
   {
     path: '/deposits',
     component: () => import('layouts/ValidationDepLYT.vue'),
     children: [
-      { path:'confirm', name: 'cmf', component: () => import('pages/Deposits/Confirm.vue') },
+      { path: 'confirm', name: 'cmf', component: () => import('pages/Deposits/Confirm.vue') },
       // { path:'verified', name: 'vrdp', component: () => import('pages/Deposits/Validate.vue') },
     ],
   },
   {
-    path:'/__set1',
+    path: '/__set1',
     component: () => import('layouts/Setter1.vue')
   },
 
