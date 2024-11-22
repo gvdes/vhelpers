@@ -59,6 +59,7 @@ const form = ref({
 
 
 const createBudget = () => {
+  $q.loading.show({message:'Obteniendo Salida'})
   if(types.value.val.id == 1){
     console.log(form.value)
     // let url = '192.168.10.53:1619';
@@ -71,7 +72,10 @@ const createBudget = () => {
           console.log(done)
         })
         .catch((fail) => {
-          console.log(fail);
+          console.log(fail.response.data);
+          $q.notify({message:fail.response.data.message,type:'negative',position:'center'});
+          $q.loading.hide();
+
         });
 
   }else if(types.value.val.id == 2){

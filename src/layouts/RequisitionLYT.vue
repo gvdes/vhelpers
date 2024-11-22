@@ -120,6 +120,8 @@
               </q-item>
               <q-radio dense class="col" v-model="condition.state" val="minmax" label="Minimo y Maximo"
                 @update:model-value="processProduct" />
+                <q-radio dense class="col" v-model="condition.state" val="query" label="Consultas"
+                @update:model-value="processProduct" />
             </div>
           </q-card-section>
         </q-card>
@@ -136,7 +138,7 @@
               </template>
             </q-input>
             <q-btn color="primary" icon-right="send" flat @click="newNotes.state = !newNotes.state"
-              :disable="bascket.length == 0" />
+              :disable="bascket.length == 0" v-if="condition.state !== 'query'" />
             <q-btn color="primary" icon="print" flat @click="impre" :disable="bascket.length == 0" />
             <q-btn color="primary" icon="download" flat @click="download" :disable="bascket.length == 0" />
             <q-select v-model="table.visible" multiple outlined dense options-dense
@@ -428,6 +430,8 @@ const suggested = computed(() => {
       } else {
         return (e.cedis + e.texcoco) > 0 && (e.sucursal <= e.min) && (e.min > 0)
       }
+    } else if(condition.value.state == 'query'){
+      return e
     }
 
   })
