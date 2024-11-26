@@ -95,7 +95,7 @@ const stores = ref({
       "id": 7,
       "name": "Sotano",
       "alias": "SOT",
-      "ip": "192.168.110.251:1619",
+      "ip": "192.168.150.253:1619",
       "id_viz": 19
     },
     {
