@@ -1341,5 +1341,73 @@
       "id_viz":1
     },
     "rol": "dir"
+  },
+  {
+    "id": 1026,
+    "name": "Moises Garcia Hermenegildo",
+    "credentials": {
+      "nick": "MoisesH",
+      "pass": "36ab",
+      "hash": "eda6a1ca88f9fdd0d38ac905b1fb494d"
+    },
+    "store": {
+      "id": 7,
+      "name": "Sotano",
+      "alias": "SOT",
+      "ip": "192.168.150.253:1619",
+      "id_viz": 19
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 1027,
+    "name": "Ximena Garcia Garcia",
+    "credentials": {
+      "nick": "XimenaG",
+      "pass": "0a9b",
+      "hash": "0b8a3c958f6b3c3f777cda30d694e259"
+    },
+    "store": {
+      "id": 7,
+      "name": "Sotano",
+      "alias": "SOT",
+      "ip": "192.168.150.253:1619",
+      "id_viz": 19
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 1028,
+    "name": "Zeltzin Gabriela Lavalle Sanchez",
+    "credentials": {
+      "nick": "GabrielaL",
+      "pass": "0a9b",
+      "hash": "0b8a3c958f6b3c3f777cda30d694e259"
+    },
+    "store": {
+      "id": 7,
+      "name": "Sotano",
+      "alias": "SOT",
+      "ip": "192.168.150.253:1619",
+      "id_viz": 19
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 1019,
+    "name": "Marco Antonio Rodriguez Diaz",
+    "credentials": {
+      "nick": "AntonioD",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 7,
+      "name": "Sotano",
+      "alias": "SOT",
+      "ip": "192.168.150.253:1619",
+      "id_viz": 19
+    },
+    "rol": "floor"
   }
 ]
