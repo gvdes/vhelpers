@@ -33,7 +33,7 @@
           <q-card class="my-card" @click="mosant">
             <q-card-section>
               <div class="text-h6 text-center">Ventas 2024</div>
-              <div class="text-h4 text-center">{{  Number(report.salesact / report.salesant * 100).toFixed(2) + '%' }}</div>
+              <div class="text-h4 text-center">{{  Number(report.salesact / Number(report.salesant *1.1) * 100).toFixed(2) + '%' }}</div>
 
             </q-card-section>
 
@@ -46,7 +46,7 @@
           <q-card class="my-card" @click="mosant">
             <q-card-section>
               <div class="text-h6 text-center">Diferencia</div>
-              <div class="text-h4 text-center">{{  Number(Number(report.salesact / report.salesant * 100) - Number(report.salesant / report.salesant * 100)).toFixed(2) + '%'}}</div>
+              <div class="text-h4 text-center">{{  Number(Number(report.salesact / Number(report.salesant *1.1) * 100) - Number(Number(report.salesant *1.1) / Number(report.salesant *1.1) * 100)).toFixed(2) + '%'}}</div>
             </q-card-section>
 
             <q-card-section>
@@ -138,6 +138,7 @@ const index = async () => {
   let sale = `http://${host}/access/public/reports/getSales`;
   axios.get(sale)
     .then(done => {
+    console.log(done.data)
       report.value = done.data
       console.log("datos obt")
       informe.value = true
