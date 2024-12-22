@@ -1409,5 +1409,22 @@
       "id_viz": 19
     },
     "rol": "floor"
+  },
+  {
+    "id": 1025,
+    "name": "MARTHA RODRIGUEZ ROJAS",
+    "credentials": {
+      "nick": "MarthaR",
+      "pass": "36ab",
+      "hash": "eda6a1ca88f9fdd0d38ac905b1fb494d"
+    },
+    "store": {
+      "id": 19,
+      "name": "Ecommerce",
+      "alias": "ECO",
+      "ip": "192.168.10.191:1619",
+      "id_viz": 20
+    },
+    "rol": "gen"
   }
 ]
