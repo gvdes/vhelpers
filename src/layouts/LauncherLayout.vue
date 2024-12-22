@@ -167,6 +167,13 @@ const stores = ref({
       "alias": "CRG",
       "ip": "192.168.130.2:1619",
       "id_viz": 23
+    },
+    {
+      "id": 19,
+      "name": "Ecommerce",
+      "alias": "ECO",
+      "ip": "192.168.10.191:1619",
+      "id_viz": 20
     }
   ]
 })
