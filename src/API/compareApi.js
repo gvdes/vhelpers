@@ -7,4 +7,7 @@ export default{
   secciones(){
     return vizapi.get(`/compare`).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  getProductReport(){
+    return vizapi.get(`/compare/getProducts`).then( done=>done.data ).catch( fail => { return {fail}} );
+  }
 }

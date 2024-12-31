@@ -74,6 +74,10 @@ const routes = [
     component: () => import('layouts/budgetsLYT.vue'),
   },
   {
+    path: '/stocks',
+    component: () => import('layouts/reportStock.vue'),
+  },
+  {
     path: '/transfers',
     component: () => import('layouts/Transfers.vue'),
     children: [
