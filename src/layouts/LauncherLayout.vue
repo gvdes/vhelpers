@@ -130,7 +130,7 @@ const stores = ref({
       "id": 12,
       "name": "Bolivia",
       "alias": "BOL",
-      "ip": "192.168.10.206:1619",
+      "ip": "192.168.10.92:1619",
       "id_viz": 13
     },
     {
