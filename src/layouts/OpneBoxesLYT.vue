@@ -161,26 +161,6 @@ const init = async () => {
   }
 };
 
-// const getSale = async (sucursales,date) => {
-//   console.log(date)
-//   sucursales.forEach((e, index) => {
-//     setTimeout(() => {
-//       let host = e.ip_address;
-//       // let sale = `http://${host}/access/public/reports/getSalesPerMonth/${mes}`;
-//       let sale = `http://192.168.10.160:1619/access/public/reports/OpenCash`;
-//       axios
-//         .post(sale,{filt: date})
-//         .then((done) => {
-//           e.sales = done.data == undefined ? null : done.data;
-//           console.log(done);
-//         })
-//         .catch((fail) => {
-//           console.log(fail.response.data.message);
-//         });
-//     }, index * 1000)
-//   });
-//   $q.loading.hide();
-// };
 const getSale = async (sucursales, date) => {
   console.log(date);
 
@@ -256,7 +236,7 @@ const crearPdf = () => {
         });
       });
       const doc = new jsPDF({ format: 'letter' });
-      doc.autoTable({
+      autoTable(doc,{
         head: [['Fecha', 'Caja', 'Tickets']],
         body: body
       });
