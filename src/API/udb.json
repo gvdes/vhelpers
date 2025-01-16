@@ -12,7 +12,7 @@
       "name": "Correo 1",
       "alias": "CR1",
       "ip": "192.168.30.253:1619",
-      "id_viz":5
+      "id_viz": 5
     },
     "rol": "gen"
   },
@@ -29,7 +29,7 @@
       "name": "Apartado 1",
       "alias": "AP1",
       "ip": "192.168.10.55:1619",
-      "id_viz":7
+      "id_viz": 7
     },
     "rol": "aux"
   },
@@ -46,7 +46,7 @@
       "name": "Apartado 1",
       "alias": "AP1",
       "ip": "192.168.10.55:1619",
-      "id_viz":7
+      "id_viz": 7
     },
     "rol": "caj"
   },
@@ -63,7 +63,7 @@
       "name": "Brasil 1",
       "alias": "BR1",
       "ip": "192.168.80.253:1619",
-      "id_viz":11
+      "id_viz": 11
     },
     "rol": "gen"
   },
@@ -80,7 +80,7 @@
       "name": "Brasil 1",
       "alias": "BR1",
       "ip": "192.168.80.253:1619",
-      "id_viz":11
+      "id_viz": 11
     },
     "rol": "aux"
   },
@@ -97,7 +97,7 @@
       "name": "Apartado 2",
       "alias": "AP2",
       "ip": "192.168.20.249:1619",
-      "id_viz":8
+      "id_viz": 8
     },
     "rol": "caj"
   },
@@ -114,7 +114,7 @@
       "name": "Bolivia",
       "alias": "BOL",
       "ip": "192.168.10.206:1619",
-      "id_viz":13
+      "id_viz": 13
     },
     "rol": "aux"
   },
@@ -131,7 +131,7 @@
       "name": "CEDIS",
       "alias": "CDS",
       "ip": "192.168.10.53:1619",
-      "id_viz":1
+      "id_viz": 1
     },
     "rol": "ven"
   },
@@ -148,7 +148,7 @@
       "name": "Bolivia",
       "alias": "BOL",
       "ip": "192.168.10.206:1619",
-      "id_viz":13
+      "id_viz": 13
     },
     "rol": "caj"
   },
@@ -165,7 +165,7 @@
       "name": "Brasil 1",
       "alias": "BR1",
       "ip": "192.168.80.253:1619",
-      "id_viz":11
+      "id_viz": 11
     },
     "rol": "caj"
   },
@@ -182,7 +182,7 @@
       "name": "San Pablo 2",
       "alias": "SP2",
       "ip": "192.168.60.253:1619",
-      "id_viz":4
+      "id_viz": 4
     },
     "rol": "gen"
   },
@@ -199,7 +199,7 @@
       "name": "Brasil 1",
       "alias": "BR1",
       "ip": "192.168.80.253:1619",
-      "id_viz":11
+      "id_viz": 11
     },
     "rol": "gen"
   },
@@ -216,7 +216,7 @@
       "name": "Brasil 2",
       "alias": "BR2",
       "ip": "192.168.80.249:1619",
-      "id_viz":12
+      "id_viz": 12
     },
     "rol": "gen"
   },
@@ -233,7 +233,7 @@
       "name": "Brasil 2",
       "alias": "BR2",
       "ip": "192.168.80.249:1619",
-      "id_viz":12
+      "id_viz": 12
     },
     "rol": "caj"
   },
@@ -250,7 +250,7 @@
       "name": "Apartado 2",
       "alias": "AP2",
       "ip": "192.168.20.249:1619",
-      "id_viz":8
+      "id_viz": 8
     },
     "rol": "aux"
   },
@@ -267,7 +267,7 @@
       "name": "Correo 1",
       "alias": "CR1",
       "ip": "192.168.30.253:1619",
-      "id_viz":5
+      "id_viz": 5
     },
     "rol": "caj"
   },
@@ -284,7 +284,7 @@
       "name": "Correo 1",
       "alias": "CR1",
       "ip": "192.168.30.253:1619",
-      "id_viz":5
+      "id_viz": 5
     },
     "rol": "aux"
   },
@@ -301,7 +301,7 @@
       "name": "Apartado 1",
       "alias": "AP1",
       "ip": "192.168.10.55:1619",
-      "id_viz":7
+      "id_viz": 7
     },
     "rol": "gen"
   },
@@ -318,7 +318,7 @@
       "name": "Correo 2",
       "alias": "CR2",
       "ip": "192.168.50.253:1619",
-      "id_viz":6
+      "id_viz": 6
     },
     "rol": "aux"
   },
@@ -335,7 +335,7 @@
       "name": "Correo 2",
       "alias": "CR2",
       "ip": "192.168.50.253:1619",
-      "id_viz":6
+      "id_viz": 6
     },
     "rol": "gen"
   },
@@ -352,7 +352,7 @@
       "name": "Correo 2",
       "alias": "CR2",
       "ip": "192.168.50.253:1619",
-      "id_viz":6
+      "id_viz": 6
     },
     "rol": "caj"
   },
@@ -369,7 +369,7 @@
       "name": "Corregidora",
       "alias": "CRG",
       "ip": "192.168.130.2:1619",
-      "id_viz":23
+      "id_viz": 23
     },
     "rol": "gen"
   },
@@ -386,7 +386,7 @@
       "name": "Corregidora",
       "alias": "CRG",
       "ip": "192.168.130.2:1619",
-      "id_viz":23
+      "id_viz": 23
     },
     "rol": "caj"
   },
@@ -403,7 +403,7 @@
       "name": "Corregidora",
       "alias": "CRG",
       "ip": "192.168.130.2:1619",
-      "id_viz":23
+      "id_viz": 23
     },
     "rol": "aux"
   },
@@ -420,7 +420,7 @@
       "name": "CEDIS SP",
       "alias": "CDS",
       "ip": "192.168.10.160:1619",
-      "id_viz":1
+      "id_viz": 1
     },
     "rol": "aud"
   },
@@ -437,7 +437,7 @@
       "name": "CEDIS SP",
       "alias": "CSP",
       "ip": "192.168.12.13:1619",
-      "id_viz":1
+      "id_viz": 1
     },
     "rol": "root"
   },
@@ -454,7 +454,7 @@
       "name": "Puebla",
       "alias": "PUE",
       "ip": "192.168.90.253:1619",
-      "id_viz":18
+      "id_viz": 18
     },
     "rol": "caj"
   },
@@ -471,7 +471,7 @@
       "name": "Puebla",
       "alias": "PUE",
       "ip": "192.168.90.253:1619",
-      "id_viz":18
+      "id_viz": 18
     },
     "rol": "gen"
   },
@@ -488,7 +488,7 @@
       "name": "Puebla",
       "alias": "PUE",
       "ip": "192.168.90.253:1619",
-      "id_viz":18
+      "id_viz": 18
     },
     "rol": "aux"
   },
@@ -505,7 +505,7 @@
       "name": "Ramon C 1",
       "alias": "RA1",
       "ip": "192.168.10.46:1619",
-      "id_viz":9
+      "id_viz": 9
     },
     "rol": "aux"
   },
@@ -522,7 +522,7 @@
       "name": "Ramon C 1",
       "alias": "RA1",
       "ip": "192.168.10.46:1619",
-      "id_viz":9
+      "id_viz": 9
     },
     "rol": "caj"
   },
@@ -539,7 +539,7 @@
       "name": "Ramon C 1",
       "alias": "RA1",
       "ip": "192.168.10.46:1619",
-      "id_viz":9
+      "id_viz": 9
     },
     "rol": "gen"
   },
@@ -556,7 +556,7 @@
       "name": "Ramon C 2",
       "alias": "RA2",
       "ip": "192.168.40.249:1619",
-      "id_viz":10
+      "id_viz": 10
     },
     "rol": "caj"
   },
@@ -573,7 +573,7 @@
       "name": "Ramon C 2",
       "alias": "RA2",
       "ip": "192.168.40.249:1619",
-      "id_viz":10
+      "id_viz": 10
     },
     "rol": "aux"
   },
@@ -590,7 +590,7 @@
       "name": "Ramon C 2",
       "alias": "RA2",
       "ip": "192.168.40.249:1619",
-      "id_viz":10
+      "id_viz": 10
     },
     "rol": "gen"
   },
@@ -607,7 +607,7 @@
       "name": "Sotano",
       "alias": "SOT",
       "ip": "192.168.150.253:1619",
-      "id_viz":19
+      "id_viz": 19
     },
     "rol": "caj"
   },
@@ -624,7 +624,7 @@
       "name": "Sotano",
       "alias": "SOT",
       "ip": "192.168.150.253:1619",
-      "id_viz":19
+      "id_viz": 19
     },
     "rol": "aux"
   },
@@ -641,7 +641,7 @@
       "name": "Sotano",
       "alias": "SOT",
       "ip": "192.168.150.253:1619",
-      "id_viz":19
+      "id_viz": 19
     },
     "rol": "gen"
   },
@@ -658,7 +658,7 @@
       "name": "San Pablo 1",
       "alias": "SP1",
       "ip": "192.168.100.250:1619",
-      "id_viz":3
+      "id_viz": 3
     },
     "rol": "caj"
   },
@@ -675,7 +675,7 @@
       "name": "San Pablo 1",
       "alias": "SP1",
       "ip": "192.168.100.250:1619",
-      "id_viz":3
+      "id_viz": 3
     },
     "rol": "aux"
   },
@@ -692,7 +692,7 @@
       "name": "San Pablo 1",
       "alias": "SP1",
       "ip": "192.168.100.250:1619",
-      "id_viz":3
+      "id_viz": 3
     },
     "rol": "gen"
   },
@@ -709,7 +709,7 @@
       "name": "San Pablo 2",
       "alias": "SP2",
       "ip": "192.168.60.253:1619",
-      "id_viz":4
+      "id_viz": 4
     },
     "rol": "caj"
   },
@@ -726,7 +726,7 @@
       "name": "San Pablo 2",
       "alias": "SP2",
       "ip": "192.168.60.253:1619",
-      "id_viz":4
+      "id_viz": 4
     },
     "rol": "aux"
   },
@@ -743,7 +743,7 @@
       "name": "San Pablo 2",
       "alias": "SP2",
       "ip": "192.168.60.253:1619",
-      "id_viz":4
+      "id_viz": 4
     },
     "rol": "aud"
   },
@@ -760,7 +760,7 @@
       "name": "San Pablo 2",
       "alias": "SP2",
       "ip": "192.168.60.253:1619",
-      "id_viz":4
+      "id_viz": 4
     },
     "rol": "gen"
   },
@@ -777,7 +777,7 @@
       "name": "Bolivia",
       "alias": "BOL",
       "ip": "192.168.10.206:1619",
-      "id_viz":13
+      "id_viz": 13
     },
     "rol": "gen"
   },
@@ -794,7 +794,7 @@
       "name": "San Pablo C",
       "alias": "SPC",
       "ip": "192.168.60.249:1619",
-      "id_viz":17
+      "id_viz": 17
     },
     "rol": "caj"
   },
@@ -811,7 +811,7 @@
       "name": "San Pablo C",
       "alias": "SPC",
       "ip": "192.168.60.249:1619",
-      "id_viz":17
+      "id_viz": 17
     },
     "rol": "gen"
   },
@@ -828,7 +828,7 @@
       "name": "CEDIS",
       "alias": "CDISAP",
       "ip": "192.168.10.112:1619",
-      "id_viz":1
+      "id_viz": 1
     },
     "rol": "root"
   },
@@ -845,7 +845,7 @@
       "name": "San Pablo 2",
       "alias": "SP2",
       "ip": "192.168.60.253:1619",
-      "id_viz":4
+      "id_viz": 4
     },
     "rol": "aud"
   },
@@ -862,7 +862,7 @@
       "name": "San Pablo 2",
       "alias": "SP2",
       "ip": "192.168.60.253:1619",
-      "id_viz":4
+      "id_viz": 4
     },
     "rol": "aud"
   },
@@ -879,7 +879,7 @@
       "name": "San Pablo 1",
       "alias": "SP1",
       "ip": "192.168.100.250:1619",
-      "id_viz":3
+      "id_viz": 3
     },
     "rol": "aud"
   },
@@ -896,7 +896,7 @@
       "name": "San Pablo 1",
       "alias": "SP1",
       "ip": "192.168.100.250:1619",
-      "id_viz":3
+      "id_viz": 3
     },
     "rol": "aud"
   },
@@ -913,7 +913,7 @@
       "name": "San Pablo 1",
       "alias": "SP1",
       "ip": "192.168.100.250:1619",
-      "id_viz":3
+      "id_viz": 3
     },
     "rol": "aud"
   },
@@ -930,7 +930,7 @@
       "name": "CEDIS",
       "alias": "CDISAP",
       "ip": "192.168.10.160:1619",
-      "id_viz":1
+      "id_viz": 1
     },
     "rol": "adm"
   },
@@ -947,7 +947,7 @@
       "name": "San Pablo 2",
       "alias": "SP2",
       "ip": "192.168.60.253:1619",
-      "id_viz":4
+      "id_viz": 4
     },
     "rol": "ven"
   },
@@ -1185,7 +1185,7 @@
       "name": "Apartado 2",
       "alias": "AP2",
       "ip": "192.168.20.249:1619",
-      "id_viz":8
+      "id_viz": 8
     },
     "rol": "gen"
   },
@@ -1338,7 +1338,7 @@
       "name": "CEDIS SP",
       "alias": "CDS",
       "ip": "192.168.10.53:1619",
-      "id_viz":1
+      "id_viz": 1
     },
     "rol": "dir"
   },
@@ -1426,5 +1426,22 @@
       "id_viz": 20
     },
     "rol": "gen"
+  },
+  {
+    "id": 305,
+    "name": "Eri",
+    "credentials": {
+      "nick": "Eri",
+      "pass": "0a9b",
+      "hash": "0b8a3c958f6b3c3f777cda30d694e259"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS",
+      "alias": "CDISAP",
+      "ip": "192.168.10.160:1619",
+      "id_viz": 1
+    },
+    "rol": "adm"
   }
 ]

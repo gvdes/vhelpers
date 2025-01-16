@@ -12,21 +12,16 @@
           </div>
           <div class="row">
             <q-btn color="primary" icon="event" @click="date = !date" flat round />
+            <q-btn color="primary" icon="download" @click="crearPdf" flat round />
+            <q-btn color="primary" icon="calculate" @click="calculate" flat round />
+
           </div>
 
         </q-toolbar>
       </q-header>
 
-
-
-      <q-table
-      title="Sucursales"
-      :rows="stores"
-      hide-header
-      :pagination=table.pagination
-      :filter="table.filter"
-    >
-    <template v-slot:top-right>
+      <q-table title="Sucursales" :rows="stores" hide-header :pagination=table.pagination :filter="table.filter">
+        <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Buscar">
             <template v-slot:append>
               <q-icon name="search" />
@@ -34,7 +29,7 @@
           </q-input>
         </template>
 
-    <template v-slot:body="props">
+        <template v-slot:body="props">
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
             <q-list bordered dense>
               <q-item>
@@ -53,7 +48,10 @@
                 <div class="" v-show="props.expand" v-if="props.row.sales">
                   <q-separator />
                   <q-item class="text-center">
-                    <q-item-section >
+                    <q-item-section>
+                      FECHA
+                    </q-item-section>
+                    <q-item-section>
                       CAJA
                     </q-item-section>
                     <q-item-section>
@@ -61,6 +59,9 @@
                     </q-item-section>
                   </q-item>
                   <q-item class="text-center" dense clickable v-ripple v-for="(sales, index) in (props.row.sales) ">
+                    <q-item-section>
+                      {{ dayjs(sales.FECFAC).format('YYYY-MM-DD') }}
+                    </q-item-section>
                     <q-item-section>
                       {{ sales.DESTER }}
                     </q-item-section>
@@ -74,29 +75,29 @@
             <q-separator spaced inset vertical dark />
           </div>
         </template>
-  </q-table>
+      </q-table>
 
 
 
       <q-dialog v-model="date">
-      <q-card class="my-card">
-        <q-card-section>
-          <div class="q-pa-md">
-            <div class="q-pb-sm">
-              <!-- Desde: {{ fechas.from }} : Hasta {{ fechas.to }} -->
-               <!-- {{ fechas }} -->
+        <q-card class="my-card">
+          <q-card-section>
+            <div class="q-pa-md">
+              <div class="q-pb-sm">
+                <!-- Desde: {{ fechas.from }} : Hasta {{ fechas.to }} -->
+                <!-- {{ fechas }} -->
+              </div>
+              <q-date v-model="fechas" range minimal />
             </div>
-            <q-date v-model="fechas" range minimal />
-          </div>
-        </q-card-section>
-        <q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat icon="close" color="negative" @click="date = !date" />
-            <q-btn flat icon="check" color="positive" @click="buscas" />
-          </q-card-actions>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+          </q-card-section>
+          <q-card-section>
+            <q-card-actions align="right">
+              <q-btn flat icon="close" color="negative" @click="date = !date" />
+              <q-btn flat icon="check" color="positive" @click="buscas" />
+            </q-card-actions>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
 
 
 
@@ -113,6 +114,9 @@ import { loadRouteLocation, useRoute, useRouter } from "vue-router";
 import { AppFullscreen, useQuasar } from "quasar";
 import Chart from 'chart.js/auto';
 import dayjs from "dayjs";
+import ExcelJS from 'exceljs';
+import { jsPDF } from "jspdf";
+import autoTable from 'jspdf-autotable'
 import UserToolbar from "src/components/UserToolbar.vue";
 import ApiAssist from "src/API/assistApi";
 import { useVDBStore } from "src/stores/VDB";
@@ -148,12 +152,12 @@ const init = async () => {
     console.log(resp);
     stores.value = resp;
     let date = new Date();
-  let fecha =  dayjs(date).format("YYYY/MM/DD")
-  fechas.value = fecha
-  console.log(fecha);
-    getSale(stores.value, fechas.value).finally(()=> {
-    $q.loading.hide();
-  });
+    let fecha = dayjs(date).format("YYYY/MM/DD")
+    fechas.value = fecha
+    console.log(fecha);
+    getSale(stores.value, fechas.value).finally(() => {
+      $q.loading.hide();
+    });
   }
 };
 
@@ -186,18 +190,22 @@ const getSale = async (sucursales, date) => {
       setTimeout(() => {
         e.sale = null;
         let host = e.ip_address;
+        // let host = '192.168.10.160:1619'
         let sale = `http://${host}/access/public/reports/OpenCash`;
         //let sale = `http://192.168.10.160:1619/access/public/reports/OpenCash`;
         axios
           .post(sale, { filt: date })
           .then((done) => {
-            e.sales = done.data == undefined ? null : done.data;
-            console.log(done);
-            resolve(done);
+            e.sales = done.data || null; // Guardar datos si la respuesta es válida
+            console.log(done.data)
+            console.log(`Sucursal ${e.name} procesada con éxito.`);
+            resolve({ success: true, data: done.data });
           })
           .catch((fail) => {
-            console.log(fail.response.data.message);
-            reject(fail);
+            console.log(`Error en sucursal ${e.name}: ${fail.message}`);
+            e.sales = []; // Establecer como null si hubo error
+            $q.notify({message:`Sucursal ${e.name} no tiene conexion`,type:'negative',position:'center'})
+            resolve({ success: false, error: fail.message }); // Resuelve con el estado de error
           });
       }, index * 1000);
     });
@@ -212,7 +220,7 @@ const getSale = async (sucursales, date) => {
 
 
 
-if ($user.session.rol === 'adm') {
+if ($user.session.rol === 'adm' || $user.session.rol === 'root') {
   init()
 } else {
   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
@@ -221,13 +229,91 @@ if ($user.session.rol === 'adm') {
 
 const buscas = () => {
   date.value = false
-
-  $q.loading.show({message:'Obteniendo Datos'})
-  getSale(stores.value, fechas.value).finally(()=> {
+  $q.loading.show({ message: 'Obteniendo Datos' })
+  getSale(stores.value, fechas.value).finally(() => {
     $q.loading.hide();
   })
+}
+
+const crearPdf = () => {
+  return new Promise((resolve, reject) => {
+    try {
+
+      let body = [];
+      stores.value.forEach((store, index) => {
+        // Agregar el encabezado con `colSpan` que muestra el nombre de la tienda
+        body.push([
+          {
+            content: store.name,
+            colSpan: 3, // Combinar columnas
+            styles: { halign: 'center', fillColor: [173, 216, 230], fontStyle: 'bold' },
+          },
+        ]);
+
+        // Agregar las ventas como filas debajo del encabezado
+        store.sales.forEach((sale) => {
+          body.push([dayjs(sale.FECFAC).format('YYYY-MM-DD'), sale.DESTER, sale.TICKETS]);
+        });
+      });
+      const doc = new jsPDF({ format: 'letter' });
+      doc.autoTable({
+        head: [['Fecha', 'Caja', 'Tickets']],
+        body: body
+      });
+
+      doc.save(`Reporte de Cajas`);
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+const calculate = () => {
+  $q.loading.show({ message: 'Importando Ticket' })
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Comparativo');
 
 
+  worksheet.columns = [
+    { header: 'Fecha', key: 'FECFAC', width: 20 },
+    { header: 'Destino', key: 'DESTER', width: 30 },
+    { header: 'Tickets', key: 'TICKETS', width: 10 },
+  ];
+
+  stores.value.forEach((store) => {
+    const headerRow = worksheet.addRow([store.name]);
+    headerRow.font = { bold: true };
+    headerRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'ADD8E6' }, // Azul claro
+    };
+    headerRow.alignment = { horizontal: 'center' };
+
+
+    store.sales.forEach((sale) => {
+      worksheet.addRow(sale);
+    });
+    worksheet.addRow([]);
+  });
+
+
+
+  const downloadExcel = async () => {
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ReporteCajas.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  downloadExcel();
+  $q.loading.hide()
 
 }
 
