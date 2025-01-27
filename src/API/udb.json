@@ -1164,11 +1164,11 @@
       "hash": "eda6a1ca88f9fdd0d38ac905b1fb494d"
     },
     "store": {
-      "id": 4,
-      "name": "San Pablo 2",
-      "alias": "SP2",
-      "ip": "192.168.60.253:1619",
-      "id_viz": 4
+      "id": 8,
+      "name": "Correo 1",
+      "alias": "CR1",
+      "ip": "192.168.30.253:1619",
+      "id_viz": 5
     },
     "rol": "gen"
   },
