@@ -357,8 +357,8 @@ const search = async () => {
     serie: cashdesk.value,
     folio: folio.value,
   }
-  // let host = VDB.session.store.ip;
-  let host = '192.168.10.160:1619';
+  let host = VDB.session.store.ip;
+  // let host = '192.168.10.160:1619';
   let url = `http://${host}/access/public/modify/getTck`;
   axios.post(url, impdat)
     .then(r => {
@@ -533,8 +533,8 @@ const terminar = async () => {
     valid:validBacket.value,
     diff:btnTerm.value
   }
-  // let host = VDB.session.store.ip;
-  let host = '192.168.10.160:1619';
+  let host = VDB.session.store.ip;
+  // let host = '192.168.10.160:1619';
   let url = `http://${host}/access/public/modify/PrintDiff`;
   axios.post(url, dat)
   .then(r => {
