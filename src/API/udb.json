@@ -18,9 +18,9 @@
   },
   {
     "id": 78,
-    "name": "Luis Fernando Hernandez Concha",
+    "name": "Alejandra Loza Mendiola",
     "credentials": {
-      "nick": "LuisFer",
+      "nick": "AlejandraM",
       "pass": "545d",
       "hash": "fbc26a1a33556dbc484a22a725bef1c9"
     },
@@ -555,7 +555,7 @@
       "id": 11,
       "name": "Ramon C 2",
       "alias": "RA2",
-      "ip": "192.168.40.249:1619",
+      "ip": "192.168.10.232:1619",
       "id_viz": 10
     },
     "rol": "caj"
@@ -572,7 +572,7 @@
       "id": 11,
       "name": "Ramon C 2",
       "alias": "RA2",
-      "ip": "192.168.40.249:1619",
+      "ip": "192.168.10.232:1619",
       "id_viz": 10
     },
     "rol": "aux"
@@ -589,7 +589,7 @@
       "id": 11,
       "name": "Ramon C 2",
       "alias": "RA2",
-      "ip": "192.168.40.249:1619",
+      "ip": "192.168.10.232:1619",
       "id_viz": 10
     },
     "rol": "gen"
@@ -1065,7 +1065,7 @@
       "id": 11,
       "name": "Ramon C 2",
       "alias": "RA2",
-      "ip": "192.168.40.249:1619",
+      "ip": "192.168.10.232:1619",
       "id_viz": 10
     },
     "rol": "ven"
@@ -1164,11 +1164,11 @@
       "hash": "eda6a1ca88f9fdd0d38ac905b1fb494d"
     },
     "store": {
-      "id": 4,
-      "name": "San Pablo 2",
-      "alias": "SP2",
-      "ip": "192.168.60.253:1619",
-      "id_viz": 4
+      "id": 8,
+      "name": "Correo 1",
+      "alias": "CR1",
+      "ip": "192.168.30.253:1619",
+      "id_viz": 5
     },
     "rol": "gen"
   },
