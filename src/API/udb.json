@@ -3,7 +3,7 @@
     "id": 74,
     "name": "Luis Felipe Reyes Serrano",
     "credentials": {
-      "nick": "LuisFel",
+      "nick": "Luis",
       "pass": "169e",
       "hash": "e2f0e4b241f71614d47c633ba1d04ef7"
     },
@@ -297,11 +297,11 @@
       "hash": "00393349ec963eb12d383698fdfdde32"
     },
     "store": {
-      "id": 16,
-      "name": "Apartado 1",
-      "alias": "AP1",
-      "ip": "192.168.10.55:1619",
-      "id_viz": 7
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.60.253:1619",
+      "id_viz": 4
     },
     "rol": "gen"
   },
@@ -751,7 +751,7 @@
     "id": 54,
     "name": "Eliuth Huerta Izalde",
     "credentials": {
-      "nick": "EliuthHu",
+      "nick": "Eliuth",
       "pass": "d680",
       "hash": "c7862693c953ca8d6a00494edf1b2d7b"
     },
