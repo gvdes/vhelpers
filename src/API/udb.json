@@ -25,19 +25,19 @@
       "hash": "fbc26a1a33556dbc484a22a725bef1c9"
     },
     "store": {
-      "id": 16,
-      "name": "Apartado 1",
-      "alias": "AP1",
-      "ip": "192.168.10.55:1619",
-      "id_viz": 7
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.60.253:1619",
+      "id_viz": 4
     },
     "rol": "aux"
   },
   {
     "id": 173,
-    "name": "ALEJANDRA LOZA MENDIOLA",
+    "name": "LUIS FERNANDO HERNANDEZ CONCHA",
     "credentials": {
-      "nick": "AlejandraLo",
+      "nick": "LuisF",
       "pass": "834f",
       "hash": "bee3ea09c0795faf68c21e38f00fad85"
     },
@@ -48,7 +48,7 @@
       "ip": "192.168.10.55:1619",
       "id_viz": 7
     },
-    "rol": "caj"
+    "rol": "gen"
   },
   {
     "id": 123,
@@ -722,11 +722,11 @@
       "hash": "fddcded2ef749717eca0185c8c444872"
     },
     "store": {
-      "id": 4,
-      "name": "San Pablo 2",
-      "alias": "SP2",
-      "ip": "192.168.60.253:1619",
-      "id_viz": 4
+      "id": 16,
+      "name": "Apartado 1",
+      "alias": "AP1",
+      "ip": "192.168.10.55:1619",
+      "id_viz": 7
     },
     "rol": "aux"
   },
