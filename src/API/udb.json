@@ -178,13 +178,13 @@
       "hash": "3cfd95f4ce1149ed1897a2c107dc5a13"
     },
     "store": {
-      "id": 4,
-      "name": "San Pablo 2",
-      "alias": "SP2",
-      "ip": "192.168.60.253:1619",
-      "id_viz": 4
+      "id": 3,
+      "name": "San Pablo 1",
+      "alias": "SP1",
+      "ip": "192.168.100.250:1619",
+      "id_viz": 3
     },
-    "rol": "gen"
+    "rol": "aux"
   },
   {
     "id": 37,
