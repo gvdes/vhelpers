@@ -222,18 +222,18 @@
   },
   {
     "id": 162,
-    "name": "MAGALY YASMIN BLANCAS CARRILLO",
+    "name": "LUIS ANGEL SANCHEZ SANCHEZ",
     "credentials": {
-      "nick": "Magaly",
+      "nick": "AngelS",
       "pass": "9086",
       "hash": "0d85eb24e2add96ff1a7021f83c1abc9"
     },
     "store": {
-      "id": 14,
-      "name": "Brasil 2",
-      "alias": "BR2",
-      "ip": "192.168.80.249:1619",
-      "id_viz": 12
+      "id": 19,
+      "name": "Ecommerce",
+      "alias": "ECO",
+      "ip": "192.168.10.191:1619",
+      "id_viz": 20
     },
     "rol": "caj"
   },
