@@ -23,7 +23,7 @@
         <q-item-section class="text-center">NOTAS</q-item-section>
         <q-item-section class="text-center">ORIGEN</q-item-section>
         <q-item-section class="text-center">DESTINO</q-item-section>
-        <q-item-section class="text-center" >FACTUSOL</q-item-section>
+        <q-item-section class="text-center">FACTUSOL</q-item-section>
         <q-item-section class="text-center">ARTICULOS</q-item-section>
 
 
@@ -73,10 +73,11 @@
         </q-card-section>
         <q-card-section class="row items-center">
           <q-select v-model="nwTransfer._origin" :options="warehouses" label="Almacen Origen" class="col"
-            option-label="name" @update:model-value="nwTransfer._destiny = null" />
+            option-label="name" @update:model-value="nwTransfer._destiny = null"
+            :option-disable="(val) => optionDisAud(val)" />
           <q-icon name="arrow_forward" class="col" size="md" />
           <q-select v-model="nwTransfer._destiny" :options="warehouses" label="Almacen Destino" class="col"
-            option-label="name" :option-disable="(val) => optionDisable(val)" />
+            option-label="name" :option-disable="(val) => optionDisable(val)" :disable="nwTransfer._origin == null" />
         </q-card-section>
         <q-card-section>
           <q-input v-model="nwTransfer.notes" type="text" label="Notas" />
@@ -169,10 +170,20 @@ const reset = () => {
 }
 
 const optionDisable = (val) => {
-  if (val.id == nwTransfer.value._origin.id) {
+  return (
+    val.id === nwTransfer.value._origin.id ||
+    (VDB.session.rol !== 'aud' && val.id === 4)
+  );
+}
+
+const optionDisAud = (val) => {
+  console.log(val)
+  if (VDB.session.rol != 'aud' && val.id == 4) {
     return true
+  } else {
+    return false
+
   }
-  return false
 }
 
 
