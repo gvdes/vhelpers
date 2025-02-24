@@ -82,6 +82,10 @@ const routes = [
     component: () => import('layouts/TckVerifyLYT.vue'),
   },
   {
+    path: '/changePrices',
+    component: () => import('layouts/ChangePricesLYT.vue'),
+  },
+  {
     path: '/transfers',
     component: () => import('layouts/Transfers.vue'),
     children: [
