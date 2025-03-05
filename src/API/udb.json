@@ -63,7 +63,7 @@
       "name": "Brasil 1",
       "alias": "BR1",
       "ip": "192.168.10.177:1619",
-      "id_viz":11
+      "id_viz": 11
     },
     "rol": "gen"
   },
@@ -80,7 +80,7 @@
       "name": "Brasil 1",
       "alias": "BR1",
       "ip": "192.168.10.177:1619",
-      "id_viz":11
+      "id_viz": 11
     },
     "rol": "aux"
   },
@@ -114,7 +114,7 @@
       "name": "Bolivia",
       "alias": "BOL",
       "ip": "192.168.10.92:1619",
-      "id_viz":13
+      "id_viz": 13
     },
     "rol": "aux"
   },
@@ -148,7 +148,7 @@
       "name": "Bolivia",
       "alias": "BOL",
       "ip": "192.168.10.92:1619",
-      "id_viz":13
+      "id_viz": 13
     },
     "rol": "caj"
   },
@@ -165,7 +165,7 @@
       "name": "Brasil 1",
       "alias": "BR1",
       "ip": "192.168.10.177:1619",
-      "id_viz":11
+      "id_viz": 11
     },
     "rol": "caj"
   },
@@ -199,7 +199,7 @@
       "name": "Brasil 1",
       "alias": "BR1",
       "ip": "192.168.10.177:1619",
-      "id_viz":11
+      "id_viz": 11
     },
     "rol": "gen"
   },
@@ -722,11 +722,11 @@
       "hash": "fddcded2ef749717eca0185c8c444872"
     },
     "store": {
-      "id": 16,
-      "name": "Apartado 1",
-      "alias": "AP1",
-      "ip": "192.168.10.55:1619",
-      "id_viz": 7
+      "id": 4,
+      "name": "San Pablo 2",
+      "alias": "SP2",
+      "ip": "192.168.60.253:1619",
+      "id_viz": 4
     },
     "rol": "aux"
   },
@@ -777,7 +777,7 @@
       "name": "Bolivia",
       "alias": "BOL",
       "ip": "192.168.10.92:1619",
-      "id_viz":13
+      "id_viz": 13
     },
     "rol": "gen"
   },
