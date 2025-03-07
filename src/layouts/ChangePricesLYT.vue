@@ -54,6 +54,10 @@
         </q-card>
         <q-separator spaced inset vertical dark />
 
+
+
+      {{  }}
+
         <q-table :rows="bascket" :columns="table.columns" />
 
         <q-dialog v-model="mosPDF.state" persistent>
@@ -173,19 +177,21 @@ const prices = ref({
   ]
 })
 
+const filterPrices = computed(() => products.value.filter(e => e.prices.some(i => i.pivot.price != 0)) )
+
 
 const bascket = computed(() => {
   if (categories.value?.seccion?.val && !categories.value?.seccion?.familia?.val) {
-    return products.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
+    return filterPrices.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
   }
   else if (categories.value?.seccion?.val && categories.value?.seccion?.familia?.val && !categories.value?.seccion?.familia?.categorias?.val) {
-    return products.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
+    return filterPrices.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
   }
   else if (categories.value?.seccion?.val && categories.value?.seccion?.familia?.val && categories.value?.seccion?.familia?.categorias?.val) {
-    return products.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
+    return filterPrices.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
   }
   else {
-    return products.value;
+    return filterPrices.value;
   }
 });
 
