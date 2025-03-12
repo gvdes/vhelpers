@@ -35,8 +35,7 @@
                 </template>
               </q-input></div>
             <q-separator spaced inset vertical dark />
-            <q-select class="col" v-model="formas.val" :options="formas.opts" label="Formas de pago" filled
-              :disable="tickFilt.length <= 0" option-label="DESFPA" dense>
+            <q-select class="col" v-model="formas.val" :options="formas.opts" label="Formas de pago" filled  option-label="DESFPA" dense>
               <template v-slot:append>
                 <q-icon v-if="formas.val" name="close" @click="formas.val = null" />
               </template>
