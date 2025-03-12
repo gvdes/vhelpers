@@ -663,23 +663,6 @@
     "rol": "caj"
   },
   {
-    "id": 39,
-    "name": "BRYAN LEONARDO GOMEZ GARDUÑO",
-    "credentials": {
-      "nick": "BrayanL",
-      "pass": "360a",
-      "hash": "39f141863d2cee617073a81b2a58ca36"
-    },
-    "store": {
-      "id": 3,
-      "name": "San Pablo 1",
-      "alias": "SP1",
-      "ip": "192.168.100.250:1619",
-      "id_viz": 3
-    },
-    "rol": "aux"
-  },
-  {
     "id": 6,
     "name": "Luisa Irasema Tolentino Gallegos",
     "credentials": {
@@ -1443,5 +1426,57 @@
       "id_viz": 1
     },
     "rol": "adm"
+  },
+  {
+    "id": 542,
+    "name": "Miriam Yuridia Rodriguez Cervantes",
+    "credentials": {
+      "nick": "MiriamY",
+      "pass": "36ab",
+      "hash": "eda6a1ca88f9fdd0d38ac905b1fb494d"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS",
+      "alias": "CDISAP",
+      "ip": "192.168.10.160:1619",
+      "id_viz": 1
+    },
+    "rol": "adm"
+  },
+  {
+    "id": 80,
+    "name": "Diego Huerta Izalde",
+    "credentials": {
+      "nick": "DiegoIz",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS",
+      "alias": "CDISAP",
+      "ip": "192.168.10.160:1619",
+      "id_viz": 1
+    },
+    "rol": "adm"
+  },
+  {
+    "id": 39,
+    "name": "Bryan Leonardo Gomez Garduño",
+    "credentials": {
+      "nick": "BrayanL",
+      "pass": "360a",
+      "hash": "39f141863d2cee617073a81b2a58ca36"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS",
+      "alias": "CDISAP",
+      "ip": "192.168.10.160:1619",
+      "id_viz": 1
+    },
+    "rol": "adm"
   }
+
 ]
