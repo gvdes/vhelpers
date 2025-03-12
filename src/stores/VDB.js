@@ -14,7 +14,6 @@ export const useVDBStore = defineStore('vdb', {
       { id:4, name:"Etiquetas", alias:"ETQ", desc:"Creacion de etiquetas", path:"labels" },
       { id:5, name:"Pedidos", alias:"PDT", desc:"Pedidos Automaticos por Familia", path:"requisition" },
       { id:6, name:"Cambios Precios", alias:"CPP", desc:"Cambios de precios de productos", path:"changePrices" },
-
       { id:7, name:"Tickets", alias:"MOD", desc:"Moviemientos para  Tickets", path:"modificaciones"},
       { id:8, name:"Pagos", alias:"PAG", desc:"Consulta de pagos", path:"pagos"},
       { id:9, name:"Apertura", alias:"APC", desc:"Apertura de cajas", path:"apertura"},
@@ -26,9 +25,12 @@ export const useVDBStore = defineStore('vdb', {
       { id:14, name:"Presupuestos", alias:"PRS", desc:"Creador Presupuestos", path:"budgets"},
       { id:15, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
       { id:16, name:"Asistencias", alias:"ASIS", desc:"Consulta de asistencias", path:"assist"},
+      { id:17, name:"Ofertas", alias:"OFT", desc:"Cobros de ofertas", path:"offers"},
       { id:50, name:"Tarjetas", alias:"TRJS", desc:"Consulta Tarjetas Sucursales", path:"cardStores"},
       // { id:51, name:"Depositos", alias:"DPTS", desc:"Aprovacion de Depositos", path:"deposits/confirm"},
       { id:52, name:"Revision de Cajas", alias:"RDC", desc:"Revision Cajas Abiertas", path:"openbox"},
+      { id:53, name:"Reporte de Cajas", alias:"RPC", desc:"Reporte de cajas", path:"boxesreport"},
+
       // { id:99, name:"Reporte", alias:"RPT", desc:"Reporte Stock", path:"stocks"},
       { id:100, name:"Ventas", alias:"VS", desc:"Ventas Sucursales", path:"stores"},
     ]
@@ -51,10 +53,10 @@ export const useVDBStore = defineStore('vdb', {
       return state.modules.filter((m) => m.id <= 14)
     },
     authGen(state){
-      return state.modules.filter((m) => m.id <= 16)
+      return state.modules.filter((m) => m.id <= 17)
     },
     autAud(state){
-      return state.modules.filter((m) => m.id <= 16)
+      return state.modules.filter((m) => m.id <= 17)
     },
     autRoot(state){
       return state.modules.filter((m) => m.id <= 1000)
