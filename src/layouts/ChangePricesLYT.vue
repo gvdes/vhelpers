@@ -36,7 +36,7 @@
               option-label="name" :disable="!categories.seccion.val">
               <template v-if="categories.familias.val" v-slot:append>
                 <q-btn round dense flat icon="close"
-                  @click="categories.familias.val = null; categories.categorias.val = null " />
+                  @click="categories.familias.val = null; categories.categorias.val = null" />
               </template>
             </q-select>
 
@@ -45,7 +45,7 @@
             <q-select class="col" v-model="categories.categorias.val" :options="cateGa" label="CATEGORIA" filled
               option-label="name" :disable="!categories.familias.val">
               <template v-if="categories.categorias.val" v-slot:append>
-                <q-btn round dense flat icon="close" @click="categories.categorias.val = null " />
+                <q-btn round dense flat icon="close" @click="categories.categorias.val = null" />
               </template>
             </q-select>
 
@@ -56,7 +56,7 @@
 
 
 
-      {{  }}
+        {{ }}
 
         <q-table :rows="bascket" :columns="table.columns" />
 
@@ -164,6 +164,8 @@ const mosPDF = ref({
     { id: 9, label: 'Juguete Extra Niño' },
     { id: 10, label: 'Juguete Horizontal Niño' },
     { id: 11, label: 'Juguete Horizontal Niña' },
+    { id: 12, label: 'Rectangular 2x4' },
+
   ]
 })
 
@@ -177,7 +179,7 @@ const prices = ref({
   ]
 })
 
-const filterPrices = computed(() => products.value.filter(e => e.prices.some(i => i.pivot.price != 0)) )
+const filterPrices = computed(() => products.value.filter(e => e.prices.some(i => i.pivot.price != 0)))
 
 
 const bascket = computed(() => {
@@ -488,6 +490,22 @@ const pdf = () => {
           $q.loading.hide()
       })
       .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
+  } else if (mosPDF.value.val.id == 12) {
+    plainMedium(bascket.value)
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
+      })
+      .catch(r => {
+        console.log(r)
         alert('Hubo un error al descargar las etiquetas')
       })
   }
@@ -1424,6 +1442,98 @@ const Hlargenina = (data) => {
   });
 }
 
+const plainMedium = (data) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const products = data
+      const expandedProducts = [];
+      products.forEach(product => {
+        for (let i = 0; i < product._copies; i++) {
+          expandedProducts.push(product);
+        }
+      });
+      const doc = new jsPDF({ format: 'letter' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const marginX = 5; // Margen izquierdo
+      const marginY = 10; // Margen superior
+      const labelWidth = 100; // Ancho de cada etiqueta
+      const labelHeight = 60; // Alto de cada etiqueta
+      const spacingX = 5; // Espaciado horizontal entre etiquetas
+      const spacingY = 5; // Espaciado vertical entre etiquetas
+      const labelsPerRow = 2; // Número de etiquetas por fila
+      const labelsPerColumn = 4; // Número de etiquetas por columna
+      const totalLabelsPerPage = labelsPerRow * labelsPerColumn;
+
+      expandedProducts.forEach((product, index) => {
+        const currentPageIndex = Math.floor(index / totalLabelsPerPage); // Página actual
+        const indexInPage = index % totalLabelsPerPage; // Índice dentro de la página
+        const row = Math.floor(indexInPage / labelsPerRow); // Calcula la fila
+        const col = indexInPage % labelsPerRow; // Calcula la columna
+        const x = marginX + col * (labelWidth + spacingX); // Calcula la posición X
+        const y = marginY + row * (labelHeight + spacingY); // Calcula la posición Y
+        // Si el índice es un múltiplo del totalLabelsPerPage, agrega una nueva página
+        if (index > 0 && indexInPage === 0) {
+          doc.addPage(); // Agrega una nueva página cuando el índice es un múltiplo de totalLabelsPerPage
+        }
+        doc.setDrawColor(0);
+        doc.setLineWidth(0.5);
+        doc.rect(x, y, labelWidth, labelHeight);
+        // doc.addImage(image, type, x, y, labelWidth, labelHeight); // Agrega la imagen
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        // doc.text(product.name, x + 10, y + 22); // se agrega codigo corto
+        doc.text('Grupo Vizcarra',x+40, y+5)
+        // // doc.addImage(barcode(product.name), type, x + 75, y + 8, 15, 15); // Agrega el código de barras
+        doc.setFontSize(33);
+        doc.setFont('helvetica', 'bold');
+        // doc.text(product.name, x + 10, y + 22); // se agrega codigo corto
+        doc.text(product.name, x + 5, y + 15); // se agrega codigo corto
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+
+        // Dividir el texto de la descripción para ajustarlo dentro de la etiqueta
+        const maxLineWidth = labelWidth - 20; // Ancho máximo para el texto
+        const textLines = doc.splitTextToSize(product.label.toUpperCase(), maxLineWidth); // Divide el texto en líneas
+        doc.text(textLines, x + 5, y + 20); // Dibuja el texto dividido en la etiqueta
+        // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
+        doc.setFontSize(12);
+        let ypri = y + 32
+        let yprincrement = 7
+        product.usedPrices.filter(item => prices.value.val.includes(item.id)).forEach((e, i) => {
+          if (e.alias == "OFERTA") {
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Unico Precio', x + 15, ypri + i * yprincrement);// alias de el precio
+            doc.setFontSize(25);
+            doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 20, ypri + i * yprincrement + 15);// valor de el precio
+          } else {
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text(e.alias, x + 15, ypri + i * yprincrement);// alias de el precio
+            doc.text(`$${Number(e.pivot.price).toFixed(0)}`, x + 37, ypri + i * yprincrement);// valor de el precio
+          }
+        })
+        // //CONTINUA CODIGO
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${product.code}`, x + 66, y + 32); // codigo de el producto
+        doc.text(product.large, x + 45, y + 52); // largo de el producto
+        doc.text(`${product.pieces} PZS`, x + 70, y + 37); // piezas por caja
+        doc.setFontSize(4)
+        doc.setFont('helvetica', 'normal');
+        doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 18, y + 55); //ubicacion de exhibicion de el producto
+      });
+
+      doc.save(`${VDB.session.credentials.nick} etiquetas ${mosPDF.value.val.label}`);
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+}
 
 
 init()
