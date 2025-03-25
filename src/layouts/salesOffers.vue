@@ -8,7 +8,7 @@
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Cobro Ofertas</span></div>
         <div>Total $<span class="text-bold">{{products.reduce((a, e) => a + e.amount * e.price?.pivot.price, 0)
-        }}</span> </div>
+            }}</span> </div>
       </q-toolbar>
     </q-header>
     <q-page-container>
@@ -17,7 +17,7 @@
         <q-card class="my-card">
           <q-card-section v-if="products.length > 0">
             <q-table hide-bottom="" :rows="products" row-key="id" :columns="table.columns"
-              :pagination="table.pagination" @row-click="rowClick"  />
+              :pagination="table.pagination" @row-click="rowClick" />
           </q-card-section>
         </q-card>
 
@@ -34,7 +34,8 @@
             <div> <q-btn color="negative" icon="delete" @click="deleteProduct" flat size="sm"
                 v-if="editProduct.val.edit == true" v-close-popup /></div>
           </div>
-          {{ editProduct.val.description }}
+          <q-input v-model="editProduct.val.description" type="text" label="description" />
+          <!-- {{ editProduct.val.description }} -->
         </q-card-section>
 
         <q-card-section>
@@ -62,9 +63,8 @@
                     label="Precios" filled option-label="name" dense /></div>
                 <q-separator spaced inset vertical dark v-if="editProduct.val.price" />
                 <div class="col" v-if="editProduct.val.price"><q-input v-model="editProduct.val.price.pivot.price"
-                    type="number" label="Precio" filled dense
-                    :error="editProduct.val.price.pivot.price <= editProduct.val.cost"
-                    error-message="El importe tiene que ser mayor que el costo" /></div>
+                    type="number" label="Precio" filled dense :error="editProduct.val.price.pivot.price <= 0"
+                    error-message="El importe tiene que ser mayor que  0" /></div>
                 <!-- en caso de que sea menor que el costo se puede poner que sea mayor que 0 solo quitas el de cost y se pone en 0 para que no aparezca el mensaje -->
               </div>
               <q-separator spaced inset vertical dark />
@@ -91,7 +91,7 @@
         </q-card-section>
         <q-card-actions align="center">
           <q-btn flat icon="close" color="negative" v-close-popup />
-          <q-btn flat icon="edit" color="warning" v-close-popup @click="insertProduct"
+          <q-btn flat icon="edit" color="warning" v-close-popup @click="edtProduct"
             v-if="editProduct.val.edit == true" />
           <q-btn flat icon="check" color="positive" v-close-popup @click="insertProduct"
             v-if="editProduct.val.edit == false"
@@ -304,38 +304,42 @@ const agregar = (ops) => {
   console.log(ops)
   let inx = products.value.findIndex(e => e.id == ops.id)
   console.log(inx);
-  if (inx >= 0) {
-    $q.notify({ message: 'El Producto ya esta agregado', type: 'negative', position: 'center' })
-    editProduct.value.state = true
-    editProduct.value.val = products.value[inx]
-    editProduct.value.val.edit = true
-  } else {
-    editProduct.value.state = true
-    ops.amount = 1
-    ops.notes = '';
-    ops.edit = false
-    editProduct.value.val = ops
-  }
+  // if (inx >= 0) {
+  //   $q.notify({ message: 'El Producto ya esta agregado', type: 'negative', position: 'center' })
+  //   editProduct.value.state = true
+  //   editProduct.value.val = products.value[inx]
+  //   editProduct.value.val.edit = true
+  // } else {
+  editProduct.value.state = true
+  ops.amount = 1
+  ops.notes = '';
+  ops.edit = false
+  editProduct.value.val = ops
+  // }
 }
 
-const rowClick = (a, b) => {
-  let inx = products.value.findIndex(e => e.id == b.id)
+const rowClick = (a, b, c) => {
+  console.log(b)
+  console.log(c)
+  let inx = c
   console.log(inx);
   if (inx >= 0) {
     editProduct.value.state = true
     editProduct.value.val = products.value[inx]
     editProduct.value.val.edit = true
+    editProduct.value.index = inx
   }
 }
 
 const insertProduct = () => {
-  let inx = products.value.findIndex(e => e.id == editProduct.value.val.id)
-  if (inx >= 0) {
-    products.value.splice(inx, 1, editProduct.value.val)
-  } else {
-    console.log(editProduct.value.val);
-    products.value.push(editProduct.value.val)
-  }
+  console.log(editProduct.value.val);
+  products.value.push(editProduct.value.val)
+
+}
+
+const edtProduct = () => {
+  let inx = editProduct.value.index
+  products.value.splice(inx, 1, editProduct.value.val)
 }
 
 const deleteProduct = () => {
@@ -423,7 +427,7 @@ const terminar = async () => {
     }
     modes.value = { "EFE": { id: null, val: 0 }, "DIG": { id: null, val: 0 } };
     products.value = [];
-    $q.notify({message:resp.data.mssg,type:'positive',position:'center'})
+    $q.notify({ message: resp.data.mssg, type: 'positive', position: 'center' })
     // $q.loading.hide()
   }
 

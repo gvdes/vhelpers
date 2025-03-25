@@ -16,15 +16,14 @@
           <q-card class="my-card" @click="mosant">
 
             <q-card-section>
-              <div class="text-h6 text-center">Ventas 2023</div>
-              <div class="text-h4 text-center">{{ Number(report.salesant / report.salesant * 100) + '%' }}</div>
-              <!-- <div class="text-caption text-white text-center">{{ Number(report.salesant * 1.10).toFixed(2) }}</div> -->
-
+              <div class="text-h6 text-center">Ventas 2024</div>
+              <!-- <div class="text-h4 text-center">{{ Number(report.salesant / report.salesant * 100) + '%' }}</div> -->
+              <div class="text-h4 text-center">{{ Number(report.salesant * 1.10).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) }}</div>
 
             </q-card-section>
 
             <q-card-section>
-              <div class="text-h6 text-center">Tickets 2023</div>
+              <div class="text-h6 text-center">Tickets 2024</div>
               <div class="text-h4 text-center">{{ report.tiketsant }}</div>
             </q-card-section>
 
@@ -32,13 +31,15 @@
 
           <q-card class="my-card" @click="mosant">
             <q-card-section>
-              <div class="text-h6 text-center">Ventas 2024</div>
-              <div class="text-h4 text-center">{{  Number(report.salesact / Number(report.salesant *1.1) * 100).toFixed(2) + '%' }}</div>
+              <div class="text-h6 text-center">Ventas 2025</div>
+              <!-- <div class="text-h4 text-center">{{  Number(report.salesact / Number(report.salesant *1.1) * 100).toFixed(2) + '%' }}</div> -->
+              <div class="text-h4 text-center">{{  Number(report.salesact).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</div>
+
 
             </q-card-section>
 
             <q-card-section>
-              <div class="text-h6 text-center">Tickets 2024</div>
+              <div class="text-h6 text-center">Tickets 2025</div>
               <div class="text-h4 text-center">{{ report.tiketsact }}</div>
             </q-card-section>
 
@@ -46,7 +47,9 @@
           <q-card class="my-card" @click="mosant">
             <q-card-section>
               <div class="text-h6 text-center">Diferencia</div>
-              <div class="text-h4 text-center">{{  Number(Number(report.salesact / Number(report.salesant *1.1) * 100) - Number(Number(report.salesant *1.1) / Number(report.salesant *1.1) * 100)).toFixed(2) + '%'}}</div>
+              <!-- <div class="text-h4 text-center">{{  Number(Number(report.salesact / Number(report.salesant *1.1) * 100) - Number(Number(report.salesant *1.1) / Number(report.salesant *1.1) * 100)).toFixed(2) + '%'}}</div> -->
+              <div class="text-h4 text-center">{{  Number(report.salesact - Number(report.salesant *1.1)).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</div>
+
             </q-card-section>
 
             <q-card-section>
@@ -58,8 +61,7 @@
             <q-card class="my-card" @click="moshoy" >
               <q-card-section>
                 <div class="text-h6 text-center">VENTA HOY </div>
-                <div class="text-h4 text-center">{{ Number.parseFloat(report.saleshoy).toLocaleString('en-US',
-                  { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
+                <div class="text-h4 text-center">{{ Number.parseFloat(report.saleshoy).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) }}</div>
               </q-card-section>
               <q-card-section>
                 <div class="text-h6 text-center">Tickets Hoy</div>
@@ -74,8 +76,9 @@
           <div class="q-pa-md" v-for="(depvent, index) in report.ventasdepmonth" :key="index">
             <q-linear-progress size="25px" stripe rounded :value="depvent.VENTA / report.salesact" color="primary">
               <div class="absolute-full flex flex-center">
-                <q-badge color="white" text-color="accent"
-                  :label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.salesact * 100).toFixed(2) + ')'" />
+                <!-- <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.salesact * 100).toFixed(2) + ')'" /> -->
+                <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   ( ' + Number.parseFloat(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" />
+
               </div>
             </q-linear-progress>
           </div>
@@ -85,8 +88,9 @@
           <div class="q-pa-md" v-for="(depvent, index) in report.ventasdepday" :key="index">
             <q-linear-progress size="25px" stripe rounded :value="depvent.VENTA / report.saleshoy" color="primary">
               <div class="absolute-full flex flex-center">
-                <q-badge color="white" text-color="accent"
-                  :label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.saleshoy * 100).toFixed(2) + ')'" />
+                <!-- <q-badge color="white" text-color="accent":label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.saleshoy * 100).toFixed(2) + ')'" /> -->
+                <q-badge color="white" text-color="accent":label="depvent.NOMDEP + '   ( ' + Number(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" />
+
               </div>
             </q-linear-progress>
           </div>
