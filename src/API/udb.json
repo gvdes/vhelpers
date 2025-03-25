@@ -816,7 +816,7 @@
     "rol": "root"
   },
   {
-    "id": 1000,
+    "id": 97,
     "name": "Jose Adrian Martinez Escobar ",
     "credentials": {
       "nick": "JoseMar",
@@ -833,7 +833,7 @@
     "rol": "aud"
   },
   {
-    "id": 1001,
+    "id": 1690,
     "name": "SONIA DIEGO FRANCISCO",
     "credentials": {
       "nick": "SoniaF",
@@ -850,7 +850,7 @@
     "rol": "aud"
   },
   {
-    "id": 1002,
+    "id": 141,
     "name": "FERNANDO ALBERTO MOGUEL CRUZ",
     "credentials": {
       "nick": "FernandoMo",
@@ -867,10 +867,10 @@
     "rol": "aud"
   },
   {
-    "id": 1003,
-    "name": "JONATHAN SERRANO VIZCARRA",
+    "id": 159,
+    "name": "OMAR BAUTISTA HERNANDEZ",
     "credentials": {
-      "nick": "JonathanSe",
+      "nick": "OmarBh",
       "pass": "d680",
       "hash": "c7862693c953ca8d6a00494edf1b2d7b"
     },
@@ -884,10 +884,27 @@
     "rol": "aud"
   },
   {
-    "id": 1004,
+    "id": 652,
     "name": "RUBEN MENDEZ JUAREZ",
     "credentials": {
       "nick": "RubenMe",
+      "pass": "c4a4",
+      "hash": "3e0ac4b9dddada2ec77d34d70ed0ad5c"
+    },
+    "store": {
+      "id": 3,
+      "name": "San Pablo 1",
+      "alias": "SP1",
+      "ip": "192.168.100.250:1619",
+      "id_viz": 3
+    },
+    "rol": "aud"
+  },
+  {
+    "id": 3553,
+    "name": "AXEL CARMONA GARCIA",
+    "credentials": {
+      "nick": "AxelCa",
       "pass": "c4a4",
       "hash": "3e0ac4b9dddada2ec77d34d70ed0ad5c"
     },
