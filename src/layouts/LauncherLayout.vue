@@ -16,7 +16,7 @@
             @update:model-value="changeStore" v-if="VDB.session.rol == 'aud' || VDB.session.rol == 'root'" />
           <div class="q-py-md text-center">
             <div class="text-h4 text-indigo-10">Menu</div>
-            <div class="text-grey-5">Herramientas rapiditas</div>
+            <div class="text-grey-5">Vhelpers</div>
           </div>
 
           <q-item clickable v-ripple v-for="(module, idx) in appmodules" :key="idx" :to="module.path">
