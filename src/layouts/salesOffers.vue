@@ -95,7 +95,7 @@
             v-if="editProduct.val.edit == true" />
           <q-btn flat icon="check" color="positive" v-close-popup @click="insertProduct"
             v-if="editProduct.val.edit == false"
-            :disable="editProduct.val.price?.pivot.price <= editProduct.val.cost || editProduct.val.notes.length <= 0" />
+            :disable="editProduct.val.price?.pivot.price <=  0 || editProduct.val.notes.length <= 0" />
         </q-card-actions>
       </q-card>
     </q-dialog>
