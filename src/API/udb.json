@@ -1494,6 +1494,23 @@
       "id_viz": 1
     },
     "rol": "adm"
+  },
+  {
+    "id": 97,
+    "name": "Luz Maria Samano ",
+    "credentials": {
+      "nick": "LuzMa",
+      "pass": "0f93",
+      "hash": "4237fcbbd0e1a6102d7a805d043ff71a"
+    },
+    "store": {
+      "id": 1,
+      "name": "Prueba",
+      "alias": "CDS",
+      "ip": "192.168.10.207:1619",
+      "id_viz": 1
+    },
+    "rol": "gen"
   }
 
 ]
