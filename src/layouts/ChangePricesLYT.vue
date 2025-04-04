@@ -7,6 +7,8 @@
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Cambios de precio</span>
         </div>
+        <div class="text-bold"> Cambio de Precios : {{ typeof (fechas.date) == 'object' ? `Del ${fechas.date.from} a ${fechas.date.to}` : fechas.date }}</div>
+
         <div class="row">
           <q-btn color="primary" icon="event" flat @click="fechas.state = !fechas.state" />
           <q-separator spaced inset vertical dark />
@@ -136,13 +138,15 @@ const stocksColumns = ref([
     name: 'stock_exh',
     label: 'EXHIBICION',
     field: row => row.stocks?.find(s => s.pivot)?.pivot?.exh || 0,
-    align: 'center'
+    align: 'center',
+    sortable:true
   },
   {
     name: 'stock_gen',
     label: 'GENERAL',
     field: row => row.stocks?.find(s => s.pivot)?.pivot?.gen || 0,
-    align: 'center'
+    align: 'center',
+    sortable:true
   }
 ])
 const categories = ref({
@@ -162,13 +166,13 @@ const categories = ref({
 
 const table = ref({
   columns: [
-    { name: 'code', label: 'CODIGO', field: row => row.code, align: 'left' },
-    { name: 'barcode', label: 'CB', field: row => row.barcode, align: 'left' },
-    { name: 'description', label: 'DESCRIPCION', field: row => row.description, align: 'left' },
-    { name: 'section', label: 'SECCION', field: row => row.categories.familia.seccion.name, align: 'left' },
-    { name: 'family', label: 'FAMILIA', field: row => row.categories.familia.name, align: 'left' },
-    { name: 'category', label: 'CATEGORIA', field: row => row.categories.name, align: 'left' },
-    { name: 'locations', label: 'UBICACION', field: row => row.locations?.map(e => e.path).join('/'), align: 'center' },
+    { name: 'code', label: 'CODIGO', field: row => row.code, align: 'left', sortable:true },
+    { name: 'barcode', label: 'CB', field: row => row.barcode, align: 'left' , sortable:true },
+    { name: 'description', label: 'DESCRIPCION', field: row => row.description, align: 'left', sortable:true },
+    { name: 'section', label: 'SECCION', field: row => row.categories.familia.seccion.name, align: 'left', sortable:true },
+    { name: 'family', label: 'FAMILIA', field: row => row.categories.familia.name, align: 'left', sortable:true },
+    { name: 'category', label: 'CATEGORIA', field: row => row.categories.name, align: 'left', sortable:true },
+    { name: 'locations', label: 'UBICACION', field: row => row.locations?.map(e => e.path).join('/'), align: 'center', sortable:true },
     ...priceColumns.value,
     ...stocksColumns.value
   ]
@@ -280,7 +284,8 @@ const init = async () => {
             name: `price_${price.id}`,
             label: price.name,
             field: row => row.prices.find(p => p.id === price.id)?.pivot?.price || 0,
-            align: 'center'
+            align: 'center',
+            sortable:true
           });
         });
       }
@@ -335,7 +340,8 @@ const buscas = async () => {
             name: `price_${price.id}`,
             label: price.name,
             field: row => row.prices.find(p => p.id === price.id)?.pivot?.price || 0,
-            align: 'center'
+            align: 'center',
+            sortable:true
           });
         });
       }
