@@ -198,6 +198,8 @@ const appmodules = computed(() => {
     return VDB.authsFloor
   }else if (user.rol == 'dir') {
     return VDB.authdir
+  }else if (user.rol == 'alm'){
+    return VDB.authsWarehouseman
   }
 })
 

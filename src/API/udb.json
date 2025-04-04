@@ -119,10 +119,10 @@
     "rol": "aux"
   },
   {
-    "id": 1,
-    "name": "VasioS",
+    "id": 43,
+    "name": "JULIO CESAR MARTINEZ CONTRERAS",
     "credentials": {
-      "nick": "vacio",
+      "nick": "JulioMa",
       "pass": "dd2f",
       "hash": "3beddce06bf229bfd00df3b16bb85dbd"
     },
@@ -133,7 +133,7 @@
       "ip": "192.168.10.53:1619",
       "id_viz": 1
     },
-    "rol": "ven"
+    "rol": "alm"
   },
   {
     "id": 87,
@@ -544,21 +544,21 @@
     "rol": "gen"
   },
   {
-    "id": 136,
-    "name": "DULCE MARIA RAMIREZ BALTAZAR",
+    "id": 33,
+    "name": "JOSE LUIS CRUZ CERVANTES",
     "credentials": {
-      "nick": "DulceRa",
+      "nick": "JoseCr",
       "pass": "532c",
       "hash": "41464fb916aea6b87db8063ac3500554"
     },
     "store": {
-      "id": 11,
-      "name": "Ramon C 2",
-      "alias": "RA2",
-      "ip": "192.168.10.232:1619",
-      "id_viz": 10
+      "id": 1,
+      "name": "CEDIS",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
     },
-    "rol": "caj"
+    "rol": "alm"
   },
   {
     "id": 193,
@@ -681,20 +681,20 @@
   },
   {
     "id": 96,
-    "name": "Leticia Carbajal Segovia",
+    "name": "LUIS IGNACIO MORALES JIMENEZ",
     "credentials": {
-      "nick": "LeticiaCa",
+      "nick": "IgnacioMo",
       "pass": "0a9b",
       "hash": "0b8a3c958f6b3c3f777cda30d694e259"
     },
     "store": {
-      "id": 4,
-      "name": "San Pablo 2",
-      "alias": "SP2",
-      "ip": "192.168.60.253:1619",
-      "id_viz": 4
+      "id": 1,
+      "name": "CEDIS",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
     },
-    "rol": "caj"
+    "rol": "alm"
   },
   {
     "id": 161,
@@ -732,20 +732,20 @@
   },
   {
     "id": 54,
-    "name": "Eliuth Huerta Izalde",
+    "name": "JOSE ANTONIO MORALES ANDRADE",
     "credentials": {
-      "nick": "Eliuth",
+      "nick": "JoseAnt",
       "pass": "d680",
       "hash": "c7862693c953ca8d6a00494edf1b2d7b"
     },
     "store": {
-      "id": 4,
-      "name": "San Pablo 2",
-      "alias": "SP2",
-      "ip": "192.168.60.253:1619",
-      "id_viz": 4
+      "id": 1,
+      "name": "CEDIS",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
     },
-    "rol": "gen"
+    "rol": "alm"
   },
   {
     "id": 7,
@@ -1259,9 +1259,9 @@
   },
   {
     "id": 545,
-    "name": "ALICIA VELAZQUEZ",
+    "name": "GEOVANY ENRIQUE ESPINAL",
     "credentials": {
-      "nick": "AliciaV",
+      "nick": "GeovanyEn",
       "pass": "d680",
       "hash": "c7862693c953ca8d6a00494edf1b2d7b"
     },
@@ -1272,7 +1272,7 @@
       "ip": "192.168.10.53:1619",
       "id_viz": 1
     },
-    "rol": "floor"
+    "rol": "alm"
   },
   {
     "id": 893,
@@ -1289,7 +1289,7 @@
       "ip": "192.168.10.53:1619",
       "id_viz": 1
     },
-    "rol": "floor"
+    "rol": "alm"
   },
   {
     "id": 655,
@@ -1306,13 +1306,13 @@
       "ip": "192.168.10.53:1619",
       "id_viz": 1
     },
-    "rol": "floor"
+    "rol": "alm"
   },
   {
     "id": 17,
-    "name": "VIVIANA CASTRO",
+    "name": "MARCO ANTONIO MENDEZ CRISTOBAL",
     "credentials": {
-      "nick": "VivianaC",
+      "nick": "MarcoA",
       "pass": "36ab",
       "hash": "eda6a1ca88f9fdd0d38ac905b1fb494d"
     },
@@ -1323,7 +1323,7 @@
       "ip": "192.168.10.53:1619",
       "id_viz": 1
     },
-    "rol": "floor"
+    "rol": "alm"
   },
   {
     "id": 74,
@@ -1511,6 +1511,73 @@
       "id_viz": 1
     },
     "rol": "gen"
+  },
+  {
+    "id": 75,
+    "name": "DANIEL SALVADOR RODRIGUEZ FLORES",
+    "credentials": {
+      "nick": "DanielRo",
+      "pass": "d1a7",
+      "hash": "ec352574309926c0da81c8ff68743a97"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS SP",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
+    },
+    "rol": "alm"
+  },
+  {
+    "id": 41,
+    "name": "ISRAEL SERRANO GARCIA",
+    "credentials": {
+      "nick": "IsraelSe",
+      "pass": "532c",
+      "hash": "41464fb916aea6b87db8063ac3500554"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS SP",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
+    },
+    "rol": "alm"
+  },
+  {
+    "id": 142,
+    "name": "ALICIA VAZQUEZ RIZO",
+    "credentials": {
+      "nick": "AliciaVa",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS SP",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
+    },
+    "rol": "alm"
+  },
+  {
+    "id": 29,
+    "name": "BIVIANA CASTRO JIMENEZ",
+    "credentials": {
+      "nick": "BivianaCa",
+      "pass": "ed2c",
+      "hash": "0ed78770cf32f0862e17cee2b64e635c"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS SP",
+      "alias": "CDS",
+      "ip": "192.168.10.53:1619",
+      "id_viz": 1
+    },
+    "rol": "alm"
   }
-
 ]

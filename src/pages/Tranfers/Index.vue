@@ -66,17 +66,18 @@
       </q-card>
     </q-dialog>
 
+
     <q-dialog v-model="addTransfer" persistent>
       <q-card style="width: 700px; max-width: 80vw;">
         <q-card-section class="text-h5 text-bold text-center">
           Nuevo Traspaso
         </q-card-section>
         <q-card-section class="row items-center">
-          <q-select v-model="nwTransfer._origin" :options="warehouses" label="Almacen Origen" class="col"
+          <q-select v-model="nwTransfer._origin" :options="userWarehouse" label="Almacen Origen" class="col"
             option-label="name" @update:model-value="nwTransfer._destiny = null"
             :option-disable="(val) => optionDisAud(val)" />
           <q-icon name="arrow_forward" class="col" size="md" />
-          <q-select v-model="nwTransfer._destiny" :options="warehouses" label="Almacen Destino" class="col"
+          <q-select v-model="nwTransfer._destiny" :options="userWarehouse" label="Almacen Destino" class="col"
             option-label="name" :option-disable="(val) => optionDisable(val)" :disable="nwTransfer._origin == null" />
         </q-card-section>
         <q-card-section>
@@ -125,6 +126,7 @@ const nwTransfer = ref({
 
 
 const validTransfer = computed(() => nwTransfer.value._origin && nwTransfer.value._destiny && nwTransfer.value.notes)
+const userWarehouse = computed(() => VDB.session.rol !== 'alm' ? warehouses.value.filter(w => [1,2,3,4].includes(w.id)) : warehouses.value.filter(w => [5,6].includes(w.id)))
 
 const index = async () => {
   console.log("Recibiendo Datos :)")
