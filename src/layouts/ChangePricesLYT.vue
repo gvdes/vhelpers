@@ -8,6 +8,8 @@
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Cambios de precio</span>
         </div>
         <div class="row">
+          <q-btn color="primary" icon="event" flat @click="fechas.state = !fechas.state" />
+          <q-separator spaced inset vertical dark />
           <q-btn class="col" flat color="primary" icon="download" rounded title="Importar Excel" @click="exportTable" />
           <q-separator spaced inset vertical dark />
           <q-btn class="col" flat color="primary" icon="label" rounded title="Crear Etiquetas"
@@ -54,10 +56,6 @@
         </q-card>
         <q-separator spaced inset vertical dark />
 
-
-
-        {{ }}
-
         <q-table :rows="bascket" :columns="table.columns" />
 
         <q-dialog v-model="mosPDF.state" persistent>
@@ -84,6 +82,27 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
+
+        <q-dialog v-model="fechas.state">
+          <q-card class="my-card">
+            <q-card-section>
+              <div class="q-pa-md">
+                <div class="q-pb-sm">
+                  <!-- Desde: {{ fechas.from }} : Hasta {{ fechas.to }} -->
+                </div>
+                <q-date v-model="fechas.date" range minimal />
+              </div>
+            </q-card-section>
+            <q-card-section>
+              <q-card-actions align="right">
+                <q-btn flat icon="close" color="negative" @click="fechas.state = !fechas.state" />
+                <q-btn flat icon="check" color="positive" @click="buscas" />
+              </q-card-actions>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+
+
       </q-page>
     </q-page-container>
   </q-layout>
@@ -95,6 +114,7 @@ import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import pricesProduct from 'src/API/pricesProduct.js'
 import { exportFile, useQuasar } from 'quasar';
 import { jsPDF } from "jspdf";
+import dayjs from "dayjs";
 import autoTable from 'jspdf-autotable'
 import { computed, ref } from 'vue';
 import ExcelJS from 'exceljs';
@@ -105,6 +125,11 @@ const VDB = useVDBStore();
 const $q = useQuasar();
 
 const products = ref([]);
+
+const fechas = ref({
+  state:false,
+  date:null
+})
 const priceColumns = ref([]);
 const stocksColumns = ref([
   {
@@ -215,8 +240,12 @@ const cateGa = computed(() => {
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Informacion' });
+
+  let date = new Date();
+  fechas.value.date = dayjs(date).format("YYYY/MM/DD")
+
   let sid = VDB.session.store.id_viz
-  const resp = await pricesProduct.getData(sid);
+  const resp = await pricesProduct.getData(sid,{fechas:fechas.value.date});
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -261,6 +290,61 @@ const init = async () => {
     $q.loading.hide()
   }
 
+}
+
+
+const buscas = async () => {
+  $q.loading.show({ message: 'Obteniendo Informacion' });
+
+  // let date = new Date();
+  // fechas.value.date = dayjs(date).format("YYYY/MM/DD")
+
+  let sid = VDB.session.store.id_viz
+  const resp = await pricesProduct.getData(sid,{fechas:fechas.value.date});
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    products.value = resp
+    products.value.forEach(e => {
+      let _labelType = labelType(e.prices)
+      e._copies = 1;
+      e.type = _labelType.type;
+      e.usedPrices = _labelType.prices;
+
+      const seccion = e.categories.familia.seccion
+      if (seccion && !categories.value.seccion.opts.map(e => e.id).includes(seccion.id)) {
+        categories.value.seccion.opts.push(seccion)
+      }
+      const familia = e.categories.familia
+      if (familia && !categories.value.familias.opts.map(e => e.id).includes(familia.id)) {
+        categories.value.familias.opts.push(familia)
+      }
+      const categoria = e.categories
+      if (categoria && !categories.value.categorias.opts.map(e => e.id).includes(categoria.id)) {
+        categories.value.categorias.opts.push(categoria)
+      }
+    })
+
+
+    if (products.value.length > 0) {
+      const sampleProduct = products.value[0];
+      if (sampleProduct.prices) {
+        sampleProduct.prices.forEach(price => {
+          priceColumns.value.push({
+            name: `price_${price.id}`,
+            label: price.name,
+            field: row => row.prices.find(p => p.id === price.id)?.pivot?.price || 0,
+            align: 'center'
+          });
+        });
+      }
+      table.value.columns = [
+        ...table.value.columns, ...priceColumns.value]
+    }
+    $q.loading.hide()
+    fechas.value.state = !fechas.value.state
+  }
 }
 
 const exportTable = async () => {
@@ -1483,7 +1567,7 @@ const plainMedium = (data) => {
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
         // doc.text(product.name, x + 10, y + 22); // se agrega codigo corto
-        doc.text('Grupo Vizcarra',x+40, y+5)
+        doc.text('Grupo Vizcarra', x + 40, y + 5)
         // // doc.addImage(barcode(product.name), type, x + 75, y + 8, 15, 15); // Agrega el código de barras
         doc.setFontSize(33);
         doc.setFont('helvetica', 'bold');

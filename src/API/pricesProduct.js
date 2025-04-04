@@ -1,7 +1,7 @@
 import { vizapi } from "src/boot/axios";
 
 export default{
-  getData(sid){
-    return vizapi.get(`/compare/getChangePrices/${sid}`).then( done=>done.data ).catch( fail => { return {fail}} );
+  getData(sid,data){
+    return vizapi.post(`/compare/getChangePrices/${sid}`, data).then( done=>done.data ).catch( fail => { return {fail}} );
   }
 }
