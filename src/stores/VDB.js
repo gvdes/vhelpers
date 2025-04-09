@@ -53,7 +53,7 @@ export const useVDBStore = defineStore('vdb', {
       return state.modules.filter((m) => m.id <= 14)
     },
     authsWarehouseman (state) {
-      return state.modules.filter((m) => m.id == 11)
+      return state.modules.filter((m) => m.id == 11 || m.id == 5  )
     },
     authGen(state){
       return state.modules.filter((m) => m.id <= 17)
