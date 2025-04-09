@@ -89,7 +89,7 @@
             <q-linear-progress size="25px" stripe rounded :value="depvent.VENTA / report.saleshoy" color="primary">
               <div class="absolute-full flex flex-center">
                 <!-- <q-badge color="white" text-color="accent":label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.saleshoy * 100).toFixed(2) + ')'" /> -->
-                <q-badge color="white" text-color="accent":label="depvent.NOMDEP + '   ( ' + Number(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" />
+                <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   ( ' + Number(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" />
 
               </div>
             </q-linear-progress>

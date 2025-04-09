@@ -496,16 +496,16 @@
     "id": 193,
     "name": "SELENE YAÑEZ DOMINGUEZ",
     "credentials": {
-      "nick": "SeleneYa",
+      "nick": "SeleneDo",
       "pass": "8324",
       "hash": "e5fc3b8d9510b02e42361c337597d9fa"
     },
     "store": {
-      "id": 10,
-      "name": "Ramon C 1",
-      "alias": "RA1",
-      "ip": "192.168.10.46:1619",
-      "id_viz": 9
+      "id": 6,
+      "name": "San Pablo C",
+      "alias": "SPC",
+      "ip": "192.168.60.249:1619",
+      "id_viz": 17
     },
     "rol": "aux"
   },
@@ -907,6 +907,57 @@
       "nick": "AxelCa",
       "pass": "c4a4",
       "hash": "3e0ac4b9dddada2ec77d34d70ed0ad5c"
+    },
+    "store": {
+      "id": 3,
+      "name": "San Pablo 1",
+      "alias": "SP1",
+      "ip": "192.168.100.250:1619",
+      "id_viz": 3
+    },
+    "rol": "aud"
+  },
+  {
+    "id": 149,
+    "name": "ALAN OMAR RODRIGUEZ RODRIGUEZ",
+    "credentials": {
+      "nick": "AlanOm",
+      "pass": "c4a4",
+      "hash": "3e0ac4b9dddada2ec77d34d70ed0ad5c"
+    },
+    "store": {
+      "id": 3,
+      "name": "San Pablo 1",
+      "alias": "SP1",
+      "ip": "192.168.100.250:1619",
+      "id_viz": 3
+    },
+    "rol": "aud"
+  },
+  {
+    "id": 3560,
+    "name": "CHRISTIAN TESSMAN ZAVALA",
+    "credentials": {
+      "nick": "ChristianZa",
+      "pass": "d680",
+      "hash": "c7862693c953ca8d6a00494edf1b2d7b"
+    },
+    "store": {
+      "id": 3,
+      "name": "San Pablo 1",
+      "alias": "SP1",
+      "ip": "192.168.100.250:1619",
+      "id_viz": 3
+    },
+    "rol": "aud"
+  },
+  {
+    "id": 178,
+    "name": "JOSE ANTONIO RODRIGUEZ TIRADO",
+    "credentials": {
+      "nick": "AntonioRo",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
     },
     "store": {
       "id": 3,
