@@ -561,12 +561,29 @@
     "rol": "alm"
   },
   {
-    "id": 193,
-    "name": "SELENE YAÑEZ DOMINGUEZ",
+    "id": 2524,
+    "name": "ALEXIS FERNANDO SANCHEZ RODRIGUEZ",
     "credentials": {
-      "nick": "SeleneYaRa2",
+      "nick": "FernadoFeRa1",
       "pass": "a9da",
       "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 10,
+      "name": "Ramon C 1",
+      "alias": "RA1",
+      "ip": "192.168.10.46:1619",
+      "id_viz": 9
+    },
+    "rol": "aux"
+  },
+  {
+    "id": 2524,
+    "name": "ALEXIS FERNANDO SANCHEZ RODRIGUEZ",
+    "credentials": {
+      "nick": "FernadoFeRa2",
+      "pass": "8b83",
+      "hash": "abd4cf3263f5b514f9c6d19fa338ef23"
     },
     "store": {
       "id": 11,
