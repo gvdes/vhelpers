@@ -94,6 +94,18 @@ const routes = [
     component: () => import('layouts/salesOffers.vue'),
   },
   {
+    path: '/cortBoxes',
+    component: () => import('layouts/cortBoxes.vue'),
+  },
+  {
+    path: '/tcksPrit',
+    component: () => import('layouts/tcksPrint.vue'),
+  },
+  {
+    path: '/withdrawals',
+    component: () => import('layouts/withdrawals.vue'),
+  },
+  {
     path: '/transfers',
     component: () => import('layouts/Transfers.vue'),
     children: [

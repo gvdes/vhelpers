@@ -30,6 +30,9 @@ export const useVDBStore = defineStore('vdb', {
       // { id:51, name:"Depositos", alias:"DPTS", desc:"Aprovacion de Depositos", path:"deposits/confirm"},
       { id:52, name:"Revision de Cajas", alias:"RDC", desc:"Revision Cajas Abiertas", path:"openbox"},
       { id:53, name:"Reporte de Cajas", alias:"RPC", desc:"Reporte de cajas", path:"boxesreport"},
+      { id:54, name:"Corte de Cajas", alias:"CDC", desc:"Cortes de Cajas", path:"cortBoxes"},
+      { id:55, name:"Tickets", alias:"TPRT", desc:"Tickets Sucursales", path:"tcksPrit"},
+      // { id:56, name:"Retiradas", alias:"RTRD", desc:"Gestion De Retiradas", path:"withdrawals"},
 
       // { id:99, name:"Reporte", alias:"RPT", desc:"Reporte Stock", path:"stocks"},
       { id:100, name:"Ventas", alias:"VS", desc:"Ventas Sucursales", path:"stores"},
