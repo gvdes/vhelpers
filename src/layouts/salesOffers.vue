@@ -386,7 +386,7 @@ const optionDisable = (val) => {
 
 const terminar = async () => {
   // let host = '192.168.10.160:1619'
-  // $q.loading.show({message:"Realizando Ticket"});
+  $q.loading.show({message:"Realizando Ticket"});
   let host = VDB.session.store.ip;
   let url = `http://${host}/access/public/modify/createTicket`;
   let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
@@ -428,7 +428,7 @@ const terminar = async () => {
     modes.value = { "EFE": { id: null, val: 0 }, "DIG": { id: null, val: 0 } };
     products.value = [];
     $q.notify({ message: resp.data.mssg, type: 'positive', position: 'center' })
-    // $q.loading.hide()
+    $q.loading.hide()
   }
 
 }
