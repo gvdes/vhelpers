@@ -106,6 +106,10 @@ const routes = [
     component: () => import('layouts/withdrawals.vue'),
   },
   {
+    path: '/advances',
+    component: () => import('layouts/AdvancesLYT.vue'),
+  },
+  {
     path: '/transfers',
     component: () => import('layouts/Transfers.vue'),
     children: [

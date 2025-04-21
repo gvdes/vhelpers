@@ -7,7 +7,7 @@
         <div class="col">
           <span class="text-grey">Helpers</span>
           <q-icon name="navigate_next" color="primary" />
-          <span class="text-h6">Retiradas de Cajas</span>
+          <span class="text-h6">Anticipos Sucursal</span>
         </div>
         <div class="col">
           <div class="row">
@@ -37,6 +37,8 @@
               <q-date v-model="fechas" landscape minimal />
             </q-menu>
           </q-btn>
+          <q-separator spaced inset vertical dark />
+          <q-btn color="primary" icon="add" flat @click="adding.state = !adding.state" :disable="!stores.val" />
         </template>
       </q-table>
     </q-page-container>
@@ -67,18 +69,18 @@
         <q-card-section>
           <q-input v-model="cut.val.FECHA" type="date" label="Fecha" dense filled disable />
           <q-separator spaced inset vertical dark />
-          <q-input v-model="cut.val.HORA" type="time" label="Hora" dense filled disable />
-          <q-separator spaced inset vertical dark />
           <q-input v-model="cut.val.DESTER" type="text" label="Terminal" dense filled disable />
           <q-separator spaced inset vertical dark />
-          <q-select v-model="cut.val.PROVEEDOR" :options="providers" label="Proveedor" filled option-label="NOFPRO" />
+          <q-select v-model="cut.val.CLIENTE" :options="options" label="Cliente" filled option-label="NOFCLI" use-input
+            input-debounce="0" @filter="filterFn" />
           <q-separator spaced inset vertical dark />
-          <q-input v-model="cut.val.CONRET" type="text" label="Concepto" dense filled />
+          <q-input v-model="cut.val.OBSANT" type="text" label="Concepto" dense filled />
           <q-separator spaced inset vertical dark />
-          <q-input v-model="cut.val.IMPRET" type="number" label="Importe" dense filled mask="#.##" fill-mask="0"
+          <q-input v-model="cut.val.IMPANT" type="number" label="Importe" dense filled mask="#.##" fill-mask="0"
             reverse-fill-mask />
           <q-separator spaced inset vertical dark />
-          <q-select dense option-label="name" v-model="impresoras.val" :options="impresoras.body" label="Impresora" filled />
+          <q-select dense option-label="name" v-model="impresoras.val" :options="impresoras.body" label="Impresora"
+            filled />
           <q-separator spaced inset vertical dark />
         </q-card-section>
         <q-card-actions align="center">
@@ -89,11 +91,32 @@
       </q-card>
     </q-dialog>
 
-
-
-
-
-
+    <q-dialog v-model="adding.state" persistent>
+      <q-card style="width: 300px">
+        <q-card-section class="text-bold text-center text-h5">
+        </q-card-section>
+        <q-card-section>
+          <q-select v-model="adding.DESTER" :options="term.opts" label="Terminal" filled option-label="DESTER"dense />
+          <q-separator spaced inset vertical dark />
+          <q-select v-model="adding.CLIENTE" :options="options" label="Cliente" filled option-label="NOFCLI" use-input
+            input-debounce="0" @filter="filterFn" dense />
+          <q-separator spaced inset vertical dark />
+          <q-input v-model="adding.OBSANT" type="text" label="Concepto" dense filled />
+          <q-separator spaced inset vertical dark />
+          <q-input v-model="adding.IMPANT" type="number" label="Importe" dense filled mask="#.##" fill-mask="0"
+            reverse-fill-mask />
+          <q-separator spaced inset vertical dark />
+          <q-select dense option-label="name" v-model="impresoras.val" :options="impresoras.body" label="Impresora"
+            filled />
+          <q-separator spaced inset vertical dark />
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn flat color="negative" icon="close"  @click="reset"/>
+          <!-- <q-btn flat color="primary" icon="print" @click="print" :disable="!validEdit || !impresoras.val" /> -->
+          <q-btn flat color="positive" icon="send" :disable="validForm || !impresoras.val" @click="addAnt" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
@@ -136,19 +159,28 @@ const impresoras = ref({
   val: null,
   body: null
 })
+
+const adding = ref({
+  state: false,
+  OBSANT: null,
+  DESTER: null,
+  IMPANT: null,
+  CLIENTE: null
+})
 const providers = ref([]);
+const options = ref(providers.value)
 
 const table = ref({
   filter: '',
   columns: [
     { name: 'date', label: 'FECHA', field: r => r.FECHA, align: 'left', sortable: true },
-    { name: 'time', label: 'TIME', field: r => r.HORA, align: 'left', sortable: true },
-    { name: 'code', label: 'CODIGO', field: r => r.CODRET, align: 'left', sortable: true },
-    { name: 'idter', label: 'ID', field: r => r.CAJRET, align: 'center', sortable: true },
+    // { name: 'time', label: 'TIME', field: r => r.HORA, align: 'left', sortable: true },
+    { name: 'code', label: 'CODIGO', field: r => r.CODANT, align: 'left', sortable: true },
+    { name: 'idter', label: 'ID', field: r => r.CAJANT, align: 'center', sortable: true },
     { name: 'ter', label: 'TERMINAL', field: r => r.DESTER, align: 'left', sortable: true },
-    { name: 'conc', label: 'CONCEPTO', field: r => r.CONRET, align: 'left', sortable: true },
-    { name: 'import', label: 'IMPORTE', field: r => Number(r.IMPRET).toFixed(2), align: 'center', sortable: true },
-    { name: 'provider', label: 'PROVEEDOR', field: r => r.NOFPRO, align: 'left', sortable: true },
+    { name: 'conc', label: 'OBSERVACION', field: r => r.OBSANT, align: 'left', sortable: true },
+    { name: 'import', label: 'IMPORTE', field: r => Number(r.IMPANT).toFixed(2), align: 'center', sortable: true },
+    { name: 'client', label: 'CLEINTE', field: r => r.NOFCLI, align: 'left', sortable: true },
   ]
 })
 
@@ -156,9 +188,9 @@ const basketFilt = computed(() => {
   if (fechas.value && !term.value.val) {
     return cuts.value.filter(e => e.FECHA == fechas.value)
   } else if (!fechas.value && term.value.val) {
-    return cuts.value.filter(e => e.CAJRET == term.value.val.CODTER)
+    return cuts.value.filter(e => e.CAJANT == term.value.val.CODTER)
   } else if (fechas.value && term.value.val) {
-    return cuts.value.filter(e => e.FECHA == fechas.value && e.CAJRET == term.value.val.CODTER)
+    return cuts.value.filter(e => e.FECHA == fechas.value && e.CAJANT == term.value.val.CODTER)
   } else {
     return cuts.value
   }
@@ -169,16 +201,15 @@ const validEdit = computed(() => {
     const filt = cuts.value.find(e => e.CODRET === cut.value.val.CODRET)
     if (!filt) return false
     let difference = {
-      CAJRET: filt.CAJRET,
-      CODRET: filt.CODRET,
-      CONRET: filt.CONRET,
+      CAJANT: filt.CAJANT,
+      CODANT: filt.CODANT,
+      OBSANT: filt.OBSANT,
       DESTER: filt.DESTER,
       FECHA: filt.FECHA,
-      HORA: filt.HORA,
-      IMPRET: Number(filt.IMPRET).toFixed(2),
-      PROVEEDOR: {
-        PRORET: filt.PRORET,
-        NOFPRO: filt.NOFPRO
+      IMPANT: Number(filt.IMPANT).toFixed(2),
+      CLIENTE: {
+        CLIANT: filt.CLIANT,
+        NOFCLI: filt.NOFCLI
       }
     }
     return JSON.stringify(difference) === JSON.stringify(cut.value.val)
@@ -186,6 +217,8 @@ const validEdit = computed(() => {
     return true
   }
 })
+
+const validForm = computed(() =>  !adding.value.OBSANT || !adding.value.DESTER || !adding.value.IMPANT ||  !adding.value.CLIENTE )
 
 const init = async () => {
 
@@ -199,7 +232,7 @@ const init = async () => {
     console.log(resp);
     stores.value.opts = resp;
     $q.loading.hide();
-    impre();
+
   }
 };
 
@@ -208,16 +241,15 @@ const mosWithdrawals = (a, b) => {
   cut.value.state = !cut.value.state
   console.log(b)
   let data = {
-    CAJRET: b.CAJRET,
-    CODRET: b.CODRET,
-    CONRET: b.CONRET,
+    CAJANT: b.CAJANT,
+    CODANT: b.CODANT,
+    OBSANT: b.OBSANT,
     DESTER: b.DESTER,
     FECHA: b.FECHA,
-    HORA: b.HORA,
-    IMPRET: Number(b.IMPRET).toFixed(2),
-    PROVEEDOR: {
-      PRORET: b.PRORET,
-      NOFPRO: b.NOFPRO
+    IMPANT: Number(b.IMPANT).toFixed(2),
+    CLIENTE: {
+      CLIANT: b.CLIANT,
+      NOFCLI: b.NOFCLI
     }
   }
   cut.value.val = { ...data }
@@ -226,8 +258,13 @@ const mosWithdrawals = (a, b) => {
 
 
 const impre = async () => {
-  let idstore = VDB.session.store.id;
+  console.log(stores.value.val.id)
+    // let host = stores.value.val.ip_address;
+  // let idstore = VDB.session.store.id;
+  let idstore = stores.value.val.id;
+
   console.log(idstore)
+
   // console.log(host);
   // let impr = `http://${host}/access/public/modify/getPrinter`;
   try {
@@ -256,15 +293,16 @@ const getCuts = async () => {
   // console.log(fechas.value);
   let host = stores.value.val.ip_address;
   // let host = '192.168.10.160:1619'
-  let url = `http://${host}/storetools/public/api/reports/getWithdrawals`;
+  let url = `http://${host}/storetools/public/api/reports/getAdvances`;
   const resp = await axios.get(url);
   if (resp.status != 200) {
     console.log(resp);
   } else {
     console.log(resp.data)
-    cuts.value = resp.data.cuts
+    cuts.value = resp.data.anticipos
     term.value.opts = resp.data.terminal
-    providers.value = resp.data.proveedores
+    providers.value = resp.data.clientes
+    impre();
     //   formas.value.opts = resp.data.formas
     //   date.value = false
     $q.loading.hide();
@@ -276,14 +314,14 @@ const print = async () => {
   console.log(stores.value.val.ip_address)
   let data = {
     print: impresoras.value.val.ip_address,
-    codret: cut.value.val.CODRET
+    codant: cut.value.val.CODANT
   }
   console.log(data)
-  $q.loading.show({ message: 'Imprimiendo Retirada' });
+  $q.loading.show({ message: 'Imprimiendo Anticipo' });
   // console.log(fechas.value);
   let host = stores.value.val.ip_address;
   // let host = '192.168.10.160:1619'
-  let url = `http://${host}/storetools/public/api/reports/printWitrawal`;
+  let url = `http://${host}/storetools/public/api/reports/printAdvance`;
   const resp = await axios.post(url, data);
   if (resp.status != 200) {
     console.log(resp);
@@ -301,18 +339,18 @@ const modifyRet = async () => {
   cut.value.val.Print = impresoras.value.val.ip_address
   console.log(cut.value.val);
 
-  $q.loading.show({ message: 'Modificando Retirada' });
+  $q.loading.show({ message: 'Modificando Anticipo' });
   // console.log(fechas.value);
   let host = stores.value.val.ip_address;
   // let host = '192.168.10.160:1619'
-  let url = `http://${host}/storetools/public/api/reports/modifyWithdrawal`;
+  let url = `http://${host}/storetools/public/api/reports/modifyAdvances`;
   const resp = await axios.post(url, cut.value.val);
   if (resp.status != 200) {
     console.log(resp);
   } else {
     console.log(resp.data)
-    let inx = cuts.value.findIndex(e => e.CODRET == resp.data.CODRET)
-    if(inx >= 0){
+    let inx = cuts.value.findIndex(e => e.CODANT == resp.data.CODANT)
+    if (inx >= 0) {
       cuts.value[inx] = resp.data
     }
     impresoras.value.val = null
@@ -322,6 +360,59 @@ const modifyRet = async () => {
   }
 }
 
+
+const filterFn = (val, update, abort) => {
+  if (val === '') {
+    update(() => {
+      options.value = providers.value
+    })
+    return
+  }
+
+  update(() => {
+    const needle = val.toLowerCase()
+    // console.log(providers.value.filter(v =>  v.NOFCLI.toLowerCase().includes(needle)))
+    // console.log(providers.value)
+    options.value = providers.value.filter(v => v.NOFCLI.toLowerCase().includes(needle))
+  })
+
+}
+
+
+const addAnt = async () => {
+  adding.value.Print = impresoras.value.val.ip_address
+  console.log(adding.value);
+
+  $q.loading.show({ message: 'Agregando Anticipo' });
+  // console.log(fechas.value);
+  let host = stores.value.val.ip_address;
+  // let host = '192.168.10.160:1619'
+  let url = `http://${host}/storetools/public/api/reports/addAdvances`;
+  const resp = await axios.post(url, adding.value);
+  if (resp.status != 200) {
+    console.log(resp);
+  } else {
+    console.log(resp.data)
+    cuts.value.push(resp.data)
+    impresoras.value.val = null
+    cut.value.val = null
+    cut.value.state = false
+    $q.loading.hide();
+    reset();
+  }
+}
+
+const reset = () => {
+  adding.value = {
+    state: false,
+    CAJANT: null,
+    CODANT: null,
+    OBSANT: null,
+    DESTER: null,
+    IMPANT: null,
+    CLIENTE: null
+  }
+}
 
 if ($user.session.rol === 'adm' || $user.session.rol === 'root') {
   init()

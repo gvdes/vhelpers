@@ -7,7 +7,7 @@
         <div class="col">
           <span class="text-grey">Helpers</span>
           <q-icon name="navigate_next" color="primary" />
-          <span class="text-h6">Cajas Abiertas</span>
+          <span class="text-h6">Cortes de Caja</span>
         </div>
         <div class="col">
           <div class="row">
