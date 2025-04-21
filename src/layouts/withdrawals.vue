@@ -34,11 +34,12 @@
           <q-separator spaced inset vertical dark />
           <q-btn color="primary" icon="event" flat round :disable="!stores.val">
             <q-menu>
-              <q-date v-model="fechas" landscape minimal />
+              <q-date v-model="fechas" landscape minimal mask="YYYY-MM-DD" />
             </q-menu>
           </q-btn>
         </template>
       </q-table>
+
     </q-page-container>
 
     <q-dialog v-model="impresoras.state">
