@@ -25,13 +25,13 @@
       <div :class="ismobile ? '' : 'row'">
         <q-card class="my-card col" bordered dense v-if="!ismobile">
           <q-card-section>
-            <div class="text-h6 text-center">Ventas 2023</div>
+            <div class="text-h6 text-center">Ventas 2024</div>
             <div class="text-h4 text-center">
               {{ ventAnt.replace(/\d(?=(\d{3})+\.)/g, "$&,") }}
             </div>
           </q-card-section>
           <q-card-section>
-            <div class="text-h6 text-center">Tickets 2023</div>
+            <div class="text-h6 text-center">Tickets 2024</div>
             <div class="text-h4 text-center">
               {{
                 Number(
@@ -50,13 +50,13 @@
 
         <q-card class="my-card col" bordered dense v-if="!ismobile">
           <q-card-section>
-            <div class="text-h6 text-center">Ventas 2024</div>
+            <div class="text-h6 text-center">Ventas 2025</div>
             <div class="text-h4 text-center">
               {{ ventAct.replace(/\d(?=(\d{3})+\.)/g, "$&,") }}
             </div>
           </q-card-section>
           <q-card-section>
-            <div class="text-h6 text-center">Tickets 2024</div>
+            <div class="text-h6 text-center">Tickets 2025</div>
             <div class="text-h4 text-center">
               {{
                 Number(
@@ -167,21 +167,21 @@
                   <q-separator />
                   <q-item class="text-center" dense clickable v-ripple @click="mostInf(props.row)">
                     <q-item-section>
-                      <q-item-label overline>VENTAS 2023</q-item-label>
+                      <q-item-label overline>VENTAS 2024</q-item-label>
                       <q-item-label caption>{{
                         Number(props.row.sales.salesant * 1.1)
                           .toFixed(2)
                           .replace(/\d(?=(\d{3})+\.)/g, "$&,")
                       }}</q-item-label>
                       <q-separator spaced inset vertical dark />
-                      <q-item-label overline>TICKETS 2023</q-item-label>
+                      <q-item-label overline>TICKETS 2024</q-item-label>
                       <q-item-label caption>{{
                         props.row.sales.tiketsant
                         }}</q-item-label>
                     </q-item-section>
 
                     <q-item-section>
-                      <q-item-label overline>Promedio 2023</q-item-label>
+                      <q-item-label overline>Promedio 2024</q-item-label>
                       <q-item-label caption>{{
                         Number(Number(props.row.sales.salesant * 1.1) / Number(props.row.sales.tiketsant)).toFixed(2)
                         }} </q-item-label>
@@ -189,21 +189,21 @@
                     </q-item-section>
 
                     <q-item-section>
-                      <q-item-label overline>VENTAS 2024</q-item-label>
+                      <q-item-label overline>VENTAS 2025</q-item-label>
                       <q-item-label caption>{{
                         Number(props.row.sales.salesact)
                           .toFixed(2)
                           .replace(/\d(?=(\d{3})+\.)/g, "$&,")
                       }}</q-item-label>
                       <q-separator spaced inset vertical dark />
-                      <q-item-label overline>TICKETS 2024</q-item-label>
+                      <q-item-label overline>TICKETS 2025</q-item-label>
                       <q-item-label caption>{{
                         props.row.sales.tiketsact
                         }}</q-item-label>
                     </q-item-section>
 
                     <q-item-section>
-                      <q-item-label overline>Promedio 2024
+                      <q-item-label overline>Promedio 2025
                       </q-item-label>
                       <q-item-label caption>{{
                         Number(Number(props.row.sales.salesact) / Number(props.row.sales.tiketsact)).toFixed(2)
