@@ -96,7 +96,7 @@
         <q-card-section class="text-bold text-center text-h5">
         </q-card-section>
         <q-card-section>
-          <q-select v-model="adding.DESTER" :options="term.opts" label="Terminal" filled option-label="DESTER"dense />
+          <q-select v-model="adding.DESTER" :options="term.opts" label="Terminal" filled option-label="DESTER" dense />
           <q-separator spaced inset vertical dark />
           <q-select v-model="adding.CLIENTE" :options="options" label="Cliente" filled option-label="NOFCLI" use-input
             input-debounce="0" @filter="filterFn" dense />
