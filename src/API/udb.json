@@ -1647,5 +1647,175 @@
       "id_viz": 1
     },
     "rol": "alm"
+  },
+  {
+    "id": 158,
+    "name": "ELIZABETH ROCHA ANGELES",
+    "credentials": {
+      "nick": "ElizabethRo",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 8,
+      "name": "Correo 1",
+      "alias": "CR1",
+      "ip": "192.168.30.253:1619",
+      "id_viz": 5
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 499,
+    "name": "DIANA CRUZ GRACIDA GARCIA",
+    "credentials": {
+      "nick": "DianaCr",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 8,
+      "name": "Correo 1",
+      "alias": "CR1",
+      "ip": "192.168.30.253:1619",
+      "id_viz": 5
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 2407,
+    "name": "RODRIGO MICHEL VAZQUEZ ORTIZ",
+    "credentials": {
+      "nick": "RodrigoMi",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 8,
+      "name": "Correo 1",
+      "alias": "CR1",
+      "ip": "192.168.30.253:1619",
+      "id_viz": 5
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 91,
+    "name": "MARIA SOYLA DIAZ MORENO",
+    "credentials": {
+      "nick": "MariaSo",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 3,
+      "name": "San Pablo 1",
+      "alias": "SP1",
+      "ip": "192.168.100.250:1619",
+      "id_viz": 3
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 10,
+    "name": "LUZ ANAHI ZAPOTE BARCENAS",
+    "credentials": {
+      "nick": "LuzZa",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 13,
+      "name": "Brasil 1",
+      "alias": "BR1",
+      "ip": "192.168.10.177:1619",
+      "id_viz": 11
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 151,
+    "name": "ROSALIA MORALES JIMENEZ",
+    "credentials": {
+      "nick": "RosaliaMo",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 20,
+      "name": "Corregidora",
+      "alias": "CRG",
+      "ip": "192.168.130.2:1619",
+      "id_viz": 23
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 60,
+    "name": "SERGIO MENDOZA MARQUEZ",
+    "credentials": {
+      "nick": "SergioMe",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 16,
+      "name": "Apartado 1",
+      "alias": "AP1",
+      "ip": "192.168.10.55:1619",
+      "id_viz": 7
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 2236,
+    "name": "MARCELA RAMIREZ CALDERON",
+    "credentials": {
+      "nick": "MarcelaRa",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 12,
+      "name": "Bolivia",
+      "alias": "BOL",
+      "ip": "192.168.10.92:1619",
+      "id_viz": 13
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 524,
+    "name": "MAYRA JUDITH VILLAVICENCIO MENDEZ",
+    "credentials": {
+      "nick": "MayraJu",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 10,
+      "name": "Ramon C 1",
+      "alias": "RA1",
+      "ip": "192.168.10.46:1619",
+      "id_viz": 9
+    },
+    "rol": "floor"
+  },
+  {
+    "id": 121,
+    "name": "ISAIAS PEREZ CAPILLA",
+    "credentials": {
+      "nick": "IsaiasPe",
+      "pass": "a9da",
+      "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 18,
+      "name": "Puebla",
+      "alias": "PUE",
+      "ip": "192.168.90.253:1619",
+      "id_viz": 18
+    },
+    "rol": "floor"
   }
 ]
