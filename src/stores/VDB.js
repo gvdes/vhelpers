@@ -20,10 +20,13 @@ export const useVDBStore = defineStore('vdb', {
       { id:10, name:"Vales", alias:"VL", desc:"Creacion de Vales", path:"vale"},
       // { id:9, name:"Depositos", alias:"DPTS", desc:"Aprobacion de Depositos", path:"deposits/forms"},
       { id:11, name:"Traspasos", alias:"TRP", desc:"Traspasos entre almacenes", path:"transfers"},
-      { id:12, name:"Comparativos", alias:"Com", desc:"Comparativos", path:"compare"},
-      { id:13, name:"Verificacion de tickets", alias:"VTCK", desc:"Verificador de tickets", path:"checkout"},
-      { id:14, name:"Presupuestos", alias:"PRS", desc:"Creador Presupuestos", path:"budgets"},
-      { id:15, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
+
+      { id:12, name:"Pedidos Insumos", alias:"PDI", desc:"Pedidos de Insumos", path:"assortment"},
+
+      { id:13, name:"Comparativos", alias:"Com", desc:"Comparativos", path:"compare"},
+      { id:14, name:"Verificacion de tickets", alias:"VTCK", desc:"Verificador de tickets", path:"checkout"},
+      { id:15, name:"Presupuestos", alias:"PRS", desc:"Creador Presupuestos", path:"budgets"},
+      { id:16, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
       // { id:16, name:"Asistencias", alias:"ASIS", desc:"Consulta de asistencias", path:"assist"}, se puede usar sin pdos
       { id:17, name:"Ofertas", alias:"OFT", desc:"Cobros de ofertas", path:"offers"},
       { id:50, name:"Tarjetas", alias:"TRJS", desc:"Consulta Tarjetas Sucursales", path:"cardStores"},
@@ -34,6 +37,7 @@ export const useVDBStore = defineStore('vdb', {
       { id:55, name:"Tickets", alias:"TPRT", desc:"Tickets Sucursales", path:"tcksPrit"},
       { id:56, name:"Retiradas", alias:"RTRD", desc:"Gestion De Retiradas", path:"withdrawals"},
       { id:57, name:"Vales", alias:"ADVS", desc:"Creacion de Anticipos", path:"advances"},
+      { id:58, name:"Pedidos Insumos", alias:"PDIN", desc:"Pedidos de Insumos", path:"inputs"},
       // { id:99, name:"Reporte", alias:"RPT", desc:"Reporte Stock", path:"stocks"},
       { id:100, name:"Ventas", alias:"VS", desc:"Ventas Sucursales", path:"stores"},
     ]
@@ -53,10 +57,10 @@ export const useVDBStore = defineStore('vdb', {
       return state.modules.filter((m) => m.id == 4 || m.id == 5 || m.id == 6)
     },
     authsAux (state) {
-      return state.modules.filter((m) => m.id <= 14)
+      return state.modules.filter((m) => m.id <= 15)
     },
     authsWarehouseman (state) {
-      return state.modules.filter((m) => m.id == 11 || m.id == 5  )
+      return state.modules.filter((m) => m.id == 13 || m.id == 5  )
     },
     authGen(state){
       return state.modules.filter((m) => m.id <= 17)

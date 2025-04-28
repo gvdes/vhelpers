@@ -110,6 +110,17 @@ const routes = [
     component: () => import('layouts/AdvancesLYT.vue'),
   },
   {
+    path: '/inputs',
+    component: () => import('layouts/inputsLYT.vue'),
+  },
+  {
+    path: '/assortment',
+    component: () => import('layouts/assortmetLYT.vue'),
+    children: [
+      { path: ':oid', name: 'reqoid', component: () => import('pages/Requisition/viewRequisition.vue') },
+    ],
+  },
+  {
     path: '/transfers',
     component: () => import('layouts/Transfers.vue'),
     children: [

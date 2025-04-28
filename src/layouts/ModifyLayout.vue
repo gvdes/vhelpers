@@ -446,7 +446,7 @@ const paymeths = [
   { id: "TSA", desc: "TARJETA C/D SANTANDER" },
   { id: "TDB", desc: "TRA/DEP BANCOMER" },
   { id: "TDA", desc: "TRA/DEP Santander" },
-  { id: "TDS", desc: "TRA/DEP Scotiabank" },
+  // { id: "TDS", desc: "TRA/DEP Scotiabank" },
   { id: "C30", desc: "CREDITO" },
 ]
 

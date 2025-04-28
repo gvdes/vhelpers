@@ -245,6 +245,7 @@ const editProduct = ref({
   val: null,
   state: false
 })
+
 const pagos = ref({
   state: false,
   dafpa: false,
@@ -256,8 +257,8 @@ const paymeths = [
   { id: "TBA", desc: "TARJETA C/D BANCOMER" },
   { id: "TSA", desc: "TARJETA C/D SANTANDER" },
   { id: "TDB", desc: "TRA/DEP BANCOMER" },
-  { id: "TDA", desc: "TRA/DEP Santander" },
-  { id: "TDS", desc: "TRA/DEP Scotiabank" },
+  // { id: "TDA", desc: "TRA/DEP Santander" },
+  // { id: "TDS", desc: "TRA/DEP Scotiabank" },
   { id: "C30", desc: "CREDITO" },
 ]
 

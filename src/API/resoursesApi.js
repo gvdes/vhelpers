@@ -22,6 +22,8 @@ export default{
   reportProductsCategories(data){
     return vizapi.post(`/resources/reportProductsCategories`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
-
+  getAssortmentInsumos(data){
+    return vizapi.post(`/resources/getAssortmentInsumos`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 
 }
