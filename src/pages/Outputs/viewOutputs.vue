@@ -60,7 +60,7 @@
               <div class="text-bold text-h6">Cantidad:</div>
               <div class="row">
                 <q-btn flat color="negative" icon="remove" class="text-h5 col"
-                  @click="product.val.amount > 1 ? product.val.amount-- : ''" />
+                  @click=" product.val.amount--" />
                 <div class=" col column q-py-md">
                   <input type="number" min="1" v-model="product.val.amount" class="text-center exo"
                     style=" width: 100px; font-size: 3em; margin: auto auto; border: none;" />

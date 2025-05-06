@@ -73,7 +73,7 @@
   <q-dialog v-model="addOuts" persistent>
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="text-h5 text-bold text-center">
-        Nuevo Traspaso
+        Nueva Salida
       </q-card-section>
       <q-card-section class="row items-center">
         <q-select v-model="nwOut.warehouse" :options="userWarehouse" label="Almacen Origen" class="col"
@@ -84,7 +84,7 @@
       </q-card-section>
       <q-card-actions align="center">
         <q-btn flat label="Cancelar" color="negative" @click="reset" />
-        <q-btn flat label="Crear" color="positive" @click="adding" />
+        <q-btn flat label="Crear" color="positive" @click="adding" :disable="!nwOut.warehouse || !nwOut.notes" />
       </q-card-actions>
     </q-card>
   </q-dialog>
