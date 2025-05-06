@@ -14,7 +14,6 @@
       </div>
       <q-separator />
     </q-header>
-
     <q-list>
       <q-item>
         <q-item-section class="text-center">ID</q-item-section>
@@ -25,13 +24,11 @@
         <q-item-section class="text-center">DESTINO</q-item-section>
         <q-item-section class="text-center">FACTUSOL</q-item-section>
         <q-item-section class="text-center">ARTICULOS</q-item-section>
-
-
       </q-item>
     </q-list>
     <q-separator spaced inset vertical dark />
     <q-list bordered v-for="(transfer, index) in (transfers)" :key="index">
-      <q-item clickable v-ripple @click="direct(transfer.id)">
+      <q-item clickable v-ripple @click="direct(transfer)">
         <q-item-section class="text-center">{{ transfer.id }}</q-item-section>
         <q-item-section class="text-center">{{ dayjs(transfer.created_at).format('YYYY-MM-D') }}</q-item-section>
         <q-item-section class="text-center">{{ transfer.created_by }}</q-item-section>
@@ -40,8 +37,6 @@
         <q-item-section class="text-center">{{ transfer.destiny.alias }}</q-item-section>
         <q-item-section class="text-center">{{ transfer.code_fs }}</q-item-section>
         <q-item-section class="text-center">{{ transfer.bodie.length }}</q-item-section>
-
-
       </q-item>
     </q-list>
 
@@ -126,7 +121,7 @@ const nwTransfer = ref({
 
 
 const validTransfer = computed(() => nwTransfer.value._origin && nwTransfer.value._destiny && nwTransfer.value.notes)
-const userWarehouse = computed(() => VDB.session.rol !== 'alm' ? warehouses.value.filter(w => [1,2,3,4].includes(w.id)) : warehouses.value.filter(w => [5,6].includes(w.id)))
+const userWarehouse = computed(() => VDB.session.rol !== 'alm' ? warehouses.value.filter(w => [1, 2, 3, 4].includes(w.id)) : warehouses.value.filter(w => [5, 6].includes(w.id)))
 
 const index = async () => {
   console.log("Recibiendo Datos :)")
@@ -168,7 +163,6 @@ const reset = () => {
     _destiny: null,
     notes: null
   }
-
 }
 
 const optionDisable = (val) => {
@@ -184,7 +178,6 @@ const optionDisAud = (val) => {
     return true
   } else {
     return false
-
   }
 }
 
@@ -212,8 +205,32 @@ const buscas = async () => {
   }
 }
 
-const direct = (oid) => {
-  $router.push(`transfers/${oid}`)
+const direct = (transfer) => {
+  console.log(transfer);
+  let oid = transfer.id
+  console.log((transfer.origin.id !== 4 && transfer.destiny.id !== 4))
+  if (
+    VDB.session.rol == 'aud'
+  ) {
+    $router.push(`transfers/${oid}`);
+  } else if (
+    (VDB.session.rol == 'aux' || VDB.session.rol == 'gen') &&
+    (transfer.origin.id !== 4 && transfer.destiny.id !== 4)
+  ) {
+    $router.push(`transfers/${oid}`);
+  } else if (
+    VDB.session.rol == 'alm' &&
+    ([5, 6].includes(transfer.destiny.id) || [5, 6].includes(transfer.origin.id)) // CORREGIDO: estaba mal la propiedad
+  ) {
+    $router.push(`transfers/${oid}`);
+  } else {
+    $q.notify({
+      message: 'No tienes acceso a este traspaso',
+      type: 'negative',
+      position: 'center'
+    });
+  }
+  // console.log(allowedIds.includes(transfer.origin.id) || allowedIds.includes(transfer.destiny.id));
 }
 
 index();

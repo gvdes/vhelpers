@@ -114,6 +114,15 @@ const routes = [
     component: () => import('layouts/inputsLYT.vue'),
   },
   {
+    path: '/outputs',
+    component: () => import('layouts/outputsLYT.vue'),
+    children: [
+      { path: '', name: 'outs', component: () => import('pages/Outputs/Index.vue') },
+      { path: ':oid', name: 'otusoid', component: () => import('pages/Outputs/viewOutputs.vue') },
+    ],
+
+  },
+  {
     path: '/assortment',
     component: () => import('layouts/assortmetLYT.vue'),
     children: [

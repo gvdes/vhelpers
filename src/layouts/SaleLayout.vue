@@ -76,8 +76,10 @@
           <div class="q-pa-md" v-for="(depvent, index) in report.ventasdepmonth" :key="index">
             <q-linear-progress size="25px" stripe rounded :value="depvent.VENTA / report.salesact" color="primary">
               <div class="absolute-full flex flex-center">
-                <!-- <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.salesact * 100).toFixed(2) + ')'" /> -->
+
                 <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   ( ' + Number.parseFloat(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" />
+                <q-badge color="white" text-color="accent" :label="'   (% ' + Number.parseFloat(depvent.VENTA / report.salesact * 100).toFixed(2) + ')'" />
+                <q-badge color="white" text-color="accent" :label="'   (' + Number.parseFloat(depvent.TICKETS).toFixed(0) + ' tcks)'" />
 
               </div>
             </q-linear-progress>
@@ -90,6 +92,9 @@
               <div class="absolute-full flex flex-center">
                 <!-- <q-badge color="white" text-color="accent":label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.saleshoy * 100).toFixed(2) + ')'" /> -->
                 <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   ( ' + Number(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" />
+                <q-badge color="white" text-color="accent" :label="'   (% ' + Number.parseFloat(depvent.VENTA / report.saleshoy * 100).toFixed(2) + ')'" />
+                <q-badge color="white" text-color="accent" :label="'   (' + Number.parseFloat(depvent.TICKETS).toFixed(0) + ' tcks)'" />
+
 
               </div>
             </q-linear-progress>
@@ -139,6 +144,7 @@ const load = ref(false);
 const index = async () => {
   load.value = true
   let host = VDB.session.store.ip;
+  // let host = '192.168.10.160:1619';
   let sale = `http://${host}/access/public/reports/getSales`;
   axios.get(sale)
     .then(done => {

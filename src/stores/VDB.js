@@ -29,6 +29,7 @@ export const useVDBStore = defineStore('vdb', {
       { id:16, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
       // { id:16, name:"Asistencias", alias:"ASIS", desc:"Consulta de asistencias", path:"assist"}, se puede usar sin pdos
       { id:17, name:"Ofertas", alias:"OFT", desc:"Cobros de ofertas", path:"offers"},
+      { id:20, name:"Salidas Internas", alias:"SIN", desc:"Salidas Internas", path:"outputs"},
       { id:50, name:"Tarjetas", alias:"TRJS", desc:"Consulta Tarjetas Sucursales", path:"cardStores"},
       // { id:51, name:"Depositos", alias:"DPTS", desc:"Aprovacion de Depositos", path:"deposits/confirm"},
       { id:52, name:"Revision de Cajas", alias:"RDC", desc:"Revision Cajas Abiertas", path:"openbox"},
@@ -66,7 +67,7 @@ export const useVDBStore = defineStore('vdb', {
       return state.modules.filter((m) => m.id <= 17)
     },
     autAud(state){
-      return state.modules.filter((m) => m.id <= 17)
+      return state.modules.filter((m) => m.id <= 20)
     },
     autRoot(state){
       return state.modules.filter((m) => m.id <= 1000)
