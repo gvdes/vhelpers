@@ -77,6 +77,9 @@ export const useVDBStore = defineStore('vdb', {
     },
     authdir(state){
       return state.modules.filter((m) => m.id == 100)
+    },
+    authrrhh(state){
+      return state.modules.filter((m) => m.id == 16)
     }
   },
 
