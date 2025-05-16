@@ -114,6 +114,10 @@ const routes = [
     component: () => import('layouts/inputsLYT.vue'),
   },
   {
+    path: '/reports',
+    component: () => import('layouts/reportsLYT.vue'),
+  },
+  {
     path: '/outputs',
     component: () => import('layouts/outputsLYT.vue'),
     children: [
