@@ -107,6 +107,7 @@ const report = async () => {
 }
 
 const genReport = (report) => {
+  $q.loading.show({message:'Generando Reporte'})
   let sid = VDB.session.store.id_viz
   switch (report.key) {
     case "catalogo":
@@ -146,8 +147,14 @@ const genReport = (report) => {
       reportExc.cedisStock(report)
       break;
   }
+  $q.loading.hide();
 }
 
+if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
+  init()
+}else{
+  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+  $router.replace('/');
 
-init()
+}
 </script>

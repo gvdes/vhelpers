@@ -227,6 +227,5 @@ if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'a
   $router.replace('/');
 
 }
-init()
 
 </script>

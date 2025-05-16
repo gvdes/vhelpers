@@ -24,10 +24,10 @@ export const useVDBStore = defineStore('vdb', {
       { id:13, name:"Comparativos", alias:"Com", desc:"Comparativos", path:"compare"},
       { id:14, name:"Verificacion de tickets", alias:"VTCK", desc:"Verificador de tickets", path:"checkout"},
       { id:15, name:"Presupuestos", alias:"PRS", desc:"Creador Presupuestos", path:"budgets"},
-      { id:16, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
+      { id:16, name:"Reportes", alias:"RPT", desc:"Tarjetas de reportes", path:"reports"},
+      { id:17, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
       // { id:16, name:"Asistencias", alias:"ASIS", desc:"Consulta de asistencias", path:"assist"}, se puede usar sin pdos
-      { id:17, name:"Ofertas", alias:"OFT", desc:"Cobros de ofertas", path:"offers"},
-      { id:18, name:"Reportes", alias:"RPT", desc:"Tarjetas de reportes", path:"reports"},
+      { id:18, name:"Ofertas", alias:"OFT", desc:"Cobros de ofertas", path:"offers"},
       { id:20, name:"Salidas Internas", alias:"SIN", desc:"Salidas Internas", path:"outputs"},
       { id:50, name:"Tarjetas", alias:"TRJS", desc:"Consulta Tarjetas Sucursales", path:"cardStores"},
       // { id:51, name:"Depositos", alias:"DPTS", desc:"Aprovacion de Depositos", path:"deposits/confirm"},
@@ -57,13 +57,13 @@ export const useVDBStore = defineStore('vdb', {
       return state.modules.filter((m) => m.id == 4 || m.id == 5 || m.id == 6)
     },
     authsAux (state) {
-      return state.modules.filter((m) => m.id <= 15)
+      return state.modules.filter((m) => m.id <= 16)
     },
     authsWarehouseman (state) {
       return state.modules.filter((m) => m.id == 13 || m.id == 5|| m.id == 11  )
     },
     authGen(state){
-      return state.modules.filter((m) => m.id <= 17)
+      return state.modules.filter((m) => m.id <= 18)
     },
     autAud(state){
       return state.modules.filter((m) => m.id <= 20)
