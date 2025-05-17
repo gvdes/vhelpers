@@ -1357,7 +1357,7 @@
       "ip": "192.168.10.53:1619",
       "id_viz": 1
     },
-    "rol": "alm"
+    "rol": "aud"
   },
   {
     "id": 1,
@@ -1842,6 +1842,23 @@
       "nick": "ElizabethRa",
       "pass": "a9da",
       "hash": "5682abb105fb4764cd54bccc2ab33621"
+    },
+    "store": {
+      "id": 1,
+      "name": "CEDIS",
+      "alias": "CDISAP",
+      "ip": "192.168.10.160:1619",
+      "id_viz": 1
+    },
+    "rol": "adm"
+  },
+  {
+    "id": 593,
+    "name": "RUTH ITANDEHUI GUARDIOLA SAMPERIO",
+    "credentials": {
+      "nick": "RuthIt",
+      "pass": "360a",
+      "hash": "39f141863d2cee617073a81b2a58ca36"
     },
     "store": {
       "id": 1,
