@@ -78,6 +78,7 @@
               <div class="absolute-full flex flex-center">
 
                 <!-- <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   ( ' + Number.parseFloat(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" /> -->
+                <q-badge color="white" text-color="accent" :label="depvent.NOMDEP " />
                 <q-badge color="white" text-color="accent" :label="'   (% ' + Number.parseFloat(depvent.VENTA / report.salesact * 100).toFixed(2) + ')'" />
                 <q-badge color="white" text-color="accent" :label="'   (' + Number.parseFloat(depvent.TICKETS).toFixed(0) + ' tcks)'" />
 
