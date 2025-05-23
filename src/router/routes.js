@@ -118,6 +118,16 @@ const routes = [
     component: () => import('layouts/reportsLYT.vue'),
   },
   {
+    path: '/refunds',
+    component: () => import('layouts/refundsLYT.vue'),
+    children: [
+      { path: '', name: 'dvb', component: () => import('pages/Refunds/Index.vue') },
+      { path: ':rid', name: 'rid', component: () => import('pages/Refunds/viewRefund.vue') },
+      { path: 'verified/:rid', name: 'versrid', component: () => import('pages/Refunds/veriferRefund.vue') },
+
+    ],
+  },
+  {
     path: '/outputs',
     component: () => import('layouts/outputsLYT.vue'),
     children: [

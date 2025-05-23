@@ -28,6 +28,8 @@ export const useVDBStore = defineStore('vdb', {
       { id:17, name:"Ventas", alias:"REP", desc:"ConsultaVentas", path:"sales"},
       // { id:16, name:"Asistencias", alias:"ASIS", desc:"Consulta de asistencias", path:"assist"}, se puede usar sin pdos
       { id:18, name:"Ofertas", alias:"OFT", desc:"Cobros de ofertas", path:"offers"},
+      { id:19, name:"Devoluciones", alias:"DVT", desc:"Devoluciones Mercancia", path:"refunds"},
+
       { id:20, name:"Salidas Internas", alias:"SIN", desc:"Salidas Internas", path:"outputs"},
       { id:50, name:"Tarjetas", alias:"TRJS", desc:"Consulta Tarjetas Sucursales", path:"cardStores"},
       // { id:51, name:"Depositos", alias:"DPTS", desc:"Aprovacion de Depositos", path:"deposits/confirm"},
