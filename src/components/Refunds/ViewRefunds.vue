@@ -73,7 +73,7 @@
             <div class="text-caption">Creado Por</div>
             <div class="text-bold">{{ props.row.createdby.complete_name }}</div>
           </q-card-section>
-          <q-card-section class="row">
+          <q-card-section class="row" @click="genPdf(props.row)">
             <div class="col">
               <div class="text-caption">Devolucion</div>
               <div class="text-bold">{{ props.row.fs_id }}</div>
@@ -111,6 +111,7 @@ import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
 import { computed, ref } from 'vue';
 import refundsApi from "src/API/refundsApi";
+import pdfRefund from "src/Pdf/Refunds/Refund.js";
 import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
@@ -212,6 +213,12 @@ const nextState = async (rows) => {
     $router.push(`/refunds/verified/${rows.id}`);
     $q.loading.hide()
   }
+}
+
+const genPdf = (refund) => {
+  console.log(refund);
+  pdfRefund.refund(refund)
+
 }
 
 

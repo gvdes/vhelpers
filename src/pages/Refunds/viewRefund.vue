@@ -114,6 +114,7 @@ import refundsApi from "src/API/refundsApi";
 import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
+import pdfRefund from "src/Pdf/Refunds/Refund.js";
 import { useRoute, useRouter } from "vue-router";
 import dayjs from 'dayjs';
 import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
@@ -204,13 +205,14 @@ const addProduct = async () => {
 
 const nextState = async () => {
   $q.loading.show({ message: 'Creando Devolucion' })
-  const resp = await refundsApi.endRefund({id:$route.params.rid})
-  if(resp.fail){
+  const resp = await refundsApi.endRefund({ id: $route.params.rid })
+  if (resp.fail) {
     console.log(resp);
-  }else{
+  } else {
     console.log(resp);
-    $q.notify({message:`Se creo la devolucion ${resp.fs_id} Correctamente`,type:'positive',position:'center'});
+    $q.notify({ message: `Se creo la devolucion ${resp.fs_id} Correctamente`, type: 'positive', position: 'center' });
     $router.push(`/refunds`);
+    genPdf(resp)
   }
   $q.loading.hide();
 }
@@ -263,6 +265,11 @@ const deleteProduct = async () => {
 const viewProduct = (val) => {
   product.value.state = true
   product.value.val = val
+}
+
+const genPdf = (refund) => {
+  console.log(refund);
+  pdfRefund.refund(refund)
 }
 
 if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
