@@ -80,7 +80,7 @@ export const useVDBStore = defineStore('vdb', {
       return state.modules.filter((m) => m.id == 100)
     },
     authrrhh(state){
-      return state.modules.filter((m) => m.id == 16)
+      return state.modules.filter((m) => m.id == 17)
     }
   },
 
