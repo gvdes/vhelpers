@@ -118,13 +118,29 @@ const routes = [
     component: () => import('layouts/reportsLYT.vue'),
   },
   {
+    path: '/cashRegisters',
+    component: () => import('layouts/CashRegistersLYT.vue'),
+    children: [
+      { path: '', name: 'cin', component: () => import('pages/cashRegisters/Index.vue') },
+      { path: ':cid', name: 'cid', component: () => import('pages/cashRegisters/salesTpv.vue') },
+    ],
+  },
+
+    {
+    path: '/verifyOrder',
+    component: () => import('layouts/verifyOrderLYT.vue'),
+    children: [
+      { path: '', name: 'cin', component: () => import('pages/Orders/Index.vue') },
+      { path: ':ord', name: 'ord', component: () => import('pages/Orders/orderVerify.vue') },
+    ],
+  },
+  {
     path: '/refunds',
     component: () => import('layouts/refundsLYT.vue'),
     children: [
       { path: '', name: 'dvb', component: () => import('pages/Refunds/Index.vue') },
       { path: ':rid', name: 'rid', component: () => import('pages/Refunds/viewRefund.vue') },
       { path: 'verified/:rid', name: 'versrid', component: () => import('pages/Refunds/veriferRefund.vue') },
-
     ],
   },
   {

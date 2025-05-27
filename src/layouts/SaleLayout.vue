@@ -144,7 +144,7 @@ const load = ref(false);
 
 const index = async () => {
   load.value = true
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   // let host = '192.168.10.160:1619';
   let sale = `http://${host}/access/public/reports/getSales`;
   axios.get(sale)

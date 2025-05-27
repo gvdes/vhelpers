@@ -495,7 +495,7 @@ const search = async () => {
   ticket.value.body = null;
   let ser = cashdesk.value;
   let fol = folio.value;
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let url = `http://${host}/access/public/modify/getTicket?serie=${ser}&folio=${fol}`;
 
 
@@ -516,7 +516,7 @@ const search = async () => {
 }
 
 const envia = async () => {
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
   if (mod.value == "Devolucion") {
     datenv.value = true
@@ -639,7 +639,7 @@ const cambiocliente = async () => {
   console.log("cambio de cliente");
   let client = clifac.value;
   console.log(client)
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let rux = `http://${host}/access/public/modify/getClient?client=${client}`;
   axios.get(rux)
     .then(done => {
@@ -676,7 +676,7 @@ const searchproduct = async () => {
   }
   let bpec = tickmod.value.body.product.findIndex((a) => a.ARTICULO == sarchpro.value)
   if (bpec == -1) {
-    let host = VDB.session.store.ip;
+    let host = VDB.session.store.ip_address;
     let impr = `http://${host}/access/public/modify/getProduct`;
     axios.get(impr, { params: envl })
       .then(done => {
@@ -744,7 +744,7 @@ const recalcular = () => {
     cliente: clmd,
     productos: prmod
   }
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let riwo = `http://${host}/access/public/modify/getPrices`;
   axios.get(riwo, { params: envm })
     .then(done => {
@@ -780,7 +780,7 @@ const edpro = () => {
 const buscarvales = async () => {
   if (valecli.value.val == "SI") {
     console.log("Buscando vales");
-    let host = VDB.session.store.ip;
+    let host = VDB.session.store.ip_address;
     let impr = `http://${host}/access/public/modify/vales?price=${clifac.value}`;
     axios.get(impr)
       .then(done => {
@@ -809,7 +809,7 @@ const mosimp = () => stateimp.value = true
 
 const terminar = async () => {
   $q.loading.show({message:'Realizando Devolucion'})
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
   console.log("Realizando proceso de modificacion de tickeet");
   let tickdev = {

@@ -263,7 +263,7 @@ const index = async () => {
  const fech =  date.formatDate(new Date(),'YYYY-MM-DD')
   console.log("Recibiendo Datos :)")
   $q.loading.show({ message: 'Obteniendo datos' });
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   const resp =  ApiAssist.index()
   console.log(resp);
   resp.then(r =>{
@@ -277,7 +277,7 @@ const index = async () => {
 const optTarj = async (row) => {
   console.log(row.ip_address)
   $q.loading.show({ message: 'Obteniendo datos' });
-  // let host = VDB.session.store.ip;
+  // let host = VDB.session.store.ip_address;
   let riwo = `http://${row.ip_address}/access/public/reports/getCashCard`;
   axios.get(riwo)
     .then(r => {
@@ -295,7 +295,7 @@ const getDayCard = async (date) => {
 
   console.log(date);
   $q.loading.show({ message: 'Obteniendo datos' });
-  // let host = VDB.session.store.ip;
+  // let host = VDB.session.store.ip_address;
   let riwo = `http://${sucursales.value.val.ip_address}/access/public/reports/getCashCard/${date}`;
   axios.get(riwo)
     .then(r => {

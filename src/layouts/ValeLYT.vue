@@ -183,7 +183,7 @@ const search = async () => {
     serie: cashdesk.value,
     folio: folio.value,
   }
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let url = `http://${host}/access/public/modify/newmod`;
 
 
@@ -219,7 +219,7 @@ const crear = () => {
     print:impresoras.value.val,
     created: `${VDB.session.name} - ${VDB.session.store.alias}`
   }
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let url = `http://${host}/access/public/modify/createVal`;
   axios.post(url, dat)
     .then(done => {

@@ -34,6 +34,7 @@
   import { computed, ref } from 'vue'
   import { useVDBStore } from 'stores/VDB'
   import { LocalStorage, useQuasar } from 'quasar';
+  import authsApi from "src/API/auth.js";
   import { useRouter } from 'vue-router';
   import CryptoJS  from 'crypto-js';
 
@@ -49,23 +50,25 @@
 
   const canSignin = computed(() => (auths.value.nick&&auths.value.pass) );
 
-  const trySignin = () => {
+  const trySignin = async  () => {
     console.log("Iniciando sesion ...", auths.value);
-    const user = VDB.findByNick(auths.value.nick);
+    const user = await authsApi.trySignin(auths.value);
+    console.log(user)
 
     if (user){
-      let hash = CryptoJS.MD5(auths.value.pass).toString();
+      // let hash = CryptoJS.MD5(auths.value.pass).toString();
 
-      if(hash==user.credentials.hash){
+      // if(hash==user.credentials.hash){
 
         let u = JSON.parse(JSON.stringify(user));
-        delete u.credentials.pass;
+        console.log(u)
+        // delete u.credentials.pass;
 
         LocalStorage.set("auth", u);
         VDB.setSession(u);
         $router.replace('/');
 
-      }else{ $q.notify({ message:"Credenciales erroneas", color:"negative", icon:"fas fa-bugs" }); }
+      // }else{ $q.notify({ message:"Credenciales erroneas", color:"negative", icon:"fas fa-bugs" }); }
     }else{ $q.notify({ message:"Credenciales erroneas", color:"negative", icon:"fas fa-bugs" }); }
   }
 </script>

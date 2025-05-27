@@ -79,7 +79,7 @@
 
     let ser = cashdesk.value;
     let fol = folio.value;
-    let host = VDB.session.store.ip;
+    let host = VDB.session.store.ip_address;
     let url = `http://${host}/access/public/iva/ticket?serie=${ser}&folio=${fol}`;
 
     axios.get(url)
@@ -115,7 +115,7 @@
     console.log("pagando...");
     console.log(modes);
 
-    let host = VDB.session.store.ip;
+    let host = VDB.session.store.ip_address;
     let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
     let url = `http://${host}/access/public/iva/create`;
     // console.log(url)
@@ -161,9 +161,12 @@
 
   if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' || VDB.session.rol == 'caj' ){
   // index()
+    console.log(VDB.session)
+
 }else{
   $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
   $router.replace('/');
+  console.log(VDB.session)
 
 }
 

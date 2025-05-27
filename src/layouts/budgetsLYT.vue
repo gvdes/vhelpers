@@ -190,7 +190,7 @@ const createBudget = () => {
   });
   presupuesto.value.factura.TOTAL = presupuesto.value.products.reduce((a, e) => Number(a) + Number(e.TOTAL), 0)
   console.log(presupuesto.value)
-  let url = VDB.session.store.ip
+  let url = VDB.session.store.ip_address
   // let url = '192.168.10.207:1619';
   console.log(form.value)
   let sale = `http://${url}/storetools/public/api/Resources/createBudget`;

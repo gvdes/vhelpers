@@ -172,7 +172,7 @@ const index = async () => {
 }
 
 const init = async() => {
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let url = `http://${host}/access/public/modify/getCash`;
   axios.get(url)
   .then(r => {

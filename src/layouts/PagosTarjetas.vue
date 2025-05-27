@@ -262,7 +262,7 @@ const onSubmit = () => {
 const index = async () => {
   console.log("Recibiendo Datos :)")
   $q.loading.show({ message: 'Obteniendo datos' });
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let riwo = `http://${host}/access/public/reports/getCashCard`;
   axios.get(riwo)
     .then(r => {

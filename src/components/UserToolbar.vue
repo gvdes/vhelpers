@@ -30,7 +30,6 @@
   const VDB = useVDBStore();
   const user = VDB.session;
   const $router = useRouter();
-
   const WSD = ref({ state:false });
 
   const sessionDestroy = () => {

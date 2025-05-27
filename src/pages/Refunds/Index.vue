@@ -166,7 +166,6 @@ const addingRefund = async () => {
     console.log(resp);
     $q.notify({ message: 'Se creo correctamente la devolucion', type: 'positive', position: 'center' })
     $router.push(`/refunds/${resp.id}`);
-
   }
 }
 

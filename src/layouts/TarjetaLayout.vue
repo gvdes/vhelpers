@@ -229,7 +229,7 @@ const imptck = () => {
     print: impresoras.value.val.ip_address
   }
   imp.value = true;
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let url = `http://${host}/access/public/modify/newmod`;
   axios.post(url, impdat)
     .then(r => {
@@ -244,7 +244,7 @@ const imptck = () => {
 const index = async () => {
   console.log("Recibiendo Datos :)")
   load.value = true
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let riwo = `http://${host}/access/public/reports/getCash`;
   axios.get(riwo)
     .then(r => {
@@ -349,7 +349,7 @@ const buscas = () => {
   }
   console.log("Recibiendo Datos :)")
   load.value = true
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let riwo = `http://${host}/access/public/reports/filter`;
   axios.post(riwo, filtro)
     .then(r => {
@@ -371,7 +371,7 @@ const mostck = (a, row) => {
 
 const pdfExport = () => {
   $q.loading.show({ message: 'Importando Ticket' })
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let ticket = otckopt.value.body.TICKET
   const dat = `http://${host}/access/public/modify/getTicket/${ticket}`;
   axios.get(dat)
@@ -395,6 +395,7 @@ const pdfExport = () => {
               type: `negative`,
               position: `center`,
             })
+            console.log(f);
           })
       } else if (pdfFormat.value.val.id == 2) {
         pdfTicket(r.data)
@@ -415,6 +416,7 @@ const pdfExport = () => {
               type: `negative`,
               position: `center`,
             })
+            console.log(f);
           })
       }
     })
@@ -529,6 +531,7 @@ const pdfTicket = (ticket) => {
 const pdfFactura = (ticket) => {
   return new Promise((resolve, reject) => {
     try {
+      console.log(ticket)
       let products = ticket.products
       let pagos = ticket.payments
       const doc = new jsPDF();
@@ -570,8 +573,8 @@ const pdfFactura = (ticket) => {
           doc.text(`SUCURSAL ${ticket.empresa.DESTPV}`, 120, 25, 'left')// NOMBRE DE LA EMPRESA
           doc.setFontSize(8)
           doc.text(ticket.header.DOMICILIO, 10, 30, 'left')//DOMICILIO DE EL CLIENTE
-          doc.text(ticket.header.CODIGOPOSTAL, 10, 35, 'left')// CODIGO POSTAL DE EL CLIENTE
-          doc.text(ticket.header.POBALCION + ticket.header.PROVINCIA, 10, 40, 'left')//DELEGACION DE EL CLIENT4E
+          doc.text(ticket.header.CODIGOPOSTAL ? ticket.header.CODIGOPOSTAL : '' , 10, 35, 'left')// CODIGO POSTAL DE EL CLIENTE
+          doc.text(ticket.header.POBALCION  ? ticket.header.POBALCION  : '' + ticket.header.PROVINCIA, 10, 40, 'left')//DELEGACION DE EL CLIENT4E
 
           doc.text(ticket.empresa.CTT3TPV, 120, 30, 'left')//DOMICILIO DE LA EMPRESA
           // doc.text('06090', 120, 35, 'left')// CODIGO POSTAL DE  LA EMPRESA
@@ -661,7 +664,7 @@ const pdfFactura = (ticket) => {
 
 const exportTck = async () => {
   $q.loading.show({ message: 'Importando Ticket' })
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let ticket = otckopt.value.body.TICKET
   const dat = `http://${host}/access/public/modify/getTicket/${ticket}`;
   axios.get(dat)

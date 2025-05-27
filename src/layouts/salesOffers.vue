@@ -282,7 +282,7 @@ const cambio = computed(() => (Number.parseFloat(modes.value.DIG.val) + Number.p
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Cajas' });
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   // let host = '192.168.10.160:1619'
   console.log(VDB.session)
   let url = `http://${host}/access/public/reports/getTerminal`;
@@ -388,7 +388,7 @@ const optionDisable = (val) => {
 const terminar = async () => {
   // let host = '192.168.10.160:1619'
   $q.loading.show({message:"Realizando Ticket"});
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let url = `http://${host}/access/public/modify/createTicket`;
   let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
   let data = {

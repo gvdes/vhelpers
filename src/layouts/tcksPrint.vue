@@ -258,7 +258,7 @@ const impMassiveTcks = () => {
         print: impresoras.value.val.ip_address
       }
       imp.value = true;
-      // let host = VDB.session.store.ip;
+      // let host = VDB.session.store.ip_address;
       let host = stores.value.val.ip_address;
       let url = `http://${host}/access/public/modify/newmod`;
       axios.post(url, impdat)
@@ -283,7 +283,7 @@ const imptck = () => {
     print: impresoras.value.val.ip_address
   }
   imp.value = true;
-  // let host = VDB.session.store.ip;
+  // let host = VDB.session.store.ip_address;
   let host = stores.value.val.ip_address;
   let url = `http://${host}/access/public/modify/newmod`;
   axios.post(url, impdat)
@@ -320,7 +320,7 @@ const init = async () => {
 const index = async () => {
   console.log("Recibiendo Datos :)")
   load.value = true
-  // let host = VDB.session.store.ip;
+  // let host = VDB.session.store.ip_address;
   let host = stores.value.val.ip_address;
   console.log(stores.value.val)
 
@@ -428,7 +428,7 @@ const buscas = () => {
   }
   console.log("Recibiendo Datos :)")
   load.value = true
-  // let host = VDB.session.store.ip;
+  // let host = VDB.session.store.ip_address;
   let host = stores.value.val.ip_address;
   let riwo = `http://${host}/access/public/reports/filter`;
   axios.post(riwo, filtro)
@@ -451,7 +451,7 @@ const mostck = (a, row) => {
 
 const pdfExport = () => {
   $q.loading.show({ message: 'Importando Ticket' })
-  // let host = VDB.session.store.ip;
+  // let host = VDB.session.store.ip_address;
   let host = stores.value.val.ip_address;
   let ticket = otckopt.value.body.TICKET
   const dat = `http://${host}/access/public/modify/getTicket/${ticket}`;
@@ -742,7 +742,7 @@ const pdfFactura = (ticket) => {
 
 const exportTck = async () => {
   $q.loading.show({ message: 'Importando Ticket' })
-  // let host = VDB.session.store.ip;
+  // let host = VDB.session.store.ip_address;
   let host = stores.value.val.ip_address;
   let ticket = otckopt.value.body.TICKET
   const dat = `http://${host}/access/public/modify/getTicket/${ticket}`;
