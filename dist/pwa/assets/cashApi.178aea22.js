@@ -1,0 +1,1 @@
+import{a as s}from"./axios.d0e8637f.js";var r={index(a){return s.post("/cashs/index",a).then(t=>t.data).catch(t=>({fail:t}))},getCash(a){return s.post("/cashs/getCash",a).then(t=>t.data).catch(t=>({fail:t}))},openCash(a){return s.post("/cashs/openCash",a).then(t=>t.data).catch(t=>({fail:t}))}};export{r as c};
