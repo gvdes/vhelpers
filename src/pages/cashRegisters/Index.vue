@@ -23,7 +23,6 @@
         <q-btn color="positive" label="Abrir" @click="openCash" flat
           v-if="cash.val._status == 2 && (VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'aux' || VDB.session.rol == 'root')" />
         <q-btn color="positive" label="Ir" @click="redirect" flat v-if="cash.val._status == 1" />
-        <q-btn color="secondary" label="Cerrar" @click="closeCash" flat v-if="cash.val._status == 1" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -32,6 +31,7 @@
 
 <script setup>
 import { useVDBStore } from 'stores/VDB';
+import { useLayoutCash } from 'stores/cashLYT';
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import axios from 'axios';//para dirigirme bro
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";
@@ -45,6 +45,7 @@ import cashApi from 'src/API/cashApi';
 const VDB = useVDBStore();
 const $q = useQuasar();
 const $router = useRouter();
+const cashLYT = useLayoutCash();
 
 const cashiers = ref([])
 const cash = ref({
@@ -92,6 +93,10 @@ const init = async () => {
     cashes.value = resp.cashes;
     cashiers.value = resp.cashiers
     printers.value = resp.printers
+    cashLYT.setTitle('CAJAS')
+    cashLYT.setDate(null)
+    cashLYT.setshowtoolbar(false)
+    cashLYT.setCash(null);
     $q.loading.hide()
   }
 }
@@ -130,9 +135,6 @@ const openCash = async () => {
   }
 }
 
-const closeCash = () => {
-
-}
 
 const reset = () => {
   cash.value.state = false
@@ -140,7 +142,8 @@ const reset = () => {
 }
 
 const redirect = () => {
-  $router.push(`/cashRegisters/${cash.value.val.id}`)
+  $router.push(`/cashRegisters/${cash.value.val.id}/automate`)
+  cashLYT.setCash(cash.value.val.id);
 }
 
 

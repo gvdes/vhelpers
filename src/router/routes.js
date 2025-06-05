@@ -122,7 +122,8 @@ const routes = [
     component: () => import('layouts/CashRegistersLYT.vue'),
     children: [
       { path: '', name: 'cin', component: () => import('pages/cashRegisters/Index.vue') },
-      { path: ':cid', name: 'cid', component: () => import('pages/cashRegisters/salesTpv.vue') },
+      { path: ':cid/automate', name: 'cidx', component: () => import('pages/cashRegisters/salesTpv.vue') },
+      { path: ':cid/standar', name: 'cids', component: () => import('pages/cashRegisters/salesEstandar.vue') },
     ],
   },
 
@@ -130,7 +131,7 @@ const routes = [
     path: '/verifyOrder',
     component: () => import('layouts/verifyOrderLYT.vue'),
     children: [
-      { path: '', name: 'cin', component: () => import('pages/Orders/Index.vue') },
+      { path: '', name: 'vor', component: () => import('pages/Orders/Index.vue') },
       { path: ':ord', name: 'ord', component: () => import('pages/Orders/orderVerify.vue') },
     ],
   },

@@ -59,7 +59,7 @@ const init = async  () => {
   if(resp.fail){
   console.log(resp)
   }else{
-    console.log(resp)
+    // console.log(resp)
     stores.value.opts = resp.stores
     modules.value = resp.rol.modules
     $q.loading.hide()

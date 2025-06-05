@@ -1,1 +1,0 @@
-import{v as a}from"./axios.76bdd693.js";var p={getOrder(e,t){return a.get(`/preorders/getOrder/${e}`,{params:t}).then(r=>r.data).catch(r=>({fail:r}))},getOrderVerify(e,t){return a.get(`/preorders/getOrderVerify/${e}`,{params:t}).then(r=>r.data).catch(r=>({fail:r}))}};export{p as o};

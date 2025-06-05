@@ -19,7 +19,7 @@
     <q-card class="my-card">
       <q-card-section>
         <q-form @submit="obtOrder" class="q-gutter-md">
-          <q-input v-model="order" type="number" label="Escanea" filled hint="Escanea el pedido de preventa" />
+          <q-input autofocus dense v-model="order" type="number" label="Escanea" filled hint="Escanea el pedido de preventa" />
         </q-form>
       </q-card-section>
     </q-card>

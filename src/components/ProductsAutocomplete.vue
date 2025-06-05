@@ -15,7 +15,7 @@
     <template v-else>
       <q-select dense filled color="blue-13" class="text-uppercase col" ref="iptatc" use-input hide-dropdown-icon
         option-value="id" option-label="id" hide-selected behavior="menu" v-model="data.target" :input-debounce="400"
-        autofocus :options="data.options" :type="data.iptsearch.type" @filter="autocomplete" @input="selItem"
+        autofocus :options="data.options" :type="data.iptsearch.type" @filter="autocomplete"
         popup-content-class="bg-darkl1">
         <template v-slot:no-option>
           <q-item>
@@ -208,15 +208,16 @@ const search = () => {
           putFocus();
           break;
 
-        case 1:
+        default:
           console.log("Perfecto, aqui esta tu producto");
+          console.log(resp[0])
           selItem(resp[0]);
           break;
 
-        default:
-          console.log(resp);
-          similarCodes(resp);
-          break;
+        // default:
+        //   console.log(resp);
+        //   similarCodes(resp);
+        //   break;
       }
       data.value.target = "";
       data.value.iptsearch.processing = false;
@@ -228,6 +229,8 @@ const putFocus = () => {
   console.log("putFocus ejecutada!!");
   iptatc.value.focus();
 }
+
+defineExpose({ focus: () => iptatc.value?.focus?.() })
 
 const emite = (a) => {
   emit('agregar',a)
