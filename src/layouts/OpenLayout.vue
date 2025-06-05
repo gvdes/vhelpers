@@ -66,13 +66,13 @@
                   <q-card-section>
                     <q-input v-model="form.withdrawal_mount" type="Number" label="Monto a modificar" outlined dense />
                   </q-card-section>
-                  <q-card-section>
-                    <q-select v-model="impresoras.val" :options="impresoras.opts" label="Impresora" option-label="name"
-                      outlined dense />
-                  </q-card-section>
                 </div>
                 <q-card-section>
                   <q-input v-model="form.reason_modify" type="text" label="Especifica por que el cambio de la retirada"
+                    outlined dense />
+                </q-card-section>
+                <q-card-section>
+                  <q-select v-model="impresoras.val" :options="impresoras.opts" label="Impresora" option-label="name"
                     outlined dense />
                 </q-card-section>
               </div>
@@ -212,7 +212,7 @@ const impre = async () => {
 
 
 const envi = async () => {
-  $q.loading.show({message:'Enviando Datos'})
+  $q.loading.show({ message: 'Enviando Datos' })
   let type = form.value._type.id;
   form.value._store = VDB.session.store.id;
   form.value._created_by = VDB.session.id;
@@ -236,9 +236,9 @@ const envi = async () => {
     formData.append('withdrawal_number', form.value.withdrawal_number);
     formData.append('movement_type_id', form.value.movement_type_id.id);
     formData.append('reason_modify', form.value.reason_modify);
+    formData.append('print', impresoras.value.val.ip_address);
     if (form.value.movement_type_id.id == 2) {
       formData.append('withdrawal_mount', form.value.withdrawal_mount);
-      formData.append('print', impresoras.value.val.ip_address);
     }
   }
   const resp = await OpenApi.opening(formData)
@@ -280,7 +280,7 @@ const reset = () => {
     withdrawal_mount: null//monto real de modificiacion
   }
   reference.value.reset();
-
+  impresoras.value.val = null
 }
 
 if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
