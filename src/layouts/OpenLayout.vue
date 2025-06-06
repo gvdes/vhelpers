@@ -241,6 +241,7 @@ const envi = async () => {
       formData.append('withdrawal_mount', form.value.withdrawal_mount);
     }
   }
+
   const resp = await OpenApi.opening(formData)
   if (resp.fail) {
     console.log(resp)

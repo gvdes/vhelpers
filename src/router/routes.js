@@ -145,6 +145,14 @@ const routes = [
     ],
   },
   {
+    path: '/modigyRefund',
+    component: () => import('layouts/refundsLYT.vue'),
+    children: [
+      { path: '', name: 'mre', component: () => import('pages/Refunds/Modify/Index.vue') },
+      { path: ':rid', name: 'mrid', component: () => import('pages/Refunds/Modify/viewRefund.vue') },
+    ],
+  },
+  {
     path: '/outputs',
     component: () => import('layouts/outputsLYT.vue'),
     children: [

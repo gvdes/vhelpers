@@ -4,6 +4,9 @@ export default {
   index(sid) {
     return assist.get(`/refunds/getRefunds/${sid}`).then(done => done.data).catch(fail => { return { fail } });
   },
+  getRefundDirerences(sid) {
+    return assist.get(`/refunds/getRefundDirerences/${sid}`).then(done => done.data).catch(fail => { return { fail } });
+  },
   addRefund(data) {
     return assist.post(`/refunds/addRefund`,data).then(done => done.data).catch(fail => { return { fail } });
   },
