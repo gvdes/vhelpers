@@ -13,4 +13,7 @@ export default{
   getCutsBoxes(sid){
     return assist.get(`/cashier/getCutsBoxes/${sid}`).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  getCurrenCut(data){
+    return assist.post(`/cashier/getCurrenCut`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 }

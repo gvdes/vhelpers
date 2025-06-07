@@ -178,7 +178,7 @@ const sendRefund = async () => {
   }
 }
 
-if ($user.session.rol === 'aud' || $user.session.rol === 'root') {
+if (VDB.session.rol === 'aud' || VDB.session.rol === 'root') {
   init()
 } else {
   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
