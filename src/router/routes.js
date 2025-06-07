@@ -118,6 +118,10 @@ const routes = [
     component: () => import('layouts/reportsLYT.vue'),
   },
   {
+    path: '/openReport',
+    component: () => import('layouts/reportOpenLYT.vue'),
+  },
+  {
     path: '/cashRegisters',
     component: () => import('layouts/CashRegistersLYT.vue'),
     children: [
@@ -127,7 +131,7 @@ const routes = [
     ],
   },
 
-    {
+  {
     path: '/verifyOrder',
     component: () => import('layouts/verifyOrderLYT.vue'),
     children: [

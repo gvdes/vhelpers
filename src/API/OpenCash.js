@@ -10,5 +10,7 @@ export default{
   getPrinters(idstore){
     return assist.get(`/cashier/getPrinters/${idstore}`).then( done=>done.data ).catch( fail => { return {fail}} );
   },
-
+  getCutsBoxes(sid){
+    return assist.get(`/cashier/getCutsBoxes/${sid}`).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 }

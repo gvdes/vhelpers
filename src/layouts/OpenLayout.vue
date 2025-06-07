@@ -212,7 +212,7 @@ const impre = async () => {
 
 
 const envi = async () => {
-  $q.loading.show({ message: 'Enviando Datos' })
+  // $q.loading.show({ message: 'Enviando Datos' })
   let type = form.value._type.id;
   form.value._store = VDB.session.store.id;
   form.value._created_by = VDB.session.id;
@@ -241,15 +241,20 @@ const envi = async () => {
       formData.append('withdrawal_mount', form.value.withdrawal_mount);
     }
   }
-
   const resp = await OpenApi.opening(formData)
   if (resp.fail) {
     console.log(resp)
-    $q.notify({
-      type: 'negative',
-      message: resp.fail.data,
-      position: 'center'
-    })
+    if (resp.fail.status == 400) {
+      $q.notify({
+        type: 'negative',
+        message: resp.fail.response.data,
+        position: 'center'
+      })
+      alert(resp.fail.response.data)
+      $q.loading.hide();
+    }else{
+    console.log(resp)
+    }
   } else {
     console.log(resp);
     $q.notify({

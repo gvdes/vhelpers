@@ -146,8 +146,6 @@ const table = ref({
   pagination: { rowsPerPage: 0 }
 })
 
-
-
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Datos', type: 'positive', position: 'center' });
   let sid = VDB.session.store.id
@@ -180,6 +178,12 @@ const sendRefund = async () => {
   }
 }
 
-init()
+if ($user.session.rol === 'aud' || $user.session.rol === 'root') {
+  init()
+} else {
+  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+  $router.replace('/');
+}
+
 
 </script>
