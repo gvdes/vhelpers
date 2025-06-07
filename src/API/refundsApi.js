@@ -37,4 +37,7 @@ export default {
   finallyRefund(data) {
     return assist.post(`/refunds/finallyRefund`,data).then(done => done.data).catch(fail => { return { fail } });
   },
+  correction(data) {
+    return assist.post(`/refunds/correction`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }
