@@ -11,24 +11,24 @@
 
 
       <q-page class="flex flex-center" padding>
-        <q-list separator>
-          <q-select v-model="stores.val" :options="stores.opts" label="Selecciona Sucursal" :option-label="opt => opt.store.name" filled
-            @update:model-value="changeStore" v-if="stores.opts.length > 1" />
-          <div class="q-py-md text-center">
-            <div class="text-h4 text-indigo-10">Menu</div>
-            <div class="text-grey-5">Vhelpers</div>
-          </div>
 
-          <q-item clickable v-ripple v-for="(module, idx) in modules" :key="idx" :to="module.module.path">
-            <q-item-section>
-              <q-item-label class="text-h6">{{ module.module.name }}</q-item-label>
-              <q-item-label caption>{{ module.module.desc }}</q-item-label>
-            </q-item-section>
-            <q-item-section avatar>
-              <q-avatar flat color="transparent" text-color="primary" icon="arrow_forward" />
-            </q-item-section>
-          </q-item>
-        </q-list>
+
+        <div class="row q-pa-md q-gutter-md">
+          <div class="col">
+            <div class="text-h4 text-grey-8 text-center">
+              <div>Hola</div>
+              <div class="text-primary">{{ VDB.session.name }}</div>
+              <span class="text-primary"></span>
+            </div>
+
+            <div class="text-center anek-lg text-h5 text-grey-6">{{ greeting }}</div>
+
+            <div class="q-py-lg text-center">
+              <q-img :src="`src/assets/avatares/avatar${avatar}.png`" style="width: 170px;" />
+            </div>
+          </div>
+        </div>
+
       </q-page>
       <!-- <router-view /> -->
     </q-page-container>
@@ -48,37 +48,54 @@ const VDB = useVDBStore();
 const $router = useRouter();
 const user = VDB.session;
 const $q = useQuasar();
-const modules = ref ([]);
-const stores = ref({
-  val:VDB.session,
-  opts:[]
-})
-const init = async  () => {
-  $q.loading.show({message:'Obteniendo Informacion'})
-  const resp = await authsApi.getResources(user.credentials.id)
-  if(resp.fail){
-  console.log(resp)
-  }else{
-    // console.log(resp)
-    stores.value.opts = resp.stores
-    modules.value = resp.rol.modules
-    $q.loading.hide()
-  }
+// const modules = ref ([]);
+// const stores = ref({
+//   val:VDB.session,
+//   opts:[]
+// })
+// const init = async  () => {
+//   $q.loading.show({message:'Obteniendo Informacion'})
+//   const resp = await authsApi.getResources(user.credentials.id)
+//   if(resp.fail){
+//   console.log(resp)
+//   }else{
+//     // console.log(resp)
+//     stores.value.opts = resp.stores
+//     modules.value = resp.rol.modules
+//     $q.loading.hide()
+//   }
 
 
-}
+// }
 
-const changeStore = () => {
-  $q.loading.show({ message: 'Cambiando sucursal' })
-  VDB.session.store = stores.value.val.store
-  VDB.setSession({
-    ...VDB.session,
-    store: stores.value.val.store
-  })
-  console.log(VDB.session)
-  $q.loading.hide()
-}
+// const changeStore = () => {
+//   $q.loading.show({ message: 'Cambiando sucursal' })
+//   VDB.session.store = stores.value.val.store
+//   VDB.setSession({
+//     ...VDB.session,
+//     store: stores.value.val.store
+//   })
+//   console.log(VDB.session)
+//   $q.loading.hide()
+// }
 
-init();
+const greetings = ref([
+  "Que gusto verte!",
+  "Excelente dia!",
+  "Que sea un gran dia!",
+  "Paciencia crack, paciencia.",
+  "Como va todo?",
+  "Empecemos...",
+  "Manos a la obra!",
+  "Exito!",
+  "Vacaciones??... pff...",
+  "Si buscas resultados distintos, no hagas siempre lo mismo.",
+  "Quien tiene claro un porque? Puede superar casi cualquier cómo"
+]);
+
+
+const greeting = computed(() => greetings.value[Math.floor(Math.random() * greetings.value.length)]);
+const avatar  = computed(() => Math.floor(Math.random() * 6));
+
 
 </script>

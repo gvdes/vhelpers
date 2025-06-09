@@ -4,14 +4,15 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
-      <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Presupuestos</span>
-        </div>
-      </q-toolbar>
+
     </q-header>
 
     <q-page-container>
       <q-page padding>
+        <q-toolbar class="justify-between">
+          <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Presupuestos</span>
+          </div>
+        </q-toolbar>
         <q-card class="my-card">
           <q-card-section class="row">
             <q-select class="col" v-model="types.val" :options="types.opts" label="Tipo" filled
@@ -39,7 +40,7 @@
                     <q-item-section>
                       <q-item-label caption lines="2">{{ types.val?.id == 1 ? 'Salida' : 'Comanda' }}</q-item-label>
                       <q-item-label class="text-h4">{{ `${presupuesto.factura.FOLIO}`
-                        }}</q-item-label>
+                      }}</q-item-label>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption lines="2">Fecha</q-item-label>
@@ -51,13 +52,13 @@
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption lines="2">Piezas</q-item-label>
-                      <q-item-label class="text-h6">{{ presupuesto.products.reduce((a, e) => Number(a) +
-                        Number(e.CANLFA), 0) }}</q-item-label>
+                      <q-item-label class="text-h6">{{presupuesto.products.reduce((a, e) => Number(a) +
+                        Number(e.CANLFA), 0)}}</q-item-label>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label caption lines="2">Total</q-item-label>
-                      <q-item-label class="text-h6">${{ presupuesto.products.reduce((a, e) => Number(a) +
-                        Number(e.TOTAL), 0) }}</q-item-label>
+                      <q-item-label class="text-h6">${{presupuesto.products.reduce((a, e) => Number(a) +
+                        Number(e.TOTAL), 0)}}</q-item-label>
                     </q-item-section>
 
                   </q-item>
@@ -186,7 +187,7 @@ const updateType = () => {
 
 const createBudget = () => {
   $q.loading.show({
-    message:'Generando Presupuesto'
+    message: 'Generando Presupuesto'
   });
   presupuesto.value.factura.TOTAL = presupuesto.value.products.reduce((a, e) => Number(a) + Number(e.TOTAL), 0)
   console.log(presupuesto.value)

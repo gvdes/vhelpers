@@ -5,6 +5,8 @@
       <q-header class="bg-grey-3 text-dark" bordered>
         <UserToolbar />
         <q-separator />
+      </q-header>
+      <q-page-container>
         <q-toolbar class="justify-between">
           <div>
             <span class="text-grey">Helpers</span>
@@ -12,8 +14,6 @@
             <span class="text-h6">Ventas Sucursales</span>
           </div>
         </q-toolbar>
-      </q-header>
-      <q-page-container>
         <router-view />
       </q-page-container>
     </template>
@@ -47,8 +47,10 @@
       </q-drawer>
       <q-page-container>
         <q-tabs v-model="tab" class="bg-grey-11" dense>
-          <q-route-tab name="prevent" icon="receipt_long" label="Preventa" :to="`/cashRegisters/${cashLYT.cash.id}/automate`" />
-          <q-route-tab name="manual" icon="keyboard" label="Capturado" :to="`/cashRegisters/${cashLYT.cash.id}/standar`" />
+          <q-route-tab name="prevent" icon="receipt_long" label="Preventa"
+            :to="`/cashRegisters/${cashLYT.cash.id}/automate`" />
+          <q-route-tab name="manual" icon="keyboard" label="Capturado"
+            :to="`/cashRegisters/${cashLYT.cash.id}/standar`" />
         </q-tabs>
         <q-dialog v-model="openWithdrawal" persistent>
           <withdrawal />

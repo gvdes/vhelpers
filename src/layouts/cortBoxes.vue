@@ -3,6 +3,9 @@
     <q-header class="bg-grey-3 text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+    <q-page-container>
       <q-toolbar class="justify-between row">
         <div class="col">
           <span class="text-grey">Helpers</span>
@@ -22,8 +25,6 @@
         </div>
 
       </q-toolbar>
-    </q-header>
-    <q-page-container>
       <q-separator spaced inset vertical dark />
       <q-table :rows="basketFilt" :filter="table.filter" :columns="table.columns" @row-click="mosImp">
         <template v-slot:top-right>
@@ -198,9 +199,9 @@ const getCuts = async () => {
 const print = async () => {
   console.log(stores.value.val.ip_address)
   let data = {
-    print:impresoras.value.val.ip_address,
-    fecha:cut.value.FECHA,
-    terminal:cut.value.TERATE
+    print: impresoras.value.val.ip_address,
+    fecha: cut.value.FECHA,
+    terminal: cut.value.TERATE
   }
   console.log(data)
   $q.loading.show({ message: 'Obteniendo Registros' });
@@ -208,7 +209,7 @@ const print = async () => {
   let host = stores.value.val.ip_address;
   // let host = '192.168.10.160:1619'
   let url = `http://${host}/storetools/public/api/reports/printCut`;
-  const resp = await axios.post(url,data);
+  const resp = await axios.post(url, data);
   if (resp.status != 200) {
     console.log(resp);
   } else {

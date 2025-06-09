@@ -5,25 +5,26 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
-      <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">VALES</span></div>
-        <q-btn color="primary" icon="add">
-          <q-menu>
-            <div class="q-pa-md bg-grey-2 text-primary">Buscar Folio</div>
-            <q-separator />
-            <q-form dense @submit="search" class="q-gutter-md q-pa-md">
-              <q-select v-model="cashdesk" :options="cashdesks" label="Serie" autofocus />
-              <q-input v-model="folio" type="number" label="Folio" />
-              <div class="text-right" v-if="cansearch">
-                <q-btn type="submit" color="primary" icon="search" />
-              </div>
-            </q-form>
-          </q-menu>
-        </q-btn>
-      </q-toolbar>
+
     </q-header>
-    <q-page-container>
-      <q-page class="bg-grey-3" padding>
+    <q-page-container class="">
+      <q-page class="bg-grey-3 " padding>
+        <q-toolbar class="justify-between">
+          <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">VALES</span></div>
+          <q-btn color="primary" icon="add">
+            <q-menu>
+              <div class="q-pa-md bg-grey-2 text-primary">Buscar Folio</div>
+              <q-separator />
+              <q-form dense @submit="search" class="q-gutter-md q-pa-md">
+                <q-select v-model="cashdesk" :options="cashdesks" label="Serie" autofocus />
+                <q-input v-model="folio" type="number" label="Folio" />
+                <div class="text-right" v-if="cansearch">
+                  <q-btn type="submit" color="primary" icon="search" />
+                </div>
+              </q-form>
+            </q-menu>
+          </q-btn>
+        </q-toolbar>
 
         <div class="row justify-center ">
           <transition name="bounce">
@@ -43,14 +44,14 @@
 
               <q-card-section>
                 <q-list bordered>
-                  <q-item  dense >
+                  <q-item dense>
                     <q-item-section>ARTICULO</q-item-section>
                     <q-item-section class="text-left" v-if="!ismobile">DESCRIPCION</q-item-section>
                     <q-item-section class="text-right">CANTIDAD</q-item-section>
                     <q-item-section class="text-right" v-if="!ismobile">PRECIO</q-item-section>
                     <q-item-section class="text-right" v-if="!ismobile">TOTAL</q-item-section>
                     <q-item-section> SELECT </q-item-section>
-                    <q-item-section > PIEZAS A DEV</q-item-section>
+                    <q-item-section> PIEZAS A DEV</q-item-section>
 
                     <q-separator spaced inset vertical dark />
                   </q-item>
@@ -58,14 +59,18 @@
                 <q-separator spaced inset vertical dark />
 
                 <q-list bordered v-for="(product, index) in bascket" :key="index">
-                  <q-item  dense tag="label" v-ripple>
+                  <q-item dense tag="label" v-ripple>
                     <q-item-section>{{ product.ARTICULO }}</q-item-section>
                     <q-item-section class="text-left" v-if="!ismobile">{{ product.DESCRIPCION }}</q-item-section>
                     <q-item-section class="text-right">{{ Number(product.CANTIDAD).toFixed(2) }}</q-item-section>
-                    <q-item-section class="text-right" v-if="!ismobile">{{ Number(product.PRECIO).toFixed(2) }}</q-item-section>
-                    <q-item-section class="text-right" v-if="!ismobile">{{ Number(product.TOTAL).toFixed(2) }}</q-item-section>
+                    <q-item-section class="text-right" v-if="!ismobile">{{ Number(product.PRECIO).toFixed(2)
+                      }}</q-item-section>
+                    <q-item-section class="text-right" v-if="!ismobile">{{ Number(product.TOTAL).toFixed(2)
+                      }}</q-item-section>
                     <q-item-section> <q-checkbox v-model="products" :val="product" /> </q-item-section>
-                    <q-item-section > <q-input v-model="product.change" type="number" label="PZ" outlined :error="product.change >  Number(product.CANTIDAD)" error-message="es mayor que la cantidad X(" :disable="!products.some(e => e.ARTICULO === product.ARTICULO)" /></q-item-section>
+                    <q-item-section> <q-input v-model="product.change" type="number" label="PZ" outlined
+                        :error="product.change > Number(product.CANTIDAD)" error-message="es mayor que la cantidad X("
+                        :disable="!products.some(e => e.ARTICULO === product.ARTICULO)" /></q-item-section>
 
                     <q-separator spaced inset vertical dark />
                   </q-item>
@@ -74,7 +79,7 @@
               </q-card-section>
               <div>
                 <q-card-actions align="between">
-                  <q-btn flat icon="cancel"  @click="reset"/>
+                  <q-btn flat icon="cancel" @click="reset" />
                   <q-btn flat icon="arrow_forward" :disable="!valid" @click="enval" />
                 </q-card-actions>
               </div>
@@ -89,11 +94,12 @@
               <span class="q-ml-sm">Selecciona Impresora</span>
             </q-card-section>
             <q-card-section>
-              <q-select v-model="impresoras.val" :options="impresoras.body" label="Impresora" option-label="name" filled />
+              <q-select v-model="impresoras.val" :options="impresoras.body" label="Impresora" option-label="name"
+                filled />
             </q-card-section>
             <q-card-actions align="right">
               <q-btn flat label="Cancel" color="negative" v-close-popup />
-              <q-btn flat label="Continuar" color="positive" @click="crear" :disable="!impresoras.val"/>
+              <q-btn flat label="Continuar" color="positive" @click="crear" :disable="!impresoras.val" />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -126,7 +132,7 @@ const ticket = ref({
 
 
 const impresoras = ref({
-  state:false,
+  state: false,
   val: null,
   body: null
 })
@@ -137,19 +143,19 @@ const products = ref([])
 
 const cansearch = computed(() => (cashdesk.value && folio.value.length));//para enviar a buscar
 const bascket = computed(() => {
-  if(filter.value){
+  if (filter.value) {
     return ticket.value.body.product.filter(e => e.ARTICULO.includes(filter.value))
-  }else{
+  } else {
     return ticket.value.body.product
   }
 })
 
 const ismobile = computed(() => $q.platform.is.mobile);
 const valid = computed(() => {
-  if(products.value.length > 0){
+  if (products.value.length > 0) {
     // console.log(products.value)
-    return  products.value.every(e => Number(e.change) > 0) && products.value.every(e => Number(e.change) <= Number(e.CANTIDAD))
-  }else{
+    return products.value.every(e => Number(e.change) > 0) && products.value.every(e => Number(e.change) <= Number(e.CANTIDAD))
+  } else {
     return false
   }
 })
@@ -214,9 +220,9 @@ const crear = () => {
   $q.loading.show({ message: 'Obteniendo Ticket' });
   products.value.map(e => e._chantot = e.change * e.PRECIO)
   let dat = {
-    ticket:ticket.value.body.ticket,
-    products:products.value,
-    print:impresoras.value.val,
+    ticket: ticket.value.body.ticket,
+    products: products.value,
+    print: impresoras.value.val,
     created: `${VDB.session.name} - ${VDB.session.store.alias}`
   }
   let host = VDB.session.store.ip_address;
@@ -224,36 +230,36 @@ const crear = () => {
   axios.post(url, dat)
     .then(done => {
       console.log(done)
-      if(done.data.mmsg){
+      if (done.data.mmsg) {
         $q.notify({
-        message: `devolucion ${done.data.devolucion}`,
-        type:'positive',
-        position: "center"
-      });
-      $q.notify({
-        message: `vale ${done.data.vale}`,
-        type:'positive',
-        position: "center"
-      });
+          message: `devolucion ${done.data.devolucion}`,
+          type: 'positive',
+          position: "center"
+        });
+        $q.notify({
+          message: `vale ${done.data.vale}`,
+          type: 'positive',
+          position: "center"
+        });
       }
 
       cashdesk.value = null;
       folio.value = "";
       ticket.value = {
-      state: false,
-      body: null
+        state: false,
+        body: null
       };
       impresoras.value = {
-      state:false,
-      val: null,
-      body: null
+        state: false,
+        val: null,
+        body: null
       }
       filter.value = ''
       products.value = []
       $q.loading.hide()
     })
     .catch(fail => {
-    console.log(fail);
+      console.log(fail);
       $q.notify({
         html: true,
         message: fail,
@@ -267,24 +273,24 @@ const crear = () => {
 const reset = () => {
 
   cashdesk.value = null;
-      folio.value = "";
-      ticket.value = {
-      state: false,
-      body: null
-      };
-      impresoras.value = {
-      state:false,
-      val: null,
-      body: null
-      }
-      filter.value = ''
-      products.value = []
+  folio.value = "";
+  ticket.value = {
+    state: false,
+    body: null
+  };
+  impresoras.value = {
+    state: false,
+    val: null,
+    body: null
+  }
+  filter.value = ''
+  products.value = []
 }
 
-if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
+if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
   index()
-}else{
-  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+} else {
+  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
   $router.replace('/');
 
 }

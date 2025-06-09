@@ -3,6 +3,9 @@
     <q-header class="bg-grey-3 text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+    <q-page-container>
       <q-toolbar class="justify-between row">
         <div class="col">
           <span class="text-grey">Helpers</span>
@@ -19,8 +22,6 @@
         </div>
 
       </q-toolbar>
-    </q-header>
-    <q-page-container>
       <q-separator spaced inset vertical dark />
       <q-table :rows="basketFilt" :filter="table.filter" :columns="table.columns" @row-click="mosWithdrawals">
         <template v-slot:top-right>

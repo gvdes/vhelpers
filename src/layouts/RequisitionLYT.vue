@@ -4,11 +4,12 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
-      <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Resurtido</span>
-        </div>
-      </q-toolbar>
+
     </q-header>
+    <q-toolbar class="justify-between">
+      <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Resurtido</span>
+      </div>
+    </q-toolbar>
 
     <q-dialog v-model="printers.state">
       <q-card class="my-card">
@@ -120,7 +121,7 @@
               </q-item>
               <q-radio dense class="col" v-model="condition.state" val="minmax" label="Minimo y Maximo"
                 @update:model-value="processProduct" />
-                <q-radio dense class="col" v-model="condition.state" val="query" label="Consultas"
+              <q-radio dense class="col" v-model="condition.state" val="query" label="Consultas"
                 @update:model-value="processProduct" />
             </div>
           </q-card-section>
@@ -130,7 +131,8 @@
         <q-separator spaced inset vertical dark />
 
         <q-table :rows="bascket" :columns="table.columns" separator="cell" :filter="table.filter"
-          v-if="products.length > 0" flat bordered class="my-sticky-header-column-table" :visible-columns="table.visible">
+          v-if="products.length > 0" flat bordered class="my-sticky-header-column-table"
+          :visible-columns="table.visible">
           <template v-slot:top-right>
             <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Buscar">
               <template v-slot:append>
@@ -176,7 +178,7 @@
               </q-td>
               <q-td key="locations" :props="props">
 
-                {{ props.row.locations?.map(e => e.path).join(", ") }}
+                {{props.row.locations?.map(e => e.path).join(", ")}}
 
               </q-td>
               <q-td key="cedis" :props="props">
@@ -353,10 +355,10 @@ const table = ref({
     { name: 'max', label: `Maximo`, align: 'center', sortable: true, field: row => row.max },
     { name: 'Percentge', label: `${VDB.session.store.name} % `, align: 'center', sortable: true, field: row => row.percentage },
     { name: 'required', label: 'Solicitado CJ', align: 'center', sortable: true, field: row => row.required },
-    { name: 'action',label:'Accion', align: 'center' }
+    { name: 'action', label: 'Accion', align: 'center' }
   ],
   filter: '',
-  visible: ['codigo','description','Seccion','Familia','Categoria','pieces','cedis','texcoco','Sucursal','required','action']
+  visible: ['codigo', 'description', 'Seccion', 'Familia', 'Categoria', 'pieces', 'cedis', 'texcoco', 'Sucursal', 'required', 'action']
 })
 
 const sections = computed(() => categories.value.all.filter(e => e.deep == 0))
@@ -430,7 +432,7 @@ const suggested = computed(() => {
       } else {
         return (e.cedis + e.texcoco) > 0 && (e.sucursal <= e.min) && (e.min > 0)
       }
-    } else if(condition.value.state == 'query'){
+    } else if (condition.value.state == 'query') {
       return e
     }
 

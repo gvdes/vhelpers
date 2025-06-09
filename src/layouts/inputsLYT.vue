@@ -3,6 +3,10 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+
+    <q-page-container>
       <q-toolbar class="justify-between">
         <div class="row items-center">
           Helpers
@@ -14,9 +18,6 @@
 
         </div>
       </q-toolbar>
-    </q-header>
-
-    <q-page-container>
       <q-table title="Pedidos" :rows="stores" :columns="table.columns" v-if="stores.length > 0">
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -44,7 +45,8 @@
           PEDIDO: {{ mosEditRequisition.val.id }}
         </q-card-section>
         <q-card-section>
-          <q-select v-model="mosEditRequisition.val.status" :options="statuses" label="Estado" filled option-label="name" disable />
+          <q-select v-model="mosEditRequisition.val.status" :options="statuses" label="Estado" filled
+            option-label="name" disable />
         </q-card-section>
         <q-card-section>
           <q-table :rows="mosEditRequisition.val.bodie" :columns="table.columnsRequired" />
@@ -52,7 +54,7 @@
         <q-card-actions align="right">
           <q-btn flat icon="close" color="primary" v-close-popup />
           <q-btn flat icon="print" color="primary" @click="printReq" />
-          <q-btn flat icon="send" color="primary" @click="changeStatus" :disable="mosEditRequisition.val._status > 3"  />
+          <q-btn flat icon="send" color="primary" @click="changeStatus" :disable="mosEditRequisition.val._status > 3" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -130,31 +132,31 @@ const mosRequisition = (a, b) => {
 }
 
 const printReq = async () => {
-  $q.loading.show({message:'Imprimiendo'});
+  $q.loading.show({ message: 'Imprimiendo' });
   // console.log(mosEditRequisition.value..val)
   const resp = await requisition.printReq(mosEditRequisition.value.val._stores, mosEditRequisition.value.val.id);
 
-  if(resp.status != 200){
+  if (resp.status != 200) {
     console.log(resp)
-  }else{
+  } else {
     console.log(resp);
     $q.loading.hide();
   }
 }
 
 const changeStatus = async () => {
-  $q.loading.hide({message:'Cambiando Status'})
+  $q.loading.hide({ message: 'Cambiando Status' })
   const resp = await requisition.change(mosEditRequisition.value.val._stores, mosEditRequisition.value.val.id)
-  if(resp.status != 200){
+  if (resp.status != 200) {
     console.log(resp)
-  }else{
+  } else {
     console.log(resp)
     $q.loading.hide();
-    $q.notify({message:'El pedido se cambio de estado',type:'positive',position:'center'});
+    $q.notify({ message: 'El pedido se cambio de estado', type: 'positive', position: 'center' });
     stores.value.forEach(e => {
-      if(e.id == resp.data._stores){
+      if (e.id == resp.data._stores) {
         let inx = e.requisition.findIndex(i => i.id == resp.data.id);
-        if(inx >= 0){
+        if (inx >= 0) {
           e.requisition[inx] = resp.data
         }
       }

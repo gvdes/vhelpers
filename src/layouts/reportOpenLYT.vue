@@ -3,6 +3,9 @@
     <q-header class="bg-grey-3 text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+    <q-page-container>
       <q-toolbar class="justify-between row">
         <div class="col">
           <span class="text-grey">Helpers</span>
@@ -10,8 +13,6 @@
           <span class="text-h6">Rerporte Aperturas de Cajas</span>
         </div>
       </q-toolbar>
-    </q-header>
-    <q-page-container>
 
       <div>
         <q-card class="my-card">
@@ -88,12 +89,14 @@
               <q-item>
                 <q-item-section>
                   <q-item-label class="text-center text-bold">Descuadre </q-item-label>
-                  <q-item-label class="text-center text-bold">{{ JSON.parse(viewCut.val.details_cut).descuadre }} </q-item-label>
+                  <q-item-label class="text-center text-bold">{{ JSON.parse(viewCut.val.details_cut).descuadre }}
+                  </q-item-label>
                 </q-item-section>
                 <q-separator spaced inset vertical dark />
                 <q-item-section>
                   <q-item-label class="text-center text-bold">Hora </q-item-label>
-                  <q-item-label class="text-bold text-center">{{ JSON.parse(viewCut.val.details_cut).corte.HORA }} </q-item-label>
+                  <q-item-label class="text-bold text-center">{{ JSON.parse(viewCut.val.details_cut).corte.HORA }}
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -211,7 +214,7 @@ const retiradas = computed(() => cuts.value.filter(e => e._type == 3));
 
 
 const init = async () => {
-  $q.loading.show({message:"Obteniendo Datos"})
+  $q.loading.show({ message: "Obteniendo Datos" })
   let sid = VDB.session.store.id;
   const resp = await OpenApi.getCutsBoxes(sid)
   if (resp.fail) {

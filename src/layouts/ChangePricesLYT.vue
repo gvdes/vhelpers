@@ -4,25 +4,28 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
-      <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Cambios de precio</span>
-        </div>
-        <div class="text-bold"> Cambio de Precios : {{ typeof (fechas.date) == 'object' ? `Del ${fechas.date.from} a ${fechas.date.to}` : fechas.date }}</div>
 
-        <div class="row">
-          <q-btn color="primary" icon="event" flat @click="fechas.state = !fechas.state" />
-          <q-separator spaced inset vertical dark />
-          <q-btn class="col" flat color="primary" icon="download" rounded title="Importar Excel" @click="exportTable" />
-          <q-separator spaced inset vertical dark />
-          <q-btn class="col" flat color="primary" icon="label" rounded title="Crear Etiquetas"
-            @click="mosPDF.state = !mosPDF.state" />
-        </div>
-      </q-toolbar>
     </q-header>
 
 
     <q-page-container>
       <q-page padding>
+        <q-toolbar class="justify-between">
+          <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Cambios de precio</span>
+          </div>
+          <div class="text-bold"> Cambio de Precios : {{ typeof (fechas.date) == 'object' ? `Del ${fechas.date.from} a
+            ${fechas.date.to}` : fechas.date }}</div>
+
+          <div class="row">
+            <q-btn color="primary" icon="event" flat @click="fechas.state = !fechas.state" />
+            <q-separator spaced inset vertical dark />
+            <q-btn class="col" flat color="primary" icon="download" rounded title="Importar Excel"
+              @click="exportTable" />
+            <q-separator spaced inset vertical dark />
+            <q-btn class="col" flat color="primary" icon="label" rounded title="Crear Etiquetas"
+              @click="mosPDF.state = !mosPDF.state" />
+          </div>
+        </q-toolbar>
         <q-card class="my-card">
           <q-card-section class="row">
 
@@ -129,8 +132,8 @@ const $q = useQuasar();
 const products = ref([]);
 
 const fechas = ref({
-  state:false,
-  date:null
+  state: false,
+  date: null
 })
 const priceColumns = ref([]);
 const stocksColumns = ref([
@@ -139,14 +142,14 @@ const stocksColumns = ref([
     label: 'EXHIBICION',
     field: row => row.stocks?.find(s => s.pivot)?.pivot?.exh || 0,
     align: 'center',
-    sortable:true
+    sortable: true
   },
   {
     name: 'stock_gen',
     label: 'GENERAL',
     field: row => row.stocks?.find(s => s.pivot)?.pivot?.gen || 0,
     align: 'center',
-    sortable:true
+    sortable: true
   }
 ])
 const categories = ref({
@@ -166,13 +169,13 @@ const categories = ref({
 
 const table = ref({
   columns: [
-    { name: 'code', label: 'CODIGO', field: row => row.code, align: 'left', sortable:true },
-    { name: 'barcode', label: 'CB', field: row => row.barcode, align: 'left' , sortable:true },
-    { name: 'description', label: 'DESCRIPCION', field: row => row.description, align: 'left', sortable:true },
-    { name: 'section', label: 'SECCION', field: row => row.categories.familia.seccion.name, align: 'left', sortable:true },
-    { name: 'family', label: 'FAMILIA', field: row => row.categories.familia.name, align: 'left', sortable:true },
-    { name: 'category', label: 'CATEGORIA', field: row => row.categories.name, align: 'left', sortable:true },
-    { name: 'locations', label: 'UBICACION', field: row => row.locations?.map(e => e.path).join('/'), align: 'center', sortable:true },
+    { name: 'code', label: 'CODIGO', field: row => row.code, align: 'left', sortable: true },
+    { name: 'barcode', label: 'CB', field: row => row.barcode, align: 'left', sortable: true },
+    { name: 'description', label: 'DESCRIPCION', field: row => row.description, align: 'left', sortable: true },
+    { name: 'section', label: 'SECCION', field: row => row.categories.familia.seccion.name, align: 'left', sortable: true },
+    { name: 'family', label: 'FAMILIA', field: row => row.categories.familia.name, align: 'left', sortable: true },
+    { name: 'category', label: 'CATEGORIA', field: row => row.categories.name, align: 'left', sortable: true },
+    { name: 'locations', label: 'UBICACION', field: row => row.locations?.map(e => e.path).join('/'), align: 'center', sortable: true },
     ...priceColumns.value,
     ...stocksColumns.value
   ]
@@ -249,7 +252,7 @@ const init = async () => {
   fechas.value.date = dayjs(date).format("YYYY/MM/DD")
 
   let sid = VDB.session.store.id_viz
-  const resp = await pricesProduct.getData(sid,{fechas:fechas.value.date});
+  const resp = await pricesProduct.getData(sid, { fechas: fechas.value.date });
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -285,7 +288,7 @@ const init = async () => {
             label: price.name,
             field: row => row.prices.find(p => p.id === price.id)?.pivot?.price || 0,
             align: 'center',
-            sortable:true
+            sortable: true
           });
         });
       }
@@ -305,7 +308,7 @@ const buscas = async () => {
   // fechas.value.date = dayjs(date).format("YYYY/MM/DD")
 
   let sid = VDB.session.store.id_viz
-  const resp = await pricesProduct.getData(sid,{fechas:fechas.value.date});
+  const resp = await pricesProduct.getData(sid, { fechas: fechas.value.date });
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -341,7 +344,7 @@ const buscas = async () => {
             label: price.name,
             field: row => row.prices.find(p => p.id === price.id)?.pivot?.price || 0,
             align: 'center',
-            sortable:true
+            sortable: true
           });
         });
       }

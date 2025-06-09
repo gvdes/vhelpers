@@ -3,13 +3,14 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+    <q-separator spaced inset vertical dark />
+    <q-page-container>
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Apertura de Cajas</span>
         </div>
       </q-toolbar>
-    </q-header>
-    <q-separator spaced inset vertical dark />
-    <q-page-container>
       <q-page>
 
         <div class="flex justify-center">
@@ -252,8 +253,8 @@ const envi = async () => {
       })
       alert(resp.fail.response.data)
       $q.loading.hide();
-    }else{
-    console.log(resp)
+    } else {
+      console.log(resp)
     }
   } else {
     console.log(resp);

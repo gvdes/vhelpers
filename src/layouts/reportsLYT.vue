@@ -3,15 +3,17 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
-      <div class=" row justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Reporteria</span>
-        </div>
-      </div>
+
       <q-separator />
     </q-header>
 
     <q-separator spaced inset vertical dark />
-    <q-page-container>
+    <q-page-container class=" q-ml-sm">
+
+      <div class=" row justify-between q-ml-sm">
+        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Reporteria</span>
+        </div>
+      </div>
       <q-card class="my-card">
         <q-card-section>
           <div class="row">
@@ -107,7 +109,7 @@ const report = async () => {
 }
 
 const genReport = (report) => {
-  $q.loading.show({message:'Generando Reporte'})
+  $q.loading.show({ message: 'Generando Reporte' })
   let sid = VDB.session.store.id_viz
   switch (report.key) {
     case "catalogo":
@@ -135,7 +137,7 @@ const genReport = (report) => {
       reportExc.generalVsExhibicion(report)
       break;
     case "generalVsCedis":
-      reportExc.generalVsCedis(report,sid)
+      reportExc.generalVsCedis(report, sid)
       break;
     case "conMaximos":
       reportExc.conMaximos(report)
@@ -150,10 +152,10 @@ const genReport = (report) => {
   $q.loading.hide();
 }
 
-if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
+if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
   init()
-}else{
-  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+} else {
+  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
   $router.replace('/');
 
 }

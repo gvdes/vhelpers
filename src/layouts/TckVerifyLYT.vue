@@ -5,25 +5,27 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
-      <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">TICKETS</span></div>
-        <q-btn color="primary" icon="add">
-          <q-menu>
-            <div class="q-pa-md bg-grey-2 text-primary">Buscar Folio</div>
-            <q-separator />
-            <q-form dense @submit="search" class="q-gutter-md q-pa-md">
-              <q-select v-model="cashdesk" :options="cashdesks" label="Serie" autofocus />
-              <q-input v-model="folio" type="number" label="Folio" />
-              <div class="text-right" v-if="cansearch">
-                <q-btn type="submit" color="primary" icon="search" />
-              </div>
-            </q-form>
-          </q-menu>
-        </q-btn>
-      </q-toolbar>
+
     </q-header>
     <q-page-container>
+
       <q-page class="bg-grey-3" padding>
+        <q-toolbar class="justify-between">
+          <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">TICKETS</span></div>
+          <q-btn color="primary" icon="add">
+            <q-menu>
+              <div class="q-pa-md bg-grey-2 text-primary">Buscar Folio</div>
+              <q-separator />
+              <q-form dense @submit="search" class="q-gutter-md q-pa-md">
+                <q-select v-model="cashdesk" :options="cashdesks" label="Serie" autofocus />
+                <q-input v-model="folio" type="number" label="Folio" />
+                <div class="text-right" v-if="cansearch">
+                  <q-btn type="submit" color="primary" icon="search" />
+                </div>
+              </q-form>
+            </q-menu>
+          </q-btn>
+        </q-toolbar>
         <div v-if="ticket.state">
           <div class="row justify-center">
             <transition name="bounce">
@@ -84,7 +86,7 @@
                 <div class="text-h6 text-center">Diferencias</div>
               </q-card-section>
               <q-card-section class="text-center text-h4">
-                {{ ticket.body.reduce((a, v) => a + Number(v.diferencia), 0) }}
+                {{ticket.body.reduce((a, v) => a + Number(v.diferencia), 0)}}
               </q-card-section>
             </q-card>
 
@@ -183,12 +185,12 @@
             </q-card-section>
 
             <q-card-section class="row">
-              <q-card-actions class="col" >
-              <q-btn flat icon="print" color="primary" @click="impresoras.state = !impresoras.state" />
-            </q-card-actions>
-            <q-card-actions  >
-              <q-btn flat label="TERMINAR"  color="positive" @click="terminarConteo" />
-            </q-card-actions>
+              <q-card-actions class="col">
+                <q-btn flat icon="print" color="primary" @click="impresoras.state = !impresoras.state" />
+              </q-card-actions>
+              <q-card-actions>
+                <q-btn flat label="TERMINAR" color="positive" @click="terminarConteo" />
+              </q-card-actions>
             </q-card-section>
           </q-card>
         </q-dialog>
@@ -206,12 +208,12 @@
               </div>
             </q-card-section>
             <q-card-section class="row">
-              <q-card-actions class="col" >
-              <q-btn flat icon="print" color="primary" @click="impresoras.state = !impresoras.state" />
-            </q-card-actions>
-            <q-card-actions  >
-              <q-btn flat label="Regresar"  color="negative" @click="returnModels" />
-            </q-card-actions>
+              <q-card-actions class="col">
+                <q-btn flat icon="print" color="primary" @click="impresoras.state = !impresoras.state" />
+              </q-card-actions>
+              <q-card-actions>
+                <q-btn flat label="Regresar" color="negative" @click="returnModels" />
+              </q-card-actions>
             </q-card-section>
 
           </q-card>
@@ -244,7 +246,7 @@
               <div class="text-bold">
                 Productos No Validados
               </div>
-              <div v-for="(product,index) in  (invalidBascket)" :key="index">
+              <div v-for="(product, index) in (invalidBascket)" :key="index">
                 {{ product.codigo }}
               </div>
             </q-card-section>
@@ -252,7 +254,7 @@
               <div class="text-bold">
                 Productos Con Diferencia
               </div>
-              <div v-for="(product,index) in  (btnTerm)" :key="index">
+              <div v-for="(product, index) in (btnTerm)" :key="index">
                 {{ product.codigo }}
               </div>
             </q-card-section>
@@ -260,7 +262,7 @@
               <div class="text-bold">
                 Productos Validados
               </div>
-              <div v-for="(product,index) in  (validBacket)" :key="index">
+              <div v-for="(product, index) in (validBacket)" :key="index">
                 {{ product.codigo }}
               </div>
             </q-card-section>
@@ -274,14 +276,16 @@
 
 
       </q-page>
-      <q-footer reveal elevated bordered v-if="ticket.state" class="row" >
-          <q-select  class="col" v-model="filter" :options="opts" filled option-label="codigo" use-input fill-input hide-selected input-class="text-white"
-            input-debounce="0" @filter="filterFn" @input-value="setModel" dense @update:model-value="updateProduct">
-            <template v-slot:before>
-              <q-icon name="fas fa-barcode" color="white" />
-            </template>
-          </q-select>
-          <q-btn  v-if="validBacket.length > 0" color="white" text-color="primary" size="sm" label="Terminar" @click="revisarTerm" />
+      <q-footer reveal elevated bordered v-if="ticket.state" class="row">
+        <q-select class="col" v-model="filter" :options="opts" filled option-label="codigo" use-input fill-input
+          hide-selected input-class="text-white" input-debounce="0" @filter="filterFn" @input-value="setModel" dense
+          @update:model-value="updateProduct">
+          <template v-slot:before>
+            <q-icon name="fas fa-barcode" color="white" />
+          </template>
+        </q-select>
+        <q-btn v-if="validBacket.length > 0" color="white" text-color="primary" size="sm" label="Terminar"
+          @click="revisarTerm" />
       </q-footer>
     </q-page-container>
   </q-layout>
@@ -305,12 +309,12 @@ const cashdesk = ref(null);
 const filter = ref(null)
 const folio = ref("");
 const impresoras = ref({
-  state:false,
+  state: false,
   val: null,
   body: null
 })
 const premature = ref({
-  state:false
+  state: false
 })
 const ticket = ref({
   state: false,
@@ -446,7 +450,7 @@ const terminarConteo = () => {
   }
 }
 
-const revisarTerm  = () => {
+const revisarTerm = () => {
   console.log('Terminado Incompleto')
   premature.value.state = true;
 
@@ -528,21 +532,21 @@ const terminar = async () => {
   $q.loading.show({ message: 'Imprimiendo Diferencias' })
   let dat = {
     printer: impresoras.value.val.ip_address,
-    data:ticket.value,
-    invalid:invalidBascket.value,
-    valid:validBacket.value,
-    diff:btnTerm.value
+    data: ticket.value,
+    invalid: invalidBascket.value,
+    valid: validBacket.value,
+    diff: btnTerm.value
   }
   let host = VDB.session.store.ip_address;
   // let host = '192.168.10.160:1619';
   let url = `http://${host}/access/public/modify/PrintDiff`;
   axios.post(url, dat)
-  .then(r => {
+    .then(r => {
       console.log(r.data)
-      if(r.data == 1 ){
-        $q.notify({message:'Impresion Correcta',type:'positive',position:'center'})
+      if (r.data == 1) {
+        $q.notify({ message: 'Impresion Correcta', type: 'positive', position: 'center' })
         impresoras.value.state = false,
-        impresoras.value.val = null
+          impresoras.value.val = null
       }
 
       $q.loading.hide()

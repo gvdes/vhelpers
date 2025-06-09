@@ -5,13 +5,14 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+    <q-page-container>
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Cobro Ofertas</span></div>
         <div>Total $<span class="text-bold">{{products.reduce((a, e) => a + e.amount * e.price?.pivot.price, 0)
-            }}</span> </div>
+        }}</span> </div>
       </q-toolbar>
-    </q-header>
-    <q-page-container>
       <q-page class="bg-grey-3" padding>
 
         <q-card class="my-card">
@@ -95,7 +96,7 @@
             v-if="editProduct.val.edit == true" />
           <q-btn flat icon="check" color="positive" v-close-popup @click="insertProduct"
             v-if="editProduct.val.edit == false"
-            :disable="editProduct.val.price?.pivot.price <=  0 || editProduct.val.notes.length <= 0" />
+            :disable="editProduct.val.price?.pivot.price <= 0 || editProduct.val.notes.length <= 0" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -387,7 +388,7 @@ const optionDisable = (val) => {
 
 const terminar = async () => {
   // let host = '192.168.10.160:1619'
-  $q.loading.show({message:"Realizando Ticket"});
+  $q.loading.show({ message: "Realizando Ticket" });
   let host = VDB.session.store.ip_address;
   let url = `http://${host}/access/public/modify/createTicket`;
   let by = `${VDB.session.name} - ${VDB.session.store.alias}`;

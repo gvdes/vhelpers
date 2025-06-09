@@ -4,24 +4,27 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
-      <q-toolbar class="justify-between">
-        <q-btn flat @click="drawer.state = !drawer.state" round dense icon="menu" />
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Creacion de Etiquetas</span>
-        </div>
 
-      </q-toolbar>
     </q-header>
 
     <q-page-container>
-      <q-page padding>
-        <q-card class="my-card">
+      <!-- <q-toolbar class="justify-between"> -->
 
+      <!-- </q-toolbar> -->
+      <q-page padding>
+        <div class="flex jutify-between row ">
+          <div class="col" >Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Creacion de
+              Etiquetas</span>
+          </div>
+          <q-btn class=" flex justify-end" flat @click="drawer.state = !drawer.state" round dense icon="menu" />
+        </div>
+        <q-card class="my-card">
           <ProductAutocomplete :checkState="false" @input="add" with_prices @agregar="agregar" with_locations />
         </q-card>
 
         <q-separator spaced inset vertical dark />
 
-        <q-drawer v-model="drawer.state" show-if-above :width="200" :breakpoint="500" bordered
+        <q-drawer v-model="drawer.state" :width="200" :breakpoint="500" bordered
           :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
           <div>
             <q-separator spaced inset vertical dark />
@@ -71,8 +74,8 @@
                   <div class="text-subtitle2 text-bold text-center">{{ props.row.name }}</div>
                   <div class="text-subtitle2 text-bold text-center">{{ props.row.label }}</div>
                   <div class="text-subtitle2 text-bold text-center">Longitud: {{ props.row.large }}</div>
-                  <div class="text-subtitle2 text-bold text-center">Ubicacion: {{ props.row.locations?.map(location =>
-                    location.path).join('/') }}</div>
+                  <div class="text-subtitle2 text-bold text-center">Ubicacion: {{props.row.locations?.map(location =>
+                    location.path).join('/')}}</div>
 
                   <q-separator spaced inset vertical dark />
                   <div class="row">
@@ -355,7 +358,7 @@ const readFile = async () => {
     });
     // console.log(codesToSend.length)
     if (codesToSend.length) {
-      let data = { codes: codesToSend, _workpoint:VDB.session.store.id_viz };
+      let data = { codes: codesToSend, _workpoint: VDB.session.store.id_viz };
       console.log(data)
       // wndImportJSON.wndTotal  = codesToSend.length;
       $q.loading.show({ message: "Procesando archivo, espera.." });
@@ -470,173 +473,173 @@ const colorLabel = (type) => {
 
 
 const pdf = () => {
-  $q.loading.show({ message:'Generando Etiquetas' })
+  $q.loading.show({ message: 'Generando Etiquetas' })
   if (mosPDF.value.val.id == 1) {
     xtralargeLabel(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
 
   } else if (mosPDF.value.val.id == 2) {
     largeLabel(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
   } else if (mosPDF.value.val.id == 3) {
     mediumLabel(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
   } else if (mosPDF.value.val.id == 4) {
     smallLabel(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
   } else if (mosPDF.value.val.id == 5) {
     verticalLabel(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
   } else if (mosPDF.value.val.id == 6) {
     toyBoys(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
   } else if (mosPDF.value.val.id == 7) {
     toyGirls(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
-  }else if (mosPDF.value.val.id == 8) {
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
+  } else if (mosPDF.value.val.id == 8) {
     xlargenina(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
-  }else if (mosPDF.value.val.id == 9) {
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
+  } else if (mosPDF.value.val.id == 9) {
     xlargenino(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
-  }else if (mosPDF.value.val.id == 10) {
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
+  } else if (mosPDF.value.val.id == 10) {
     Hlargenino(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
-  }else if (mosPDF.value.val.id == 11) {
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
+  } else if (mosPDF.value.val.id == 11) {
     Hlargenina(products.value)
-    .then(r => {
-      $q.notify({
-        message:`Se Descargo las etiquetas Correctamente`,
-        type:`positive`,
-        position:`center`,
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
       })
-     mosPDF.value.state= false,
-     mosPDF.value.val =  null,
-      $q.loading.hide()
-    })
-    .catch(r => {
-      alert('Hubo un error al descargar las etiquetas')
-    })
+      .catch(r => {
+        alert('Hubo un error al descargar las etiquetas')
+      })
   }
 }
 
@@ -795,7 +798,7 @@ const xtralargeLabel = (data) => {
         doc.text(`${product.code}`, x + 18, y + 23); // codigo de el producto
         doc.text(product.large, x + 35, y + 112); // largo de el producto
         doc.setFont('helvetica', 'normal');
-        doc.text(`${product.pieces} PZS`, x + 185, y + 23,{align:'right'} ); // piezas por caja
+        doc.text(`${product.pieces} PZS`, x + 185, y + 23, { align: 'right' }); // piezas por caja
         doc.setFontSize(6)
         doc.setFont('helvetica', 'normal');
         doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 38, y + 114); //ubicacion de exhibicion de el producto
@@ -1046,7 +1049,7 @@ const verticalLabel = (data) => {
         // //CONTINUA CODIGO
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
-        doc.text(`${product.code}`, x + 24, y + 17, {align:'center'}); // codigo de el producto
+        doc.text(`${product.code}`, x + 24, y + 17, { align: 'center' }); // codigo de el producto
         doc.text(product.large, x + 20, y + 68); // largo de el producto
         doc.text(`${product.pieces} PZS`, x + 20, y + 73); // piezas por caja
         doc.setFontSize(4)
@@ -1124,7 +1127,7 @@ const toyBoys = (data) => {
           } else {
             doc.setFontSize(18);
             doc.setFont('helvetica', 'bold');
-            doc.text(e.alias, x +2, ypri + i * yprincrement);// alias de el precio
+            doc.text(e.alias, x + 2, ypri + i * yprincrement);// alias de el precio
             doc.text(`$${Number(e.pivot.price).toFixed(0)}`, x + 19, ypri + i * yprincrement);// valor de el precio
           }
         })
@@ -1209,14 +1212,14 @@ const toyGirls = (data) => {
           } else {
             doc.setFontSize(18);
             doc.setFont('helvetica', 'bold');
-            doc.text(e.alias, x +15, ypri + i * yprincrement);// alias de el precio
+            doc.text(e.alias, x + 15, ypri + i * yprincrement);// alias de el precio
             doc.text(`$${Number(e.pivot.price).toFixed(0)}`, x + 32, ypri + i * yprincrement);// valor de el precio
           }
         })
         // //CONTINUA CODIGO
         doc.setFontSize(13);
         doc.setFont('helvetica', 'bold');
-        doc.text(`${product.code}`, x + 62, y + 70, {align:'right'}); // codigo de el producto
+        doc.text(`${product.code}`, x + 62, y + 70, { align: 'right' }); // codigo de el producto
         doc.setFont('helvetica', 'normal');
         doc.text(product.large, x + 15, y + 65); // largo de el producto
         doc.text(`${product.pieces} PZS`, x + 15, y + 70); // piezas por caja
@@ -1303,7 +1306,7 @@ const xlargenina = (data) => {
         doc.text(`${product.code}`, x + 18, y + 23); // codigo de el producto
         doc.text(product.large, x + 35, y + 112); // largo de el producto
         doc.setFont('helvetica', 'normal');
-        doc.text(`${product.pieces} PZS`, x + 185, y + 23,{align:'right'} ); // piezas por caja
+        doc.text(`${product.pieces} PZS`, x + 185, y + 23, { align: 'right' }); // piezas por caja
         doc.setFontSize(6)
         doc.setFont('helvetica', 'normal');
         doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 38, y + 114); //ubicacion de exhibicion de el producto
@@ -1387,7 +1390,7 @@ const xlargenino = (data) => {
         doc.text(`${product.code}`, x + 18, y + 23); // codigo de el producto
         doc.text(product.large, x + 35, y + 112); // largo de el producto
         doc.setFont('helvetica', 'normal');
-        doc.text(`${product.pieces} PZS`, x + 185, y + 23,{align:'right'} ); // piezas por caja
+        doc.text(`${product.pieces} PZS`, x + 185, y + 23, { align: 'right' }); // piezas por caja
         doc.setFontSize(6)
         doc.setFont('helvetica', 'normal');
         doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 38, y + 114); //ubicacion de exhibicion de el producto
@@ -1463,7 +1466,7 @@ const Hlargenino = (data) => {
           } else {
             doc.setFontSize(18);
             doc.setFont('helvetica', 'bold');
-            doc.text(e.alias, x +15, ypri + i * yprincrement);// alias de el precio
+            doc.text(e.alias, x + 15, ypri + i * yprincrement);// alias de el precio
             doc.text(`$${Number(e.pivot.price).toFixed(0)}`, x + 32, ypri + i * yprincrement);// valor de el precio
           }
         })
@@ -1548,7 +1551,7 @@ const Hlargenina = (data) => {
           } else {
             doc.setFontSize(18);
             doc.setFont('helvetica', 'bold');
-            doc.text(e.alias, x +20, ypri + i * yprincrement);// alias de el precio
+            doc.text(e.alias, x + 20, ypri + i * yprincrement);// alias de el precio
             doc.text(`$${Number(e.pivot.price).toFixed(0)}`, x + 37, ypri + i * yprincrement);// valor de el precio
           }
         })
@@ -1584,586 +1587,586 @@ const barcode = (text) => {
 }
 
 const plainMedium = (pdf, count, products, nick, zip) => {
-      console.log("ESTE ES EL FORMATO!!!");
-      let width = pdf.internal.pageSize.getWidth() / 2.15;
-      let height = pdf.internal.pageSize.getHeight() / 4.3;
-      let countX = 1;
-      let countY = 1;
-      let counterCodeShort = 0;
-      let counterCodeShortX = 0;
-      let productXY = 8;
-      let newProducts = [];
-      products.map((item) => {
-        for (let i = 0; i < item.copies; i++) {
-          newProducts.push(item);
-        }
-        return newProducts;
-      });
-      products = newProducts;
-      for (let i = 0; i < products.length; i++) {
-        if (i % 2 == 0) {
-          pdf.setFontSize(12);
-          pdf.setFont("Montserrat-Semi");
-          pdf.rect(20, 20, width, height * countY);
-          pdf.text(
-            "Vizuru",
-            (width / 1.75),
-            (32 + (countY == 1 ? 0 : counterCodeShort)),
-            null,
-            null,
-            "center"
-          ); //18.3 12.5 6.75
-          pdf.setFont("Montserrat-Bold");
-          pdf.setFontSize(33);
-          this.useIpack
-            ? pdf.text(
-                products[i].name,
-                width / 10,
-                70 + (countY == 1 ? 0 : counterCodeShort),
-                null,
-                null,
-                "left"
-              )
-            : pdf.text(
-                products[i].name,
-                (width / 1.75),
-                (70 + (countY == 1 ? 0 : counterCodeShort)), null, null, "center" );
-          pdf.setFontSize(10);
-          pdf.setFont("Montserrat");
-          let splitter = pdf.splitTextToSize(products[i].label, 270);
-          pdf.text(
-            splitter,
-            width / 10,
-            88 + (countY == 1 ? 0 : counterCodeShort),
-            null,
-            null,
-            "left"
-          );
-          let aux = 0;
-          if (products[i].type == "off") {
-            pdf.setFont("Montserrat-Semi");
-            pdf.setFontSize(12);
-            // pdf.addImage(
-            //   "pdf/img/banner.png",
-            //   "PNG",
-            //   width / 4.5,
-            //   70 + (countY == 1 ? 0 : counterCodeShort) + aux,
-            //   210,
-            //   140
-            // );
-            let convert =
-              products[i].prices[0].price +
-              (products[i].prices[0].price * products[i].discount) / 100;
-            convert =
-              Math.floor(convert) == products[i].prices[0].price
-                ? convert + 1
-                : convert;
-            // pdf.text(
-            //   `De $${Math.floor(convert) + 1} a`,
-            //   width / 2.2,
-            //   123 + (countY == 1 ? 0 : counterCodeShort) + aux,
-            //   null,
-            //   null,
-            //   "left"
-            // );
-            pdf.setFont("Montserrat-Bold");
-            pdf.setFontSize(12);
-            pdf.text(
-              `PRECIO UNICO`,
-              width / 2,
-              110 + (countY == 1 ? 0 : counterCodeShort) + aux,
-              null,
-              null,
-              "left"
-            );
-            pdf.setFontSize(35);
-            pdf.text(
-              `$${parseFloat(
-                products[i].prices[0].price != 0
-                  ? products[i].prices[0].price
-                  : 1
-              )}`,
-              width / 2.2,
-              155 + (countY == 1 ? 0 : counterCodeShort) + aux,
-              null,
-              null,
-              "left"
-            );
-            pdf.setFontSize(20);
-            // pdf.text(
-            //   `-${products[i].discount}%`,
-            //   width / 3.6,
-            //   145 + (countY == 1 ? 0 : counterCodeShort) + aux,
-            //   null,
-            //   null,
-            //   "left"
-            // );
-            pdf.setFontSize(30);
-            pdf.setFont("Montserrat-Semi");
-            aux += aux + 30;
-          } else {
-            switch (products[i].prices.length) {
-              case 1:
-                pdf.setFont("Montserrat");
-                pdf.setFontSize(30);
-                pdf.text(
-                  products[i].prices[0].alias,
-                  width / 3.8,
-                  140 + (countY == 1 ? 0 : counterCodeShort) + aux,
-                  null,
-                  null,
-                  "left"
-                );
-                pdf.setFontSize(30);
-                pdf.setFont("Montserrat-Semi");
-                pdf.text(
-                  `$${parseFloat(products[i].prices[0].price)}`,
-                  width / 1.8,
-                  140 + (countY == 1 ? 0 : counterCodeShort) + aux,
-                  null,
-                  null,
-                  "left"
-                );
-                aux += aux + 30;
-                break;
-              case 2:
-                for (let y = 0; y < products[i].prices.length; y++) {
-                  pdf.setFont("Montserrat");
-                  pdf.setFontSize(20);
-                  pdf.text(
-                    products[i].prices[y].alias,
-                    width / 3,
-                    120 + (countY == 1 ? 0 : counterCodeShort) + aux,
-                    null,
-                    null,
-                    "left"
-                  );
-                  pdf.setFontSize(25);
-                  pdf.setFont("Montserrat-Semi");
-                  pdf.text(
-                    `$${parseFloat(products[i].prices[y].price)}`,
-                    width / 1.8,
-                    120 + (countY == 1 ? 0 : counterCodeShort) + aux,
-                    null,
-                    null,
-                    "left"
-                  );
-                  aux += aux + 30;
-                }
-                break;
-              case 3:
-                for (let y = 0; y < products[i].prices.length; y++) {
-                  pdf.setFont("Montserrat");
-                  pdf.setFontSize(18);
-                  pdf.text(
-                    products[i].prices[y].alias,
-                    width / 3,
-                    118 + (countY == 1 ? 0 : counterCodeShort) + aux,
-                    null,
-                    null,
-                    "left"
-                  );
-                  pdf.setFontSize(22);
-                  pdf.setFont("Montserrat-Semi");
-                  pdf.text(
-                    `$${parseFloat(products[i].prices[y].price)}`,
-                    width / 1.8,
-                    118 + (countY == 1 ? 0 : counterCodeShort) + aux,
-                    null,
-                    null,
-                    "left"
-                  );
-                  aux += 25;
-                }
-                break;
-              case 4:
-                for (let y = 0; y < products[i].prices.length; y++) {
-                  if (y == 1) {
-                    aux = 0;
-                  }
-                  if (y == 1 || y == 3) {
-                    pdf.setFont("Montserrat");
-                    pdf.setFontSize(15);
-                    pdf.text(
-                      products[i].prices[y].alias,
-                      width / 1.7,
-                      130 + (countY == 1 ? 0 : counterCodeShort) + aux,
-                      null,
-                      null,
-                      "left"
-                    );
-                    pdf.setFontSize(18);
-                    pdf.setFont("Montserrat-Semi");
-                    pdf.text(
-                      `$${parseFloat(products[i].prices[y].price)}`,
-                      width / 1.35,
-                      130 + (countY == 1 ? 0 : counterCodeShort) + aux,
-                      null,
-                      null,
-                      "left"
-                    );
-                    aux += aux + 30;
-                  } else if (y == 0 || y == 2) {
-                    pdf.setFont("Montserrat");
-                    pdf.setFontSize(15);
-                    pdf.text(
-                      products[i].prices[y].alias,
-                      width / 7,
-                      130 + (countY == 1 ? 0 : counterCodeShort) + aux,
-                      null,
-                      null,
-                      "left"
-                    );
-                    pdf.setFontSize(18);
-                    pdf.setFont("Montserrat-Semi");
-                    pdf.text(
-                      `$${parseFloat(products[i].prices[y].price)}`,
-                      width / 3.3,
-                      130 + (countY == 1 ? 0 : counterCodeShort) + aux,
-                      null,
-                      null,
-                      "left"
-                    );
-                  }
-                }
-                break;
-            }
-          }
-          pdf.setFont("Montserrat");
-          pdf.setFontSize(16);
-          pdf.text(
-            `${products[i].pieces}pz`,
-            width / 4.5,
-            195 + (countY == 1 ? 0 : counterCodeShort),
-            null,
-            null,
-            "center"
-          );
-          pdf.setFont("Montserrat-Bold");
-          pdf.text(
-            products[i].large,
-            width / 3,
-            195 + (countY == 1 ? 0 : counterCodeShort),
-            null,
-            null,
-            "left"
-          );
-          pdf.setFont("Montserrat-Semi");
-          pdf.setFontSize(16);
-          pdf.text(
-            `${products[i].code}`,                        // text
-            (width / 1.4),                                // X
-            (195 + (countY == 1 ? 0 : counterCodeShort)), // Y
-            null,
-            null,
-            "left"
-          );
-          this.useIpack
-            ? pdf.addImage(
-                this.convertTextToBase64Barcode(products[i].name),
-                "PNG",
-                width / 1.48,
-                40 + (countY == 1 ? 0 : counterCodeShort),
-                100,
-                25
-              )
-            : "";
-          // /*----------  SEGMENTO DE PRECIOS SOLO SI SON SELECCIONADOS TODOS  -----------*/
-          countY++;
-          counterCodeShort += 182 + (i < 3 ? 4 : 2);
-        } else {
-          pdf.setFont("Montserrat-Semi");
-          pdf.setFontSize(12);
-          pdf.rect(width + 20, 20, width, height * countX);
-          pdf.text(
-            "Vizuru",
-            (width / 1.75) * 2.75,
-            32 + (countX == 1 ? 0 : counterCodeShortX),
-            null,
-            null,
-            "center"
-          );
-          pdf.setFont("Montserrat-Bold");
-          pdf.setFontSize(33);
-          this.useIpack
-            ? pdf.text(
-                products[i].name,
-                width * 1.1,
-                70 + (countX == 1 ? 0 : counterCodeShortX),
-                null,
-                null,
-                "left"
-              )
-            : pdf.text(
-                products[i].name,
-                (width / 1.75) * 2.75,
-                70 + (countX == 1 ? 0 : counterCodeShortX),
-                null,
-                null,
-                "center"
-              );
-          pdf.setFontSize(10);
-          pdf.setFont("Montserrat");
-          let splitter = pdf.splitTextToSize(products[i].label, 270);
-          pdf.text(
-            splitter,
-            width * 1.1,
-            88 + (countX == 1 ? 0 : counterCodeShortX),
-            null,
-            null,
-            "left"
-          );
-          let aux = 0;
-          if (products[i].type == "off") {
-            pdf.setFont("Montserrat-Semi");
-            pdf.setFontSize(12);
-            // pdf.setTextColor(255);
-            // pdf.addImage(
-            //   "pdf/img/banner.png",
-            //   "PNG",
-            //   width * 1.23,
-            //   70 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-            //   210,
-            //   140
-            // );
-            let convert =
-              products[i].prices[0].price +
-              (products[i].prices[0].price * products[i].discount) / 100;
-            convert =
-              Math.floor(convert) == products[i].prices[0].price
-                ? convert + 1
-                : convert;
-            // pdf.text(
-            //   `De $${Math.floor(convert) + 1} a`,
-            //   width * 1.46,
-            //   123 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-            //   null,
-            //   null,
-            //   "left"
-            // );
-            // pdf.setTextColor(0);
-            pdf.setFont("Montserrat-Bold");
-            pdf.setFontSize(12);
-            pdf.text(
-              `PRECIO UNICO`,
-              width * 1.42,
-              110 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-              null,
-              null,
-              "left"
-            );
-            pdf.setFontSize(35);
-            pdf.text(
-              `$${parseFloat(
-                products[i].prices[0].price != 0
-                  ? products[i].prices[0].price
-                  : 1
-              )}`,
-              width * 1.48,
-              160 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-              null,
-              null,
-              "left"
-            );
-            pdf.setFontSize(20);
-            // pdf.text(
-            //   `-${products[i].discount}%`,
-            //   width * 1.28,
-            //   145 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-            //   null,
-            //   null,
-            //   "left"
-            // );
-            // pdf.text(products[i].prices[0].alias, width / 3.8, 140 + (countY == 1 ? 0 : counterCodeShort) + aux, null, null, 'left');
-            pdf.setFontSize(30);
-            pdf.setFont("Montserrat-Semi");
-            // pdf.text(`$${parseFloat(products[i].prices[0].price).toFixed(2)}`, width / 1.8, 140 + (countY == 1 ? 0 : counterCodeShort) + aux, null, null, 'left');
-            aux += aux + 30;
-          } else {
-            switch (products[i].prices.length) {
-              case 1:
-                pdf.setFont("Montserrat");
-                pdf.setFontSize(30);
-                pdf.text(
-                  products[i].prices[0].alias,
-                  width * 1.26,
-                  140 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-                  null,
-                  null,
-                  "left"
-                );
-                pdf.setFontSize(30);
-                pdf.setFont("Montserrat-Semi");
-                pdf.text(
-                  `$${parseFloat(products[i].prices[0].price)}`,
-                  width * 1.55,
-                  140 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-                  null,
-                  null,
-                  "left"
-                );
-                aux += aux + 30;
-                break;
-              case 2:
-                for (let y = 0; y < products[i].prices.length; y++) {
-                  pdf.setFont("Montserrat");
-                  pdf.setFontSize(20);
-                  pdf.text(
-                    products[i].prices[y].alias,
-                    width * 1.33,
-                    120 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-                    null,
-                    null,
-                    "left"
-                  );
-                  pdf.setFontSize(25);
-                  pdf.setFont("Montserrat-Semi");
-                  pdf.text(
-                    `$${parseFloat(products[i].prices[y].price)}`,
-                    width * 1.55,
-                    120 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-                    null,
-                    null,
-                    "left"
-                  );
-                  aux += aux + 30;
-                }
-                break;
-              case 3:
-                for (let y = 0; y < products[i].prices.length; y++) {
-                  pdf.setFont("Montserrat");
-                  pdf.setFontSize(18);
-                  pdf.text(
-                    products[i].prices[y].alias,
-                    width * 1.33,
-                    118 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-                    null,
-                    null,
-                    "left"
-                  );
-                  pdf.setFontSize(22);
-                  pdf.setFont("Montserrat-Semi");
-                  pdf.text(
-                    `$${parseFloat(products[i].prices[y].price)}`,
-                    width * 1.55,
-                    118 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-                    null,
-                    null,
-                    "left"
-                  );
-                  aux += 25;
-                }
-                break;
-              case 4:
-                for (let y = 0; y < products[i].prices.length; y++) {
-                  if (y == 1) {
-                    aux = 0;
-                  }
-                  if (y == 1 || y == 3) {
-                    pdf.setFont("Montserrat");
-                    pdf.setFontSize(15);
-                    pdf.text(
-                      products[i].prices[y].alias,
-                      width * 1.6,
-                      130 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-                      null,
-                      null,
-                      "left"
-                    );
-                    pdf.setFontSize(18);
-                    pdf.setFont("Montserrat-Semi");
-                    pdf.text(
-                      `$${parseFloat(products[i].prices[y].price)}`,
-                      width * 1.75,
-                      130 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-                      null,
-                      null,
-                      "left"
-                    );
-                    aux += aux + 30;
-                  } else if (y == 0 || y == 2) {
-                    pdf.setFont("Montserrat");
-                    pdf.setFontSize(15);
-                    pdf.text(
-                      products[i].prices[y].alias,
-                      width * 1.15,
-                      130 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-                      null,
-                      null,
-                      "left"
-                    );
-                    pdf.setFontSize(18);
-                    pdf.setFont("Montserrat-Semi");
-                    pdf.text(
-                      `$${parseFloat(products[i].prices[y].price)}`,
-                      width * 1.3,
-                      130 + (countX == 1 ? 0 : counterCodeShortX) + aux,
-                      null,
-                      null,
-                      "left"
-                    );
-                  }
-                }
-                break;
-            }
-          }
-          pdf.setFont("Montserrat");
-          pdf.setFontSize(16);
-          pdf.text(
-            `${products[i].pieces}pz`,
-            (width / 4) * 5,
-            195 + (countX == 1 ? 0 : counterCodeShortX),
-            null,
-            null,
-            "center"
-          );
-          pdf.setFont("Montserrat-Bold");
-          pdf.text(
-            products[i].large,
-            (width / 3.7) * 5,
-            195 + (countY == 1 ? 0 : counterCodeShortX),
-            null,
-            null,
-            "left"
-          );
-          pdf.setFont("Montserrat-Semi");
-          pdf.setFontSize(16);
-          pdf.text(
-            `${products[i].code}`,
-            (width / 1.3) * 2.1,
-            195 + (countX == 1 ? 0 : counterCodeShortX),
-            null,
-            null,
-            "left"
-          );
-          this.useIpack
-            ? pdf.addImage(
-                this.convertTextToBase64Barcode(products[i].name),
-                "PNG",
-                (width / 1.12) * 1.88,
-                40 + (countX == 1 ? 0 : counterCodeShortX),
-                100,
-                25
-              )
-            : "";
-          if ((i + 1) % productXY == 0) {
+  console.log("ESTE ES EL FORMATO!!!");
+  let width = pdf.internal.pageSize.getWidth() / 2.15;
+  let height = pdf.internal.pageSize.getHeight() / 4.3;
+  let countX = 1;
+  let countY = 1;
+  let counterCodeShort = 0;
+  let counterCodeShortX = 0;
+  let productXY = 8;
+  let newProducts = [];
+  products.map((item) => {
+    for (let i = 0; i < item.copies; i++) {
+      newProducts.push(item);
+    }
+    return newProducts;
+  });
+  products = newProducts;
+  for (let i = 0; i < products.length; i++) {
+    if (i % 2 == 0) {
+      pdf.setFontSize(12);
+      pdf.setFont("Montserrat-Semi");
+      pdf.rect(20, 20, width, height * countY);
+      pdf.text(
+        "Vizuru",
+        (width / 1.75),
+        (32 + (countY == 1 ? 0 : counterCodeShort)),
+        null,
+        null,
+        "center"
+      ); //18.3 12.5 6.75
+      pdf.setFont("Montserrat-Bold");
+      pdf.setFontSize(33);
+      this.useIpack
+        ? pdf.text(
+          products[i].name,
+          width / 10,
+          70 + (countY == 1 ? 0 : counterCodeShort),
+          null,
+          null,
+          "left"
+        )
+        : pdf.text(
+          products[i].name,
+          (width / 1.75),
+          (70 + (countY == 1 ? 0 : counterCodeShort)), null, null, "center");
+      pdf.setFontSize(10);
+      pdf.setFont("Montserrat");
+      let splitter = pdf.splitTextToSize(products[i].label, 270);
+      pdf.text(
+        splitter,
+        width / 10,
+        88 + (countY == 1 ? 0 : counterCodeShort),
+        null,
+        null,
+        "left"
+      );
+      let aux = 0;
+      if (products[i].type == "off") {
+        pdf.setFont("Montserrat-Semi");
+        pdf.setFontSize(12);
+        // pdf.addImage(
+        //   "pdf/img/banner.png",
+        //   "PNG",
+        //   width / 4.5,
+        //   70 + (countY == 1 ? 0 : counterCodeShort) + aux,
+        //   210,
+        //   140
+        // );
+        let convert =
+          products[i].prices[0].price +
+          (products[i].prices[0].price * products[i].discount) / 100;
+        convert =
+          Math.floor(convert) == products[i].prices[0].price
+            ? convert + 1
+            : convert;
+        // pdf.text(
+        //   `De $${Math.floor(convert) + 1} a`,
+        //   width / 2.2,
+        //   123 + (countY == 1 ? 0 : counterCodeShort) + aux,
+        //   null,
+        //   null,
+        //   "left"
+        // );
+        pdf.setFont("Montserrat-Bold");
+        pdf.setFontSize(12);
+        pdf.text(
+          `PRECIO UNICO`,
+          width / 2,
+          110 + (countY == 1 ? 0 : counterCodeShort) + aux,
+          null,
+          null,
+          "left"
+        );
+        pdf.setFontSize(35);
+        pdf.text(
+          `$${parseFloat(
+            products[i].prices[0].price != 0
+              ? products[i].prices[0].price
+              : 1
+          )}`,
+          width / 2.2,
+          155 + (countY == 1 ? 0 : counterCodeShort) + aux,
+          null,
+          null,
+          "left"
+        );
+        pdf.setFontSize(20);
+        // pdf.text(
+        //   `-${products[i].discount}%`,
+        //   width / 3.6,
+        //   145 + (countY == 1 ? 0 : counterCodeShort) + aux,
+        //   null,
+        //   null,
+        //   "left"
+        // );
+        pdf.setFontSize(30);
+        pdf.setFont("Montserrat-Semi");
+        aux += aux + 30;
+      } else {
+        switch (products[i].prices.length) {
+          case 1:
             pdf.setFont("Montserrat");
-            pdf.setFontSize(12);
-            pdf.text(3, 10, `Se generó ${count} plantilla, creador: ${nick}`);
-            products.length > productXY ? pdf.addPage() : "";
-            count++;
-            counterCodeShort = 0;
-            counterCodeShortX = 0;
-            countX = 1;
-            countY = 1;
-          } else {
-            countX++;
-            counterCodeShortX += 182 + (i < 3 ? 4 : 2);
-          }
+            pdf.setFontSize(30);
+            pdf.text(
+              products[i].prices[0].alias,
+              width / 3.8,
+              140 + (countY == 1 ? 0 : counterCodeShort) + aux,
+              null,
+              null,
+              "left"
+            );
+            pdf.setFontSize(30);
+            pdf.setFont("Montserrat-Semi");
+            pdf.text(
+              `$${parseFloat(products[i].prices[0].price)}`,
+              width / 1.8,
+              140 + (countY == 1 ? 0 : counterCodeShort) + aux,
+              null,
+              null,
+              "left"
+            );
+            aux += aux + 30;
+            break;
+          case 2:
+            for (let y = 0; y < products[i].prices.length; y++) {
+              pdf.setFont("Montserrat");
+              pdf.setFontSize(20);
+              pdf.text(
+                products[i].prices[y].alias,
+                width / 3,
+                120 + (countY == 1 ? 0 : counterCodeShort) + aux,
+                null,
+                null,
+                "left"
+              );
+              pdf.setFontSize(25);
+              pdf.setFont("Montserrat-Semi");
+              pdf.text(
+                `$${parseFloat(products[i].prices[y].price)}`,
+                width / 1.8,
+                120 + (countY == 1 ? 0 : counterCodeShort) + aux,
+                null,
+                null,
+                "left"
+              );
+              aux += aux + 30;
+            }
+            break;
+          case 3:
+            for (let y = 0; y < products[i].prices.length; y++) {
+              pdf.setFont("Montserrat");
+              pdf.setFontSize(18);
+              pdf.text(
+                products[i].prices[y].alias,
+                width / 3,
+                118 + (countY == 1 ? 0 : counterCodeShort) + aux,
+                null,
+                null,
+                "left"
+              );
+              pdf.setFontSize(22);
+              pdf.setFont("Montserrat-Semi");
+              pdf.text(
+                `$${parseFloat(products[i].prices[y].price)}`,
+                width / 1.8,
+                118 + (countY == 1 ? 0 : counterCodeShort) + aux,
+                null,
+                null,
+                "left"
+              );
+              aux += 25;
+            }
+            break;
+          case 4:
+            for (let y = 0; y < products[i].prices.length; y++) {
+              if (y == 1) {
+                aux = 0;
+              }
+              if (y == 1 || y == 3) {
+                pdf.setFont("Montserrat");
+                pdf.setFontSize(15);
+                pdf.text(
+                  products[i].prices[y].alias,
+                  width / 1.7,
+                  130 + (countY == 1 ? 0 : counterCodeShort) + aux,
+                  null,
+                  null,
+                  "left"
+                );
+                pdf.setFontSize(18);
+                pdf.setFont("Montserrat-Semi");
+                pdf.text(
+                  `$${parseFloat(products[i].prices[y].price)}`,
+                  width / 1.35,
+                  130 + (countY == 1 ? 0 : counterCodeShort) + aux,
+                  null,
+                  null,
+                  "left"
+                );
+                aux += aux + 30;
+              } else if (y == 0 || y == 2) {
+                pdf.setFont("Montserrat");
+                pdf.setFontSize(15);
+                pdf.text(
+                  products[i].prices[y].alias,
+                  width / 7,
+                  130 + (countY == 1 ? 0 : counterCodeShort) + aux,
+                  null,
+                  null,
+                  "left"
+                );
+                pdf.setFontSize(18);
+                pdf.setFont("Montserrat-Semi");
+                pdf.text(
+                  `$${parseFloat(products[i].prices[y].price)}`,
+                  width / 3.3,
+                  130 + (countY == 1 ? 0 : counterCodeShort) + aux,
+                  null,
+                  null,
+                  "left"
+                );
+              }
+            }
+            break;
         }
-        i % productXY == 0 ? zip++ : 1;
       }
-      return zip;
+      pdf.setFont("Montserrat");
+      pdf.setFontSize(16);
+      pdf.text(
+        `${products[i].pieces}pz`,
+        width / 4.5,
+        195 + (countY == 1 ? 0 : counterCodeShort),
+        null,
+        null,
+        "center"
+      );
+      pdf.setFont("Montserrat-Bold");
+      pdf.text(
+        products[i].large,
+        width / 3,
+        195 + (countY == 1 ? 0 : counterCodeShort),
+        null,
+        null,
+        "left"
+      );
+      pdf.setFont("Montserrat-Semi");
+      pdf.setFontSize(16);
+      pdf.text(
+        `${products[i].code}`,                        // text
+        (width / 1.4),                                // X
+        (195 + (countY == 1 ? 0 : counterCodeShort)), // Y
+        null,
+        null,
+        "left"
+      );
+      this.useIpack
+        ? pdf.addImage(
+          this.convertTextToBase64Barcode(products[i].name),
+          "PNG",
+          width / 1.48,
+          40 + (countY == 1 ? 0 : counterCodeShort),
+          100,
+          25
+        )
+        : "";
+      // /*----------  SEGMENTO DE PRECIOS SOLO SI SON SELECCIONADOS TODOS  -----------*/
+      countY++;
+      counterCodeShort += 182 + (i < 3 ? 4 : 2);
+    } else {
+      pdf.setFont("Montserrat-Semi");
+      pdf.setFontSize(12);
+      pdf.rect(width + 20, 20, width, height * countX);
+      pdf.text(
+        "Vizuru",
+        (width / 1.75) * 2.75,
+        32 + (countX == 1 ? 0 : counterCodeShortX),
+        null,
+        null,
+        "center"
+      );
+      pdf.setFont("Montserrat-Bold");
+      pdf.setFontSize(33);
+      this.useIpack
+        ? pdf.text(
+          products[i].name,
+          width * 1.1,
+          70 + (countX == 1 ? 0 : counterCodeShortX),
+          null,
+          null,
+          "left"
+        )
+        : pdf.text(
+          products[i].name,
+          (width / 1.75) * 2.75,
+          70 + (countX == 1 ? 0 : counterCodeShortX),
+          null,
+          null,
+          "center"
+        );
+      pdf.setFontSize(10);
+      pdf.setFont("Montserrat");
+      let splitter = pdf.splitTextToSize(products[i].label, 270);
+      pdf.text(
+        splitter,
+        width * 1.1,
+        88 + (countX == 1 ? 0 : counterCodeShortX),
+        null,
+        null,
+        "left"
+      );
+      let aux = 0;
+      if (products[i].type == "off") {
+        pdf.setFont("Montserrat-Semi");
+        pdf.setFontSize(12);
+        // pdf.setTextColor(255);
+        // pdf.addImage(
+        //   "pdf/img/banner.png",
+        //   "PNG",
+        //   width * 1.23,
+        //   70 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+        //   210,
+        //   140
+        // );
+        let convert =
+          products[i].prices[0].price +
+          (products[i].prices[0].price * products[i].discount) / 100;
+        convert =
+          Math.floor(convert) == products[i].prices[0].price
+            ? convert + 1
+            : convert;
+        // pdf.text(
+        //   `De $${Math.floor(convert) + 1} a`,
+        //   width * 1.46,
+        //   123 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+        //   null,
+        //   null,
+        //   "left"
+        // );
+        // pdf.setTextColor(0);
+        pdf.setFont("Montserrat-Bold");
+        pdf.setFontSize(12);
+        pdf.text(
+          `PRECIO UNICO`,
+          width * 1.42,
+          110 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+          null,
+          null,
+          "left"
+        );
+        pdf.setFontSize(35);
+        pdf.text(
+          `$${parseFloat(
+            products[i].prices[0].price != 0
+              ? products[i].prices[0].price
+              : 1
+          )}`,
+          width * 1.48,
+          160 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+          null,
+          null,
+          "left"
+        );
+        pdf.setFontSize(20);
+        // pdf.text(
+        //   `-${products[i].discount}%`,
+        //   width * 1.28,
+        //   145 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+        //   null,
+        //   null,
+        //   "left"
+        // );
+        // pdf.text(products[i].prices[0].alias, width / 3.8, 140 + (countY == 1 ? 0 : counterCodeShort) + aux, null, null, 'left');
+        pdf.setFontSize(30);
+        pdf.setFont("Montserrat-Semi");
+        // pdf.text(`$${parseFloat(products[i].prices[0].price).toFixed(2)}`, width / 1.8, 140 + (countY == 1 ? 0 : counterCodeShort) + aux, null, null, 'left');
+        aux += aux + 30;
+      } else {
+        switch (products[i].prices.length) {
+          case 1:
+            pdf.setFont("Montserrat");
+            pdf.setFontSize(30);
+            pdf.text(
+              products[i].prices[0].alias,
+              width * 1.26,
+              140 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+              null,
+              null,
+              "left"
+            );
+            pdf.setFontSize(30);
+            pdf.setFont("Montserrat-Semi");
+            pdf.text(
+              `$${parseFloat(products[i].prices[0].price)}`,
+              width * 1.55,
+              140 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+              null,
+              null,
+              "left"
+            );
+            aux += aux + 30;
+            break;
+          case 2:
+            for (let y = 0; y < products[i].prices.length; y++) {
+              pdf.setFont("Montserrat");
+              pdf.setFontSize(20);
+              pdf.text(
+                products[i].prices[y].alias,
+                width * 1.33,
+                120 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+                null,
+                null,
+                "left"
+              );
+              pdf.setFontSize(25);
+              pdf.setFont("Montserrat-Semi");
+              pdf.text(
+                `$${parseFloat(products[i].prices[y].price)}`,
+                width * 1.55,
+                120 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+                null,
+                null,
+                "left"
+              );
+              aux += aux + 30;
+            }
+            break;
+          case 3:
+            for (let y = 0; y < products[i].prices.length; y++) {
+              pdf.setFont("Montserrat");
+              pdf.setFontSize(18);
+              pdf.text(
+                products[i].prices[y].alias,
+                width * 1.33,
+                118 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+                null,
+                null,
+                "left"
+              );
+              pdf.setFontSize(22);
+              pdf.setFont("Montserrat-Semi");
+              pdf.text(
+                `$${parseFloat(products[i].prices[y].price)}`,
+                width * 1.55,
+                118 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+                null,
+                null,
+                "left"
+              );
+              aux += 25;
+            }
+            break;
+          case 4:
+            for (let y = 0; y < products[i].prices.length; y++) {
+              if (y == 1) {
+                aux = 0;
+              }
+              if (y == 1 || y == 3) {
+                pdf.setFont("Montserrat");
+                pdf.setFontSize(15);
+                pdf.text(
+                  products[i].prices[y].alias,
+                  width * 1.6,
+                  130 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+                  null,
+                  null,
+                  "left"
+                );
+                pdf.setFontSize(18);
+                pdf.setFont("Montserrat-Semi");
+                pdf.text(
+                  `$${parseFloat(products[i].prices[y].price)}`,
+                  width * 1.75,
+                  130 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+                  null,
+                  null,
+                  "left"
+                );
+                aux += aux + 30;
+              } else if (y == 0 || y == 2) {
+                pdf.setFont("Montserrat");
+                pdf.setFontSize(15);
+                pdf.text(
+                  products[i].prices[y].alias,
+                  width * 1.15,
+                  130 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+                  null,
+                  null,
+                  "left"
+                );
+                pdf.setFontSize(18);
+                pdf.setFont("Montserrat-Semi");
+                pdf.text(
+                  `$${parseFloat(products[i].prices[y].price)}`,
+                  width * 1.3,
+                  130 + (countX == 1 ? 0 : counterCodeShortX) + aux,
+                  null,
+                  null,
+                  "left"
+                );
+              }
+            }
+            break;
+        }
+      }
+      pdf.setFont("Montserrat");
+      pdf.setFontSize(16);
+      pdf.text(
+        `${products[i].pieces}pz`,
+        (width / 4) * 5,
+        195 + (countX == 1 ? 0 : counterCodeShortX),
+        null,
+        null,
+        "center"
+      );
+      pdf.setFont("Montserrat-Bold");
+      pdf.text(
+        products[i].large,
+        (width / 3.7) * 5,
+        195 + (countY == 1 ? 0 : counterCodeShortX),
+        null,
+        null,
+        "left"
+      );
+      pdf.setFont("Montserrat-Semi");
+      pdf.setFontSize(16);
+      pdf.text(
+        `${products[i].code}`,
+        (width / 1.3) * 2.1,
+        195 + (countX == 1 ? 0 : counterCodeShortX),
+        null,
+        null,
+        "left"
+      );
+      this.useIpack
+        ? pdf.addImage(
+          this.convertTextToBase64Barcode(products[i].name),
+          "PNG",
+          (width / 1.12) * 1.88,
+          40 + (countX == 1 ? 0 : counterCodeShortX),
+          100,
+          25
+        )
+        : "";
+      if ((i + 1) % productXY == 0) {
+        pdf.setFont("Montserrat");
+        pdf.setFontSize(12);
+        pdf.text(3, 10, `Se generó ${count} plantilla, creador: ${nick}`);
+        products.length > productXY ? pdf.addPage() : "";
+        count++;
+        counterCodeShort = 0;
+        counterCodeShortX = 0;
+        countX = 1;
+        countY = 1;
+      } else {
+        countX++;
+        counterCodeShortX += 182 + (i < 3 ? 4 : 2);
+      }
+    }
+    i % productXY == 0 ? zip++ : 1;
+  }
+  return zip;
 }
 
 </script>

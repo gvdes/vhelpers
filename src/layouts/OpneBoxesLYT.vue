@@ -4,21 +4,21 @@
       <q-header class="bg-grey-3 text-dark" bordered>
         <UserToolbar />
         <q-separator />
-        <q-toolbar class="justify-between">
-          <div>
-            <span class="text-grey">Helpers</span>
-            <q-icon name="navigate_next" color="primary" />
-            <span class="text-h6">Cajas Abiertas</span>
-          </div>
-          <div class="row">
-            <q-btn color="primary" icon="event" @click="date = !date" flat round />
-            <q-btn color="primary" icon="download" @click="crearPdf" flat round />
-            <q-btn color="primary" icon="calculate" @click="calculate" flat round />
-
-          </div>
-
-        </q-toolbar>
       </q-header>
+      <q-toolbar class="justify-between">
+        <div>
+          <span class="text-grey">Helpers</span>
+          <q-icon name="navigate_next" color="primary" />
+          <span class="text-h6">Cajas Abiertas</span>
+        </div>
+        <div class="row">
+          <q-btn color="primary" icon="event" @click="date = !date" flat round />
+          <q-btn color="primary" icon="download" @click="crearPdf" flat round />
+          <q-btn color="primary" icon="calculate" @click="calculate" flat round />
+
+        </div>
+
+      </q-toolbar>
 
       <q-table title="Sucursales" :rows="stores" hide-header :pagination=table.pagination :filter="table.filter">
         <template v-slot:top-right>
@@ -30,6 +30,7 @@
         </template>
 
         <template v-slot:body="props">
+
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
             <q-list bordered dense>
               <q-item>
@@ -58,7 +59,7 @@
                       TICKETS
                     </q-item-section>
                   </q-item>
-                  <q-item class="text-center" dense clickable v-ripple v-for="(sales, index) in (props.row.sales) ">
+                  <q-item class="text-center" dense clickable v-ripple v-for="(sales, index) in (props.row.sales)">
                     <q-item-section>
                       {{ dayjs(sales.FECFAC).format('YYYY-MM-DD') }}
                     </q-item-section>
@@ -184,7 +185,7 @@ const getSale = async (sucursales, date) => {
           .catch((fail) => {
             console.log(`Error en sucursal ${e.name}: ${fail.message}`);
             e.sales = []; // Establecer como null si hubo error
-            $q.notify({message:`Sucursal ${e.name} no tiene conexion`,type:'negative',position:'center'})
+            $q.notify({ message: `Sucursal ${e.name} no tiene conexion`, type: 'negative', position: 'center' })
             resolve({ success: false, error: fail.message }); // Resuelve con el estado de error
           });
       }, index * 1000);
@@ -236,7 +237,7 @@ const crearPdf = () => {
         });
       });
       const doc = new jsPDF({ format: 'letter' });
-      autoTable(doc,{
+      autoTable(doc, {
         head: [['Fecha', 'Caja', 'Tickets']],
         body: body
       });

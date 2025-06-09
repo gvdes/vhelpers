@@ -3,6 +3,10 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+
+    <q-page-container>
       <q-toolbar class="justify-between">
         <div class="row items-center">
           Helpers
@@ -28,17 +32,9 @@
           </q-btn>
         </div>
       </q-toolbar>
-    </q-header>
 
-    <q-page-container>
-
-      <q-table v-if="layout.showOrders"
-        title="Pedidos"
-        :rows="orders"
-        grid
-        :columns="table.columns"
-        @row-click="viewRequisition"
-      />
+      <q-table v-if="layout.showOrders" title="Pedidos" :rows="orders" grid :columns="table.columns"
+        @row-click="viewRequisition" />
 
       <router-view />
     </q-page-container>
@@ -67,13 +63,13 @@ const orders = ref([]);
 
 
 const table = ref({
-  columns:[
-    {name:'id',label:'ID',field: r => r.id},
-    {name:'user',label:'USUARIO',field: r => r.user.complete_name},
-    {name:'status',label:'ESTADO',field: r => r.status.name},
-    {name:'date',label:'FECHA',field: r => dayjs(r.created_at).format("YYYY/MM/DD")},
-    {name:'products',label:'PRODUCTOS',field: r => r.bodie_count},
-    {name:'notes',label:'NOTAS',field: r => r.notes}
+  columns: [
+    { name: 'id', label: 'ID', field: r => r.id },
+    { name: 'user', label: 'USUARIO', field: r => r.user.complete_name },
+    { name: 'status', label: 'ESTADO', field: r => r.status.name },
+    { name: 'date', label: 'FECHA', field: r => dayjs(r.created_at).format("YYYY/MM/DD") },
+    { name: 'products', label: 'PRODUCTOS', field: r => r.bodie_count },
+    { name: 'notes', label: 'NOTAS', field: r => r.notes }
   ]
 })
 
@@ -91,7 +87,7 @@ const init = async () => {
 }
 
 const createRequisition = async () => {
-  $q.loading.show({message:'Creando Pedido'})
+  $q.loading.show({ message: 'Creando Pedido' })
   let data = {
     notes: `INSUMOS ${nameOrder.value}`,
     _stores: VDB.session.store.id,
@@ -108,14 +104,14 @@ const createRequisition = async () => {
   }
 }
 
-const viewRequisition = (a,b) => {
-    $router.push(`/assortment/${b.id}`);
+const viewRequisition = (a, b) => {
+  $router.push(`/assortment/${b.id}`);
 }
 
-if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
+if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
   init()
-}else{
-  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+} else {
+  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
   $router.replace('/');
 
 }
@@ -124,10 +120,13 @@ if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'a
 
 <!-- 🎯 Aquí el efecto fade -->
 <style scoped>
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
-.fade-enter-from, .fade-leave-to {
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
   transform: translateY(-10px);
 }

@@ -4,26 +4,27 @@
       <q-header class="bg-grey-3 text-dark" bordered>
         <UserToolbar />
         <q-separator />
-        <q-toolbar class="justify-between row">
-          <div class="col">
-            <span class="text-grey">Helpers</span>
-            <q-icon name="navigate_next" color="primary" />
-            <span class="text-h6">Cajas Abiertas</span>
-          </div>
-          <div class="col">
-            <div class="row">
-              <div class="col"></div>
-              <q-btn  color="primary" icon="event" @click="date = !date" flat round :disable="!stores.val" />
-              <q-btn  color="primary" icon="download" @click="calculate" flat round :disable="tickFilt.length <= 0" />
-              <q-select class="col" v-model="stores.val" :options="stores.opts" label="Sucursales" filled option-label="name"
-                @update:model-value="getSale" dense />
 
-            </div>
-
-          </div>
-
-        </q-toolbar>
       </q-header>
+      <q-toolbar class="justify-between row">
+        <div class="col">
+          <span class="text-grey">Helpers</span>
+          <q-icon name="navigate_next" color="primary" />
+          <span class="text-h6">Cajas Abiertas</span>
+        </div>
+        <div class="col">
+          <div class="row">
+            <div class="col"></div>
+            <q-btn color="primary" icon="event" @click="date = !date" flat round :disable="!stores.val" />
+            <q-btn color="primary" icon="download" @click="calculate" flat round :disable="tickFilt.length <= 0" />
+            <q-select class="col" v-model="stores.val" :options="stores.opts" label="Sucursales" filled
+              option-label="name" @update:model-value="getSale" dense />
+
+          </div>
+
+        </div>
+
+      </q-toolbar>
       <q-table title="Tickets" :rows="tickFilt" :pagination=table.pagination :filter="table.filter"
         :columns="table.columns">
 
@@ -35,7 +36,8 @@
                 </template>
               </q-input></div>
             <q-separator spaced inset vertical dark />
-            <q-select class="col" v-model="formas.val" :options="formas.opts" label="Formas de pago" filled  option-label="DESFPA" dense>
+            <q-select class="col" v-model="formas.val" :options="formas.opts" label="Formas de pago" filled
+              option-label="DESFPA" dense>
               <template v-slot:append>
                 <q-icon v-if="formas.val" name="close" @click="formas.val = null" />
               </template>

@@ -3,18 +3,19 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+
+    <q-page-container>
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Depositos</span>
         </div>
       </q-toolbar>
-    </q-header>
 
-    <q-page-container>
-
-        <q-tabs v-model="tab" class="text-primary">
-          <q-route-tab name="confirm" icon="list" label="Confirmaciones" to="/depositsap/confirm" />
-          <!-- <q-route-tab name="deposit" icon="grid_view" label="Depositos" to="/deposits/verified" /> -->
-        </q-tabs>
+      <q-tabs v-model="tab" class="text-primary">
+        <q-route-tab name="confirm" icon="list" label="Confirmaciones" to="/depositsap/confirm" />
+        <!-- <q-route-tab name="deposit" icon="grid_view" label="Depositos" to="/deposits/verified" /> -->
+      </q-tabs>
 
       <router-view />
     </q-page-container>

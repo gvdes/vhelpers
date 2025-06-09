@@ -4,15 +4,16 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
-      <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Consulta de Pagos</span>
-        </div>
 
-      </q-toolbar>
     </q-header>
 
     <q-page-container>
       <q-page padding>
+        <q-toolbar class="justify-between">
+          <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Consulta de Pagos</span>
+          </div>
+
+        </q-toolbar>
         <div class="justify-end">
 
           <q-btn color="primary" icon="event" @click="date = !date" flat round />
@@ -573,8 +574,8 @@ const pdfFactura = (ticket) => {
           doc.text(`SUCURSAL ${ticket.empresa.DESTPV}`, 120, 25, 'left')// NOMBRE DE LA EMPRESA
           doc.setFontSize(8)
           doc.text(ticket.header.DOMICILIO, 10, 30, 'left')//DOMICILIO DE EL CLIENTE
-          doc.text(ticket.header.CODIGOPOSTAL ? ticket.header.CODIGOPOSTAL : '' , 10, 35, 'left')// CODIGO POSTAL DE EL CLIENTE
-          doc.text(ticket.header.POBALCION  ? ticket.header.POBALCION  : '' + ticket.header.PROVINCIA, 10, 40, 'left')//DELEGACION DE EL CLIENT4E
+          doc.text(ticket.header.CODIGOPOSTAL ? ticket.header.CODIGOPOSTAL : '', 10, 35, 'left')// CODIGO POSTAL DE EL CLIENTE
+          doc.text(ticket.header.POBALCION ? ticket.header.POBALCION : '' + ticket.header.PROVINCIA, 10, 40, 'left')//DELEGACION DE EL CLIENT4E
 
           doc.text(ticket.empresa.CTT3TPV, 120, 30, 'left')//DOMICILIO DE LA EMPRESA
           // doc.text('06090', 120, 35, 'left')// CODIGO POSTAL DE  LA EMPRESA

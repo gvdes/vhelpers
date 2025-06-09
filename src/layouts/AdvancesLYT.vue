@@ -3,6 +3,9 @@
     <q-header class="bg-grey-3 text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+    <q-page-container class="q-ml-md">
       <q-toolbar class="justify-between row">
         <div class="col">
           <span class="text-grey">Helpers</span>
@@ -22,8 +25,6 @@
         </div>
 
       </q-toolbar>
-    </q-header>
-    <q-page-container>
       <q-separator spaced inset vertical dark />
       <q-table :rows="basketFilt" :filter="table.filter" :columns="table.columns" @row-click="mosWithdrawals">
         <template v-slot:top-right>
@@ -111,7 +112,7 @@
           <q-separator spaced inset vertical dark />
         </q-card-section>
         <q-card-actions align="center">
-          <q-btn flat color="negative" icon="close"  @click="reset"/>
+          <q-btn flat color="negative" icon="close" @click="reset" />
           <!-- <q-btn flat color="primary" icon="print" @click="print" :disable="!validEdit || !impresoras.val" /> -->
           <q-btn flat color="positive" icon="send" :disable="validForm || !impresoras.val" @click="addAnt" />
         </q-card-actions>
@@ -218,7 +219,7 @@ const validEdit = computed(() => {
   }
 })
 
-const validForm = computed(() =>  !adding.value.OBSANT || !adding.value.DESTER || !adding.value.IMPANT ||  !adding.value.CLIENTE )
+const validForm = computed(() => !adding.value.OBSANT || !adding.value.DESTER || !adding.value.IMPANT || !adding.value.CLIENTE)
 
 const init = async () => {
 
@@ -259,7 +260,7 @@ const mosWithdrawals = (a, b) => {
 
 const impre = async () => {
   console.log(stores.value.val.id)
-    // let host = stores.value.val.ip_address;
+  // let host = stores.value.val.ip_address;
   // let idstore = VDB.session.store.id;
   let idstore = stores.value.val.id;
 

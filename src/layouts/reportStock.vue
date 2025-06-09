@@ -3,18 +3,19 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+
+    <q-page-container>
       <q-toolbar class="justify-between">
         <div>
           Helpers <q-icon name="navigate_next" color="primary" />
           <span class="text-h6">Reporte Stocks</span>
         </div>
       </q-toolbar>
-    </q-header>
-
-    <q-page-container>
       <q-page padding>
 
-        <q-table :rows="allReport" :loading="loading" :columns="table.columns" :pagination="table.pagination"/>
+        <q-table :rows="allReport" :loading="loading" :columns="table.columns" :pagination="table.pagination" />
       </q-page>
     </q-page-container>
   </q-layout>

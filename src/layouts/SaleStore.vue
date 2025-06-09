@@ -1,25 +1,25 @@
 <template>
   <q-layout view="hHh Lpr fFf">
-    <q-page-container>
+    <q-page-container class="q-ml-md">
       <q-header class="bg-grey-3 text-dark" bordered>
         <UserToolbar />
         <q-separator />
-        <q-toolbar class="justify-between">
-          <div>
-            <span class="text-grey">Helpers</span>
-            <q-icon name="navigate_next" color="primary" />
-            <span class="text-h6">Ventas Sucursales</span>
-          </div>
-          <div class="row">
-            <q-select v-model="smonth.val" :options="meses" label="mes" outlined dense @update:model-value="ObtReport"
-              v-if="!ismobile" />
-            <q-btn dense flat color="primary" icon="autorenew" @click="init" />
-          </div>
 
-        </q-toolbar>
       </q-header>
+      <q-toolbar class="justify-between">
+        <div>
+          <span class="text-grey">Helpers</span>
+          <q-icon name="navigate_next" color="primary" />
+          <span class="text-h6">Ventas Sucursales</span>
+        </div>
+        <div class="row">
+          <q-select v-model="smonth.val" :options="meses" label="mes" outlined dense @update:model-value="ObtReport"
+            v-if="!ismobile" />
+          <q-btn dense flat color="primary" icon="autorenew" @click="init" />
+        </div>
+      </q-toolbar>
       <q-separator spaced inset vertical dark />
-      <div class="text-bold text-h6">{{ smonth.val.label }}</div>
+      <div class="text-bold text-h6 q-ml-md">{{ smonth.val.label }}</div>
       <q-separator spaced inset vertical dark />
 
       <div :class="ismobile ? '' : 'row'">
@@ -177,14 +177,14 @@
                       <q-item-label overline>TICKETS 2024</q-item-label>
                       <q-item-label caption>{{
                         props.row.sales.tiketsant
-                        }}</q-item-label>
+                      }}</q-item-label>
                     </q-item-section>
 
                     <q-item-section>
                       <q-item-label overline>Promedio 2024</q-item-label>
                       <q-item-label caption>{{
                         Number(Number(props.row.sales.salesant * 1.1) / Number(props.row.sales.tiketsant)).toFixed(2)
-                        }} </q-item-label>
+                      }} </q-item-label>
                       <q-separator spaced inset vertical dark />
                     </q-item-section>
 
@@ -199,7 +199,7 @@
                       <q-item-label overline>TICKETS 2025</q-item-label>
                       <q-item-label caption>{{
                         props.row.sales.tiketsact
-                        }}</q-item-label>
+                      }}</q-item-label>
                     </q-item-section>
 
                     <q-item-section>
@@ -207,7 +207,7 @@
                       </q-item-label>
                       <q-item-label caption>{{
                         Number(Number(props.row.sales.salesact) / Number(props.row.sales.tiketsact)).toFixed(2)
-                        }} </q-item-label>
+                      }} </q-item-label>
                       <q-separator spaced inset vertical dark />
                     </q-item-section>
 
@@ -227,7 +227,7 @@
                       <q-item-label overline>DIFERENCIA TICKETS</q-item-label>
                       <q-item-label caption>{{
                         props.row.sales.tiketsact - props.row.sales.tiketsant
-                        }}</q-item-label>
+                      }}</q-item-label>
                     </q-item-section>
                     <q-item-section>
                       <q-item-label overline>VENTA HOY </q-item-label>
@@ -240,7 +240,7 @@
                       <q-item-label overline>TICKETS HOY</q-item-label>
                       <q-item-label caption>{{
                         props.row.sales.hoytck
-                        }}</q-item-label>
+                      }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </div>
@@ -365,10 +365,10 @@
                     </q-item-section>
                     <q-item-section>{{ cajas.DESTER }}</q-item-section>
                     <q-item-section>{{ Number(cajas.VENTA).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
-                      }}</q-item-section>
+                    }}</q-item-section>
                     <q-item-section>{{ cajas.TCK }}</q-item-section>
                     <q-item-section>{{ Number(cajas.VENTA / cajas.TCK).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
-                      }}</q-item-section>
+                    }}</q-item-section>
                   </q-item>
                 </q-list>
               </q-card-section>
@@ -381,10 +381,10 @@
                     </q-item-section>
                     <q-item-section>{{ cajas.DESTER }}</q-item-section>
                     <q-item-section>{{ Number(cajas.VENTA).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
-                      }}</q-item-section>
+                    }}</q-item-section>
                     <q-item-section>{{ cajas.TCK }}</q-item-section>
                     <q-item-section>{{ Number(cajas.VENTA / cajas.TCK).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")
-                      }}</q-item-section>
+                    }}</q-item-section>
                   </q-item>
                 </q-list>
               </q-card-section>
@@ -469,7 +469,7 @@ const init = async () => {
   smonth.value.val = meses.filter(e => e.id === mes)[0]
   $q.loading.show({ message: "Cargando Informacion" });
   console.log("se inicia el init");
-  let url= `http://mx100-cedis-mkrqpwcczk.dynamic-m.com:3030/Assist/public/api/sales/getSale`
+  let url = `http://mx100-cedis-mkrqpwcczk.dynamic-m.com:3030/Assist/public/api/sales/getSale`
   const resp = await axios.get(url);
   if (resp.error) {
     console.log(resp);

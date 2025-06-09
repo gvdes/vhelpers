@@ -3,6 +3,11 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+
+    </q-header>
+
+    <q-page-container>
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Consulta de Pagos</span>
         </div>
@@ -15,10 +20,6 @@
 
         </div>
       </q-toolbar>
-
-    </q-header>
-
-    <q-page-container>
       <q-page padding>
         <div class="justify-end">
 

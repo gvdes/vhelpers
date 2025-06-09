@@ -1,1 +1,0 @@
-import{a as e}from"./axios.128a942b.js";var a={trySignin(r){return e.post("/users/trySignin",r).then(t=>t.data).catch(t=>({fail:t}))},getResources(r){return e.get(`/users/getResources/${r}`).then(t=>t.data).catch(t=>({fail:t}))}};export{a};

@@ -6,19 +6,20 @@
         <q-header class="bg-grey-3 text-dark " bordered>
           <UserToolbar />
           <q-separator />
-          <q-toolbar class="justify-between">
-            <div>
-              <span class="text-grey">Helpers</span>
-              <q-icon name="navigate_next" color="primary" />
-              <span class="text-h6">Tarjetas</span>
-            </div>
-            <div class="row">
-              <q-select v-model="terminales.val" :options="terminales.opts" option-label="DESTER" label="Caja" outlined
-                dense />
-            </div>
-          </q-toolbar>
 
         </q-header>
+
+        <q-toolbar class="justify-between">
+          <div>
+            <span class="text-grey">Helpers</span>
+            <q-icon name="navigate_next" color="primary" />
+            <span class="text-h6">Tarjetas</span>
+          </div>
+          <div class="row">
+            <q-select v-model="terminales.val" :options="terminales.opts" option-label="DESTER" label="Caja" outlined
+              dense />
+          </div>
+        </q-toolbar>
 
         <div class="q-mb-lg row">
           <q-card class="my-card col" bordered>
@@ -26,7 +27,8 @@
               <div class="text-h6">Bauchers</div>
             </q-card-section>
             <q-card-section>
-              <div class="text-center text-h6">$ {{ tarjSuc.reduce((a, b) => Number(Number(a) + Number(b)).toFixed(2), 0)
+              <div class="text-center text-h6">$ {{tarjSuc.reduce((a, b) => Number(Number(a) + Number(b)).toFixed(2),
+                0)
                 }}</div>
             </q-card-section>
           </q-card>
@@ -36,8 +38,8 @@
               <div class="text-h6">Cobros</div>
             </q-card-section>
             <q-card-section>
-              <div class="text-center text-h6">$ {{ tertar.reduce((a, b) =>
-                Number(Number(a) + Number(b.TARJETAS)).toFixed(2), 0) }}</div>
+              <div class="text-center text-h6">$ {{tertar.reduce((a, b) =>
+                Number(Number(a) + Number(b.TARJETAS)).toFixed(2), 0)}}</div>
             </q-card-section>
           </q-card>
           <q-separator spaced inset vertical dark />
@@ -46,9 +48,9 @@
               <div class="text-h6">Diferencia</div>
             </q-card-section>
             <q-card-section>
-              <div class="text-center text-h6">$ {{ Number(Number(tarjSuc.reduce((a, b) =>
+              <div class="text-center text-h6">$ {{Number(Number(tarjSuc.reduce((a, b) =>
                 Number(Number(a) + Number(b)).toFixed(2), 0)) - Number(tertar.reduce((a, b) =>
-                  Number(Number(a) + Number(b.TARJETAS)).toFixed(2), 0))).toFixed(2) }}</div>
+                  Number(Number(a) + Number(b.TARJETAS)).toFixed(2), 0))).toFixed(2)}}</div>
             </q-card-section>
           </q-card>
         </div>
@@ -61,7 +63,8 @@
         <q-separator spaced inset vertical dark />
         <div class="row">
           <div>
-            <q-table title="LISTA" :rows="tarjSuc" row-key="name" :columns="columns" :pagination="{ rowsPerPage: 9 }" hide-bottom />
+            <q-table title="LISTA" :rows="tarjSuc" row-key="name" :columns="columns" :pagination="{ rowsPerPage: 9 }"
+              hide-bottom />
           </div>
           <q-separator spaced inset vertical dark />
           <div class="col">
