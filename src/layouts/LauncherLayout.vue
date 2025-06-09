@@ -24,7 +24,7 @@
             <div class="text-center anek-lg text-h5 text-grey-6">{{ greeting }}</div>
 
             <div class="q-py-lg text-center">
-              <q-img :src="`/public/avatares/avatar${avatar}.png`" style="width: 170px;" />
+              <q-img :src="`/avatares/avatar${avatar}.png`" style="width: 170px;" />
             </div>
           </div>
         </div>
