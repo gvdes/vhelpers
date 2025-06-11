@@ -35,7 +35,7 @@
         <q-separator />
         <q-separator spaced inset vertical dark />
         <template v-for="(menuItem, index) in VDB.modules" :key="index">
-          <q-item clickable v-ripple :to="menuItem.module.path">
+          <q-item clickable v-ripple :to="`/${menuItem.module.path}`">
             <q-item-section>
               <q-item-label class="text-h6 text-dark">{{ menuItem.module.name }}</q-item-label>
               <q-item-label caption>{{ menuItem.module.desc }}</q-item-label>

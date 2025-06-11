@@ -122,6 +122,14 @@ const routes = [
     component: () => import('layouts/reportOpenLYT.vue'),
   },
   {
+    path: '/clients',
+    component: () => import('layouts/clientLYT.vue'),
+    children: [
+      { path: 'formClient', name: 'rcl', component: () => import('pages/clients/formCli.vue') },
+      { path: 'addClient', name: 'acl', component: () => import('pages/clients/addCli.vue') },
+    ],
+  },
+  {
     path: '/cashRegisters',
     component: () => import('layouts/CashRegistersLYT.vue'),
     children: [
