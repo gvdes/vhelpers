@@ -213,7 +213,7 @@ const impre = async () => {
 
 
 const envi = async () => {
-  // $q.loading.show({ message: 'Enviando Datos' })
+  $q.loading.show({ message: 'Enviando Datos' })
   let type = form.value._type.id;
   form.value._store = VDB.session.store.id;
   form.value._created_by = VDB.session.id;
