@@ -152,11 +152,11 @@ const genReport = (report) => {
   $q.loading.hide();
 }
 
-if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
+// if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
   init()
-} else {
-  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
-  $router.replace('/');
+// } else {
+//   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+//   $router.replace('/');
 
-}
+// }
 </script>

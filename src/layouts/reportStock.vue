@@ -102,11 +102,11 @@ const index = async () => {
 }
 
 // Verificar permisos y cargar datos
-if (VDB.session.rol === "aux" || VDB.session.rol === "gen" || VDB.session.rol === "aud" || VDB.session.rol === "root") {
+// if (VDB.session.rol === "aux" || VDB.session.rol === "gen" || VDB.session.rol === "aud" || VDB.session.rol === "root") {
   index();
-} else {
-  $q.notify({ message: "No tienes acceso a esta página", type: "negative", position: "center" });
-  $router.replace("/");
-}
+// } else {
+//   $q.notify({ message: "No tienes acceso a esta página", type: "negative", position: "center" });
+//   $router.replace("/");
+// }
 
 </script>

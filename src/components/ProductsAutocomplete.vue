@@ -84,6 +84,7 @@ const props = defineProps({
   "with_locations": { default: null, type: Boolean },
   "with_image": { default: null, type: Boolean },
   "with_prices": { default: null, type: Boolean },
+  "with_prices_Invoice": { default: null, type: Boolean },
   "with_stock": { default: null, type: Boolean },
   "checkState": { default: true, type: Boolean },
   "workpointStatus": { default: null, type: [Array, String] },

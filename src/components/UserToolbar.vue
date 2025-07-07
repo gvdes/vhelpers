@@ -21,8 +21,6 @@
 
     </div>
   </div>
-
-
   <q-drawer v-model="drawerPr" :width="300" :breakpoint="500" bordered
     :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
     <q-scroll-area class="fit text-bold text-dark">
@@ -35,16 +33,21 @@
         <q-separator />
         <q-separator spaced inset vertical dark />
         <template v-for="(menuItem, index) in VDB.modules" :key="index">
-          <q-item clickable v-ripple :to="`/${menuItem.module.path}`">
-            <q-item-section>
-              <q-item-label class="text-h6 text-dark">{{ menuItem.module.name }}</q-item-label>
-              <q-item-label caption>{{ menuItem.module.desc }}</q-item-label>
-            </q-item-section>
-            <q-item-section avatar>
-              <q-avatar flat color="transparent" text-color="primary" icon="arrow_forward" />
-            </q-item-section>
-          </q-item>
-          <q-separator />
+          <q-expansion-item expand-separator :label="menuItem.name" :content-inset-level="0.5">
+            <div v-for="(modul, inx) in menuItem.modules" :key="inx">
+              <q-item clickable v-ripple :to="`/${modul.path}`">
+                <q-item-section>
+                  <q-item-label class="text-dark tex-bold">{{ modul.name }}</q-item-label>
+                  <q-item-label caption>{{ modul.desc }}</q-item-label>
+                </q-item-section>
+                <q-item-section avatar>
+                  <q-avatar flat color="transparent" text-color="primary" icon="arrow_forward" />
+                </q-item-section>
+              </q-item>
+              <q-separator />
+            </div>
+
+          </q-expansion-item>
         </template>
 
       </q-list>
@@ -92,17 +95,18 @@ const stores = ref({
   opts: []
 })
 const init = async () => {
-  $q.loading.show({ message: 'Obteniendo Informacion' })
+  // $q.loading.show({ message: 'Obteniendo Informacion' })
   const resp = await authsApi.getResources(user.credentials.id)
   if (resp.fail) {
     console.log(resp)
   } else {
-    // console.log(resp)
-    VDB.setModules(resp.rol.modules)
+    console.log(resp)
+    VDB.setModules(resp.grouped_modules)
     VDB.setStores(resp.stores)
+    VDB.modulesLoaded = true;
     // stores.value.opts = resp.stores
     // modules.value = resp.rol.modules
-    $q.loading.hide()
+    // $q.loading.hide()
   }
 }
 
@@ -114,7 +118,7 @@ const changeStore = () => {
     store: stores.value.val.store
   })
   console.log(VDB.session)
-window.location.reload()
+  window.location.reload()
 
   $q.loading.hide()
 }

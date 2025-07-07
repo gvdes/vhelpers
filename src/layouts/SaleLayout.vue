@@ -180,12 +180,12 @@ const mosant = () => {
   barrashoy.value = false
 }
 
-if (VDB.session.rol == 'root' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'rrhh') {
+// if (VDB.session.rol == 'root' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'rrhh') {
   index()
-} else {
-  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
-  $router.replace('/');
+// } else {
+//   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+//   $router.replace('/');
 
-}
+// }
 
 </script>

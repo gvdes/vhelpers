@@ -503,10 +503,10 @@ const generarCombinaciones = (array) => {
   return resultado;
 }
 
-if (VDB.session.rol == 'root' || VDB.session.rol == 'adm') {
+// if (VDB.session.rol == 'root' || VDB.session.rol == 'adm') {
   index()
-} else {
-  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
-  $router.replace('/');
-}
+// } else {
+//   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+//   $router.replace('/');
+// }
 </script>

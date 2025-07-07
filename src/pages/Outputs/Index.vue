@@ -191,12 +191,12 @@ const direct = (output) => {
 }
 
 
-if(VDB.session.rol == 'root' || VDB.session.rol == 'aud' ){
+// if(VDB.session.rol == 'root' || VDB.session.rol == 'aud' ){
   index()
-}else{
-  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
-  $router.replace('/');
-}
+// }else{
+//   $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+//   $router.replace('/');
+// }
 
 
 </script>

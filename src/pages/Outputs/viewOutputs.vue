@@ -492,11 +492,11 @@ const addingMasive = async (prd) => {
   }
 }
 
-if(VDB.session.rol == 'root' || VDB.session.rol == 'aud' ){
+// if(VDB.session.rol == 'root' || VDB.session.rol == 'aud' ){
   init()
-}else{
-  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
-  $router.replace('/');
-}
+// }else{
+//   $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
+//   $router.replace('/');
+// }
 
 </script>

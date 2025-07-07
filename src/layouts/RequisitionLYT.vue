@@ -1,11 +1,11 @@
 <template>
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
 
-    <q-header class="transparent text-dark" bordered>
+    <!-- <q-header class="transparent text-dark" bordered> -->
       <UserToolbar />
       <q-separator />
 
-    </q-header>
+    <!-- </q-header> -->
     <q-toolbar class="justify-between">
       <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Resurtido</span>
       </div>

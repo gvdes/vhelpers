@@ -502,12 +502,12 @@ const getSale = async (sucursales, mes) => {
   $q.loading.hide();
 };
 
-if ($user.session.rol === 'root' || $user.session.rol === 'dir') {
+// if ($user.session.rol === 'root' || $user.session.rol === 'dir') {
   init()
-} else {
-  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
-  $router.replace('/');
-}
+// } else {
+//   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+//   $router.replace('/');
+// }
 
 const ObtReport = () => {
   stores.value.map(e => e.sales = null);

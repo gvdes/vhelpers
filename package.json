@@ -2,7 +2,7 @@
   "name": "vhelpers",
   "version": "0.0.1",
   "description": "A Quasar Project",
-  "productName": "Fast Tools Vizcarra",
+  "productName": "Vhelpers",
   "author": "Eduardo Lopez <lalo.kob@gmail.com>",
   "private": true,
   "scripts": {
@@ -18,7 +18,7 @@
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "firebase": "^10.14.0",
-    "jsbarcode": "^3.11.6",
+    "jsbarcode": "^3.12.1",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
     "pinia": "^2.0.11",

@@ -1,15 +1,8 @@
 import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
-
-/*
- * If not building with SSR mode, you can
- * directly export the Router instantiation;
- *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves
- * with the Router instance.
- */
+import { useVDBStore } from 'stores/VDB';
+import { useQuasar } from 'quasar';
 
 export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
@@ -19,12 +12,34 @@ export default route(function (/* { store, ssrContext } */) {
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
-
-    // Leave this as is and make changes in quasar.conf.js instead!
-    // quasar.conf.js -> build -> vueRouterMode
-    // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
+
+  // const vdb = useVDBStore();
+  Router.beforeEach(async (to, from, next) => {
+    const vdb = useVDBStore();
+    // const $q = useQuasar();
+    if (!vdb.modulesLoaded) {
+      await vdb.loadModules();
+    }
+
+    const requiredModuleId = to.meta.moduleId;
+    if (!requiredModuleId) {
+      return next(); // ruta sin restricción
+    }
+    // console.log(requiredModuleId)
+    const hasAccess = vdb.modules.some(group =>
+      group.modules.some(mod => mod.id === requiredModuleId)
+    );
+    // console.log(hasAccess)
+    if (hasAccess) {
+      return next();
+    } else {
+      // console.log(hasAccess)
+      // $q.notify({ message: 'No tienes permiso para entrar a la pagina', type: 'negative', position: 'center' })
+      return next('/launcher');
+    }
+  });
 
   return Router
 })

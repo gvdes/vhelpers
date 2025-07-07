@@ -201,12 +201,12 @@ const getSale = async (sucursales, date) => {
 
 
 
-if ($user.session.rol === 'adm' || $user.session.rol === 'root') {
+// if ($user.session.rol === 'adm' || $user.session.rol === 'root') {
   init()
-} else {
-  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
-  $router.replace('/');
-}
+// } else {
+//   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+//   $router.replace('/');
+// }
 
 const buscas = () => {
   date.value = false
