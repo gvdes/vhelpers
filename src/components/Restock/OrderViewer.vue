@@ -33,9 +33,11 @@
         </q-btn>
         <q-separator spaced inset vertical dark />
         <div class="col" v-if="cstate && cstate.id == 2">
-          <q-btn size="12px" class="full-width"  color="positive" icon="start" dense label="Iniciar" @click="selsupply" flat    />
+          <q-btn size="12px" class="full-width" color="positive" icon="start" dense label="Iniciar" @click="selsupply"
+            flat />
           <q-separator spaced inset vertical dark />
-          <q-btn size="12px" class="full-width"  color="negative" icon="close" dense label="Cancelar" @click="removePed" flat  />
+          <q-btn size="12px" class="full-width" color="negative" icon="close" dense label="Cancelar" @click="removePed"
+            flat />
         </div>
       </div>
     </q-card-section>
@@ -165,14 +167,26 @@
   <q-dialog v-model="viewSupply.state" persistent>
     <q-card style="width: 400px;">
       <q-card-section class="row items-center">
-        <q-select dense v-model="supply.val" :options="supply.filter" label="SELECCIONA SURTIDOR"
-          :option-label="i => i.staff.complete_name" filled multiple counter max-values="10"
-          hint="Maximo 10 colaboradores" style="width: 100%" @filter="filterFn" input-debounce="0" use-input
-          use-chips />
+        <q-list >
+          <q-item v-for="(loc, index) in locations" :key="index">
+            <q-item-section class="q-mb-lg">
+              <q-item-label class="q-mb-md" caption>Ubicaciones</q-item-label>
+              <q-item-label >{{ loc.name }}</q-item-label>
+            </q-item-section>
+            <q-item-section class="q-mb-lg">
+              <q-item-label class="q-mb-md text-center" caption>Productos</q-item-label>
+              <q-item-label class="text-center">{{ loc.cantidad }}</q-item-label>
+            </q-item-section>
+            <q-item-section class="q-mt-md">
+              <q-item-label class=" text-center" caption>Particiones</q-item-label>
+              <q-item-label class="q-mb-sm text-center" > <q-input v-model="loc.partition" type="number" dense filled input-class="text-center" :min="1" :error="loc.partition == 0 || loc.partition > loc.cantidad" :error-message="loc.partition > loc.cantidad ? 'No se pueden generar mas particiones que articulos' : 'la particiones tienen que ser minimo ' " /></q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
       </q-card-section>
       <q-card-actions align="right">
         <q-btn flat label="Cancel" color="primary" v-close-popup />
-        <q-btn flat label="Continuar" color="primary" @click="startSupply" :disable="supply.val.length == 0" />
+        <q-btn flat label="Continuar" color="primary" @click="startSupply" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -200,7 +214,7 @@ import InvoicePdf from 'src/Pdf/Invoices/invoices.js';
 // import AssitApi from 'src/api/AssistApi.js';
 import { useRoute, useRouter } from 'vue-router';
 import dayjs from 'dayjs';
-import { useQuasar } from 'quasar';
+import { LoadingBar, useQuasar } from 'quasar';
 import QRCode from 'qrcode';
 import PrinterSelect from 'src/components/Restock/PrinterSelect.vue';
 import { useRestockStore } from 'stores/Restock';
@@ -210,7 +224,7 @@ import { $sktRestock } from 'src/boot/socket';
 const $q = useQuasar();
 const $restockStore = useRestockStore();
 const $route = useRoute();
-
+const locations = ref([]);
 const $props = defineProps({
   head: { type: Object, default: {} }
 });
@@ -227,7 +241,6 @@ const chof = ref({
 })
 
 const part = ref(null);
-const selSupply = ref(null)
 
 
 const $emit = defineEmits(['loaded', 'loading', 'fresh', 'chofiAssigned']);
@@ -273,9 +286,9 @@ const table = ref({
     { name: 'checkout', label: 'Checkout', 'field': row => row.pivot.checkout ? 'OK' : '---', align: "center", classes: row => row.pivot.checkout ? 'text-positive text-bold' : 'text-red', sortable: true, coldesc: "Revision del Administrador" },
     { name: 'received', label: 'Entrada (conteo)', field: row => row.pivot.toReceived, align: "center", coldesc: "Embalaje recibido" },
     { name: 'descr', label: 'Descripcion', field: 'description', align: "left" },
-    { name: 'section', label: 'Seccion', field: 'section', align: "left" },
-    { name: 'family', label: 'Familia', field: 'family', align: "left" },
-    { name: 'category', label: 'Categoria', field: 'category', align: "left" },
+    { name: 'section', label: 'Seccion', field: r => r.category.familia.seccion.name, align: "left" },
+    { name: 'family', label: 'Familia', field: r => r.category.familia.name, align: "left" },
+    { name: 'category', label: 'Categoria', field: r => r.category.name, align: "left" },
   ],
   filter: '',
   pagination: {
@@ -296,14 +309,15 @@ const init = async () => {
   console.log(head.value.id)
   loading.value = true;
   let response = await RestockApi.order(head.value.id)
-  console.log(response.data);
-  basket.value = response.data.products;
-  log.value = response.data.log.map(l => { l.pivot.details = JSON.parse(l.pivot.details); return l; });
-  partition.value = response.data.partition
-  cstate.value = response.data.status;
-  order.value = response.data
-  // wndQRCode.value.key = response.data.entry_key;
-  invoice.value = response.data.invoice;
+  console.log(response);
+  basket.value = response.data.order.products;
+  log.value = response.data.order.log.map(l => { l.pivot.details = JSON.parse(l.pivot.details); return l; });
+  partition.value = response.data.order.partition
+  cstate.value = response.data.order.status;
+  order.value = response.data.order
+  // wndQRCode.value.key = response.data.order.entry_key;
+  invoice.value = response.data.order.invoice;
+  locations.value = Object.values(response.data.ubicaciones).map(w => ({ ...w, partition: 1}));
   // if (cstate.value.id == 2) {
   //   console.log(order.value.to.id);
   //   let supp = await RestockApi.getSupply(order.value.to.id);
@@ -334,14 +348,15 @@ const startSupply = async () => {
     startingStep.value = false;
     $q.notify({ message: `Surtido iniciado para el pedido  ${head.value.id}`, icon: "done", position: "center", color: "teal" });
     let dat = {
-      supplyer: supply.value.val,
+      // supplyer: supply.value.val,
+      ubicaciones: locations.value,
       pedido: head.value.id,
       status: newState,
       _workpoint_to: head.value.to.id,
       _workpoint_from: head.value.from.id,
     }
     console.log(dat)
-    let savesupply = await RestockApi.SaveSupply(dat);
+    let savesupply = await RestockApi.createParitions(dat);
     console.log(savesupply)
     if (savesupply.fail) {
       console.log(savesupply)
@@ -363,72 +378,6 @@ const startSupply = async () => {
   $emit("loaded"); // desblockea la venta modal del padre que contiene eeste componente
 }
 
-const tryGenInvoice = async () => {
-  console.log("Generando factura");
-  $q.loading.show({ message: "Cambiando, espera..." });
-  let dat = {
-    chofi: chof.value.val,
-    supplyer: selSupply.value._suplier_id,
-    pedido: head.value.id,
-    status: 7
-  }
-  let savesupply = await AssitApi.SaveChofi(dat);
-  console.log("%cDELIVERY ASSIGNED", "color:white; background:#b71540; font-size:1.3em;");
-  console.log(savesupply);
-
-  if (savesupply.status == 200) {
-    let data = { id: head.value.id, state: 7, suply: selSupply.value._suplier_id }
-    console.log(data);
-    let resp = await AssitApi.nextState(data);
-    console.log("%cState Changed on Assist", "color:white; background:#0a3d62; font-size:1.2em;");
-    console.log(resp)
-    if (resp.data.partitionsEnd > order.value._status) {
-      console.log("%cTodas las particiones se han finalizado", "color:white; background:#eb2f06; font-size:1.3em;");
-      let nes = { id: head.value.id, state: resp.data.partitionsEnd };
-      console.log(nes)
-      const nxt = await RestockApi.nextState(nes);
-      console.log("%cState Changed on RestockAPI", "color:white; background:#079992; font-size:1.3em;");
-      console.log(nxt);
-    }
-
-    $emit("chofiAssigned", data.id);
-
-    if (resp.status == 200) {
-      init();
-      let id = resp.data.partition.id
-      let inx = partition.value.findIndex(e => e.id == id)
-      partition.value[inx]._status = resp.data.partition._status
-      partition.value[inx].invoice = resp.data.partition.invoice
-    }
-
-    $q.notify({
-      message: `Pedido en ruta`,
-      position: "center", icon: "done", timeout: 5000, color: "positive"
-    });
-    wndGenInvoice.value.state = false
-  } else { alert(`Error ${savesupply.status}: ${savesupply.data}`); }
-
-  $q.loading.hide();
-}
-
-const genQRKey = async (data) => {
-  // let url = `http://192.168.10.189:2200/#/checkin/${head.value.id}?key=${data}`;
-  let url = `http://192.168.10.207:1308/#/checkin/${head.value.id}?key=${data}`;
-
-  wndQRCode.value.state = true;
-  nextTick(() => QRCode.toCanvas(document.getElementById('qrcode'), url));
-}
-
-const printKey = async (data) => {
-  $q.loading.show({ message: "..." });
-  console.log(data);
-  const response = await RestockApi.printKey({ ip: data.ip, port: data._port, order: head.value.id });
-  if (response.status == 200) {
-    let resp = response.data;
-    $q.loading.hide();
-    $q.notify({ message: "Impresion correcta", icon: "done", color: "positive", position: "top" });
-  } else { console.error(response); alert(`Error ${response.status}: ${response.data}`); }
-}
 
 const printForSupply = async data => {
   $q.loading.show({ message: "..." });
@@ -463,37 +412,6 @@ const printForPartition = async data => {
   } else { console.error(resp); alert(`Error ${resp.status}: ${resp.data}`); }
 }
 
-const genvoice = async (row) => {
-  selSupply.value = row
-  wndGenInvoice.value.state = true
-  let ch = await AssitApi.getSupply(order.value.to.id);
-  console.log(ch);
-  chof.value.opts = ch
-}
-
-const filterFn = (val, update, abort) => {
-  update(() => {
-    if (val === '') {
-      supply.value.filter = supply.value.opts
-    } else {
-      const needle = val.toLowerCase()
-      supply.value.filter = supply.value.opts.filter(v => v.complete_name.toLowerCase().indexOf(needle) > -1)
-    }
-
-  })
-}
-
-const filterCH = (val, update, abort) => {
-  update(() => {
-    if (val === '') {
-      chof.value.filter = chof.value.opts
-    } else {
-      const needle = val.toLowerCase()
-      chof.value.filter = chof.value.opts.filter(v => v.complete_name.toLowerCase().indexOf(needle) > -1)
-    }
-
-  })
-}
 
 const remove = async () => {
   console.log("Eliminando Pedido");

@@ -162,12 +162,12 @@ const table = ref({
       classes: row => colorCellState[(row._status ? parseInt(row._status) - 1 : parseInt(row.status.id) - 1)],
     },
     { name: 'suplier', label: 'Surtidores', field: row => row.partition?.length, align: "center", classes: "text-bold" },
-    {
-      name: 'laststate',
-      label: 'Ultima actividad',
-      field: row => dayjs(row.log.find(l => l.id == row.status.id).pivot.updated_at).format('YYYY-MM-DD hh:mm A'),
-      align: "left"
-    },
+    // {
+    //   name: 'laststate',
+    //   label: 'Ultima actividad',
+    //   field: row => dayjs(row.log.find(l => l.id == row.status.id).pivot.updated_at).format('YYYY-MM-DD hh:mm A'),
+    //   align: "left"
+    // },
     { name: 'from', label: 'Sucursal', field: row => row.from.name.toUpperCase(), align: "left", sortable: true },
     { name: 'to', label: 'Destino', field: row => row.to.name.toUpperCase(), align: "left", sortable: true },
     { name: 'notes', label: 'Notas', field: row => row.notes, align: "left", classes: 'text-orange text-bold' },

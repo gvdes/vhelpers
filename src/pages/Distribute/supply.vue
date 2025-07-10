@@ -77,7 +77,7 @@ const mosPartition = ref({
   val: null
 })
 
-const ordersdb = computed(() => $restockStore.partitions.filter(o => o._status == 3 && o._suplier_id == VDB.session.credentials.staff.id && o.requisition._workpoint_to == VDB.session.store.id_viz))
+const ordersdb = computed(() => $restockStore.partitions.filter(o => o._status == 3 && o.requisition._workpoint_to == VDB.session.store.id_viz))
 const init = async () => {
   $restockStore.setTitle('Surtido')
   $restockStore.setButtonShow(false)
@@ -101,42 +101,82 @@ const printForPartition = async data => {
 }
 
 
-const nextState = async () => {
+// const nextState = async () => {
+//   console.log("Finalizando Surtido");
+//   let ext = ordersdb.value.findIndex(e => e.id == partition.value);
+//   if (ext >= 0) {
+//     $q.loading.show({ message: "Terminando, espera..." });
+//     let data = { id: partition.value, state: 4, };
+//     const response = await RestockApi.nextStatePartition(data);
+//     console.log(response);
+//     let inx = $restockStore.partitions.findIndex(e => e.id == response.data.partition.id);
+//     if (inx >= 0) {
+//       $restockStore.partitions.splice(inx, 1, response.data.partition)
+//       if (response.data.partitionsEnd > response.data.partition.requisition._status) {
+//         let nes = { id: response.data.partition._requisition, state: response.data.partitionsEnd };
+//         const nxt = await RestockApi.nextState(nes);
+//         $sktRestock.emit("order_refresh", { order:nxt.data });
+//         console.log(nxt.data);
+//       }
+//       $sktRestock.emit("orderpartition_refresh", { order: response.data.partition })
+//       if (response.status == 200) {
+//         partition.value = null
+//         mosPartition.value = {
+//           state: false,
+//           val: null
+//         }
+//       }
+//       $q.loading.hide();
+//     }
+//   } else {
+//     $q.notify({ message: 'No se encuentra tu pedido', type: 'negative', position: 'bottom' })
+//     partition.value = null
+//   }
+// }
 
-  console.log("Finalizando Surtido");
+
+const nextState = async () => {
   let ext = ordersdb.value.findIndex(e => e.id == partition.value);
   if (ext >= 0) {
-    $q.loading.show({ message: "Terminando, espera..." });
-    let data = { id: partition.value, state: 4, };
-    const response = await RestockApi.nextStatePartition(data);
-    console.log(response);
-    let inx = $restockStore.partitions.findIndex(e => e.id == response.data.partition.id);
-    if (inx >= 0) {
-      $restockStore.partitions.splice(inx, 1, response.data.partition)
-      if (response.data.partitionsEnd > response.data.partition.requisition._status) {
-        let nes = { id: response.data.partition._requisition, state: response.data.partitionsEnd };
-        const nxt = await RestockApi.nextState(nes);
-        $sktRestock.emit("order_refresh", { order:nxt.data });
-        console.log(nxt.data);
-      }
-      $sktRestock.emit("orderpartition_refresh", { order: response.data.partition })
-      if (response.status == 200) {
-        partition.value = null
-        mosPartition.value = {
-          state: false,
-          val: null
+    $q.loading.show({ message: 'Cambiando Estado' })
+    let data = {
+      partition: partition.value,
+      surtidor: VDB.session.credentials.staff,
+      state: 4
+    }
+    console.log(data)
+    let savesupply = await RestockApi.saveSupply(data);
+    console.log(savesupply)
+    if (savesupply.status == 200) {
+      let inx = $restockStore.partitions.findIndex(e => e.id == savesupply.data.partition.id);
+      if (inx >= 0) {
+        $restockStore.partitions.splice(inx, 1, savesupply.data.partition)
+        if (savesupply.data.partitionsEnd > savesupply.data.partition.requisition._status) {
+          let nes = { id: savesupply.data.partition._requisition, state: savesupply.data.partitionsEnd };
+          const nxt = await RestockApi.nextState(nes);
+          $sktRestock.emit("order_refresh", { order: nxt.data });
+          console.log(nxt.data);
         }
+        $sktRestock.emit("orderpartition_refresh", { order: savesupply.data.partition })
+      }
+      partition.value = null
+      mosPartition.value = {
+        state: false,
+        val: null
       }
       $q.loading.hide();
+    } else {
+      alert(`Error ${savesupply.status}: ${savesupply.data} 2`);
     }
   } else {
     $q.notify({ message: 'No se encuentra tu pedido', type: 'negative', position: 'bottom' })
     partition.value = null
   }
-
-
-
 }
+
+
+
+
 init();
 // document.title = "Vhelpers/Surtido";
 </script>

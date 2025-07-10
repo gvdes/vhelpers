@@ -78,7 +78,7 @@ const mosPartition = ref({
 
 const ordersdb = computed(() => {
   return $restockStore.partitions.filter(part => {
-    const isChofer = ['chf', 'vld','root'].includes(VDB.session.rol);
+    const isChofer = ['chf','amc', 'vld','root'].includes(VDB.session.rol);
     const isSameStore = part.requisition.from.id == VDB.session.store.id_viz;
     const isStore = part.requisition.to.id == VDB.session.store.id_viz;
     const isAlmacenista = ['gen', 'aux', 'alm', 'root'].includes(VDB.session.rol);

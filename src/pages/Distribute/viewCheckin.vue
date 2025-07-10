@@ -341,75 +341,6 @@ const setReceivedProduct = async () => {
   } else { alert(`Error ${response.status}: ${response.data}`); }
 }
 
-// const tryGenEntry = async () => {
-//   $q.loading.show({ message: "Generando, espera..." });
-//   console.log(order.value.requisition.from._type)
-//   let data = { id: $route.params.oid, state: 10, suply: order.value._suplier_id }
-//   console.log(data);
-//   let resp = await AssitApi.nextState(data)
-//   if (resp.status == 200) {
-//     if (order.value.requisition.from._type != 1) {
-//       const entry = await RestockApi.genEntry(order.value.id);
-//       console.log(entry);
-
-//       if (entry.status == 200) {
-//         console.log(entry.data);
-
-//         if (entry.data) {
-//           $q.notify({
-//             message: `Se genero la Entrada <b class="text-h6">${entry.data.invoice.folio}</b>`,
-//             html: true, position: "center", icon: "done", timeout: 5000, color: "orange"
-//           });
-
-//         } else { alert("Error 500: Ocurrio un error inesperado :("); }
-//       } else { alert(`Error ${entry.status}: ${entry.data}`); console.log(entry.data) }
-
-//       if (resp.data.partitionsEnd > order.value.requisition._status) {
-//         let nes = { id: $route.params.oid, state: resp.data.partitionsEnd };
-//         console.log(nes)
-//         const nxt = await RestockApi.nextState(nes);
-//         console.log(nxt);
-//       }
-//       // $sktRestock.emit("orderpartition_refresh", { order: data.id });
-//       $q.notify({
-//         message: `Se genero la entrada`,
-//         html: true, position: "center", icon: "done", timeout: 5000, color: "positive"
-//       });
-//       reload();
-//       console.log(resp)
-//     } else {
-//       console.log('es Traspaso')
-//       const response = await RestockApi.genTransferRec($route.params.oid, order.value._suplier_id);
-//       console.log(response);
-//       if (response.status == 200) {
-//         if (resp.data.partitionsEnd > order.value.requisition._status) {
-//           let nes = { id: $route.params.oid, state: resp.data.partitionsEnd };
-//           console.log(nes)
-//           const nxt = await RestockApi.nextState(nes);
-//           console.log(nxt);
-//         }
-//         // $sktRestock.emit("orderpartition_refresh", { order: data.id });
-//         console.log(response)
-//         if (response.data.transfer) {
-//           console.log(response)
-//           $q.notify({
-//             message: `Se actualizo el traspaso  <b class="text-h6">${response.data.transfer.folio}</b>`,
-//             html: true, position: "center", icon: "done", timeout: 5000, color: "positive"
-//           });
-//           // let wndQRCode = response.data.requisition.entry_key;
-//           // pdf.pdfTransfer(response.data.transfer.folio, wndQRCode, $route.params.oid)
-//         }
-//         reload();
-//       } else { alert(`Error ${response.status}: ${response.data}`); }
-//     }
-//   } else {
-//     console.log(resp)
-//   }
-//   $q.loading.hide();
-// }
-
-
-
 const tryGenEntry = async () => {
   // $sktRestock.emit("blockButton", order.value);
   $q.loading.show({ message: "Terminando, espera..." });
@@ -433,6 +364,8 @@ const tryGenEntry = async () => {
     if (response.status == 200) {
       console.log(response.data)
       $sktRestock.emit("orderpartition_refresh", { order: response.data.order })
+      let message = await diff.value > 0 ? RestockApi.sendMessageDiff(response.data.order) : '';
+      console.log(message);
       if (order.value.requisition.from._type != 1) {
         // InvoicePdf.invoiceFormat(response.data.order)
         createEntryFS(response.data.order)
@@ -447,7 +380,9 @@ const tryGenEntry = async () => {
 }
 
 const createEntryFS = async (partition) => {
+  $q.loading.show({message:'Realizando Salida'});
   const resp = await invApi.addEntryFS(partition);
+  console.log(resp)
   if (resp.fail) {
     if (resp.fail.status == 503) {
       $q.notify({ message: 'No hubo conexion a cedis, Intentarlo mas tarde', type: 'negative', position: 'bottom' });
@@ -457,29 +392,30 @@ const createEntryFS = async (partition) => {
       console.log(resp);
     }
   } else {
-    $q.notify({ message: `Entrada Creada ${resp}`, type: 'positive', position: 'bottom' })
+    $q.notify({ message: `Entrada Creada ${resp.invoice_received}`, type: 'positive', position: 'bottom' })
     // const para = await RestockApi.partitionFresh($route.params.chk)
-    $sktRestock.emit("orderpartition_refresh", { order: partition })
+    $sktRestock.emit("orderpartition_refresh", { order: resp })
     $router.push('/distribute/checkin')
     $q.loading.hide();
   }
 }
 
 const createTransferFS = async (partition) => {
+  $q.loading.show({message:'Realizando Salida'});
   const resp = await invApi.endTransferFS(partition);
   if (resp.fail) {
     if (resp.fail.status == 503) {
       $q.notify({ message: 'No hubo conexion a cedis, Intentarlo mas tarde', type: 'negative', position: 'bottom' });
-      $router.push('/distribute/checkout')
+      // $router.push('/distribute/checkout')
       $q.loading.hide();
     } else {
       console.log(resp);
     }
   } else {
-    $q.notify({ message: `Traspaso Creado ${resp}`, type: 'positive', position: 'bottom' })
+    $q.notify({ message: `Traspaso Creado ${resp.invoice_received}`, type: 'positive', position: 'bottom' })
     // const para = await RestockApi.partitionFresh($route.params.chk)
-    $sktRestock.emit("orderpartition_refresh", { order: partition })
-    $router.push('/distribute/checkout')
+    $sktRestock.emit("orderpartition_refresh", { order: resp })
+    // $router.push('/distribute/checkout')
     $q.loading.hide();
   }
 }

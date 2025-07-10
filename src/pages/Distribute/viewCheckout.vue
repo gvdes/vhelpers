@@ -438,8 +438,11 @@ const nextState = async () => {
 
 
 const createInvoiceFS = async (partition) => {
+  $q.loading.show({message:'Realizando Salida'});
   const resp = await invApi.addInvoiceFS(partition);
+  console.log(resp);
   if (resp.fail) {
+    console.log(resp)
     if (resp.fail.status == 503) {
       $q.notify({ message: 'No hubo conexion a cedis, Intentarlo mas tarde', type: 'negative', position: 'bottom' });
       $router.push('/distribute/checkout')
@@ -448,9 +451,9 @@ const createInvoiceFS = async (partition) => {
       console.log(resp);
     }
   } else {
-    $q.notify({ message: `Salida Creada ${resp}`, type: 'positive', position: 'bottom' })
+    $q.notify({ message: `Salida Creada ${resp.invoice}`, type: 'positive', position: 'bottom' })
     // const para = await RestockApi.partitionFresh($route.params.chk)
-    $sktRestock.emit("orderpartition_refresh", { order: partition })
+    $sktRestock.emit("orderpartition_refresh", { order: resp })
     $router.push('/distribute/checkout')
     $q.loading.hide();
     // $q.notify({message:'Factura Realizada',type:'positive',position:'center'});
@@ -458,6 +461,7 @@ const createInvoiceFS = async (partition) => {
 }
 
 const createTransferFS = async (partition) => {
+  $q.loading.show({message:'Realizando Salida'});
   const resp = await invApi.addTransferFS(partition);
   if (resp.fail) {
     if (resp.fail.status == 503) {
@@ -468,9 +472,9 @@ const createTransferFS = async (partition) => {
       console.log(resp);
     }
   } else {
-    $q.notify({ message: `Traspaso Creado ${resp}`, type: 'positive', position: 'bottom' })
+    $q.notify({ message: `Traspaso Creado ${resp.invoice}`, type: 'positive', position: 'bottom' })
     // const para = await RestockApi.partitionFresh($route.params.chk)
-    $sktRestock.emit("orderpartition_refresh", { order: partition })
+    $sktRestock.emit("orderpartition_refresh", { order: resp })
     $router.push('/distribute/checkout')
     $q.loading.hide();
   }

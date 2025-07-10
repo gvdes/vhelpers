@@ -37,7 +37,7 @@
               <q-item-section>
                 <q-item-label class="text-center" caption>Verificador</q-item-label>
                 <q-item-label class="text-center text-caption">{{ partition.val.verified?.complete_name
-                }}</q-item-label>
+                  }}</q-item-label>
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-center" caption>Chofer</q-item-label>
@@ -126,9 +126,10 @@
           Resultado de la Modificacin
         </q-card-section>
         <q-card-section>
-          <div class="text-center text-bold"><span class="text-center q-mr-md">Elminar :</span>{{ mosModigy.val.res.Eliminar.message ?
-                mosModigy.val.res.Eliminar.message : '' }}<q-icon class="q-mb-sm"
-              size="sm" :color="mosModigy.val.res.Eliminar.success ? 'positive' : 'negative'"
+          <div class="text-center text-bold"><span class="text-center q-mr-md">Elminar :</span>{{
+            mosModigy.val.res.Eliminar.message ?
+              mosModigy.val.res.Eliminar.message : '' }}<q-icon class="q-mb-sm" size="sm"
+              :color="mosModigy.val.res.Eliminar.success ? 'positive' : 'negative'"
               :name="mosModigy.val.res.Eliminar.success ? 'check' : 'close'" /></div>
 
           <div class="text-center text-bold"><span class="text-center q-mr-md">Salida :</span>{{
@@ -166,6 +167,7 @@ import { useRestockStore } from 'stores/Restock';
 import { useQuasar } from 'quasar';
 import { $sktRestock } from 'boot/socket';
 import PrinterSelect from 'src/components/Restock/PrinterSelect.vue';
+import InvoicePdf from 'src/Pdf/Invoices/invoices.js';
 const $route = useRoute();
 const $router = useRouter();
 const $restockStore = useRestockStore();
@@ -192,7 +194,7 @@ const orderByDifference = computed(() => ordersdb.value.filter(order => order.pr
 
 const init = async () => {
   $restockStore.setShowLYT(true)
-  $restockStore.setTitle('Comparativo')
+  $restockStore.setTitle('Modificaciones')
   $restockStore.setButtonShow(true)
 }
 
@@ -221,6 +223,7 @@ const sendSave = async () => {
   const originalToReceived = originalProducts.value.products.map(p => ({ id: p.id, toReceived: p.pivot.toReceived }));
   const originalToDelivered = originalProducts.value.products.map(p => ({ id: p.id, toDelivered: p.pivot.toDelivered }));
   console.log(partition.value.val)
+
   try {
     const resp = await RestockApi.correction(partition.value.val)
     // console.log(resp);
@@ -271,12 +274,19 @@ const sendSave = async () => {
     console.error('Error al guardar:', error);
   } finally {
     $sktRestock.emit("orderpartition_refresh", { order: partition.value.val })
+    partition.value.val.products.forEach(e => {
+      e.pivot.units = e.pivot.toDelivered * mult(e.pivot._supply_by, e);
+      console.log(e.pivot.toDelivered * mult(e.pivot._supply_by, e))
+    })
+    console.log(partition.value.val)
+    InvoicePdf.invoiceFormat(partition.value.val)
     modifyInvoices.value = false
     $q.loading.hide();
     partition.value = {
       state: false,
       val: null
     }
+    // createFS(resp.partition)
     originalProducts.value = []; // copia segura para rollback
   }
 }
@@ -328,9 +338,9 @@ const createEntryFS = async (partition) => {
     }
   } else {
     console.log(resp);
-    $q.notify({ message: `Entrada Creada ${resp}`, type: 'positive', position: 'bottom' })
-    partition.invoice_received = resp;
-    $sktRestock.emit("orderpartition_refresh", { order: partition })
+    $q.notify({ message: `Entrada Creada ${resp.invoice_received}`, type: 'positive', position: 'bottom' })
+    // partition.invoice_received = resp;
+    $sktRestock.emit("orderpartition_refresh", { order: resp })
     $q.loading.hide();
   }
 }
@@ -347,9 +357,9 @@ const createInvoiceFS = async (partition) => {
     }
   } else {
     console.log(resp);
-    $q.notify({ message: `Salida Creada ${resp}`, type: 'positive', position: 'bottom' })
-    partition.invoice = resp;
-    $sktRestock.emit("orderpartition_refresh", { order: partition })
+    $q.notify({ message: `Salida Creada ${resp.invoice}`, type: 'positive', position: 'bottom' })
+    // partition.invoice = resp;
+    $sktRestock.emit("orderpartition_refresh", { order: resp })
     $q.loading.hide();
   }
 }
@@ -367,9 +377,9 @@ const createTransferFS = async (partition, origen) => {
       }
     } else {
       console.log(resp);
-      $q.notify({ message: `Traspaso Creado ${resp}`, type: 'positive', position: 'bottom' })
-      partition.invoice = resp;
-      $sktRestock.emit("orderpartition_refresh", { order: partition })
+      $q.notify({ message: `Traspaso Creado ${resp.invoice}`, type: 'positive', position: 'bottom' })
+      // partition.invoice = resp;
+      $sktRestock.emit("orderpartition_refresh", { order: resp })
       $q.loading.hide();
     }
   } else {
@@ -383,9 +393,9 @@ const createTransferFS = async (partition, origen) => {
       }
     } else {
       console.log(resp);
-      $q.notify({ message: `Traspaso Creado ${resp}`, type: 'positive', position: 'bottom' })
-      partition.invoice_received = resp;
-      $sktRestock.emit("orderpartition_refresh", { order: partition })
+      $q.notify({ message: `Traspaso Creado ${resp.invoice_received}`, type: 'positive', position: 'bottom' })
+      // partition.invoice_received = resp;
+      $sktRestock.emit("orderpartition_refresh", { order: resp })
       $q.loading.hide();
     }
   }
@@ -403,7 +413,7 @@ const mult = (surtido, product) => {
       mul = 12
       break;
     case 3:
-      mul = product.pieces
+      mul = product.pivot.ipack
   }
   return mul;
 }

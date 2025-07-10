@@ -47,6 +47,7 @@ export const useRestockStore = defineStore('restock', {
     },
 
     addOrUpdatePartition(oid, data) {
+      // console.log(this.partitions)
       let idx = this.partitions.findIndex(o => o.id == oid);
       if (idx >= 0) {
         this.partitions[idx] = data;

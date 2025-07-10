@@ -83,10 +83,10 @@ export default{
     let burl = "/restock/nextStep";
     return vizapi.post(burl,data).then( done => done ).catch( fail => fail.response);
   },
-  // getDifferences(data){
-  //   let burl = "/restock/getDifferences";
-  //   return vizapi.post(burl,data).then( done => done ).catch( fail => fail.response);
-  // },
+  sendMessageDiff(data){
+    let burl = "/invoices/sendMessageDiff";
+    return assist.post(burl,data).then( done => done ).catch( fail => fail.response);
+  },
   correction(data){
     let burl = "/invoices/correction";
     return assist.post(burl,data).then( done => done ).catch( fail => fail.response);
@@ -95,9 +95,13 @@ export default{
     let burl = `restock/getSupply/${data}`;
     return assist.get(burl).then( done => done.data ).catch( fail => fail);
   },
-  SaveSupply(data){
-    let burl = `restock/saveSupply`;
+  createParitions(data){
+    let burl = `restock/createParitions`;
     return assist.post(burl,data).then( done => done.data ).catch( fail => fail);
+  },
+  saveSupply(data){
+    let burl = `restock/saveSupply`;
+    return assist.post(burl,data).then( done => done ).catch( fail => fail);
   },
   nextStatePartition(data){
     let burl = `restock/changeStatus`;

@@ -120,19 +120,20 @@ const sktOrderPartFresh = async skt => {
   if (skt.order.requisition.to.id === VDB.session.store.id_viz || skt.order.requisition.from.id === VDB.session.store.id_viz) {
     let order = skt.order;
     console.log("Partition refresh!!", skt);
-    let resp = await RestockApi.partitionFresh(order.id);
-    console.log(resp);
-    let data = resp.data.order;
+    // let resp = await RestockApi.partitionFresh(order.id);
+    // console.log(resp);
+    let data = skt.order;
     // let partitions = data.partition;
-    let oid = resp.data.oid;
+    let oid = skt.order.id;
     let cmd = $restockStore.addOrUpdatePartition(oid, data);
-    // $q.notify({
-    //   message: `La Particion <b>${oid}</b> esta listo para iniciar <b>embarque</b>`,
-    //   html: true,
-    //   color: "purple-10",
-    //   icon: "fa-solid fa-truck-ramp-box"
-    // });
-    // }
+    console.log(data)
+    console.log(oid)
+    let part = $restockStore.ordersdb.find(e => e.id == data._requisition).partition
+    console.log(part)
+    let inx = part.findIndex(e => e.id == data.id);
+    if(inx >= 0){
+      part.splice(inx,1,data)
+    }
   }
 
 }
@@ -162,9 +163,9 @@ const sktPartitionCreate = async skt => {
   if (skt.requisition.to.id === VDB.session.store.id_viz || skt.requisition.from.id === VDB.session.store.id_viz) {
     let partition = skt;
     console.log(skt.requisition.to.id)
-    let resp = await RestockApi.partitionFresh(partition.id);
-    let data = resp.data.order;
-    let oid = resp.data.oid;
+    // let resp = await RestockApi.partitionFresh(partition.id);
+    let data = skt;
+    let oid = skt.id;
     let cmd = $restockStore.addOrUpdatePartition(oid, data);
   }
 }

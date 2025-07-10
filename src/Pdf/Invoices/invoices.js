@@ -13,9 +13,9 @@ const invoiceFormat = async (invoice) => {
   console.log(invoice);
   const currentDate = new Date();
   // const qrData = `http://192.168.10.238:1308/#/checkin/${invoice.id}?key=${invoice.entry_key}`;
-  const qrData = `http://192.168.10.160:8000/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  // const qrData = `http://192.168.10.160:8000/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  const qrData = `http://192.168.10.189:2201/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
 
-  // const qrData = `http://192.168.10.189:2200/#/checkin/${invoice.id}?key=${invoice.entry_key}`;
   const almacenes = {
     1: 'GEN',//cedis
     2: 'STC',//texcoco
@@ -45,14 +45,10 @@ const invoiceFormat = async (invoice) => {
   });
   const barcodeImage = barcodeCanvas.toDataURL('image/png');
 
-
-
-
-
-
   const doc = new jsPDF();
   let chunks = [];
-  const product = invoice.products.map(e => {
+  const filterPro = invoice.products.filter(e => e.pivot.checkout == 1)
+  const product = filterPro.map(e => {
     return {
       code: e.code,
       caja: e.pivot._supply_by == 3 ? e.pivot.toDelivered : 1,
@@ -61,6 +57,7 @@ const invoiceFormat = async (invoice) => {
       description: e.description,
     }
   })
+
   const arreglo = product.map(producto => Object.values(producto));
   const paginas = Math.ceil(arreglo.length / 20);
   for (var i = 0; i < arreglo.length; i += 20) {
@@ -95,7 +92,7 @@ const invoiceFormat = async (invoice) => {
       doc.text("GRUPO VIZCARRA", 105, 10, "center");
       doc.setFontSize(8)
       doc.text('NUMERO PEDIDO:', 10, 10, 'left')
-      doc.text(invoice._requisition.toString(), 10, 15, 'left');
+      doc.text(`${invoice._requisition.toString()} - ${invoice.requisition.notes}`, 10, 15, 'left');
       doc.setFontSize(12)
       doc.text(copias, 185, 10, 'left');
       doc.text(invoice.requisition.from.name, 10, 25, 'left')
@@ -193,8 +190,8 @@ const transferFormat = async (invoice) => {
   console.log(invoice);
   const currentDate = new Date();
   // const qrData = `http://192.168.10.238:1308/#/checkin/${invoice.id}?key=${invoice.entry_key}`;
-  const qrData = `http://192.168.10.160:8000/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
-  // const qrData = `http://192.168.10.189:2200/#/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  // const qrData = `http://192.168.10.160:8000/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  const qrData = `http://192.168.10.189:2201/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
   const almacenes = [
     { id: 1, alias: 'GEN', name: 'ALMACEN GENERAL' },
     { id: 2, alias: 'STC', name: 'ALMACEN TEXCOCO' },
@@ -203,11 +200,8 @@ const transferFormat = async (invoice) => {
     { id: 24, alias: 'BOL', name: 'ALMACEN BOLIVIA' },
 
   ]
-
   const almacenOr = almacenes.find(e => e.id == invoice?.requisition?.to?.id);
   const almacenDe = almacenes.find(e => e.id == invoice?.requisition?.from?.id);
-
-
   const qrOptions = {
     margin: 1,
     width: 1,
