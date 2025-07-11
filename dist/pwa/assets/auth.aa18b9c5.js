@@ -1,0 +1,1 @@
+import{b as h,u as o,P as r}from"./index.afd768e7.js";var i=h(async({router:s})=>{const u=o();s.beforeEach((t,f,a)=>{let e=r.getItem("auth");e?(u.setSession(e),t.path!="/auth"?a():a("/launcher")):t.path=="/auth"?a():a("/auth")})});export{i as default};

@@ -98,6 +98,11 @@ const routes = [
     meta: { moduleId: 14 }
   },
   {
+    path: '/products',
+    component: () => import('layouts/getProduct.vue'),
+    meta: { moduleId: 47 }
+  },
+  {
     path: '/changePrices',
     component: () => import('layouts/ChangePricesLYT.vue'),
     meta: { moduleId: 6 }
