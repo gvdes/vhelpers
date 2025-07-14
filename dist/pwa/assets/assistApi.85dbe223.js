@@ -1,1 +1,0 @@
-import{l as e}from"./axios.48019e0f.js";var s={index(){return e.get("/sales/getSale").then(t=>t.data).catch(t=>({fail:t}))},getReport(){return e.get("/getResourses").then(t=>t.data).catch(t=>({fail:t}))}};export{s as A};
