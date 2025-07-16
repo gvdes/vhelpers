@@ -1,10 +1,10 @@
 <template>
-  <q-page >
+  <q-page>
     <div class="bg-cyan-10 text-white">
       <q-toolbar>
         <q-toolbar-title>
           Pedido {{ $route.params.chk }} <span class="text--3" v-if="order">- {{ order.requisition.from.alias
-            }}</span>
+          }}</span>
         </q-toolbar-title>
         <div class="text-bold text-h6">Diferencias : {{ diff }}</div>
         <div v-if="order?.invoice_received" class="text-white">
@@ -26,7 +26,7 @@
       </div>
     </div>
     <q-table row-key="id" :rows="basket" :columns="table.columns" :pagination="table.pagination" :filter="table.filter"
-      :visible-columns="viewcols" @row-click="rowClicked"  >
+      :visible-columns="viewcols" @row-click="rowClicked">
       <template v-slot:top>
         <div class="full-width row items-center justify-between">
           <q-input dense v-model="table.filter" placeholder="Buscar" input-class="text-uppercase" color="pink-5">
@@ -36,9 +36,9 @@
           </q-input>
           <q-btn color="secondary" icon="fas fa-eye" flat no-caps>
             <q-menu style="min-width: 200px">
-              <q-list >
+              <q-list>
                 <q-item tag="label" v-ripple v-for="(col, idx) in table.columns" :key="idx">
-                  <q-item-section >
+                  <q-item-section>
                     <q-item-label>{{ col.label }}</q-item-label>
                     <q-item-label caption>{{ col.coldesc }}</q-item-label>
                   </q-item-section>
@@ -168,7 +168,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed, nextTick, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import RestockApi from 'src/API/RestockApi.js';
@@ -240,50 +240,70 @@ const basket = computed(() => {
   return target.length ? productsdb.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)))) : productsdb.value;
 });
 const totalpieces = computed(() => basket.value.reduce((am, p) => (am + (p.pivot._supply_by == 3 ? (p.pivot.amount * p.pieces) : p.pivot.amount)), 0));
-const diff = computed(() =>   productsdb.value.reduce((am, p) => am + Number(p.pivot.toReceived !== p.pivot.toDelivered), 0))
+const diff = computed(() => productsdb.value.reduce((am, p) => am + Number(p.pivot.toReceived !== p.pivot.toDelivered), 0))
+
 const init = async () => {
+  $q.loading.show({ message: 'Obteniendo Informacion' });
   $restockStore.setShowLYT(false)
   const resp = await RestockApi.partitionFresh($route.params.chk)
   console.log(resp.data.order)
   if (resp.status == 200) {
-    if (resp.data.order._status == 9) {
-      order.value = resp.data.order
-    } else if (resp.data.order._status > 9) {
-      order.value = resp.data.order
-    } else {
-      let data = {
-        partition: $route.params.chk,
-        verified: VDB.session.credentials.staff.id,
-        state: 9,
-        key: $route.query.key
-      }
-      let savesupply = await RestockApi.saveCheck(data);
-      if (savesupply.status == 200) {
-        let inx = $restockStore.partitions.findIndex(e => e.id == savesupply.data.partition.id);
-        if (inx >= 0) {
-          $restockStore.partitions.splice(inx, 1, savesupply.data.partition)
-          if (savesupply.data.partitionsEnd > savesupply.data.partition.requisition._status) {
-            let nes = { id: savesupply.data.partition._requisition, state: savesupply.data.partitionsEnd };
-            const nxt = await RestockApi.nextState(nes);
-            $sktRestock.emit("order_refresh", { order: nxt.data });
-            console.log(nxt.data);
-          }
-          $sktRestock.emit("orderpartition_refresh", { order: savesupply.data.partition })
-        }
-        order.value = savesupply.partition
+    if (resp.data.order.requisition.from.id == VDB.session.store.id_viz) {
+      if (resp.data.order._status == 9) {
         $q.loading.hide();
-      } else {
-        if (savesupply.status == 401) {
-          alert(savesupply.response.data.message);
-          console.log(savesupply.response.data.message);
-          $q.loading.hide();
-        } else {
-          alert(`Error ${savesupply.status}: ${savesupply.response.data} `);
-        }
+        order.value = resp.data.order
+      } else if (resp.data.order._status > 9) {
+        $q.loading.hide();
+        order.value = resp.data.order
+      } else if (resp.data.order._status == 7 || resp.data.order._status == 8) {
+        await changeStatus();
+      } else if (resp.data.order._status < 7) {
+        order.value = resp.data.order
+        $q.loading.hide();
       }
+    }else{
+        $router.push('/distribute/checkin')
+        $q.notify({message:'No perteneces a la sucursal',type:'negative',position:'center'})
+        $q.loading.hide();
     }
   } else {
     alert(`Error ${resp.status}: ${resp.response.data} `);
+  }
+}
+
+const changeStatus = async () => {
+  let data = {
+    partition: $route.params.chk,
+    verified: VDB.session.credentials.staff.id,
+    state: 9,
+    key: $route.query.key
+  }
+  console.log(data);
+  let savesupply = await RestockApi.saveCheck(data);
+  console.log(savesupply)
+  if (savesupply.status == 200) {
+    let inx = $restockStore.partitions.findIndex(e => e.id == savesupply.data.partition.id);
+    if (inx >= 0) {
+      $restockStore.partitions.splice(inx, 1, savesupply.data.partition)
+      if (savesupply.data.partitionsEnd > savesupply.data.partition.requisition._status) {
+        let nes = { id: savesupply.data.partition._requisition, state: savesupply.data.partitionsEnd };
+        const nxt = await RestockApi.nextState(nes);
+        $sktRestock.emit("order_refresh", { order: nxt.data });
+        console.log(nxt.data);
+      }
+      $sktRestock.emit("orderpartition_refresh", { order: savesupply.data.partition })
+    }
+    $q.loading.hide();
+    order.value = savesupply.data.partition
+    $q.loading.hide();
+  } else {
+    if (savesupply.status == 401) {
+      alert(savesupply.response.data.message);
+      console.log(savesupply.response.data.message);
+      $q.loading.hide();
+    } else {
+      alert(`Error ${savesupply.status}: ${savesupply.response.data} `);
+    }
   }
 }
 
@@ -352,7 +372,7 @@ const tryGenEntry = async () => {
   let resp = await RestockApi.nextStatePartition(data)
   console.log(resp)
   if (resp.status == 200) {
-    if (resp.data.partitionsEnd > order.value.requisition._status) {
+    if (resp.data.partitionsEnd > resp.data.partition.requisition._status) {
       let nes = { id: resp.data.partition._requisition, state: resp.data.partitionsEnd };
       const nxt = await RestockApi.nextState(nes);
       $sktRestock.emit("order_refresh", { order: nxt.data });
@@ -368,26 +388,26 @@ const tryGenEntry = async () => {
       console.log(message);
       if (order.value.requisition.from._type != 1) {
         // InvoicePdf.invoiceFormat(response.data.order)
-        createEntryFS(response.data.order)
+       await createEntryFS(response.data.order)
       } else {
         // InvoicePdf.transferFormat(response.data.order)
-        createTransferFS(response.data.order)
+       await createTransferFS(response.data.order)
       }
     } else { alert(`Error ${response.status}: ${response.data}`) };
   } else { console.log(resp) }
-  $q.loading.hide();
+  // $q.loading.hide();
   // $sktRestock.emit("unblockButton", order.value.requisition);
 }
 
 const createEntryFS = async (partition) => {
-  $q.loading.show({message:'Realizando Salida'});
+  $q.loading.show({ message: 'Realizando Salida' });
   const resp = await invApi.addEntryFS(partition);
   console.log(resp)
   if (resp.fail) {
     if (resp.fail.status == 503) {
       $q.notify({ message: 'No hubo conexion a cedis, Intentarlo mas tarde', type: 'negative', position: 'bottom' });
       $router.push('/distribute/checkin')
-      $q.loading.hide();
+      // $q.loading.hide();
     } else {
       console.log(resp);
     }
@@ -401,13 +421,13 @@ const createEntryFS = async (partition) => {
 }
 
 const createTransferFS = async (partition) => {
-  $q.loading.show({message:'Realizando Salida'});
+  $q.loading.show({ message: 'Realizando Salida' });
   const resp = await invApi.endTransferFS(partition);
   if (resp.fail) {
     if (resp.fail.status == 503) {
       $q.notify({ message: 'No hubo conexion a cedis, Intentarlo mas tarde', type: 'negative', position: 'bottom' });
-      // $router.push('/distribute/checkout')
-      $q.loading.hide();
+      $router.push('/distribute/checkout')
+      // $q.loading.hide();
     } else {
       console.log(resp);
     }
@@ -415,12 +435,20 @@ const createTransferFS = async (partition) => {
     $q.notify({ message: `Traspaso Creado ${resp.invoice_received}`, type: 'positive', position: 'bottom' })
     // const para = await RestockApi.partitionFresh($route.params.chk)
     $sktRestock.emit("orderpartition_refresh", { order: resp })
-    // $router.push('/distribute/checkout')
+    $router.push('/distribute/checkout')
     $q.loading.hide();
   }
 }
 
 const rowClicked = (a, row, b) => enabledEditor.value ? openEditor(row) : null;
 
-init();
+onMounted(async () => {
+  if (window.layoutReady) {
+    await init(); // si ya estaba listo
+  } else {
+    window.addEventListener('layout-ready', async () => {
+      await init(); // si apenas va a estar listo
+    }, { once: true });
+  }
+});
 </script>

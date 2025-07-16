@@ -142,7 +142,7 @@ const reset = () => {
 }
 
 const redirect = () => {
-  $router.push(`/cashRegisters/${cash.value.val.id}/automate`)
+  $router.push(`/cashRegisters/${cash.value.val.id}/cash`)
   cashLYT.setCash(cash.value.val.id);
 }
 

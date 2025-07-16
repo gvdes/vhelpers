@@ -3,13 +3,13 @@
     <q-card-section class="item-center">
       <div class="row">
         <div class="text-subtitle2 col text-bold text-left text-grey text-overline">
-          {{ product.categories.familia.seccion.name }}
+          {{ product.category.familia.seccion.name }}
         </div>
         <div class="text-subtitle2 col text-bold text-center text-grey text-overline">
-          {{ product.categories.familia.name }}
+          {{ product.category.familia.name }}
         </div>
         <div class="text-subtitle2 col text-bold text-right text-grey text-overline">
-          {{ product.categories.name }}
+          {{ product.category.name }}
         </div>
       </div>
     </q-card-section>

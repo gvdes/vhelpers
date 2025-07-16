@@ -192,6 +192,7 @@ const search = () => {
     data.value.iptsearch.processing = true;
 
     dbproduct.autocomplete(attrs.value).then(done => {
+      console.log(attrs.value)
       let resp = done.data;
 
       switch (resp.length) {

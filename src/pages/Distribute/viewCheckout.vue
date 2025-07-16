@@ -238,6 +238,7 @@ import InvoicePdf from 'src/Pdf/Invoices/invoices.js';
 import dayjs from 'dayjs';
 import RestockApi from 'src/API/RestockApi.js';
 import invApi from 'src/API/invoicesApi.js';
+import { useVDBStore } from 'stores/VDB';
 // import pdf from 'src/api/pdfCreate.js';
 import { $sktRestock } from 'boot/socket';
 import { useRestockStore } from 'stores/Restock';
@@ -248,6 +249,7 @@ const $route = useRoute();
 const $router = useRouter();
 const $q = useQuasar();
 const $restockStore = useRestockStore();
+const VDB = useVDBStore()
 
 // const user_socket = usrSkt;
 
@@ -406,13 +408,19 @@ const nextState = async () => {
   $q.loading.show({ message: "Terminando, espera..." });
   console.log(order.value.requisition._workpoint_from)
   wndNextState.value.state = false;
-  let data = { id: $route.params.chk, state: 6, suply: order.value._suplier_id }
+  // let data = { id: $route.params.chk, state: 6, suply: order.value._suplier_id }
+    let data = {
+    partition: $route.params.chk,
+    verified: VDB.session.credentials.staff.id,
+    warehouse: 'GEN',
+    state: 6
+  }
   console.log(data);
   console.log("... por acasito");
-  let resp = await RestockApi.nextStatePartition(data)
+  let resp = await RestockApi.SaveVerified(data)
   console.log(resp)
   if (resp.status == 200) {
-    if (resp.data.partitionsEnd > order.value.requisition._status) {
+    if (resp.data.partitionsEnd > resp.data.partition.requisition._status) {
       let nes = { id: resp.data.partition._requisition, state: resp.data.partitionsEnd };
       const nxt = await RestockApi.nextState(nes);
       $sktRestock.emit("order_refresh", { order: nxt.data });
@@ -424,15 +432,17 @@ const nextState = async () => {
     if (response.status == 200) {
       $sktRestock.emit("orderpartition_refresh", { order: response.data.order })
       if (order.value.requisition.from._type != 1) {
+        // InvoicePdf.invoiceFormat(response.data.order)
+        await createInvoiceFS(response.data.order)
         InvoicePdf.invoiceFormat(response.data.order)
-        createInvoiceFS(response.data.order)
       } else {
+        // InvoicePdf.transferFormat(response.data.order)
+        await createTransferFS(response.data.order)
         InvoicePdf.transferFormat(response.data.order)
-        createTransferFS(response.data.order)
       }
     } else { alert(`Error ${response.status}: ${response.data}`) };
   } else { console.log(resp) }
-  $q.loading.hide();
+  // $q.loading.hide();
   $sktRestock.emit("unblockButton", order.value.requisition);
 }
 
@@ -449,14 +459,13 @@ const createInvoiceFS = async (partition) => {
       $q.loading.hide();
     } else {
       console.log(resp);
+      alert(resp)
     }
   } else {
     $q.notify({ message: `Salida Creada ${resp.invoice}`, type: 'positive', position: 'bottom' })
-    // const para = await RestockApi.partitionFresh($route.params.chk)
     $sktRestock.emit("orderpartition_refresh", { order: resp })
     $router.push('/distribute/checkout')
     $q.loading.hide();
-    // $q.notify({message:'Factura Realizada',type:'positive',position:'center'});
   }
 }
 
@@ -470,10 +479,10 @@ const createTransferFS = async (partition) => {
       $q.loading.hide();
     } else {
       console.log(resp);
+      alert(resp)
     }
   } else {
     $q.notify({ message: `Traspaso Creado ${resp.invoice}`, type: 'positive', position: 'bottom' })
-    // const para = await RestockApi.partitionFresh($route.params.chk)
     $sktRestock.emit("orderpartition_refresh", { order: resp })
     $router.push('/distribute/checkout')
     $q.loading.hide();

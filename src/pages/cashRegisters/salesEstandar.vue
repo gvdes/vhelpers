@@ -1,6 +1,41 @@
 <template>
   <q-page>
-
+    <q-toolbar class="">
+      <q-toolbar-title>
+      </q-toolbar-title>
+      <q-btn flat round dense icon="settings" class="q-mr-xs">
+        <q-menu style="width:200px;">
+          <q-card class="my-card">
+            <q-card-section>
+              <q-list dense>
+                <q-item  class="q-px-sm q-py-xs column">
+                  <div class="row items-center justify-between">
+                    <q-item-label>{{ config.name }}</q-item-label>
+                    <q-toggle color="blue" v-model="config.option" @update:model-value="(a) => { a ?  config.value = 16 : config.value = 0}" />
+                  </div>
+                  <q-select v-if="config.option" v-model="config.value" :options="config.optval" label="Porcentaje" filled
+                    dense emit-value map-options class="q-mt-sm" />
+                  <q-separator spaced inset vertical dark />
+                </q-item>
+              </q-list>
+            </q-card-section>
+          </q-card>
+        </q-menu>
+      </q-btn>
+      <q-btn flat round dense icon="receipt_long">
+        <q-menu>
+          <q-list style="min-width: 100px">
+            <q-item>
+              <q-item-section>
+                <q-form @submit="searchOrd">
+                  <q-item-label><q-input v-model="order" type="Number" dense filled label="Comanda" /></q-item-label>
+                </q-form>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+    </q-toolbar>
     <q-card class="my-card ">
       <q-card-section class="row">
         <div class="col">
@@ -19,8 +54,16 @@
     <q-card class="my-card">
       <q-card-section class="row">
         <div class="col ">
-          <div class="text-caption text-center">Total</div>
+          <div class="text-caption text-center">{{ config.option ? 'SUBTOTAL' : 'TOTAL' }}</div>
           <div class="text-center text-h6">$ {{ total }}</div>
+        </div>
+        <div class="col "  v-if="config.option" >
+          <div class="text-caption text-center"> IVA </div>
+          <div class="text-center text-h6 text-caption">$ {{ Number(total * Number((config.value / 100))).toFixed(2) }}</div>
+        </div>
+        <div class="col "  v-if="config.option" >
+          <div class="text-caption text-center"> TOTAL </div>
+          <div class="text-center text-h6">$ {{ Number(total * Number((1 + config.value / 100))).toFixed(2) }}</div>
         </div>
         <div class="col ">
           <div class="text-caption text-center">Cantidad</div>
@@ -31,7 +74,7 @@
 
     <q-separator spaced inset vertical dark />
 
-    <q-table :rows="sale.products" :columns="table.columns" hide-bottom :pagination="table.pagination"
+    <q-table :rows="sale.products" :columns="columns" hide-bottom :pagination="table.pagination"
       @row-click="getProduct" />
 
     <q-dialog v-model="product.state" persistent position="bottom">
@@ -89,7 +132,7 @@
 
     <div>
       <q-dialog v-model="endSale">
-        <paymentSales :total="Number(total)" :paymeths="cashLYT.methods" :client="sale.client.id"
+        <paymentSales :total="config.option ?  Number(total * Number.parseFloat((1 + config.value / 100)))  : Number(total)    " :paymeths="cashLYT.methods" :client="sale.client.id"
           @sendTicket="finallytck" />
       </q-dialog>
     </div>
@@ -111,11 +154,11 @@
 import { useVDBStore } from 'stores/VDB';
 import { useLayoutCash } from 'stores/cashLYT';
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
-import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
+import ProductAutocomplete from 'src/components/Sales/ProductAutocomplete.vue';// encabezado aoiida
 import viewProduct from 'src/components/Sales/viewProduct.vue';// encabezado aoiida
 import axios from 'axios';//para dirigirme bro
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";
-import CashApi from "src/API/cashApi";
+
 import { exportFile, useQuasar, date } from 'quasar';
 import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import paymentSales from 'src/components/Sales/PaymentSales.vue';// encabezado aoiida;
@@ -129,7 +172,10 @@ const $router = useRouter();
 const $route = useRoute();
 const cashLYT = useLayoutCash();
 
-console.log(cashLYT.rules);
+const config = ref(
+  { name: 'IVA', option: false, optval: [16, 8, 6], value: 0 }
+)
+const order = ref(null);
 const productRef = ref(null)
 const pivots = ref({
   amount: 0,
@@ -170,9 +216,12 @@ const table = ref({
     { name: 'code', label: 'Codigo', field: r => r.code, align: 'left' },
     { name: 'description', label: 'Descripcion', field: r => r.description, align: 'left' },
     // { name: 'amount', label: 'Pedido', field: r => r.pivot.units, align: 'center' },
-    { name: 'verify', label: 'Verificado', field: r => r.pivot.toDelivered, align: 'center' },
+    { name: 'verify', label: 'Cantidad', field: r => r.pivot.toDelivered, align: 'center' },
     { name: 'price', label: 'Precio', field: r => r.pivot.price, align: 'center' },
-    { name: 'total', label: 'Total', field: r => r.pivot.total, align: 'center' }
+    { name:'bruto', label: config.option ? 'Bruto' : 'Total', field: r => r.pivot.total, align: 'center' },
+    { name: 'iva', label: 'Total', field: r => r.pivot.total, align: 'center' },
+    { name: 'neto', label: 'Total', field: r => r.pivot.total, align: 'center' },
+
   ],
   pagination: { rowsPerPage: 0 }
 })
@@ -196,6 +245,63 @@ const total = computed(() => Number(sale.value.products.reduce((a, e) => a + e.p
 const cantidad = computed(() => sale.value.products.reduce((a, e) => a + Number(e.pivot.toDelivered), 0))
 
 const validForm = computed(() => sale.value.products.length > 0 && sale.value.dependiente && sale.value.client)
+const columns = computed(() => {
+  const cols = [
+    {
+      name: 'code',
+      label: 'Codigo',
+      field: row => row.code,
+      align: 'left'
+    },
+    {
+      name: 'description',
+      label: 'Descripcion',
+      field: row => row.description,
+      align: 'left'
+    },
+    ,
+    {
+      name: 'verify',
+      label: 'Verificado',
+      field: row => row.pivot.toDelivered,
+      align: 'center'
+    },
+    {
+      name: 'price',
+      label: 'Precio',
+      field: row => row.pivot.price,
+      align: 'center'
+    },
+    {
+      name: 'bruto',
+      label: config.value.option ? 'Subtotal' : 'Total',
+      field: row => row.pivot.total,
+      format: val => `$ ${val.toFixed(2)}`,
+      align: 'center'
+    }
+  ]
+
+  // Si IVA está activo, agregamos columnas de IVA y Total con IVA
+  if (config.value.option) {
+    cols.splice(6, 0, {
+      name: 'iva',
+      label: 'IVA',
+      field: row => row.pivot.total * (config.value.value / 100),
+      format: val => `$ ${val.toFixed(2)}`,
+      align: 'center'
+    })
+
+    cols.push({
+      name: 'total',
+      label: 'Total c/IVA',
+      field: row => row.pivot.total * (1 + config.value.value / 100),
+      format: val => `$ ${val.toFixed(2)}`,
+      align: 'center'
+    })
+  }
+
+  return cols
+})
 
 const agregar = (ops) => {
   console.log(ops)
@@ -282,8 +388,8 @@ const changeDepen = () => {
 const searchDep = async () => {
   if (Dependiente.value.val) {
     let data = {
-      val:Dependiente.value.val,
-      sto:VDB.session.store.id
+      val: Dependiente.value.val,
+      sto: VDB.session.store.id
     }
     const resp = await cashApi.getDependiente(data);
     if (resp.fail) {
@@ -338,10 +444,23 @@ const deleteProduct = (product) => {
 }
 
 const finallytck = async (pagos) => {
-  $q.loading.show({ message: 'Realizando Ticket' })
+  // $q.loading.show({ message: 'Realizando Ticket' })
   sale.value.payments = pagos
-  sale.value.change = pagos.conditions.super ? 0 : (Number.parseFloat(pagos.SFPA.val) + Number.parseFloat(pagos.PFPA.val)) + Number.parseFloat(pagos.VALE.val) - sale.value.products.reduce((a, c) => a + c.pivot.total, 0)
+  // (Number(Number.parseFloat(modes.value.SFPA.val) + Number.parseFloat(modes.value.PFPA.val)) + Number.parseFloat(modes.value.VALE.val) - Number.parseFloat(props.total)).toFixed(2))
+  sale.value.change = pagos.conditions.super ? 0 : pagos.change
+  if(config.value.option){
+    sale.value.subtotal = sale.value.products.reduce((a, c) => a + c.pivot.total, 0)
+    sale.value.iva = config.value.value
+    sale.value.total = Number(total.value * Number((1 + config.value.value / 100)).toFixed(2))
+    sale.value.products.forEach(a => {
+      a.pivot.iva = config.value.value
+      a.pivot.subtotal = a.pivot.total
+      a.pivot.total = a.pivot.total * (1 + config.value.value / 100)
+    })
+  }else{
   sale.value.total = sale.value.products.reduce((a, c) => a + c.pivot.total, 0)
+  }
+
   let data = {
     order: sale.value,
     cashier: cashLYT.cash
@@ -358,6 +477,8 @@ const finallytck = async (pagos) => {
       dependiente: null,
       products: []
     }
+    config.value.value = 0
+    config.value.option = false
     localStorage.removeItem('current_sale')
     $q.loading.hide();
   }
@@ -382,6 +503,41 @@ const reset = () => {
   nextTick(() => {
     productRef.value?.focus()
   })
+}
+
+const searchOrd = async () => {
+  console.log(order.value)
+    if (order.value) {
+    $q.loading.show({ message: 'Obteniendo Orden' })
+    let data = {
+      uid: VDB.session.credentials.staff.id_va,
+      oid: order.value
+    }
+    const resp = await cashApi.getOrderCash(data)
+    if (resp.fail) {
+      if (resp.fail.status == 401) {
+        console.log(resp);
+        $q.notify({ message: resp.fail.response.data, type: 'negative', position: 'bottom' })
+        order.value = null;
+        $q.loading.hide();
+      } else if (resp.fail.status == 404) {
+        console.log(resp);
+        $q.notify({ message: resp.fail.response.data, type: 'negative', position: 'bottom' })
+        order.value = null;
+        $q.loading.hide();
+      } else {
+        console.log(resp);
+      }
+    } else {
+      sale.value.dependiente = resp.staff
+      sale.value.client = resp.client
+      sale.value.products = resp.products
+      order.value = null
+      // order.value = resp
+      console.log(resp)
+      $q.loading.hide();
+    }
+  }
 }
 
 

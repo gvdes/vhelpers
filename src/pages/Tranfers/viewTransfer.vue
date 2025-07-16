@@ -208,7 +208,7 @@ const init = async () => {
       traspaso.value = resp
       products.value = resp.bodie
       console.log(traspaso.value)
-    } else if (VDB.session.rol == 'alm' && ([5, 6].includes(resp.destiny.id) || [5, 6].includes(resp.origin.id))) {
+    } else if (VDB.session.rol == 'alm' || VDB.session.rol == 'vld' && ([5, 6].includes(resp.destiny.id) || [5, 6].includes(resp.origin.id))) {
       traspaso.value = resp
       products.value = resp.bodie
       console.log(traspaso.value)

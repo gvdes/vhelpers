@@ -2,7 +2,7 @@ import orderApi from 'src/API/orderApi';
 
 
 const verificarPrecioMayoreo = (prdts, product, rules) => {
-  const categoria = product.categories.familia.seccion.id;
+  const categoria = product.category.familia.seccion.id;
   const categoriaReglas = rules.find(e => e._category == categoria).rules;
   let model = 0;
   let family = 0;
@@ -12,9 +12,9 @@ const verificarPrecioMayoreo = (prdts, product, rules) => {
     return false;
   }
   let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let sameFamily = prdts.filter(p => p.categories.familia.id === product.categories.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
 
-  let distin = prdts.filter(p => p.categories.familia.seccion.id === product.categories.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
   let inx = prdts.findIndex((e) => e.id == product.id);
   if (inx >= 0) {
     model = sameModel
@@ -45,7 +45,7 @@ const verificarPrecioMayoreo = (prdts, product, rules) => {
 const verificarPrecioDocena = (prdts, product, rules) => {
   // console.log(product)
   // console.log(prdts)
-  const categoria = product.categories.familia.seccion.id;
+  const categoria = product.category.familia.seccion.id;
   const categoriaReglas = rules.find(e => e._category == categoria).rules;
   let model = 0;
   let family = 0;
@@ -56,10 +56,10 @@ const verificarPrecioDocena = (prdts, product, rules) => {
   }
 
   let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let sameFamily = prdts.filter(p => p.categories.familia.id === product.categories.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  // console.log(prdts.filter(p => p.categories.familia.id === product.categories.familia.id));
+  let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // console.log(prdts.filter(p => p.category.familia.id === product.category.familia.id));
 
-  let distin = prdts.filter(p => p.categories.familia.seccion.id === product.categories.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
   let inx = prdts.findIndex((e) => e.id == product.id);
   if (inx >= 0) {
     model = sameModel

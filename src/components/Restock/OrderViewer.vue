@@ -355,7 +355,7 @@ const startSupply = async () => {
       _workpoint_to: head.value.to.id,
       _workpoint_from: head.value.from.id,
     }
-    console.log(dat)
+    // console.log(dat)
     let savesupply = await RestockApi.createParitions(dat);
     console.log(savesupply)
     if (savesupply.fail) {

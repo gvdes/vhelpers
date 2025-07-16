@@ -46,8 +46,7 @@
                 <div class="text-subtitle2 col">{{ product.description }}</div>
               </q-card-section>
               <q-card-section class="item-center row">
-                <div class="col text-subtitle2 text-center"
-                  v-for="(price, index) in product.prices" :key="index">
+                <div class="col text-subtitle2 text-center" v-for="(price, index) in product.prices" :key="index">
                   <div class="text-weight-bold">
                     {{ price.alias }}
                   </div>
@@ -59,12 +58,20 @@
                 </div>
               </q-card-section>
               <q-card-section>
-                <q-table
-                :rows="product.details"
-                hideBottom
-                :columns="table.columns"
-                :pagination="{rowsPerPage:0}"
-                />
+                <q-table :rows="product.details" hideBottom :columns="table.columns" :pagination="{ rowsPerPage: 0 }">
+                  <template v-slot:bottom-row>
+                    <q-tr class="text-bold bg-yellow-12">
+                      <q-td class="text-center">
+                        Total
+                      </q-td>
+                      <q-td class="text-center">
+                        {{ product.details.reduce((a,r) => a + Number(r.compras), 0) }}
+                      </q-td>
+                      <q-td class="text-center">
+                        {{ product.details.reduce((a,r) => a + Number(r.ventas), 0) }}
+                      </q-td>
+                    </q-tr>
+                  </template></q-table>
               </q-card-section>
             </q-card>
           </transition>
@@ -102,10 +109,10 @@ const $route = useRoute();
 
 const product = ref(null);
 const table = ref({
-  columns:[
-    {name:'anio',label:'AÑO',field:'year',align:'center'},
-    {name:'sales',label:'COMPRAS',field:'compras',align:'center'},
-    {name:'purchases',label:'VENTAS',field:'ventas',align:'center'},
+  columns: [
+    { name: 'anio', label: 'AÑO', field: 'year', align: 'center' },
+    { name: 'sales', label: 'COMPRAS', field: 'compras', align: 'center' },
+    { name: 'purchases', label: 'VENTAS', field: 'ventas', align: 'center' },
   ]
 })
 const add = (opt) => {
@@ -130,7 +137,7 @@ const getProduct = async (id) => {
   } else {
     $q.loading.hide();
     console.log(resp)
-    resp.prices.push({id: 8, alias:"COS",pivot:{ price: resp.cost}})
+    resp.prices.push({ id: 8, alias: "COS", pivot: { price: resp.cost } })
     resp.prices.sort((a, b) => b.id - a.id);
     product.value = resp;
   }

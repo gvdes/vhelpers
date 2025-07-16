@@ -127,7 +127,7 @@ const process = () => {
     if (b.ARTICULOS !== a.ARTICULOS) {
       return b.ARTICULOS.localeCompare(a.ARTICULOS); // Ordena por codigo
     }
-    return b.SALIDA.localeCompare(a.SALIDA); // Si los codigos son iguales, ordena por factura
+    return b.REFERENCIA.localeCompare(a.REFERENCIA); // Si los codigos son iguales, ordena por factura
   });
 
   // Ordenar salidas por codigo y luego por factura (de mayor a menor)
@@ -135,7 +135,7 @@ const process = () => {
     if (b.ARTICULOS !== a.ARTICULOS) {
       return b.ARTICULOS.localeCompare(a.ARTICULOS); // Ordena por codigo
     }
-    return b.FACTURA.localeCompare(a.FACTURA); // Si los codigos son iguales, ordena por factura
+    return b.PARTICION.localeCompare(a.PARTICION); // Si los codigos son iguales, ordena por factura
   });
 
   const matchedIndices = new Set();
@@ -143,8 +143,12 @@ const process = () => {
   // Procesar todas las entradas
   match.value.entradas.forEach(entrada => {
     const salidaCoincidente = match.value.salidas.find((salida, index) => {
-      const matchFound = salida.ARTICULOS === entrada.ARTICULOS && 'FAC ' + salida.FACTURA === entrada.SALIDA;
+      console.log(`P-${salida.PARTICION}`)
+      console.log(entrada.REFERENCIA)
+      const matchFound = salida.ARTICULOS === entrada.ARTICULOS && `P-${salida.PARTICION}` === entrada.REFERENCIA;
+      console.log(matchFound)
       if (matchFound) {
+
         matchedIndices.add(index); // Marcar el índice como coincidente
       }
       return matchFound;

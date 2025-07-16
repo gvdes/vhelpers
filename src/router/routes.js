@@ -166,8 +166,8 @@ const routes = [
     meta: { moduleId: 30 },
     children: [
       { path: '', name: 'cin', component: () => import('pages/cashRegisters/Index.vue'),meta: { moduleId: 30 } },
-      { path: ':cid/automate', name: 'cidx', component: () => import('pages/cashRegisters/salesTpv.vue'),meta: { moduleId: 30 } },
-      { path: ':cid/standar', name: 'cids', component: () => import('pages/cashRegisters/salesEstandar.vue'),meta: { moduleId: 30 } },
+      // { path: ':cid/automate', name: 'cidx', component: () => import('pages/cashRegisters/salesTpv.vue'),meta: { moduleId: 30 } },
+      { path: ':cid/cash', name: 'cids', component: () => import('pages/cashRegisters/salesEstandar.vue'),meta: { moduleId: 30 } },
     ],
   },
 

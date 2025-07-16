@@ -3,7 +3,7 @@
     <div>
       <div class="flex justify-center">
         <div class="text-center " :style="`width: 50%;`">
-          <q-form @submit="mosPartitiionStatus">
+          <q-form @submit="nextState">
             <q-input v-model="partition" type="number" label="Pedido" autofocus rounded outlined />
           </q-form>
         </div>
@@ -11,7 +11,7 @@
       <q-table :rows="ordersdb" row-key="name" grid :pagination="pagination" hide-bottom>
         <template v-slot:item="props">
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-            <q-list bordered>
+            <q-list bordered :class="`${props.row._status == 4 ? 'bg-green-11' : 'bg-red-11'} text-bold`">
               <q-item clickable v-ripple @click="() => { mosPartition.state = true; mosPartition.val = props.row }">
                 <q-item-section>
                   <q-item-label class="text-center text-bold">{{ props.row.id }}</q-item-label>
@@ -33,7 +33,7 @@
     <q-card>
       <q-card-section class="row items-center">
         <q-avatar icon="warning" color="orange-14" text-color="white" />
-        <span class="q-mx-sm text-h6">Iniciar CheckOut #{{ partition }}</span>
+        <span class="q-mx-sm text-h6">Iniciar CheckOut #{{ partition.id }}</span>
       </q-card-section>
       <q-card-section>
         <q-select v-model="warehouseSel.val" :options="warehouseSel.opts" label="Almacen Destino" filled />
@@ -61,7 +61,7 @@
             <PrinterSelect @selectedPartition="printForPartition" :partition="true" />
           </q-menu>
         </q-btn>
-        <q-btn flat icon="send" color="positive" @click="mosPartitiionStatus" />
+        <q-btn flat icon="send" color="positive" @click="nextState" />
 
       </q-card-actions>
     </q-card>
@@ -101,7 +101,7 @@ const warehouseSel = ref({
   ]
 })
 
-const ordersdb = computed(() => $restockStore.partitions.filter(o => o._status == 4 && o.requisition._workpoint_to == VDB.session.store.id_viz))
+const ordersdb = computed(() => $restockStore.partitions.filter(o => o._status == 4 || o._status == 5 && o.requisition._workpoint_to == VDB.session.store.id_viz))
 const init = async () => {
   $restockStore.setShowLYT(true)
   $restockStore.setTitle('Verificacion')
@@ -125,55 +125,95 @@ const printForPartition = async data => {
   } else { console.error(resp); alert(`Error ${resp.status}: ${resp.data}`); }
 }
 
-const mosPartitiionStatus = () => {
-  // if(mosPartition.value.val.requisition.from._type == 1){
+// const mosPartitiionStatus = () => {
+//   // if(mosPartition.value.val.requisition.from._type == 1){
 
-  // };
-  // // if(mosPartition.value.)
+//   // };
+//   // // if(mosPartition.value.)
+//   if (mosPartition.value.val) {
+//     partition.value = mosPartition.value.val.id
+//   }
+//   console.log(partition.value)
+//   // let ext = ordersdb.value.findIndex(e => e.id == partition.value);
+//   let ext = ordersdb.value.find(e => e.id == partition.value);
+//   console.log(ext)
+//   if (ext) {
+//     partition.value = ext;
+//     warehouseSel.value.state = true;
+//   } else {
+//     $q.notify({ message: 'No se encuentra tu pedido', type: 'negative', position: 'bottom' })
+//     partition.value = null
+//   }
+// }
+
+// const nextState = async () => {
+//   // console.log(partition.value)
+//   $q.loading.show({message:'Cambiando Estado'})
+//   let data = {
+//     partition: partition.value,
+//     verified: VDB.session.credentials.staff.id,
+//     warehouse: warehouseSel.value.val ? warehouseSel.value.val : 'GEN',
+//     state: 5
+//   }
+//   console.log(data)
+//   let savesupply = await RestockApi.SaveVerified(data);
+//   console.log(savesupply)
+//   if (savesupply.status == 200) {
+//     let inx = $restockStore.partitions.findIndex(e => e.id == savesupply.data.partition.id);
+//     if (inx >= 0) {
+//       $restockStore.partitions.splice(inx, 1, savesupply.data.partition)
+//       if (savesupply.data.partitionsEnd > savesupply.data.partition.requisition._status) {
+//         let nes = { id: savesupply.data.partition._requisition, state: savesupply.data.partitionsEnd };
+//         const nxt = await RestockApi.nextState(nes);
+//         $sktRestock.emit("order_refresh", { order:nxt.data });
+//         console.log(nxt.data);
+//       }
+//       $sktRestock.emit("orderpartition_refresh", { order: savesupply.data.partition })
+//     }
+//     partition.value = null
+//     $router.push(`/distribute/checkout/${savesupply.data.partition.id}`)
+//     $q.loading.hide();
+//   } else {
+//     alert(`Error ${savesupply.status}: ${savesupply.data} 2`);
+//   }
+// }
+
+
+
+const nextState = async () => {
   if (mosPartition.value.val) {
     partition.value = mosPartition.value.val.id
   }
   console.log(partition.value)
-  let ext = ordersdb.value.findIndex(e => e.id == partition.value);
-  console.log(ext)
-  if (ext >= 0) {
-    warehouseSel.value.state = true;
-  } else {
+  // let ext = ordersdb.value.findIndex(e => e.id == partition.value);
+  let ext = ordersdb.value.find(e => e.id == partition.value);
+  if (ext._status == 5) {
+    $router.push(`/distribute/checkout/${ext.id}`)
+  } else if (ext._status == 4) {
+    $q.loading.show({ message: "Terminando, espera..." });
+    let data = { id: ext.id, state: 5, suply: ext._suplier_id }
+    console.log(data);
+    let resp = await RestockApi.nextStatePartition(data)
+    console.log(resp)
+    if (resp.status == 200) {
+      console.log(ext.requisition._status)
+      if (resp.data.partitionsEnd > resp.data.partition.requisition._status) {
+        let nes = { id: resp.data.partition._requisition, state: resp.data.partitionsEnd };
+        const nxt = await RestockApi.nextState(nes);
+        $sktRestock.emit("order_refresh", { order: nxt.data });
+        console.log(nxt.data);
+      }
+      $sktRestock.emit("orderpartition_refresh", { order: resp.data.partition })
+      $router.push(`/distribute/checkout/${resp.data.partition.id}`)
+    } else { console.log(resp) }
+    $q.loading.hide();
+  }else{
     $q.notify({ message: 'No se encuentra tu pedido', type: 'negative', position: 'bottom' })
     partition.value = null
   }
 }
 
-const nextState = async () => {
-  $q.loading.show({message:'Cambiando Estado'})
-  let data = {
-    partition: partition.value,
-    verified: VDB.session.credentials.staff.id,
-    warehouse: warehouseSel.value.val ? warehouseSel.value.val : 'GEN',
-    state: 5
-  }
-  console.log(data)
-  let savesupply = await RestockApi.SaveVerified(data);
-  console.log(savesupply)
-  if (savesupply.status == 200) {
-    let inx = $restockStore.partitions.findIndex(e => e.id == savesupply.data.partition.id);
-    if (inx >= 0) {
-      $restockStore.partitions.splice(inx, 1, savesupply.data.partition)
-      if (savesupply.data.partitionsEnd > savesupply.data.partition.requisition._status) {
-        let nes = { id: savesupply.data.partition._requisition, state: savesupply.data.partitionsEnd };
-        const nxt = await RestockApi.nextState(nes);
-        $sktRestock.emit("order_refresh", { order:nxt.data });
-        console.log(nxt.data);
-      }
-      $sktRestock.emit("orderpartition_refresh", { order: savesupply.data.partition })
-    }
-    partition.value = null
-    $router.push(`/distribute/checkout/${savesupply.data.partition.id}`)
-    $q.loading.hide();
-  } else {
-    alert(`Error ${savesupply.status}: ${savesupply.data} 2`);
-  }
-}
+
+
 init();
-// document.title = "Vhelpers/Checkout";
 </script>

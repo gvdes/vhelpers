@@ -7,13 +7,17 @@ import axios from 'axios'
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
+
+//conexion vizapi
 const vizapi = axios.create({ baseURL: 'http://192.168.10.189/vizapi/public/LVH' });
 // const vizapi = axios.create({ baseURL: 'http://192.168.10.160:1619/vizapi/public/LVH' });
+// const vizapi = axios.create({ baseURL: 'http://192.168.1.80:1619/vizapi/public/LVH' });
 // const vizapi = axios.create({ baseURL: 'http://192.168.12.114:1619/vizapi/public/LVH' });
 
-
+//conexion Assist
 // const assist = axios.create({ baseURL: 'http://192.168.10.61:1619/Assist/public/api' });
 // const assist = axios.create({ baseURL: 'http://192.168.10.160:1920/Assist/public/api'});
+// const assist = axios.create({ baseURL: 'http://192.168.1.80:1920/Assist/public/api'});
 // const assist = axios.create({ baseURL: 'http://192.168.12.114:1920/Assist/public/api'});
 const assist = axios.create({ baseURL: 'http://192.168.10.238:2902/Assist/public/api'});
 

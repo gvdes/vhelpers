@@ -12,7 +12,6 @@
         <q-toolbar class="justify-between">
           <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Consulta de Pagos</span>
           </div>
-
         </q-toolbar>
         <div class="justify-end">
 
@@ -373,6 +372,7 @@ const mostck = (a, row) => {
 const pdfExport = () => {
   $q.loading.show({ message: 'Importando Ticket' })
   let host = VDB.session.store.ip_address;
+  // let host = '192.168.10.160:1619'
   let ticket = otckopt.value.body.TICKET
   const dat = `http://${host}/access/public/modify/getTicket/${ticket}`;
   axios.get(dat)
@@ -662,6 +662,156 @@ const pdfFactura = (ticket) => {
     }
   });
 }
+
+// const pdfFactura = (ticket) => {
+//   return new Promise((resolve, reject) => {
+//     try {
+//       console.log(ticket);
+//       let products = ticket.products;
+//       let pagos = ticket.payments;
+//       const doc = new jsPDF();
+//       let chunks = [];
+//       const arreglo = products.map(producto => Object.values(producto));
+//       const paginas = Math.ceil(arreglo.length / 20);
+//       for (var i = 0; i < arreglo.length; i += 20) {
+//         chunks.push(arreglo.slice(i, i + 20));
+//       }
+
+//       let totalGlobal = 0;
+//       let totalUnidadesGlobal = 0;
+
+//       chunks.forEach(function (chunk, index) {
+//         if (index > 0) doc.addPage();
+
+//         let totcan = 0;
+//         let total = 0;
+
+//         for (let i = 0; i < chunk.length; i++) {
+//           chunk[i][1] = chunk[i][1].replace(/\n/g, " ");
+//           chunk[i][2] = parseFloat(chunk[i][2]);
+//           chunk[i][3] = Number(chunk[i][3]).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+//           chunk[i][4] = Number(chunk[i][4]).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+//           totcan += parseFloat(chunk[i][2]);
+//           total += parseFloat(chunk[i][4].replace(/,/g, ''));
+//         }
+
+//         totalGlobal += total;
+//         totalUnidadesGlobal += totcan;
+
+//           doc.setFontSize(25)
+//           doc.setFont('helvetica', 'bold')
+//           doc.text("GRUPO VIZCARRA", 105, 10, "center");
+//           doc.setFontSize(8)
+//           doc.text('Hora Ticket:', 10, 10, 'left')
+//           doc.text(ticket.header.HORA, 10, 15, 'left');//HORA DE EL TICKET
+//           doc.setFontSize(12)
+//           doc.text(`${ticket.header.NOMBRECLIENTE} ${ticket.header.CLIENTE}`, 10, 25, 'left')//NOMBRE DE CLEINTE
+//           doc.text(`SUCURSAL ${ticket.empresa.DESTPV}`, 120, 25, 'left')// NOMBRE DE LA EMPRESA
+//           doc.setFontSize(8)
+//           doc.text(ticket.header.DOMICILIO, 10, 30, 'left')//DOMICILIO DE EL CLIENTE
+//           doc.text(ticket.header.CODIGOPOSTAL ? ticket.header.CODIGOPOSTAL : '', 10, 35, 'left')// CODIGO POSTAL DE EL CLIENTE
+//           doc.text(ticket.header.POBALCION ? ticket.header.POBALCION : '' + ticket.header.PROVINCIA, 10, 40, 'left')//DELEGACION DE EL CLIENT4E
+
+//           doc.text(ticket.empresa.CTT3TPV, 120, 30, 'left')//DOMICILIO DE LA EMPRESA
+//           // doc.text('06090', 120, 35, 'left')// CODIGO POSTAL DE  LA EMPRESA
+//           // doc.text('DELEG, CUAUHTEMOC CDMX       CENTRO', 120, 40, 'left')//DELEGACION DE LA EMPRESA
+//           doc.text('LLI1210184G8', 120, 45, 'left')//RFC DE LA EMPRESA
+//           doc.rect(120, 51, 80, 5);
+//           doc.text('DOCUMENTO', 121, 55, 'left')
+//           doc.text('FACTURA', 121, 60, 'left')
+//           doc.text('NUMERO', 143, 55, 'left')
+//           doc.text(ticket.header.TICKET, 143, 60, 'left')//factura
+//           doc.text('PAGINA', 165, 55, 'left')
+//           doc.text(`${index + 1} de ${paginas}`, 165, 60, 'left')
+//           doc.text('FECHA', 185, 55, 'left')
+//           const fecha = ticket.header.FECHA
+//           doc.text(fecha, 185, 60, 'left')
+//           autoTable(doc, {
+//             startX: 10,
+//             startY: 65,
+//             theme: 'grid',
+//             styles: { cellPadding: 1, fontSize: 8, halign: 'center' },
+//             head: [['CREADOR DOC', 'ALMACEN', 'AGENTE', 'FORMA DE PAGO']],
+//             body: [
+//               ['APP', 'GEN', ticket.header.DEPENDIENTE, pagos[0].CONCEPTOPAGO],//forma de pago primero
+//             ],
+//           })
+
+//           autoTable(doc, {
+//             alternateRowStyles: {
+//               fillColor: [192, 192, 192],
+//             },
+//             startX: 10,
+//             startY: 80,
+//             theme: 'striped',
+//             styles: { cellPadding: .6, fontSize: 8, halign: 'left' },
+//             head: [['ARTICULO', 'DESCRIPCION', 'CANTIDAD', 'PRECIO', 'TOTAL']],
+//             body: chunk,
+//             columnStyles: {
+//               0: { fontStyle: 'bold', halign: 'left' },
+//               1: { fontStyle: 'bold', halign: 'left' },
+//               2: { halign: 'center' },
+//               3: { halign: 'center' },
+//               4: { halign: 'center' },
+//             },
+
+//           })
+
+//           doc.setFontSize(11)
+//           // doc.text('TOTAL UNIDADES:', 60, 200, 'left')
+//           // doc.text(Number(totcan).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 100, 200, 'left')
+//           doc.setFont('helvetica', 'bold')
+//           // doc.text('TOTAL:', 140, 200, 'left')
+//           // doc.text(`$ ${Number(total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 160, 200, 'left')//TOTAL TICKET
+//           doc.setFontSize(8)
+//           doc.text('Debo(emos) y pagare(mos) incondicionalmente por este pagare a la order de GRUPO VIZCARRA, en la ciudad de Mexico,', 5, 210, 'left')
+//           doc.text('la cantidad de el valor recibido a mi(nuestra) entera satisfaccion', 5, 215, 'left')
+//           doc.text('Este pagare forma parte de una serie numerica del 1 al y 9 y todos estos estan sujetos a la condicion, de que al no pagarse cualquiera de ellos a su', 5, 220, 'left')
+//           doc.text('vencimiento sean exigibles todos los que le sigan en numero, ademas de los ya vencidosm desde la fecha de su vencimiento de el presente documento', 5, 225, 'left')
+//           doc.text('hasta el dia de su liquidacion, causaran intereses moratorios al tipo del % mensual en esta ciudad justamente con el principal', 5, 230, 'left')
+//           doc.setFontSize(15)
+//           doc.text('______________', 31, 248, 'center')
+//           doc.text('AUTORIZO', 20, 254, 'left')
+//           doc.text('______________', 85, 248, 'center')
+//           doc.text('CHOFER', 75, 254, 'left')
+//           doc.text('______________', 140, 248, 'center')
+//           doc.text('RECIBIO', 130, 254, 'left')
+//           doc.text('______________', 168, 248, 'left')
+//           doc.text('FECHA Y HORA', 168, 254, 'left')
+//           doc.setFontSize(9)
+//           doc.text('UNA VEZ ENTREGADA LA MERCANCIA EN LA FLETERA O DOMICILIO QUE INDIQUE EL CLIENTE ', 5, 260, 'left')
+//           doc.text('LLUVIA LIGHT SA DE CV NO ES RESPONSABLE POR PEDIDAS TOTALES, PARCIALES ', 5, 265, 'left')
+//           doc.text('O CUALQUIER TIPO DE DANO EN LA MERCANCIA DE ESTE DOCUMENTO ', 5, 270, 'left')
+//           doc.setFont('helvetica', 'bold')
+//           doc.setFontSize(12)
+//           doc.text('NO SE ACEPTAN CAMBIOS NI DEVOLUCIONES', 5, 275, 'left')
+//           doc.setFontSize(25)
+//           doc.setFont('helvetica', 'bold')
+//           doc.text("GRUPO VIZCARRA", 105, 10, "center");
+//         })
+
+
+//       // Después de imprimir todas las páginas, accede a la última
+//       doc.setPage(doc.getNumberOfPages());
+
+//       // Escribe el total global en la última página
+//       doc.setFontSize(12);
+//       doc.setFont('helvetica', 'bold');
+//       doc.text('CANTIDAD :', 60, 200, 'left');
+//       doc.text(Number(totalUnidadesGlobal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 100, 200, 'left');
+
+//       doc.text('TOTAL :', 140, 200, 'left');
+//       doc.text(`$ ${Number(totalGlobal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 160, 200, 'left');
+
+//       doc.save(`Factura ${ticket.header.TICKET}`);
+//       resolve();
+//     } catch (error) {
+//       reject(error);
+//     }
+//   });
+// };
+
 
 const exportTck = async () => {
   $q.loading.show({ message: 'Importando Ticket' })

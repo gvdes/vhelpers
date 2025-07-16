@@ -123,7 +123,7 @@ const valecli = ref({
   opts: []
 })
 const modes = ref({ "PFPA": { id: props.paymeths[1], val: props.total }, "SFPA": { id: null, val: 0 }, "VALE": { id: null, val: 0 }, conditions: { createWithdrawal: false, super: null } });
-const cambio = computed(() => (Number.parseFloat(modes.value.SFPA.val) + Number.parseFloat(modes.value.PFPA.val)) + Number.parseFloat(modes.value.VALE.val) - props.total)
+const cambio = computed(() => (Number(Number.parseFloat(modes.value.SFPA.val) + Number.parseFloat(modes.value.PFPA.val)) + Number.parseFloat(modes.value.VALE.val) - Number.parseFloat(props.total)).toFixed(2))
 const valpag = computed(() => cambio.value >= 0 && ((modes.value.PFPA.id?.id && modes.value.PFPA.val > 0) || (modes.value.SFPA.id?.id && modes.value.SFPA.val > 0) || (modes.value.VALE.id?.id && modes.value.VALE.val > 0)))
 
 const superaTotalYNoEsEfe = computed(() => {
@@ -187,6 +187,7 @@ const handleKeydown = (e) => {
 const finallyTck = () => {
   // console.log(modes.value)
   modes.value.conditions.super = superaTotalYNoEsEfe.value
+  modes.value.change = cambio.value
   emits('sendTicket', modes.value)
   valecli.value = ref({
     opts: []

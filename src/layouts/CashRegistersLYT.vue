@@ -11,7 +11,7 @@
           <div>
             <span class="text-grey">Helpers</span>
             <q-icon name="navigate_next" color="primary" />
-            <span class="text-h6">Ventas Sucursales</span>
+            <span class="text-h6">Cajas</span>
           </div>
         </q-toolbar>
         <router-view />
@@ -46,12 +46,8 @@
         <!-- </q-scroll-area> -->
       </q-drawer>
       <q-page-container>
-        <q-tabs v-model="tab" class="bg-grey-11" dense>
-          <q-route-tab name="prevent" icon="receipt_long" label="Preventa"
-            :to="`/cashRegisters/${cashLYT.cash.id}/automate`" />
-          <q-route-tab name="manual" icon="keyboard" label="Capturado"
-            :to="`/cashRegisters/${cashLYT.cash.id}/standar`" />
-        </q-tabs>
+
+        <!-- partes de procesos  -->
         <q-dialog v-model="openWithdrawal" persistent>
           <withdrawal />
         </q-dialog>
@@ -179,36 +175,24 @@ const init = async () => {
     cashLYT.setMethods(resp.methods);
     cashLYT.setProviders(resp.providers);
     cashLYT.setClients(resp.clientIngress);
+    cashLYT.setRules(resp.rules);
     $q.loading.hide()
   }
 }
 
 
-const index = async () => {
-  const resp = await orderApi.getRules();
-  if (resp.fail) {
-    console.log(resp)
-  } else {
-    console.log(resp)
-    cashLYT.setRules(resp);
-  }
-}
-
 onMounted(() => {
   if (cashLYT.cash && $route.params.cid) {
     init()
-    index()
   }
   if (!cashLYT.showtoolbar && $route.params.cid) {
     init()
-    index()
   }
 })
 
 watch(() => $route.params.cid, (newVal) => {
   if (newVal) {
     init()
-    index()
   }
 })
 

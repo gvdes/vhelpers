@@ -178,9 +178,8 @@ const pay = (modes) => {
 }
 
 // if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' || VDB.session.rol == 'caj') {
-  // index()
-  console.log(VDB.session)
-
+// index()
+console.log(VDB.session)
 // } else {
 //   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
 //   $router.replace('/');

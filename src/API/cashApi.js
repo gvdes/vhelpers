@@ -52,4 +52,7 @@ export default{
   getSales(data){
     return assist.post(`/cashs/getSales`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  getOrderCash(data) {
+    return assist.post(`/cashs/getOrderCash`, data).then(done => done.data).catch(fail => { return { fail } });
+  }
 }

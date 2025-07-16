@@ -13,8 +13,8 @@ const invoiceFormat = async (invoice) => {
   console.log(invoice);
   const currentDate = new Date();
   // const qrData = `http://192.168.10.238:1308/#/checkin/${invoice.id}?key=${invoice.entry_key}`;
-  // const qrData = `http://192.168.10.160:8000/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
-  const qrData = `http://192.168.10.189:2201/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  const qrData = `http://192.168.10.160:8000/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  // const qrData = `http://192.168.10.189:2201/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
 
   const almacenes = {
     1: 'GEN',//cedis
@@ -52,8 +52,9 @@ const invoiceFormat = async (invoice) => {
     return {
       code: e.code,
       caja: e.pivot._supply_by == 3 ? e.pivot.toDelivered : 1,
-      uxcaja: e.pieces,
-      cantidad: e.pivot.units,
+      uxcaja: e.pivot.ipack,
+      // cantidad: e.pivot.units,
+      cantidad : e.pivot._supply_by == 3 ? (e.pivot.toDelivered * e.pivot.ipack) : e.pivot._supply_by == 2 ? (e.pivot.toDelivered * 12) : e.pivot.toDelivered,
       description: e.description,
     }
   })
@@ -229,8 +230,9 @@ const transferFormat = async (invoice) => {
     return {
       code: e.code,
       caja: e.pivot._supply_by == 3 ? e.pivot.toDelivered : 1,
-      uxcaja: e.pieces,
-      cantidad: e.pivot.units,
+      uxcaja: e.pivot.ipack,
+      // cantidad: e.pivot.units,
+      cantidad : e.pivot._supply_by == 3 ? (e.pivot.toDelivered * e.pivot.ipack) : e.pivot._supply_by == 2 ? (e.pivot.toDelivered * 12) : e.pivot.toDelivered,
       description: e.description,
     }
   })

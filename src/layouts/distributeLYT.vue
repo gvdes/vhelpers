@@ -10,7 +10,7 @@
           optranges.val && optranges.val.from
             ? `Del ${optranges.val.from} a ${optranges.val.to}`
             : optranges.val
-          }}</div>
+        }}</div>
         <div class="row">
           <q-btn color="white" round unelevated flat icon="sync" @click="init" />
           <div class="col row">
@@ -45,7 +45,7 @@
 <script setup>
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import { useRestockStore } from 'stores/Restock';
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useVDBStore } from 'stores/VDB';
 import { useRoute, useRouter } from 'vue-router';
 import dayjs from 'dayjs';
@@ -85,7 +85,7 @@ const init = async () => {
   $q.loading.show({ message: "Cargado vista..." });
   console.log("%cIniciando MainLayout...", "font-size:2em;color:orange;");
   let fecha = dayjs(new Date()).format("YYYY/MM/DD")
-  optranges.value.val =   { from: fecha, to: fecha }
+  optranges.value.val = { from: fecha, to: fecha }
   const req = await RestockApi.index({ date: optranges.value.val, storeTo: VDB.session.store.id_viz });
   if (req.fail) {
     console.log(req);
@@ -131,8 +131,8 @@ const sktOrderPartFresh = async skt => {
     let part = $restockStore.ordersdb.find(e => e.id == data._requisition).partition
     console.log(part)
     let inx = part.findIndex(e => e.id == data.id);
-    if(inx >= 0){
-      part.splice(inx,1,data)
+    if (inx >= 0) {
+      part.splice(inx, 1, data)
     }
   }
 
@@ -201,7 +201,7 @@ const sktOrderOrderFresh = async skt => {
 }
 
 
-onMounted(() => {
+onMounted(async () => {
   $sktRestock.connect();
   $sktRestock.emit("joinat", user_socket);
   $sktRestock.on("joineddashreq", sktJoinatRes);
@@ -211,7 +211,10 @@ onMounted(() => {
   $sktRestock.on("order_refresh", sktOrderOrderFresh);
   $sktRestock.on("orderpartition_refresh", sktOrderPartFresh);
   $sktRestock.on("sktPartitionCreate", sktPartitionCreate);
-
+  await nextTick(); // ✅ espera a que la página haya montado
+  window.layoutReady = true;
+  await init()
+  window.dispatchEvent(new Event('layout-ready')); // ✅ ahora sí lo escuchará
 })
 
 onBeforeUnmount(() => {
@@ -225,5 +228,5 @@ onBeforeUnmount(() => {
 
 })
 
-init()
+
 </script>
