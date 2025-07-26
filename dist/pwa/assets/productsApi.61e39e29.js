@@ -1,0 +1,1 @@
+import{k as e}from"./axios.ee701c42.js";var u={getProduct(r){return e.get(`/Products/getProduct/${r}`).then(t=>t.data).catch(t=>({fail:t}))},autocomplete(r){return e.post("/Products/autoComplete",r).then(t=>t).catch(t=>({fail:t}))}};export{u as d};
