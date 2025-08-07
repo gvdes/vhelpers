@@ -6,5 +6,8 @@ export default{
   },
   getReport(){
     return assist.get(`/getResourses`).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+  getSales(data){
+    return assist.post(`/sales/getSale`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   }
 }

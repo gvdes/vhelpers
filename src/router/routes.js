@@ -22,7 +22,7 @@ const routes = [
   {
     path: '/modificaciones',
     component: () => import('layouts/ModifyLayout.vue'),
-    meta: { moduleId:  7}
+    meta: { moduleId: 7 }
   },
   {
     path: '/pagos',
@@ -49,11 +49,24 @@ const routes = [
     component: () => import('layouts/ValeLYT.vue'),
     meta: { moduleId: 10 }
   },
+  // {
+  //   path: '/stores',
+  //   component: () => import('layouts/SaleStore.vue'),
+  //   meta: { moduleId: 29 }
+  // },
   {
     path: '/stores',
+    meta: { moduleId: 29 },
     component: () => import('layouts/SaleStore.vue'),
-    meta: { moduleId: 29 }
+    children: [
+      { path: 'daily', name: 'rdy', component: () => import('pages/Report/Sales/daily.vue'), meta: { moduleId: 29 } },
+      { path: 'month', name: 'rmn', component: () => import('pages/Report/Sales/month.vue'), meta: { moduleId: 29 } },
+      { path: 'year', name: 'ryr', component: () => import('pages/Report/Sales/year.vue'), meta: { moduleId: 29 } },
+    ],
   },
+
+
+
   {
     path: '/cardStores',
     component: () => import('layouts/cardStores.vue'),
@@ -153,6 +166,16 @@ const routes = [
     meta: { moduleId: 33 }
   },
   {
+    path: '/file',
+    component: () => import('layouts/FileAttentionLYT.vue'),
+    meta: { moduleId: 48 }
+  },
+  {
+    path: '/storeWithdrawals',
+    component: () => import('layouts/WithdrawalStoreLYT.vue'),
+    meta: { moduleId: 52 }
+  },
+  {
     path: '/clients',
     component: () => import('layouts/clientLYT.vue'),
     children: [
@@ -165,9 +188,9 @@ const routes = [
     component: () => import('layouts/CashRegistersLYT.vue'),
     meta: { moduleId: 30 },
     children: [
-      { path: '', name: 'cin', component: () => import('pages/cashRegisters/Index.vue'),meta: { moduleId: 30 } },
+      { path: '', name: 'cin', component: () => import('pages/cashRegisters/Index.vue'), meta: { moduleId: 30 } },
       // { path: ':cid/automate', name: 'cidx', component: () => import('pages/cashRegisters/salesTpv.vue'),meta: { moduleId: 30 } },
-      { path: ':cid/cash', name: 'cids', component: () => import('pages/cashRegisters/salesEstandar.vue'),meta: { moduleId: 30 } },
+      { path: ':cid/cash', name: 'cids', component: () => import('pages/cashRegisters/salesEstandar.vue'), meta: { moduleId: 30 } },
     ],
   },
 
@@ -176,29 +199,29 @@ const routes = [
     component: () => import('layouts/verifyOrderLYT.vue'),
     meta: { moduleId: 31 },
     children: [
-      { path: '', name: 'vor', component: () => import('pages/Orders/Index.vue'),meta: { moduleId: 31 } },
-      { path: ':ord', name: 'ord', component: () => import('pages/Orders/orderVerify.vue'),meta: { moduleId: 31 } },
+      { path: '', name: 'vor', component: () => import('pages/Orders/Index.vue'), meta: { moduleId: 31 } },
+      { path: ':ord', name: 'ord', component: () => import('pages/Orders/orderVerify.vue'), meta: { moduleId: 31 } },
     ],
   },
-    {
+  {
     path: '/distribute',
     component: () => import('layouts/distributeLYT.vue'),
     children: [
-      { path:'dashboard', component: () => import('pages/Distribute/dashboard.vue'), meta: { moduleId: 37 } },
-      { path:'compare', component: () => import('pages/Distribute/Compare.vue'), meta: { moduleId: 43 } },
-      { path:'dashboardStore', component: () => import('pages/Distribute/dashboardStore.vue'), meta: { moduleId: 42 } },
-      { path:'report', component: () => import('pages/Distribute/report.vue'), meta: { moduleId: 44 } },
-      { path:'reportStore', component: () => import('pages/Distribute/reportStore.vue'), meta: { moduleId: 45 } },
-      { path:'automate', component: () => import('pages/Distribute/automate.vue'), meta: { moduleId: 46 } },
-      { path:'invoice', component: () => import('pages/Distribute/invoice.vue'), meta: { moduleId: 36 } },
-      { path:'invoice/:inv', component: () => import('pages/Distribute/viewInvoice.vue'), meta: { moduleId: 36 } },
-      { path:'supply', component: () => import('pages/Distribute/supply.vue'), meta: { moduleId: 38 } },
+      { path: 'dashboard', component: () => import('pages/Distribute/dashboard.vue'), meta: { moduleId: 37 } },
+      { path: 'compare', component: () => import('pages/Distribute/Compare.vue'), meta: { moduleId: 43 } },
+      { path: 'dashboardStore', component: () => import('pages/Distribute/dashboardStore.vue'), meta: { moduleId: 42 } },
+      { path: 'report', component: () => import('pages/Distribute/report.vue'), meta: { moduleId: 44 } },
+      { path: 'reportStore', component: () => import('pages/Distribute/reportStore.vue'), meta: { moduleId: 45 } },
+      { path: 'automate', component: () => import('pages/Distribute/automate.vue'), meta: { moduleId: 46 } },
+      { path: 'invoice', component: () => import('pages/Distribute/invoice.vue'), meta: { moduleId: 36 } },
+      { path: 'invoice/:inv', component: () => import('pages/Distribute/viewInvoice.vue'), meta: { moduleId: 36 } },
+      { path: 'supply', component: () => import('pages/Distribute/supply.vue'), meta: { moduleId: 38 } },
       // { path:'supply/:sup', component: () => import('pages/Distribute/viewSupply.vue'), meta: { moduleId: 5 } },
-      { path:'checkout', component: () => import('pages/Distribute/checkout.vue'), meta: { moduleId: 39 } },
-      { path:'checkout/:chk', component: () => import('pages/Distribute/viewCheckout.vue'), meta: { moduleId: 39 } },
-      { path:'driving', component: () => import('pages/Distribute/driving.vue'), meta: { moduleId: 41 } },
-      { path:'checkin', component: () => import('pages/Distribute/checkin.vue'), meta: { moduleId: 40 } },
-      { path:'checkin/:chk', component: () => import('pages/Distribute/viewCheckin.vue'), meta: { moduleId: 40 } },
+      { path: 'checkout', component: () => import('pages/Distribute/checkout.vue'), meta: { moduleId: 39 } },
+      { path: 'checkout/:chk', component: () => import('pages/Distribute/viewCheckout.vue'), meta: { moduleId: 39 } },
+      { path: 'driving', component: () => import('pages/Distribute/driving.vue'), meta: { moduleId: 41 } },
+      { path: 'checkin', component: () => import('pages/Distribute/checkin.vue'), meta: { moduleId: 40 } },
+      { path: 'checkin/:chk', component: () => import('pages/Distribute/viewCheckin.vue'), meta: { moduleId: 40 } },
     ],
   },
   {
@@ -206,9 +229,9 @@ const routes = [
     component: () => import('layouts/refundsLYT.vue'),
     meta: { moduleId: 19 },
     children: [
-      { path: '', name: 'dvb', component: () => import('pages/Refunds/Index.vue'),meta: { moduleId: 19 } },
-      { path: ':rid', name: 'rid', component: () => import('pages/Refunds/viewRefund.vue'),meta: { moduleId: 19 } },
-      { path: 'verified/:rid', name: 'versrid', component: () => import('pages/Refunds/veriferRefund.vue'),meta: { moduleId: 19 } },
+      { path: '', name: 'dvb', component: () => import('pages/Refunds/Index.vue'), meta: { moduleId: 19 } },
+      { path: ':rid', name: 'rid', component: () => import('pages/Refunds/viewRefund.vue'), meta: { moduleId: 19 } },
+      { path: 'verified/:rid', name: 'versrid', component: () => import('pages/Refunds/veriferRefund.vue'), meta: { moduleId: 19 } },
     ],
   },
   {
@@ -216,8 +239,8 @@ const routes = [
     component: () => import('layouts/refundsLYT.vue'),
     meta: { moduleId: 32 },
     children: [
-      { path: '', name: 'mre', component: () => import('pages/Refunds/Modify/Index.vue'),meta: { moduleId: 32 } },
-      { path: ':rid', name: 'mrid', component: () => import('pages/Refunds/Modify/viewRefund.vue'),meta: { moduleId: 32 } },
+      { path: '', name: 'mre', component: () => import('pages/Refunds/Modify/Index.vue'), meta: { moduleId: 32 } },
+      { path: ':rid', name: 'mrid', component: () => import('pages/Refunds/Modify/viewRefund.vue'), meta: { moduleId: 32 } },
     ],
   },
   {
@@ -225,8 +248,8 @@ const routes = [
     component: () => import('layouts/outputsLYT.vue'),
     meta: { moduleId: 20 },
     children: [
-      { path: '', name: 'outs', component: () => import('pages/Outputs/Index.vue'),meta: { moduleId: 20 } },
-      { path: ':oid', name: 'otusoid', component: () => import('pages/Outputs/viewOutputs.vue'),meta: { moduleId: 20 } },
+      { path: '', name: 'outs', component: () => import('pages/Outputs/Index.vue'), meta: { moduleId: 20 } },
+      { path: ':oid', name: 'otusoid', component: () => import('pages/Outputs/viewOutputs.vue'), meta: { moduleId: 20 } },
     ],
 
   },
@@ -235,7 +258,7 @@ const routes = [
     component: () => import('layouts/assortmetLYT.vue'),
     meta: { moduleId: 12 },
     children: [
-      { path: ':oid', name: 'reqoid', component: () => import('pages/Requisition/viewRequisition.vue'),meta: { moduleId: 12 } },
+      { path: ':oid', name: 'reqoid', component: () => import('pages/Requisition/viewRequisition.vue'), meta: { moduleId: 12 } },
     ],
   },
   {
@@ -243,8 +266,19 @@ const routes = [
     component: () => import('layouts/Transfers.vue'),
     meta: { moduleId: 11 },
     children: [
-      { path: '', name: 'trns', component: () => import('pages/Tranfers/Index.vue'),meta: { moduleId: 11 } },
-      { path: ':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue'),meta: { moduleId: 11 } },
+      { path: '', name: 'trns', component: () => import('pages/Tranfers/Index.vue'), meta: { moduleId: 11 } },
+      { path: ':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue'), meta: { moduleId: 11 } },
+    ],
+  },
+    {
+    path: '/products',
+    component: () => import('layouts/ProductsLYT.vue'),
+    meta: { moduleId: 49 },
+    children: [
+      { path: 'create', name: 'mngpr', component: () => import('pages/Products/higthProducts.vue'), meta: { moduleId: 49 } },
+      { path: 'prices', name: 'pricespr', component: () => import('pages/Products/pricesProducts.vue'), meta: { moduleId: 50 } },
+      { path: 'modify', name: 'modipr', component: () => import('pages/Products/ModifyProducts.vue'), meta: { moduleId: 51 } },
+
     ],
   },
   // {

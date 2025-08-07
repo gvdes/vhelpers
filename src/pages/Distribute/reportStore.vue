@@ -53,7 +53,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import restockApi from 'src/API/RestockApi.js';
+// import restockApi from 'src/API/RestockApi.js';
 import { useQuasar } from 'quasar';
 import { useRestockStore } from 'stores/Restock';
 import { useRoute, useRouter } from 'vue-router';
@@ -93,7 +93,7 @@ const init = async () => {
   let fecha = dayjs(date).format("YYYY/MM/DD")
   fechas.value = { from: fecha, to: fecha };
   console.log(fecha);
-  const resp = await restockApi.getStores()
+  const resp = await RestockApi.getStores()
   if (resp.status == 200) {
     console.log(resp.data)
     workpoints.value.workpoints = resp.data
@@ -152,7 +152,19 @@ const process = () => {
   // Procesar todas las entradas
   match.value.entradas.forEach(entrada => {
     const salidaCoincidente = match.value.salidas.find((salida, index) => {
-      const matchFound = salida.ARTICULOS === entrada.ARTICULOS && 'FAC ' + salida.FACTURA === entrada.SALIDA;
+
+      const salidaFacturaStr = ('FAC ' + salida.FACTURA).trim().toUpperCase();
+      const entradaSalidaStr = (entrada.SALIDA || '').trim().toUpperCase();
+      if (salidaFacturaStr !== entradaSalidaStr) {
+        console.log('❌ No match por FACTURA:', {
+          articulo: salida.ARTICULOS,
+          salidaFacturaStr,
+          entradaSalidaStr
+        });
+      }
+
+      const matchFound = salida.ARTICULOS === entrada.ARTICULOS && salidaFacturaStr === entradaSalidaStr;
+      // const matchFound = salida.ARTICULOS === entrada.ARTICULOS && 'FAC ' + salida.FACTURA === entrada.SALIDA;
       if (matchFound) {
         matchedIndices.add(index); // Marcar el índice como coincidente
       }
@@ -175,8 +187,8 @@ const process = () => {
         CODIGO: salidaCoincidente.ARTICULOS,
         DESCRIPCION: salidaCoincidente.DESCRIPCION,
         CANTIDAD: Number(salidaCoincidente.CANTIDAD).toFixed(2),
-        PRECIO: Number(salidaCoincidente.PRECIO).toFixed(2),
-        TOTAL: Number(totalSalida).toFixed(2),
+        // PRECIO: Number(salidaCoincidente.PRECIO).toFixed(2),
+        // TOTAL: Number(totalSalida).toFixed(2),
 
         codigoIGUAL: codigoIgual ? 'verdadero' : 'falso',
         CANTIDADIGUAL: cantidadIgual ? 'verdadero' : 'falso',
@@ -189,8 +201,8 @@ const process = () => {
         ENTRADA_CODIGO: entrada.ARTICULOS,
         ENTRADA_DESCRIPCION: entrada.DESCRIPCION,
         ENTRADA_CANTIDAD: Number(entrada.CANTIDAD).toFixed(2),
-        ENTRADA_PRECIO: Number(entrada.PRECIO).toFixed(2),
-        ENTRADA_TOTAL: Number(totalEntrada).toFixed(2)
+        // ENTRADA_PRECIO: Number(entrada.PRECIO).toFixed(2),
+        // ENTRADA_TOTAL: Number(totalEntrada).toFixed(2)
       });
 
       // Eliminar la salida coincidente para que luego podamos procesar las que no tienen entrada
@@ -209,8 +221,8 @@ const process = () => {
         CODIGO: '',
         DESCRIPCION: '',
         CANTIDAD: '',
-        PRECIO: '',
-        TOTAL: '',
+        // PRECIO: '',
+        // TOTAL: '',
 
         codigoIGUAL: false,
         CANTIDADIGUAL: false,
@@ -223,8 +235,8 @@ const process = () => {
         ENTRADA_CODIGO: entrada.ARTICULOS,
         ENTRADA_DESCRIPCION: entrada.DESCRIPCION,
         ENTRADA_CANTIDAD: Number(entrada.CANTIDAD).toFixed(2),
-        ENTRADA_PRECIO: Number(entrada.PRECIO).toFixed(2),
-        ENTRADA_TOTAL: Number(totalEntrada).toFixed(2)
+        // ENTRADA_PRECIO: Number(entrada.PRECIO).toFixed(2),
+        // ENTRADA_TOTAL: Number(totalEntrada).toFixed(2)
       });
     }
   });
@@ -245,8 +257,8 @@ const process = () => {
         CODIGO: salida.ARTICULOS,
         DESCRIPCION: salida.DESCRIPCION,
         CANTIDAD: Number(salida.CANTIDAD).toFixed(2),
-        PRECIO: Number(salida.PRECIO).toFixed(2),
-        TOTAL: Number(totalSalida).toFixed(2),
+        // PRECIO: Number(salida.PRECIO).toFixed(2),
+        // TOTAL: Number(totalSalida).toFixed(2),
 
         codigoIGUAL: false,
         CANTIDADIGUAL: false,
@@ -259,8 +271,8 @@ const process = () => {
         ENTRADA_CODIGO: '',
         ENTRADA_DESCRIPCION: '',
         ENTRADA_CANTIDAD: '',
-        ENTRADA_PRECIO: '',
-        ENTRADA_TOTAL: ''
+        // ENTRADA_PRECIO: '',
+        // ENTRADA_TOTAL: ''
 
 
       });

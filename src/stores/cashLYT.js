@@ -18,9 +18,9 @@ export const useLayoutCash = defineStore('layout', {
       { id: 3, name: 'Reimpresiones de Tickets', description: 'Realiza Reimpresion', icon: "print" },
       // { id: 4, name: 'Rutilizar Documento', description: 'Reutilizar Documento', icon: "autorenew" },
       { id: 5, name: 'Cierre de Caja', description: 'Realiza Cierre', icon: "logout" },
-      // { id: 6, name: 'Devoluciones', description: 'Devoluciones de tickets', icon: "money_off" },
-      // { id: 7, name: 'Modificaciones', description: 'Modificaciones de ticket', icon: "edit_note" },
-      // { id: 8, name: 'Consulta', description: 'Consulta de tickets', icon: "query_stats" },
+      { id: 6, name: 'Devoluciones', description: 'Devoluciones de tickets', icon: "money_off" },
+      { id: 7, name: 'Modificaciones', description: 'Modificaciones de ticket', icon: "edit_note" },
+      { id: 8, name: 'Consulta', description: 'Consulta de tickets', icon: "query_stats" },
       { id: 9, name: 'Crear Vales', description: 'Vales', icon: "confirmation_number" },
     ]
   }),

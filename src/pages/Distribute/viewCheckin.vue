@@ -385,6 +385,8 @@ const tryGenEntry = async () => {
       console.log(response.data)
       $sktRestock.emit("orderpartition_refresh", { order: response.data.order })
       let message = await diff.value > 0 ? RestockApi.sendMessageDiff(response.data.order) : '';
+      let freshTransit = await RestockApi.refresTransit({id:response.data.order.id});
+      console.log(freshTransit)
       console.log(message);
       if (order.value.requisition.from._type != 1) {
         // InvoicePdf.invoiceFormat(response.data.order)
@@ -395,7 +397,7 @@ const tryGenEntry = async () => {
       }
     } else { alert(`Error ${response.status}: ${response.data}`) };
   } else { console.log(resp) }
-  // $q.loading.hide();
+  $q.loading.hide();
   // $sktRestock.emit("unblockButton", order.value.requisition);
 }
 

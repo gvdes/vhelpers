@@ -78,18 +78,18 @@ const props = defineProps({
   "limit": { default: 30, type: Number },
   "_category": { default: null, type: Boolean },
   "_status": { default: null, type: Boolean },
-  "_location": { default: null, type: Boolean },
-  "_celler": { default: null, type: Boolean },
-  "check_stock": { default: null, type: Boolean },
-  "with_locations": { default: null, type: Boolean },
-  "with_image": { default: null, type: Boolean },
+  // "_location": { default: null, type: Boolean },
+  // "_celler": { default: null, type: Boolean },
+  // "check_stock": { default: null, type: Boolean },
+  // "with_locations": { default: null, type: Boolean },
+  // "with_image": { default: null, type: Boolean },
   "with_prices": { default: null, type: Boolean },
-  "with_prices_Invoice": { default: null, type: Boolean },
-  "with_stock": { default: null, type: Boolean },
+  // "with_prices_Invoice": { default: null, type: Boolean },
+  // "with_stock": { default: null, type: Boolean },
   "checkState": { default: true, type: Boolean },
   "workpointStatus": { default: null, type: [Array, String] },
-  "wkpToVal": { default: null, type: Number },
-  "blockStates": { type: Array, default: () => [4, 5, 6] }
+  // "wkpToVal": { default: null, type: Number },
+  // "blockStates": { type: Array, default: () => [4, 5, 6] }
 })
 
 const emit = defineEmits(['input', 'similarcodes','agregar']);
@@ -104,17 +104,9 @@ const iptatc = ref(null)
 const attrs = computed(() => {
   return {
     "autocomplete": data.value.target,
-    "_category": props._category,
-    "_status": props._status,
-    "_location": props._location,
-    "with_locations": props.with_locations,
-    "with_stock": props.with_stock,
-    "check_stock": props.check_stock,
-    "with_prices": props.with_prices,
-    "_celler": props._celler,
     "limit": props.limit,
-    "_workpoint_status": props.workpointStatus,
-    "_workpoint":$user.session.store.id_viz
+    "_workpoint":$user.session.store.id_viz,
+    "strict":data.read_barcode
   }
 })
 const block = computed(() => { return st => props.checkState ? props.blockStates.some(e => e == st.state.id) : false; })
@@ -225,6 +217,8 @@ const search = () => {
     }).catch(fail => { console.log(fail); });
   }
 }
+
+
 const clear = () => { data.value.target = ""; }
 const putFocus = () => {
   console.log("putFocus ejecutada!!");

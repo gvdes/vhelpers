@@ -210,7 +210,7 @@ const direct = (transfer) => {
   let oid = transfer.id
   console.log((transfer.origin.id !== 4 && transfer.destiny.id !== 4))
   if (
-    VDB.session.rol == 'aud'
+    VDB.session.rol == 'aud' ||  VDB.session.rol == 'root' || VDB.session.rol == 'audc'
   ) {
     $router.push(`transfers/${oid}`);
   } else if (

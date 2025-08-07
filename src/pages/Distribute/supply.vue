@@ -11,12 +11,13 @@
       <q-table :rows="ordersdb" row-key="name" grid :pagination="pagination" hide-bottom>
         <template v-slot:item="props">
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-            <q-list bordered>
+            <q-list bordered :class="colorsets(props.row.requisition.from.id)">
               <q-item clickable v-ripple @click="() => { mosPartition.state = true; mosPartition.val = props.row }">
                 <q-item-section>
                   <q-item-label class="text-center text-bold">{{ props.row.id }}</q-item-label>
-                  <q-item-label class="text-center text-overline text-caption">(P: {{ props.row.requisition.id
-                    }})</q-item-label>
+                  <q-item-label class="text-center text-overline text-caption"> <span class="text-bold">{{
+                    props.row.requisition.from.name }}</span> (P: {{
+                        props.row.requisition.id }})</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -165,14 +166,39 @@ const nextState = async () => {
         val: null
       }
       $q.loading.hide();
+    } else if (savesupply.status == 401) {
+      $q.notify({ message: 'Ya esta surtido', type: 'negative', position: 'bottom' })
+      $q.loading.hide();
+      partition.value = null
     } else {
-      alert(`Error ${savesupply.status}: ${savesupply.data} 2`);
+      alert(`Error ${savesupply.status}: ${savesupply.data.message} 2`);
     }
   } else {
     $q.notify({ message: 'No se encuentra tu pedido', type: 'negative', position: 'bottom' })
     partition.value = null
   }
 }
+
+const colorsets = (partitionStore) => {
+  switch (partitionStore) {
+    case 4:
+      return 'bg-blue-11'
+    case 7:
+      return 'bg-red-11'
+    case 5:
+      return 'bg-purple-11'
+    case 9:
+      return 'bg-green-11'
+    case 23:
+      return 'bg-yellow-11'
+    case 13:
+      return 'bg-brown-12'
+    default:
+      return ''
+  }
+}
+
+
 
 
 

@@ -6,7 +6,7 @@
       </div>
       <div class="text-right">
         <div class="fs-dec3">Total Actual</div>
-        <div class="fw-bold text-h4">$ {{ total }}</div>
+        <div class="fw-bold text-h4">$ {{ Number(total).toFixed(2) }}</div>
       </div>
     </div>
     <q-card-section>
@@ -122,7 +122,7 @@ const emits = defineEmits(['sendTicket'])
 const valecli = ref({
   opts: []
 })
-const modes = ref({ "PFPA": { id: props.paymeths[1], val: props.total }, "SFPA": { id: null, val: 0 }, "VALE": { id: null, val: 0 }, conditions: { createWithdrawal: false, super: null } });
+const modes = ref({ "PFPA": { id: props.paymeths[1], val: Math.round(props.total) }, "SFPA": { id: null, val: 0 }, "VALE": { id: null, val: 0 }, conditions: { createWithdrawal: false, super: null } });
 const cambio = computed(() => (Number(Number.parseFloat(modes.value.SFPA.val) + Number.parseFloat(modes.value.PFPA.val)) + Number.parseFloat(modes.value.VALE.val) - Number.parseFloat(props.total)).toFixed(2))
 const valpag = computed(() => cambio.value >= 0 && ((modes.value.PFPA.id?.id && modes.value.PFPA.val > 0) || (modes.value.SFPA.id?.id && modes.value.SFPA.val > 0) || (modes.value.VALE.id?.id && modes.value.VALE.val > 0)))
 

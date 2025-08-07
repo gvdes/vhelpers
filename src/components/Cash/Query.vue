@@ -1,10 +1,13 @@
 <template>
   <q-card class="my-card">
-    <q-card-section style="width: 700px;" class="text-center text-bold text-h6">
+    <q-card-section style="" class="text-center text-bold text-h6">
       Consulta de Documentos
     </q-card-section>
     <q-card-section>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      <q-table
+        :rows="sales"
+        :columns="table.columns"
+      />
     </q-card-section>
   </q-card>
 </template>
@@ -26,6 +29,15 @@ const cashLYT = useLayoutCash();
 
 const sales = ref([])
 
+const table  = ref({
+  columns:[
+    {name:'id',label:'ID',field:r=>r.id},
+    {name:'client',label:'CLIENTE',field:r=>r.client_name},
+    {name:'staff',label:'COLABORADOR',field:r=>r.staff.complete_name},
+    {name:'fpas',label:'FPAS',field:r=> r.payments.length},
+  ]
+})
+
 
 const init = async () => {
   // $q.loading.show({message:'Obteniendo Ventas'})
@@ -33,7 +45,13 @@ const init = async () => {
     cash:cashLYT.cash
   }
   const resp = await cashApi.getSales(data)
+  if(resp.fail){
+    console.log(resp);
+  }else{
   console.log(resp);
+  sales.value = resp;
+  }
+
 }
 
 init();

@@ -13,8 +13,8 @@ const invoiceFormat = async (invoice) => {
   console.log(invoice);
   const currentDate = new Date();
   // const qrData = `http://192.168.10.238:1308/#/checkin/${invoice.id}?key=${invoice.entry_key}`;
-  const qrData = `http://192.168.10.160:8000/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
-  // const qrData = `http://192.168.10.189:2201/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  // const qrData = `http://192.168.10.160:8000/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  const qrData = `http://192.168.10.189:2201/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
 
   const almacenes = {
     1: 'GEN',//cedis

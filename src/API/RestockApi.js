@@ -135,4 +135,8 @@ export default{
     let burl = `restock/getData`;
     return assist.post(burl,data).then( done => done ).catch( fail => fail);
   },
+  refresTransit(data){
+    let burl = `restock/refresTransit`;
+    return assist.post(burl,data).then( done => done ).catch( fail => fail);
+  },
 }

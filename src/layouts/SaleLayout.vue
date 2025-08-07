@@ -27,15 +27,15 @@
 
             <q-card-section>
               <div class="text-h6 text-center">Tickets 2024</div>
-              <div class="text-h4 text-center">{{ report.tiketsant }}</div>
+              <div class="text-h4 text-center">{{ Math.round(Number(report.tiketsant) * Number(VDB.session.store.increment),0)  }}</div>
             </q-card-section>
-
+            {{ report.tiketsant }}
           </q-card>
 
           <q-card class="my-card" @click="mosant">
             <q-card-section>
               <div class="text-h6 text-center">Ventas 2025</div>
-              <div class="text-h4 text-center">{{ Number(report.salesact / Number(report.salesant * 1.1) *
+              <div class="text-h4 text-center">{{ Number(report.salesact / Number(report.salesant * VDB.session.store.increment) *
                 100).toFixed(2) + '%' }}</div>
               <!-- <div class="text-h4 text-center">{{  Number(report.salesact).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</div> -->
 
@@ -51,15 +51,15 @@
           <q-card class="my-card" @click="mosant">
             <q-card-section>
               <div class="text-h6 text-center">Diferencia</div>
-              <div class="text-h4 text-center">{{ Number(Number(report.salesact / Number(report.salesant * 1.1) * 100) -
-                Number(Number(report.salesant * 1.1) / Number(report.salesant * 1.1) * 100)).toFixed(2) + '%' }}</div>
+              <div class="text-h4 text-center">{{ Number(Number(report.salesact / Number(report.salesant * 1.15) * 100) -
+                Number(Number(report.salesant * 1.15) / Number(report.salesant * 1.15) * 100)).toFixed(2) + '%' }}</div>
               <!-- <div class="text-h4 text-center">{{  Number(report.salesact - Number(report.salesant *1.1)).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</div> -->
 
             </q-card-section>
 
             <q-card-section>
               <div class="text-h6 text-center">Tickets Diferencia</div>
-              <div class="text-h4 text-center">{{ report.tiketsact - report.tiketsant }}</div>
+              <div class="text-h4 text-center">{{ report.tiketsact - Math.round(Number(report.tiketsant  * VDB.session.store.increment)) }}</div>
             </q-card-section>
           </q-card>
 

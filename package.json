@@ -11,8 +11,10 @@
   "dependencies": {
     "@quasar/cli": "^2.0.0",
     "@quasar/extras": "^1.0.0",
+    "apexcharts": "^5.3.1",
     "axios": "^1.2.1",
     "chart.js": "^4.4.3",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
     "exceljs": "^4.4.0",
@@ -27,7 +29,8 @@
     "socket.io-client": "^4.8.0",
     "uuid": "^9.0.0",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.0.0",
+    "vue3-apexcharts": "^1.8.0"
   },
   "devDependencies": {
     "@quasar/app-vite": "^1.0.0",

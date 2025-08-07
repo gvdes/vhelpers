@@ -11,7 +11,7 @@
       <q-table :rows="ordersdb" row-key="name" grid :pagination="pagination" hide-bottom>
         <template v-slot:item="props">
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-            <q-list bordered :class="`${props.row._status == 4 ? 'bg-green-11' : 'bg-red-11'} text-bold`">
+            <q-list bordered :class="colorsets(props.row)">
               <q-item clickable v-ripple @click="() => { mosPartition.state = true; mosPartition.val = props.row }">
                 <q-item-section>
                   <q-item-label class="text-center text-bold">{{ props.row.id }}</q-item-label>
@@ -212,6 +212,31 @@ const nextState = async () => {
     partition.value = null
   }
 }
+
+const colorsets = (partitionStore) => {
+  let status = partitionStore.status ==  4 ? '11' : '10'
+  let cltext = partitionStore.status ==  4 ? 'text-dark' : 'text-white'
+
+  // console.log(partitionStore.requisition.from.id)
+  let store = partitionStore.requisition.from.id;
+  switch (store) {
+    case 4:
+      return `bg-blue-${status} ${cltext}`
+    case 7:
+      return `bg-red-${status} ${cltext}`
+    case 5:
+      return `bg-purple-${status} ${cltext}`
+    case 9:
+      return `bg-green-${status} ${cltext}`
+    case 23:
+      return `bg-yellow-${status} ${cltext}`
+    case 13:
+      return `bg-brown-${status} ${cltext}`
+    default:
+      return 'text-dark'
+  }
+}
+
 
 
 

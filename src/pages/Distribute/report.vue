@@ -170,8 +170,8 @@ const process = () => {
         CODIGO: salidaCoincidente.ARTICULOS,
         DESCRIPCION: salidaCoincidente.DESCRIPCION,
         CANTIDAD: Number(salidaCoincidente.CANTIDAD).toFixed(2),
-        PRECIO: Number(salidaCoincidente.PRECIO).toFixed(2),
-        TOTAL: Number(totalSalida).toFixed(2),
+        // PRECIO: Number(salidaCoincidente.PRECIO).toFixed(2),
+        // TOTAL: Number(totalSalida).toFixed(2),
 
         codigoIGUAL: codigoIgual ? 'verdadero' : 'falso',
         CANTIDADIGUAL: cantidadIgual ? 'verdadero' : 'falso',
@@ -184,8 +184,8 @@ const process = () => {
         ENTRADA_CODIGO: entrada.ARTICULOS,
         ENTRADA_DESCRIPCION: entrada.DESCRIPCION,
         ENTRADA_CANTIDAD: Number(entrada.CANTIDAD).toFixed(2),
-        ENTRADA_PRECIO: Number(entrada.PRECIO).toFixed(2),
-        ENTRADA_TOTAL: Number(totalEntrada).toFixed(2)
+        // ENTRADA_PRECIO: Number(entrada.PRECIO).toFixed(2),
+        // ENTRADA_TOTAL: Number(totalEntrada).toFixed(2)
       });
 
       // Eliminar la salida coincidente para que luego podamos procesar las que no tienen entrada
@@ -204,8 +204,8 @@ const process = () => {
         CODIGO: '',
         DESCRIPCION: '',
         CANTIDAD: '',
-        PRECIO: '',
-        TOTAL: '',
+        // PRECIO: '',
+        // TOTAL: '',
 
         codigoIGUAL: false,
         CANTIDADIGUAL: false,
@@ -218,8 +218,8 @@ const process = () => {
         ENTRADA_CODIGO: entrada.ARTICULOS,
         ENTRADA_DESCRIPCION: entrada.DESCRIPCION,
         ENTRADA_CANTIDAD: Number(entrada.CANTIDAD).toFixed(2),
-        ENTRADA_PRECIO: Number(entrada.PRECIO).toFixed(2),
-        ENTRADA_TOTAL: Number(totalEntrada).toFixed(2)
+        // ENTRADA_PRECIO: Number(entrada.PRECIO).toFixed(2),
+        // ENTRADA_TOTAL: Number(totalEntrada).toFixed(2)
       });
     }
   });
@@ -240,8 +240,8 @@ const process = () => {
         CODIGO: salida.ARTICULOS,
         DESCRIPCION: salida.DESCRIPCION,
         CANTIDAD: Number(salida.CANTIDAD).toFixed(2),
-        PRECIO: Number(salida.PRECIO).toFixed(2),
-        TOTAL: Number(totalSalida).toFixed(2),
+        // PRECIO: Number(salida.PRECIO).toFixed(2),
+        // TOTAL: Number(totalSalida).toFixed(2),
 
         codigoIGUAL: false,
         CANTIDADIGUAL: false,
@@ -254,8 +254,8 @@ const process = () => {
         ENTRADA_CODIGO: '',
         ENTRADA_DESCRIPCION: '',
         ENTRADA_CANTIDAD: '',
-        ENTRADA_PRECIO: '',
-        ENTRADA_TOTAL: ''
+        // ENTRADA_PRECIO: '',
+        // ENTRADA_TOTAL: ''
 
 
       });

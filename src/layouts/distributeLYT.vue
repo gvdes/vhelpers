@@ -94,7 +94,7 @@ const init = async () => {
     $restockStore.fillOrders(req.orders);
     $restockStore.fillResume(req.resume);
     $restockStore.fillPrinters(req.printers);
-    $restockStore.setUsers(req.staff)
+    // $restockStore.setUsers(req.staff)
     $restockStore.fillPartitions(req.partitions)
     $restockStore.setShowLoad(false)
     console.log("%cMainLayout listo!!", "font-size:2em;color:orange;");
@@ -211,10 +211,10 @@ onMounted(async () => {
   $sktRestock.on("order_refresh", sktOrderOrderFresh);
   $sktRestock.on("orderpartition_refresh", sktOrderPartFresh);
   $sktRestock.on("sktPartitionCreate", sktPartitionCreate);
-  await nextTick(); // ✅ espera a que la página haya montado
+  await nextTick();
   window.layoutReady = true;
   await init()
-  window.dispatchEvent(new Event('layout-ready')); // ✅ ahora sí lo escuchará
+  window.dispatchEvent(new Event('layout-ready'));
 })
 
 onBeforeUnmount(() => {

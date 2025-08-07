@@ -59,6 +59,7 @@
               <q-item>
                 <q-item-section>ID</q-item-section>
                 <q-item-section>ESTADO</q-item-section>
+                <q-item-section>Utima Actividad</q-item-section>
                 <q-item-section v-if="props.row.from._type == 2">SALIDA</q-item-section>
                 <q-item-section v-if="props.row.from._type == 2">ENTRADA</q-item-section>
                 <q-item-section v-if="props.row.from._type == 1">TRASPASO</q-item-section>
@@ -77,6 +78,8 @@
 
                   <q-item-section :class="`${colorCellState[partition.status.id - 1]}`"> {{ partition.status.name
                   }}</q-item-section>
+                  <!-- <q-item-section> {{ dayjs(partition.log.find(l => l.id == partition.status.id).pivot.updated_at).format('YYYY-MM-DD hh:mm A')}}</q-item-section> -->
+                  <q-item-section> {{ dayjs(partition.log?.find(e => e.id == partition._status)?.pivot.updated_at).format('YYYY-MM-DD HH:mm:ss') }}</q-item-section>
                   <q-item-section v-if="props.row.from._type == 2"> {{ partition.invoice }}</q-item-section>
                   <q-item-section v-if="props.row.from._type == 2"> {{ partition.invoice_received }}</q-item-section>
                   <q-item-section v-if="props.row.from._type == 1"> {{ partition.invoice }}</q-item-section>
@@ -162,12 +165,12 @@ const table = ref({
       classes: row => colorCellState[(row._status ? parseInt(row._status) - 1 : parseInt(row.status.id) - 1)],
     },
     { name: 'suplier', label: 'Surtidores', field: row => row.partition?.length, align: "center", classes: "text-bold" },
-    // {
-    //   name: 'laststate',
-    //   label: 'Ultima actividad',
-    //   field: row => dayjs(row.log.find(l => l.id == row.status.id).pivot.updated_at).format('YYYY-MM-DD hh:mm A'),
-    //   align: "left"
-    // },
+    {
+      name: 'laststate',
+      label: 'Ultima actividad',
+      field: row => dayjs(row.log.find(l => l.id == row.status.id).pivot.updated_at).format('YYYY-MM-DD hh:mm A'),
+      align: "left"
+    },
     { name: 'from', label: 'Sucursal', field: row => row.from.name.toUpperCase(), align: "left", sortable: true },
     { name: 'to', label: 'Destino', field: row => row.to.name.toUpperCase(), align: "left", sortable: true },
     { name: 'notes', label: 'Notas', field: row => row.notes, align: "left", classes: 'text-orange text-bold' },

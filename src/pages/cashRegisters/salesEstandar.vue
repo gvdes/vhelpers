@@ -8,33 +8,35 @@
           <q-card class="my-card">
             <q-card-section>
               <q-list dense>
-                <q-item  class="q-px-sm q-py-xs column">
+                <q-item class="q-px-sm q-py-xs column">
                   <div class="row items-center justify-between">
                     <q-item-label>{{ config.name }}</q-item-label>
-                    <q-toggle color="blue" v-model="config.option" @update:model-value="(a) => { a ?  config.value = 16 : config.value = 0}" />
+                    <q-toggle color="blue" v-model="config.option"
+                      @update:model-value="(a) => { a ? config.value = 16 : config.value = 0 }" />
                   </div>
-                  <q-select v-if="config.option" v-model="config.value" :options="config.optval" label="Porcentaje" filled
-                    dense emit-value map-options class="q-mt-sm" />
-                  <q-separator spaced inset vertical dark />
+                  <q-select v-if="config.option" v-model="config.value" :options="config.optval" label="Porcentaje"
+                    filled dense emit-value map-options class="q-mt-sm" />
                 </q-item>
               </q-list>
             </q-card-section>
           </q-card>
         </q-menu>
       </q-btn>
+
       <q-btn flat round dense icon="receipt_long">
         <q-menu>
-          <q-list style="min-width: 100px">
-            <q-item>
-              <q-item-section>
-                <q-form @submit="searchOrd">
-                  <q-item-label><q-input v-model="order" type="Number" dense filled label="Comanda" /></q-item-label>
-                </q-form>
-              </q-item-section>
-            </q-item>
-          </q-list>
+            <q-list style="min-width: 100px">
+              <q-item>
+                <q-item-section>
+                    <q-select v-model="reut.val" :options="reut.opts" label="Tipo" filled dense />
+                    <q-separator spaced inset vertical dark />
+                    <q-input v-model="reut.valueVal" :type="reut.val.type" dense filled :label="reut.val.label" @keyup.enter="reutilizar" />
+                </q-item-section>
+              </q-item>
+            </q-list>
         </q-menu>
       </q-btn>
+
     </q-toolbar>
     <q-card class="my-card ">
       <q-card-section class="row">
@@ -57,11 +59,12 @@
           <div class="text-caption text-center">{{ config.option ? 'SUBTOTAL' : 'TOTAL' }}</div>
           <div class="text-center text-h6">$ {{ total }}</div>
         </div>
-        <div class="col "  v-if="config.option" >
+        <div class="col " v-if="config.option">
           <div class="text-caption text-center"> IVA </div>
-          <div class="text-center text-h6 text-caption">$ {{ Number(total * Number((config.value / 100))).toFixed(2) }}</div>
+          <div class="text-center text-h6 text-caption">$ {{ Number(total * Number((config.value / 100))).toFixed(2) }}
+          </div>
         </div>
-        <div class="col "  v-if="config.option" >
+        <div class="col " v-if="config.option">
           <div class="text-caption text-center"> TOTAL </div>
           <div class="text-center text-h6">$ {{ Number(total * Number((1 + config.value / 100))).toFixed(2) }}</div>
         </div>
@@ -132,8 +135,9 @@
 
     <div>
       <q-dialog v-model="endSale">
-        <paymentSales :total="config.option ?  Number(total * Number.parseFloat((1 + config.value / 100)))  : Number(total)    " :paymeths="cashLYT.methods" :client="sale.client.id"
-          @sendTicket="finallytck" />
+        <paymentSales
+          :total="config.option ? Number(total * Number.parseFloat((1 + config.value / 100))) : Number(total)"
+          :paymeths="cashLYT.methods" :client="sale.client.id" @sendTicket="finallytck" />
       </q-dialog>
     </div>
 
@@ -158,7 +162,6 @@ import ProductAutocomplete from 'src/components/Sales/ProductAutocomplete.vue';/
 import viewProduct from 'src/components/Sales/viewProduct.vue';// encabezado aoiida
 import axios from 'axios';//para dirigirme bro
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";
-
 import { exportFile, useQuasar, date } from 'quasar';
 import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import paymentSales from 'src/components/Sales/PaymentSales.vue';// encabezado aoiida;
@@ -172,11 +175,20 @@ const $router = useRouter();
 const $route = useRoute();
 const cashLYT = useLayoutCash();
 
-const config = ref(
-  { name: 'IVA', option: false, optval: [16, 8, 6], value: 0 }
-)
+
 const order = ref(null);
 const productRef = ref(null)
+const reut = ref({
+  val: { id: 1, label: "Preventa", type: "number" },
+  opts: [
+    { id: 1, label: "Preventa", type: "number" },
+    { id: 2, label: "Particion", type: "number" },
+    { id: 3, label: "Presupuesto", type: "text" },
+    { id: 4, label: "Ticket", type: "number" },
+    // {id:1,label:"Preventa"},
+  ],
+  valueVal: null
+})
 const pivots = ref({
   amount: 0,
   amountDelivered: 0,
@@ -187,7 +199,7 @@ const pivots = ref({
   _price_list: 1,
   _supply_by: 1
 })
-
+const config = ref({ name: 'IVA', option: false, optval: [16, 8, 6], value: 0, amount: 0 })
 const clients = ref({
   val: null,
   opts: []
@@ -218,7 +230,7 @@ const table = ref({
     // { name: 'amount', label: 'Pedido', field: r => r.pivot.units, align: 'center' },
     { name: 'verify', label: 'Cantidad', field: r => r.pivot.toDelivered, align: 'center' },
     { name: 'price', label: 'Precio', field: r => r.pivot.price, align: 'center' },
-    { name:'bruto', label: config.option ? 'Bruto' : 'Total', field: r => r.pivot.total, align: 'center' },
+    { name: 'bruto', label: config.option ? 'Bruto' : 'Total', field: r => r.pivot.total, align: 'center' },
     { name: 'iva', label: 'Total', field: r => r.pivot.total, align: 'center' },
     { name: 'neto', label: 'Total', field: r => r.pivot.total, align: 'center' },
 
@@ -242,6 +254,7 @@ const tableDep = ref({
 })
 
 const total = computed(() => Number(sale.value.products.reduce((a, e) => a + e.pivot.total, 0)).toFixed(2));
+
 const cantidad = computed(() => sale.value.products.reduce((a, e) => a + Number(e.pivot.toDelivered), 0))
 
 const validForm = computed(() => sale.value.products.length > 0 && sale.value.dependiente && sale.value.client)
@@ -379,7 +392,6 @@ const changeNewClient = async (a, b) => {
 
 }
 
-
 const changeDepen = () => {
   console.log('cambio de cliente')
   Dependiente.value.state = true
@@ -444,11 +456,11 @@ const deleteProduct = (product) => {
 }
 
 const finallytck = async (pagos) => {
-  // $q.loading.show({ message: 'Realizando Ticket' })
+  $q.loading.show({ message: 'Realizando Ticket' })
   sale.value.payments = pagos
   // (Number(Number.parseFloat(modes.value.SFPA.val) + Number.parseFloat(modes.value.PFPA.val)) + Number.parseFloat(modes.value.VALE.val) - Number.parseFloat(props.total)).toFixed(2))
   sale.value.change = pagos.conditions.super ? 0 : pagos.change
-  if(config.value.option){
+  if (config.value.option) {
     sale.value.subtotal = sale.value.products.reduce((a, c) => a + c.pivot.total, 0)
     sale.value.iva = config.value.value
     sale.value.total = Number(total.value * Number((1 + config.value.value / 100)).toFixed(2))
@@ -457,8 +469,8 @@ const finallytck = async (pagos) => {
       a.pivot.subtotal = a.pivot.total
       a.pivot.total = a.pivot.total * (1 + config.value.value / 100)
     })
-  }else{
-  sale.value.total = sale.value.products.reduce((a, c) => a + c.pivot.total, 0)
+  } else {
+    sale.value.total = sale.value.products.reduce((a, c) => a + c.pivot.total, 0)
   }
 
   let data = {
@@ -505,13 +517,25 @@ const reset = () => {
   })
 }
 
-const searchOrd = async () => {
-  console.log(order.value)
-    if (order.value) {
+const reutilizar = async () => {
+  console.log(reut.value)
+  switch (reut.value.val.id) {
+    case 1:
+      searchOrd(reut.value)
+      break;
+
+    default:
+      break;
+  }
+}
+
+const searchOrd = async (order) => {
+  console.log(order)
+  if (order) {
     $q.loading.show({ message: 'Obteniendo Orden' })
     let data = {
       uid: VDB.session.credentials.staff.id_va,
-      oid: order.value
+      oid: order.valueVal
     }
     const resp = await cashApi.getOrderCash(data)
     if (resp.fail) {
@@ -531,9 +555,21 @@ const searchOrd = async () => {
     } else {
       sale.value.dependiente = resp.staff
       sale.value.client = resp.client
-      sale.value.products = resp.products
-      order.value = null
-      // order.value = resp
+      resp.products.forEach(newProduct => {
+        console.log(newProduct)
+        const existing = sale.value.products.find(p => p.id === newProduct.id)
+
+        const newUnits = newProduct.pivot?.units || 0
+        if (existing) {
+          if (!existing.pivot) {
+            existing.pivot = { units: 0 }
+          }
+          existing.pivot.units += newUnits
+        } else {
+          sale.value.products.push({ ...newProduct })
+        }
+      })
+      reut.value.valueVal = null
       console.log(resp)
       $q.loading.hide();
     }

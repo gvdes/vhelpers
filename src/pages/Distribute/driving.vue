@@ -11,7 +11,7 @@
       <q-table :rows="ordersdb" row-key="name" grid :pagination="pagination" hide-bottom>
         <template v-slot:item="props">
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-            <q-list bordered>
+            <q-list bordered :class="colorsets(props.row.requisition.from.id)">
               <q-item clickable v-ripple @click="() => { mosPartition.state = true; mosPartition.val = props.row }">
                 <q-item-section>
                   <q-item-label class="text-center text-bold">{{ props.row.id }}</q-item-label>
@@ -78,10 +78,10 @@ const mosPartition = ref({
 
 const ordersdb = computed(() => {
   return $restockStore.partitions.filter(part => {
-    const isChofer = ['chf','amc', 'vld','root','jch'].includes(VDB.session.rol);
+    const isChofer = ['chf','amc', 'vld','root','jch','gce'].includes(VDB.session.rol);
     const isSameStore = part.requisition.from.id == VDB.session.store.id_viz;
     const isStore = part.requisition.to.id == VDB.session.store.id_viz;
-    const isAlmacenista = ['gen', 'aux', 'alm', 'root','recp'].includes(VDB.session.rol);
+    const isAlmacenista = ['gen', 'aux', 'alm', 'root','recp','gce'].includes(VDB.session.rol);
     if (isChofer && isStore) {
       return part._status === 6
     }
@@ -160,5 +160,24 @@ const nextState = async () => {
   }
 }
 init();
+
+const colorsets = (partitionStore) => {
+  switch (partitionStore) {
+    case 4:
+      return 'bg-blue-11'
+    case 7:
+      return 'bg-red-11'
+    case 5:
+      return 'bg-purple-11'
+    case 9:
+      return 'bg-green-11'
+    case 23:
+      return 'bg-yellow-11'
+    case 13:
+      return 'bg-bg-brown-12'
+    default:
+      return ''
+  }
+}
 // document.title = "Vhelpers/InComming";
 </script>
