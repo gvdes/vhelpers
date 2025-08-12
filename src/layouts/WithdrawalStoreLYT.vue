@@ -112,7 +112,7 @@
         </q-card-section>
         <q-card-actions align="center">
           <q-btn flat color="negative" icon="close" @click="reset" />
-          <q-btn flat color="primary" icon="print" @click="print" :disable="!validEdit || !impresoras.val" />
+          <!-- <q-btn flat color="primary" icon="print" @click="print" :disable="!validEdit || !impresoras.val" /> -->
           <q-btn flat color="positive" icon="send" :disable="validForm || !impresoras.val" @click="addAnt" />
         </q-card-actions>
       </q-card>
