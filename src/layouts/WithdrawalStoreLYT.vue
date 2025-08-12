@@ -15,15 +15,13 @@
         <div class="col">
           <div class="row">
             <div class="col"></div>
-            <!-- <q-select class="col" v-model="stores.val" :options="stores.opts" label="Sucursales" filled
-              option-label="name" @update:model-value="getCuts" dense /> -->
           </div>
 
         </div>
 
       </q-toolbar>
       <q-separator spaced inset vertical dark />
-      <q-table v-if="basketFilt.length > 0" :rows="basketFilt" :filter="table.filter" :columns="table.columns" @row-click="mosWithdrawals">
+      <q-table :rows="basketFilt" :filter="table.filter" :columns="table.columns" @row-click="mosWithdrawals">
         <template v-slot:top-right>
           <q-input v-model="table.filter" type="text" label="Buscar" filled dense  />
           <q-separator spaced inset vertical dark />
@@ -70,14 +68,14 @@
           <q-separator spaced inset vertical dark />
           <q-input v-model="cut.val.HORA" type="time" label="Hora" dense filled disable />
           <q-separator spaced inset vertical dark />
-          <q-input v-model="cut.val.DESTER" type="text" label="Terminal" dense filled disable />
+          <q-input v-model="cut.val.DESTER" type="text" label="Terminal" dense filled disable :disable="!veriVied" />
           <q-separator spaced inset vertical dark />
-          <q-select v-model="cut.val.PROVEEDOR" :options="providers" label="Proveedor" filled option-label="NOFPRO" />
+          <q-select v-model="cut.val.PROVEEDOR" :options="providers" label="Proveedor" filled option-label="NOFPRO" :disable="!veriVied" />
           <q-separator spaced inset vertical dark />
-          <q-input v-model="cut.val.CONRET" type="text" label="Concepto" dense filled />
+          <q-input v-model="cut.val.CONRET" type="text" label="Concepto" dense filled :disable="!veriVied" />
           <q-separator spaced inset vertical dark />
           <q-input v-model="cut.val.IMPRET" type="number" label="Importe" dense filled mask="#.##" fill-mask="0"
-            reverse-fill-mask />
+            reverse-fill-mask :disable="!veriVied" />
           <q-separator spaced inset vertical dark />
           <q-select dense option-label="name" v-model="impresoras.val" :options="impresoras.body" label="Impresora"
             filled />
@@ -85,8 +83,8 @@
         </q-card-section>
         <q-card-actions align="center">
           <q-btn flat color="negative" icon="close" v-close-popup />
-          <q-btn flat color="primary" icon="print" @click="print" :disable="!validEdit || !impresoras.val" />
-          <q-btn flat color="yellow" icon="edit" :disable="validEdit || !impresoras.val" @click="modifyRet" />
+          <q-btn flat color="primary" icon="print" @click="print" :disable="!impresoras.val " />
+          <q-btn flat color="yellow" icon="edit" :disable="validEdit || !veriVied || !impresoras.val" @click="modifyRet" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -96,7 +94,7 @@
         <q-card-section class="text-bold text-center text-h5">
         </q-card-section>
         <q-card-section>
-          <q-input v-model="adding.FECHA" type="date" label="Fecha" dense filled />
+          <q-input v-model="adding.FECHA" type="date" label="Fecha" dense filled disable />
           <q-separator spaced inset vertical dark />
           <q-select v-model="adding.DESTER" :options="term.opts" label="Terminal" filled option-label="DESTER" dense />
           <q-separator spaced inset vertical dark />
@@ -114,7 +112,7 @@
         </q-card-section>
         <q-card-actions align="center">
           <q-btn flat color="negative" icon="close" @click="reset" />
-          <!-- <q-btn flat color="primary" icon="print" @click="print" :disable="!validEdit || !impresoras.val" /> -->
+          <q-btn flat color="primary" icon="print" @click="print" :disable="!validEdit || !impresoras.val" />
           <q-btn flat color="positive" icon="send" :disable="validForm || !impresoras.val" @click="addAnt" />
         </q-card-actions>
       </q-card>
@@ -136,9 +134,7 @@ import ExcelJS from 'exceljs';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
 import UserToolbar from "src/components/UserToolbar.vue";
-
-import withApi from "src/API/withdrawalsApi";
-
+import ApiAssist from "src/API/assistApi";
 import { useVDBStore } from "src/stores/VDB";
 import axios from "axios"; //para dirigirme bro
 import { assist } from "src/boot/axios";
@@ -151,8 +147,9 @@ const VDB = useVDBStore();
 
 
 
-// const stores = ref([])
-const fechas = ref(null)
+const stores = ref([])
+const  date = new Date();
+const fechas = ref(dayjs(date).format("YYYY-MM-DD"));
 const cuts = ref([]);
 const cut = ref({
   val: null,
@@ -177,7 +174,7 @@ const adding = ref({
   DESTER: null,
   IMPRET: null,
   CLIENTE: null,
-  FECHA: null
+  FECHA: fechas.value
 })
 
 const table = ref({
@@ -206,6 +203,7 @@ const basketFilt = computed(() => {
   }
 })
 
+
 const validEdit = computed(() => {
   if (cut.value) {
     const filt = cuts.value.find(e => e.CODRET === cut.value.val.CODRET)
@@ -229,26 +227,11 @@ const validEdit = computed(() => {
   }
 })
 
+const veriVied = computed(() => dayjs(date).format('YYYY-MM-DD') === dayjs(cut.value.val.FECHA).format('YYYY-MM-DD'));
 const validForm = computed(() => !adding.value.CONRET || !adding.value.DESTER || !adding.value.IMPRET || !adding.value.PROVEEDOR)
 
-// const init = async () => {
-
-//   // smonth.value.val = meses.filter(e => e.id === mes)[0]
-//   $q.loading.show({ message: "Cargando Informacion" });
-//   console.log("se inicia el init");
-//   const resp = await ApiAssist.index();
-//   if (resp.error) {
-//     //   console.log(resp);
-//   } else {
-//     console.log(resp);
-//     stores.value.opts = resp;
-//     $q.loading.hide();
-//     impre();
-//   }
-// };
-
-
 const mosWithdrawals = (a, b) => {
+
   cut.value.state = !cut.value.state
   console.log(b)
   let data = {
@@ -294,21 +277,33 @@ const impre = async () => {
 
 
 
-const init = async () => {
+const getCuts = async () => {
+  console.log(VDB.session.store)
   $q.loading.show({ message: 'Obteniendo Registros' });
-  let host = VDB.session.store.id;
-  const resp = await withApi.getStoreWithdrawals(host);
-  if(resp.fail){
+  // console.log(fechas.value);
+  // let host = VDB.session.store.ip_address;
+  let host = VDB.session.store.ip_address;
 
-  }else{
-    $q.loading.hide()
+  // let host = '192.168.10.160:1619'
+  let url = `http://${host}/storetools/public/api/reports/getWithdrawals`;
+  const resp = await axios.get(url);
+  if (resp.status != 200) {
     console.log(resp);
+  } else {
+    console.log(resp.data)
+    cuts.value = resp.data.cuts
+    term.value.opts = resp.data.terminal
+    providers.value = resp.data.proveedores
+    impre()
+    //   formas.value.opts = resp.data.formas
+    //   date.value = false
+    $q.loading.hide();
   }
 };
 
 
 const print = async () => {
-  console.log(stores.value.val.ip_address)
+  console.log(VDB.session.store.ip_address)
   let data = {
     print: impresoras.value.val.ip_address,
     codret: cut.value.val.CODRET
@@ -316,7 +311,7 @@ const print = async () => {
   console.log(data)
   $q.loading.show({ message: 'Imprimiendo Retirada' });
   // console.log(fechas.value);
-  let host = stores.value.val.ip_address;
+  let host = VDB.session.store.ip_address;
   // let host = '192.168.10.160:1619'
   let url = `http://${host}/storetools/public/api/reports/printWitrawal`;
   const resp = await axios.post(url, data);
@@ -338,7 +333,7 @@ const modifyRet = async () => {
 
   $q.loading.show({ message: 'Modificando Retirada' });
   // console.log(fechas.value);
-  let host = stores.value.val.ip_address;
+  let host = VDB.session.store.ip_address;
   // let host = '192.168.10.160:1619'
   let url = `http://${host}/storetools/public/api/reports/modifyWithdrawal`;
   const resp = await axios.post(url, cut.value.val);
@@ -363,7 +358,7 @@ const addAnt = async () => {
 
   $q.loading.show({ message: 'Agregando Anticipo' });
   // console.log(fechas.value);
-  let host = stores.value.val.ip_address;
+  let host = VDB.session.store.ip_address;
   // let host = '192.168.10.160:1619'
   let url = `http://${host}/storetools/public/api/reports/addWithdrawal`;
   const resp = await axios.post(url, adding.value);
@@ -408,7 +403,7 @@ const filterFn = (val, update, abort) => {
 
 
 // if ($user.session.rol === 'adm' || $user.session.rol === 'root') {
-  init()
+  getCuts()
 // } else {
 //   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
 //   $router.replace('/');
