@@ -8,9 +8,6 @@
     </q-header>
 
     <q-page-container>
-      <!-- <q-toolbar class="justify-between"> -->
-
-      <!-- </q-toolbar> -->
       <q-page padding>
         <div class="flex jutify-between row ">
           <div class="col">Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Creacion de
@@ -19,7 +16,7 @@
           <q-btn class=" flex justify-end" flat @click="drawer.state = !drawer.state" round dense icon="menu" />
         </div>
         <q-card class="my-card">
-          <ProductAutocomplete :checkState="false" @input="add" with_prices @agregar="agregar" with_locations />
+          <ProductAutocomplete :checkState="false" @input="add" with_prices @agregar="agregar" with_locations withHistoric />
         </q-card>
 
         <q-separator spaced inset vertical dark />
@@ -122,19 +119,13 @@
             </q-page-sticky>
           </template>
           <template v-slot:no-data>
-            <!-- <div class="text-center">
-              <q-avatar size="300px" font-size="200px" color="white"  text-color="primary" icon="sentiment_dissatisfied" />
-            </div> -->
           </template>
-
         </q-table>
-
         <q-dialog v-model="deltb.state" persistent>
           <q-card>
             <q-card-section class="row items-center">
               <q-avatar icon="warning" color="white" text-color="negative" />
               <div class="q-ml-sm">Se eliminaran todos los articulos de la lista </div>
-
             </q-card-section>
             <q-card-section>
               <div class="q-ml-sm">Deseas Continuar?</div>
@@ -245,12 +236,10 @@ const mosPDF = ref({
     { id: 9, label: 'Juguete Extra Niño' },
     { id: 10, label: 'Juguete Horizontal Niño' },
     { id: 11, label: 'Juguete Horizontal Niña' },
-    // { id: 12, label: 'Rectangular 2 x 4' },
+    { id: 12, label: 'Rectangular 9 x 2' },
     { id: 15, label: 'Horizontal 9 x 2' },
     { id: 13, label: 'Exhibicion Nino Mochila' },
     { id: 14, label: 'Exhibicion Nina Mochila' },
-
-
   ]
 })
 const prices = ref({
@@ -276,8 +265,6 @@ const wndImportJSON = ref({
   messageRepeat: "",
   wndNotExist: [],
 })
-
-
 
 const checkPrices = (data) => {
   let notFound = [];
@@ -309,6 +296,7 @@ const drawer = ref({
 })
 
 const agregar = (ops) => {
+  console.log(ops);
   let inx = products.value.findIndex(e => e.id == ops.id)
   console.log(inx);
   if (inx >= 0) {
@@ -333,7 +321,6 @@ const delTable = () => {
   products.value = []
   deltb.value.state = false
 }
-
 
 const clickFile = () => {
   inputFile.value.click()
@@ -663,7 +650,7 @@ const pdf = () => {
         alert('Hubo un error al descargar las etiquetas')
       })
   } else if (mosPDF.value.val.id == 12) {
-    labels.Hlargenina(products.value, VDB.session.credentials.nick, mosPDF.value.val.label,prices.value)
+    labels.VerticalLabel(products.value, VDB.session.credentials.nick, mosPDF.value.val.label,prices.value)
       .then(r => {
         $q.notify({
           message: `Se Descargo las etiquetas Correctamente`,

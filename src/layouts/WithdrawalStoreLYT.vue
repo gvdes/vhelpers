@@ -382,7 +382,7 @@ const reset = () => {
     DESTER: null,
     IMPRET: null,
     CLIENTE: null,
-    FECHA: null
+    FECHA: fechas.value
   }
 }
 

@@ -78,6 +78,11 @@ const routes = [
     meta: { moduleId: 4 }
   },
   {
+    path: '/checkLabels',
+    component: () => import('layouts/checkLavelsLYT.vue'),
+    meta: { moduleId: 54  }
+  },
+  {
     path: '/compare',
     component: () => import('layouts/CompareLayout.vue'),
     meta: { moduleId: 13 }
@@ -270,7 +275,7 @@ const routes = [
       { path: ':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue'), meta: { moduleId: 11 } },
     ],
   },
-    {
+  {
     path: '/products',
     component: () => import('layouts/ProductsLYT.vue'),
     meta: { moduleId: 49 },

@@ -88,6 +88,7 @@ const props = defineProps({
   "with_stock": { default: null, type: Boolean },
   "checkState": { default: true, type: Boolean },
   "workpointStatus": { default: null, type: [Array, String] },
+  "withHistoric":{ default: null, type: Boolean },
   "wkpToVal": { default: null, type: Number },
   "blockStates": { type: Array, default: () => [4, 5, 6] }
 })
@@ -111,6 +112,7 @@ const attrs = computed(() => {
     "with_stock": props.with_stock,
     "check_stock": props.check_stock,
     "with_prices": props.with_prices,
+    "withHistoric": props.withHistoric,
     "_celler": props._celler,
     "limit": props.limit,
     "_workpoint_status": props.workpointStatus,
