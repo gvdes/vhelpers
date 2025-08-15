@@ -408,16 +408,16 @@ const terminar = async () => {
     console.log(resp.data);
     impresoras.value = {
       state: false,
-      val: null,
-      body: null
+      // val: null,
+      // body: null
     }
     terminales.value = {
       val: null,
-      opts: []
+      // opts: []
     }
     colab.value = {
       val: null,
-      opts: []
+      // opts: []
     };
     editProduct.value = {
       val: null,

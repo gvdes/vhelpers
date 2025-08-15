@@ -139,4 +139,8 @@ export default{
     let burl = `restock/refresTransit`;
     return assist.post(burl,data).then( done => done ).catch( fail => fail);
   },
+  deletePartition(data){
+    let burl = `restock/deletePartition`;
+    return assist.post(burl,data).then( done => done ).catch( fail => fail);
+  }
 }

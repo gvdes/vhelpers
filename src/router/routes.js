@@ -186,6 +186,11 @@ const routes = [
     meta: { moduleId: 52 }
   },
   {
+    path: '/refundsStore',
+    component: () => import('layouts/RefundStoreLYT.vue'),
+    meta: { moduleId: 56 }
+  },
+  {
     path: '/clients',
     component: () => import('layouts/clientLYT.vue'),
     children: [

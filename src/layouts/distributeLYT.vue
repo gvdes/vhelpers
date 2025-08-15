@@ -170,6 +170,15 @@ const sktPartitionCreate = async skt => {
   }
 }
 
+const sktPartitionDelete = async skt => {
+  console.log(skt)
+    let oid = skt.id;
+    let requisition = skt._requisition
+    let cmd = $restockStore.deleteParition(oid);
+    let cmdd = $restockStore.deleteParitionOrder(oid,requisition);
+
+}
+
 const sktOrderUpdate = skt => { $restockStore.orderUpdate(skt); }
 
 const sktOrderChangeState = async skt => {
@@ -211,6 +220,8 @@ onMounted(async () => {
   $sktRestock.on("order_refresh", sktOrderOrderFresh);
   $sktRestock.on("orderpartition_refresh", sktOrderPartFresh);
   $sktRestock.on("sktPartitionCreate", sktPartitionCreate);
+  $sktRestock.on("sktPartitionDelete", sktPartitionDelete);
+
   await nextTick();
   window.layoutReady = true;
   await init()
@@ -225,7 +236,7 @@ onBeforeUnmount(() => {
   $sktRestock.off("order_refresh", sktOrderOrderFresh);
   $sktRestock.off("orderpartition_refresh", sktOrderPartFresh);
   $sktRestock.on("sktPartitionCreate", sktPartitionCreate);
-
+  $sktRestock.on("sktPartitionDelete", sktPartitionDelete);
 })
 
 

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import RequisitionLYT from 'src/layouts/RequisitionLYT.vue';
 
 export const useRestockStore = defineStore('restock', {
   state: () => ({
@@ -57,7 +58,18 @@ export const useRestockStore = defineStore('restock', {
         return "a";
       }
     },
-
+    deleteParition(id){
+      let inx = this.partitions.findIndex(p => p.id == id)
+      if(inx >=0){
+        this.partitions.splice(inx,1)
+      }
+    },
+    deleteParitionOrder(id, requisition){
+      let inx = this.ordersdb.find(e => e.id == requisition).partition?.findIndex(p => p.id == id)
+      if(inx >=0){
+        this.ordersdb.find(e => e.id == requisition).partition.splice(inx,1)
+      }
+    },
     setUsers(user) {
       this.users = user;
     },

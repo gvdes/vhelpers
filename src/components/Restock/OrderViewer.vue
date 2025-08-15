@@ -52,7 +52,7 @@
       <q-tabs v-model="tab" class="text-pink-5" dense no-caps>
         <q-tab name="log" label="Log" />
         <q-tab name="basket" label="Productos" />
-        <q-tab name="supliers" label="Surtidores" />
+        <q-tab name="supliers" label="Particiones" />
       </q-tabs>
 
       <q-tab-panels v-model="tab" animated>
@@ -113,9 +113,9 @@
               <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
                 <q-card flat bordered>
                   <q-card-section class="text-center">
-                    Surtidor
+                    Particion: <span class="text-bold">{{ props.row.id }}</span>
                     <br>
-                    <strong>{{ props.row._suplier }}</strong>
+                    <!-- <strong>{{ props.row }}</strong> -->
                     <q-separator spaced inset vertical dark />
                     <q-icon name="print" color="pink" size="sm" @click="partitionPrint(props.row)">
                       <q-menu class="bg-grey-1 text-indigo-10" style="min-width:250px;">
@@ -126,6 +126,10 @@
                     <div class="text-overline text-grey-7"> <q-badge color="primary" text-color="white"
                         :label="props.row.status.name" /></div>
                   </q-card-section>
+                  <q-card-actions align="right">
+                    <q-btn color="red" flat icon="delete" @click="deleteParticion(props.row)"
+                      :disable="props.row._status != 3" />
+                  </q-card-actions>
                   <q-separator />
                   <q-card-section class="flex justify-between">
                     <div v-if="head.from._type != 1">
@@ -136,7 +140,6 @@
                       <div>Traspaso</div>
                     </div>
                     <div>Herramientas</div>
-
                   </q-card-section>
                   <q-separator />
                   <q-card-section class="flex justify-between">
@@ -167,11 +170,11 @@
   <q-dialog v-model="viewSupply.state" persistent>
     <q-card style="width: 400px;">
       <q-card-section class="row items-center">
-        <q-list >
+        <q-list>
           <q-item v-for="(loc, index) in locations" :key="index">
             <q-item-section class="q-mb-lg">
               <q-item-label class="q-mb-md" caption>Ubicaciones</q-item-label>
-              <q-item-label >{{ loc.name }}</q-item-label>
+              <q-item-label>{{ loc.name }}</q-item-label>
             </q-item-section>
             <q-item-section class="q-mb-lg">
               <q-item-label class="q-mb-md text-center" caption>Productos</q-item-label>
@@ -179,7 +182,9 @@
             </q-item-section>
             <q-item-section class="q-mt-md">
               <q-item-label class=" text-center" caption>Particiones</q-item-label>
-              <q-item-label class="q-mb-sm text-center" > <q-input v-model="loc.partition" type="number" dense filled input-class="text-center" :min="1" :error="loc.partition == 0 || loc.partition > loc.cantidad" :error-message="loc.partition > loc.cantidad ? 'No se pueden generar mas particiones que articulos' : 'la particiones tienen que ser minimo ' " /></q-item-label>
+              <q-item-label class="q-mb-sm text-center"> <q-input v-model="loc.partition" type="number" dense filled
+                  input-class="text-center" :min="1" :error="loc.partition == 0 || loc.partition > loc.cantidad"
+                  :error-message="loc.partition > loc.cantidad ? 'No se pueden generar mas particiones que articulos' : 'la particiones tienen que ser minimo '" /></q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -201,6 +206,22 @@
       <q-card-actions align="center">
         <q-btn flat label="Cancel" color="positive" v-close-popup />
         <q-btn flat label="Confirmar" color="negative" @click="remove" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="deletePrt.state" persistent>
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="warning" color="warning" text-color="red" />
+        <span class="q-ml-sm">Estas a punto de eliminar la particion {{ deletePrt.val.id }}</span>
+      </q-card-section>
+      <q-card-section>
+        Estas Segur@ ??
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn flat icon="close" color="positive" v-close-popup />
+        <q-btn flat icon="delete" color="negative" @click="suprPartition"/>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -238,6 +259,11 @@ const chof = ref({
   opts: null,
   val: null,
   filter: null
+})
+
+const deletePrt = ref({
+  val:null,
+  state:false
 })
 
 const part = ref(null);
@@ -317,7 +343,7 @@ const init = async () => {
   order.value = response.data.order
   // wndQRCode.value.key = response.data.order.entry_key;
   invoice.value = response.data.order.invoice;
-  locations.value = Object.values(response.data.ubicaciones).map(w => ({ ...w, partition: 1}));
+  locations.value = Object.values(response.data.ubicaciones).map(w => ({ ...w, partition: 1 }));
   // if (cstate.value.id == 2) {
   //   console.log(order.value.to.id);
   //   let supp = await RestockApi.getSupply(order.value.to.id);
@@ -355,7 +381,7 @@ const startSupply = async () => {
       _workpoint_to: head.value.to.id,
       _workpoint_from: head.value.from.id,
     }
-    // console.log(dat)
+    console.log(dat)
     let savesupply = await RestockApi.createParitions(dat);
     console.log(savesupply)
     if (savesupply.fail) {
@@ -445,6 +471,32 @@ const createPDF = async (row) => {
     }
   }
 }
+
+const deleteParticion = (partition) => {
+  console.log(partition)
+  deletePrt.value.state = true
+  deletePrt.value.val = partition
+}
+
+const suprPartition = async () => {
+  $q.loading.show({message:'Eliminando Particion'})
+  console.log(deletePrt.value.val)
+  const resp = await RestockApi.deletePartition(deletePrt.value.val)
+  if(resp.fail){
+    console.log(resp)
+  }else{
+    console.log(resp);
+    $sktRestock.emit('partitionDelete', deletePrt.value.val)
+    let inx = partition.value.findIndex(e => e.id == deletePrt.value.val.id);
+    partition.value.splice(inx,1);
+    deletePrt.value.state = false
+    deletePrt.value.val = null
+    $q.notify({message:resp.data.message,type:'negative',position:'center'})
+
+    $q.loading.hide()
+  }
+}
+
 
 
 onBeforeMount(() => viewcols.value = table.value.columns.map(c => c.name));
