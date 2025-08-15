@@ -1244,9 +1244,9 @@ const VerticalLabel = (data, nick, name, prices) => {
         // QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
         //   if (err) throw err
 
-        //   doc.addImage(url, 'PNG', x + 75, y + 20, 20, 20) // ajusta la posición y tamaño
+        //   doc.addImage(url, 'PNG', x + 75, y + 20, 25, 25) // ajusta la posición y tamaño
         // })
-        doc.rect(x, y, labelWidth, labelHeight)//agrega rectangulo buey
+        // doc.rect(x, y, labelWidth, labelHeight)//agrega rectangulo buey
 
         // // doc.addImage(barcode(product.name), type, x + 75, y + 8, 15, 15); // Agrega el código de barras
         doc.setFontSize(30);

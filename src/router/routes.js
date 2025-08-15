@@ -166,6 +166,11 @@ const routes = [
     meta: { moduleId: 16 }
   },
   {
+    path: '/audreports',
+    component: () => import('layouts/reportsAudLYT.vue'),
+    meta: { moduleId: 55 }
+  },
+  {
     path: '/openReport',
     component: () => import('layouts/reportOpenLYT.vue'),
     meta: { moduleId: 33 }
