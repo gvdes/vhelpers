@@ -1297,6 +1297,136 @@ const VerticalLabel = (data, nick, name, prices) => {
   });
 }
 
+const Paquetes = (data, nick, name, prices) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const products = data
+      const expandedProducts = [];
+      products.forEach(product => {
+        for (let i = 0; i < product._copies; i++) {
+          expandedProducts.push(product);
+        }
+      });
+      const image = "/icons/Mochila/STAR12_1.png";
+      const type = "PNG";
+      const doc = new jsPDF({ format: 'letter' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const marginX = 5; // Margen izquierdo
+      const marginY = 10; // Margen superior
+      const labelWidth = 205; // Ancho de cada etiqueta
+      const labelHeight = 125; // Alto de cada etiqueta
+      const spacingX = 5; // Espaciado horizontal entre etiquetas
+      const spacingY = 5; // Espaciado vertical entre etiquetas
+      const labelsPerRow = 1; // Número de etiquetas por fila
+      const labelsPerColumn = 2; // Número de etiquetas por columna
+      const totalLabelsPerPage = labelsPerRow * labelsPerColumn;
+      expandedProducts.forEach((product, index) => {
+        const currentPageIndex = Math.floor(index / totalLabelsPerPage); // Página actual
+        const indexInPage = index % totalLabelsPerPage; // Índice dentro de la página
+        const row = Math.floor(indexInPage / labelsPerRow); // Calcula la fila
+        const col = indexInPage % labelsPerRow; // Calcula la columna
+        const x = marginX + col * (labelWidth + spacingX); // Calcula la posición X
+        const y = marginY + row * (labelHeight + spacingY); // Calcula la posición Y
+        // Si el índice es un múltiplo del totalLabelsPerPage, agrega una nueva página
+        if (index > 0 && indexInPage === 0) {
+          doc.addPage(); // Agrega una nueva página cuando el índice es un múltiplo de totalLabelsPerPage
+        }
+        doc.addImage(image, type, x, y, labelWidth, labelHeight); // Agrega la imagen
+        // doc.addImage(barcode(product.name), type, x + 75, y + 8, 15, 15); // Agrega el código de barras
+        doc.setFontSize(70);
+        doc.setFont('helvetica', 'bold');
+        // doc.text(product.name, x + 10, y + 22); // se agrega codigo corto
+        doc.text(product.name, x + 100, y + 30, { align: 'center' }); // se agrega codigo corto
+
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'normal');
+        const maxLineWidth = labelWidth - 20; // Ancho máximo para el texto
+        const textLines = doc.splitTextToSize(product.label, maxLineWidth); // Divide el texto en líneas
+        doc.text(textLines, x + 100, y + 52, { align: 'center' }); // Dibuja el texto dividido en la etiqueta
+        // doc.text(product.label.substring(0, 34), x + 10, y + 25); // descripcion de el producto
+        doc.setFontSize(12);
+        let ypri = y + 50
+        let yprincrement = 12
+
+        // product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
+        //   if (e.alias == "OFERTA") {
+        //     doc.setFontSize(35);
+        //     doc.setFont('helvetica', 'bold');
+        //     doc.text('Unico Precio', x + 60, ypri + i * yprincrement + 10);// alias de el precio
+        //     doc.setFontSize(50);
+        //     doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 64, ypri + i * yprincrement + 35);// valor de el precio
+        //   } else {
+        //     if (e.id === 1 || e.id === 4) {
+        //       doc.setFont('helvetica', 'bold');
+        //       doc.setFontSize(35);
+        //       let mosPro = e.alias === 'CAJ' ? 'A PARTIR DE 12' : e.alias;
+        //       let xla = e.alias === 'CAJ' ? 20 : x + 60;
+        //       doc.text(mosPro, xla, ypri + i * yprincrement + 15); // alias del precio
+        //       doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 115, ypri + i * yprincrement + 15); // valor del precio
+        //     }
+        //     // doc.setFont('helvetica', 'bold');
+        //     // doc.setFontSize(35);
+        //     // let mosPro = e.alias == 'CAJ' ? 'A PARTIR DE 12' : e.alias;
+        //     // let xla = e.alias == 'CAJ' ? 20 : x + 60;
+        //     // // doc.setFontSize(fnts);
+        //     // doc.text(mosPro, xla, ypri + i * yprincrement + 15);// alias de el precio
+
+        //     // doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 115, ypri + i * yprincrement + 15);// valor de el precio
+        //   }
+        // })
+        product.usedPrices
+          .filter(item => prices.val.includes(item.id))             // los que están en prices.val
+          .filter(e => e.alias === "OFERTA" || e.id === 1 || e.id === 4) // solo OFERTA, 1 y 4
+          .sort((a, b) => b.id - a.id) // ordenar por id descendente
+          .forEach((e, i) => {
+            if (e.alias === "OFERTA") {
+              doc.setFontSize(35);
+              doc.setFont('helvetica', 'bold');
+              doc.text('Unico Precio', x + 60, ypri + i * yprincrement + 10); // alias del precio
+              doc.setFontSize(50);
+              doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 64, ypri + i * yprincrement + 35); // valor del precio
+            } else if (e.alias === "CAJ") {
+              // Mostrar "A PARTIR" en una línea y "DE 12" en otra
+              doc.setFont('helvetica', 'bold');
+              doc.setFontSize(25); // tamaño más chico para que sea como párrafos
+              doc.text("A PARTIR", x + 60, ypri + i * yprincrement + 18);
+              doc.setFontSize(30); // tamaño más chico para que sea como párrafos
+              doc.text("DE 12", x + 60, ypri + i * yprincrement + 26);
+              doc.setFontSize(40); // tamaño más chico para que sea como párrafos
+              // Precio al mismo tamaño de letra que los párrafos
+              doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 115, ypri + i * yprincrement + 22);
+            } else {
+              doc.setFont('helvetica', 'bold');
+              doc.setFontSize(35);
+              doc.text(e.alias, x + 60, ypri + i * yprincrement + 30);
+                doc.setFontSize(40);
+              doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 115, ypri + i * yprincrement + 30);
+            }
+          });
+        //CONTINUA CODIGO
+        doc.setFontSize(50);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${product.code}`, x + 100, y + 45, { align: 'center' }); // codigo de el producto
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(20);
+        doc.text(`${product.pieces} PZS`, x + 100, y + 105, { align: 'center' }); // piezas por caja
+        doc.setFont('helvetica', 'bold');
+        doc.text(product.large, x + 100, y + 112, { align: 'center' }); // largo de el producto
+        doc.setFontSize(6)
+        doc.setFont('helvetica', 'normal');
+        doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 38, y + 114); //ubicacion de exhibicion de el producto
+      });
+      doc.save(`${nick} etiquetas ${name}`);
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+
 const barcode = (text) => {
   const qrData = text;
   const qrOptions = {
@@ -1893,4 +2023,4 @@ const plainMedium = (pdf, count, products, nick, zip) => {
 }
 
 
-export default { largeLabel, xtralargeLabel, mediumLabel, smallLabel, verticalLabel, toyBoys, toyGirls, xlargenina, xlargenino, Hlargenino, Hlargenina, xlargeExhnino, xlargeExhnina, HorizontalLabel, VerticalLabel };
+export default { largeLabel, xtralargeLabel, mediumLabel, smallLabel, verticalLabel, toyBoys, toyGirls, xlargenina, xlargenino, Hlargenino, Hlargenina, xlargeExhnino, xlargeExhnina, HorizontalLabel, VerticalLabel, Paquetes };

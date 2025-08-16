@@ -240,6 +240,8 @@ const mosPDF = ref({
     { id: 15, label: 'Horizontal 9 x 2' },
     { id: 13, label: 'Exhibicion Nino Mochila' },
     { id: 14, label: 'Exhibicion Nina Mochila' },
+    { id: 16, label: 'Paquetes Mochila' },
+
   ]
 })
 const prices = ref({
@@ -699,6 +701,22 @@ const pdf = () => {
       })
   } else if (mosPDF.value.val.id == 15) {
     labels.HorizontalLabel(products.value, VDB.session.credentials.nick, mosPDF.value.val.label,prices.value)
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
+      })
+      .catch(r => {
+        console.log(r);
+        alert('Hubo un error al descargar las etiquetas')
+      })
+  }else if (mosPDF.value.val.id == 16) {
+    labels.Paquetes(products.value, VDB.session.credentials.nick, mosPDF.value.val.label,prices.value)
       .then(r => {
         $q.notify({
           message: `Se Descargo las etiquetas Correctamente`,
