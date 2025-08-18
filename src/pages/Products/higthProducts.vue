@@ -300,7 +300,7 @@ const readFile = async () => {
       }
 
       if (mappedKey === 'cb') {
-        if (cell.length > 13) {
+        if (cell?.length > 13) {
           errores.value.data.push({ row: dataline, field: 'Mayor a 13 dígitos', value: cell, code: currentCode });
           hasError = true;
           break;
