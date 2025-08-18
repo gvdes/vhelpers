@@ -315,7 +315,7 @@ const readFile = async () => {
       }
 
       if (mappedKey === 'familia') {
-        familiaObj = layoutProduct.categories.find(p => p.alias === cell && p.root !== null);
+        familiaObj = layoutProduct.categories.find(p => p.alias.toUpperCase() === cell.toUpperCase() && p.root !== null);
         if (!familiaObj) {
           errores.value.data.push({ row: dataline, field: 'familia', value: cell, code: currentCode });
           hasError = true;
@@ -328,7 +328,7 @@ const readFile = async () => {
 
       if (mappedKey === 'categoria') {
         categoriaObj = layoutProduct.categories.find(p =>
-          p.alias === cell && familiaObj && p.root === familiaObj.id
+          p.alias.toUpperCase() === cell.toUpperCase() && familiaObj && p.root === familiaObj.id
         );
         if (!categoriaObj) {
           errores.value.data.push({ row: dataline, field: 'categoria', value: cell, code: currentCode });
