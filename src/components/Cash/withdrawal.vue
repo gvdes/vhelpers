@@ -40,6 +40,7 @@ import { exportFile, useQuasar, date } from 'quasar';
 import dayjs from 'dayjs';
 import { computed, ref, onMounted, watch } from 'vue';
 import cashApi from 'src/API/cashApi';
+import saleLocalApi from 'src/API/saleLocalApi';
 import orderApi from 'src/API/orderApi';
 const VDB = useVDBStore();
 const $q = useQuasar();
@@ -64,11 +65,12 @@ const withdrawals = ref({
 
 const table = ref({
   columns:[
-    {name:'codigo',label:'Codigo',field:r=>r.id},
-    {name:'fs_code',label:'Factusol',field:r=>r.fs_id},
-    {name:'provedor',label:'Provedor',field:r=>r.provider.name},
-    {name:'concept',label:'Concepto',field:r=>r.concept},
-    {name:'import',label:'Importe',field:r=>r.import},
+    {name:'fs_code',label:'code',field:r=>r.CODRET},
+    {name:'date',label:'Factusol',field:r=>r.FECHA},
+    {name:'hour',label:'Factusol',field:r=>r.HORA},
+    {name:'concept',label:'Factusol',field:r=>r.CONRET},
+    {name:'import',label:'Factusol',field:r=>r.IMPRET},
+    {name:'provedor',label:'Provedor',field:r=>r.NOFPRO},,
   ],
   pagination:{rowsPerPage:0}
 })
@@ -80,13 +82,14 @@ const consultWidrawal = async () => {
     cash: cashLYT.cash,
   }
   console.log(data);
-  const resp = await cashApi.getWithdrawals(data);
+  const resp = await saleLocalApi.getWithdrawal(data);
+  console.log(resp)
   if (resp.fail) {
     console.log(resp);
   } else {
     // console.log(resp);
     withdrawals.value.status = true
-    withdrawals.value.vals = resp
+    withdrawals.value.vals = resp.withdrawals
     $q.loading.hide();
   }
 
@@ -100,12 +103,12 @@ const createdWidrawal = async () => {
     withdrawal: withdrawal.value
   }
   console.log(data);
-  const resp = await cashApi.addWitrawal(data);
+  const resp = await saleLocalApi.addWithdrawal(data);
   if (resp.fail) {
     console.log(resp);
   } else {
     console.log(resp);
-    $q.notify({ message: `Retirada ${resp.retirada.fs_id} Creada`, type: 'positive', position: 'bottom' })
+    $q.notify({ message: `Retirada ${resp} Creada`, type: 'positive', position: 'bottom' })
     $q.loading.hide();
     reset()
   }
@@ -113,7 +116,11 @@ const createdWidrawal = async () => {
 
 const printRet = async  (a,b) =>{
   $q.loading.show({ message: 'RIMPRIMIENDO RETIRADA' })
-  const resp = await cashApi.reprintWithdrawal(b);
+  let data = {
+    cash:cashLYT.cash,
+    withdrawal:b.CODRET
+  }
+  const resp = await saleLocalApi.printWitrawal(data);
   if (resp.fail) {
     console.log(resp);
   } else {

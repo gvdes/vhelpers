@@ -14,14 +14,14 @@ export const useLayoutCash = defineStore('layout', {
     init:false,
     modules: [
       { id: 1, name: 'Retiradas de Efectivo', description: 'Realiza Retiradas', icon: "payments" },
-      { id: 2, name: 'Ingresos', description: 'Ingresos de efectivo', icon: "transit_enterexit" },
+      // { id: 2, name: 'Ingresos', description: 'Ingresos de efectivo', icon: "transit_enterexit" },
       { id: 3, name: 'Reimpresiones de Tickets', description: 'Realiza Reimpresion', icon: "print" },
       // { id: 4, name: 'Rutilizar Documento', description: 'Reutilizar Documento', icon: "autorenew" },
       { id: 5, name: 'Cierre de Caja', description: 'Realiza Cierre', icon: "logout" },
-      { id: 6, name: 'Devoluciones', description: 'Devoluciones de tickets', icon: "money_off" },
-      { id: 7, name: 'Modificaciones', description: 'Modificaciones de ticket', icon: "edit_note" },
-      { id: 8, name: 'Consulta', description: 'Consulta de tickets', icon: "query_stats" },
-      { id: 9, name: 'Crear Vales', description: 'Vales', icon: "confirmation_number" },
+      // { id: 6, name: 'Devoluciones', description: 'Devoluciones de tickets', icon: "money_off" },
+      // { id: 7, name: 'Modificaciones', description: 'Modificaciones de ticket', icon: "edit_note" },
+      // { id: 8, name: 'Consulta', description: 'Consulta de tickets', icon: "query_stats" },
+      // { id: 9, name: 'Crear Vales', description: 'Vales', icon: "confirmation_number" },
     ]
   }),
   getters: {

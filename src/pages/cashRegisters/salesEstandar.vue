@@ -25,15 +25,16 @@
 
       <q-btn flat round dense icon="receipt_long">
         <q-menu>
-            <q-list style="min-width: 100px">
-              <q-item>
-                <q-item-section>
-                    <q-select v-model="reut.val" :options="reut.opts" label="Tipo" filled dense />
-                    <q-separator spaced inset vertical dark />
-                    <q-input v-model="reut.valueVal" :type="reut.val.type" dense filled :label="reut.val.label" @keyup.enter="reutilizar" />
-                </q-item-section>
-              </q-item>
-            </q-list>
+          <q-list style="min-width: 100px">
+            <q-item>
+              <q-item-section>
+                <q-select v-model="reut.val" :options="reut.opts" label="Tipo" filled dense />
+                <q-separator spaced inset vertical dark />
+                <q-input v-model="reut.valueVal" :type="reut.val.type" dense filled :label="reut.val.label"
+                  @keyup.enter="reutilizar" />
+              </q-item-section>
+            </q-item>
+          </q-list>
         </q-menu>
       </q-btn>
 
@@ -169,6 +170,7 @@ import cashApi from 'src/API/cashApi';
 import orderApi from 'src/API/orderApi';
 import Resourse from 'src/API/resoursesOrder';
 import { layouts } from 'chart.js';
+import saleLocalApi from 'src/API/saleLocalApi';
 const VDB = useVDBStore();
 const $q = useQuasar();
 const $router = useRouter();
@@ -216,7 +218,7 @@ const product = ref({
 });
 
 const sale = ref({
-  client: null,
+  client:null,
   dependiente: null,
   products: []
 })
@@ -294,24 +296,24 @@ const columns = computed(() => {
     }
   ]
 
-  // Si IVA está activo, agregamos columnas de IVA y Total con IVA
-  if (config.value.option) {
-    cols.splice(6, 0, {
-      name: 'iva',
-      label: 'IVA',
-      field: row => row.pivot.total * (config.value.value / 100),
-      format: val => `$ ${val.toFixed(2)}`,
-      align: 'center'
-    })
+  // // Si IVA está activo, agregamos columnas de IVA y Total con IVA
+  // if (config.value.option) {
+  //   cols.splice(6, 0, {
+  //     name: 'iva',
+  //     label: 'IVA',
+  //     field: row => row.pivot.total * (config.value.value / 100),
+  //     format: val => `$ ${val.toFixed(2)}`,
+  //     align: 'center'
+  //   })
 
-    cols.push({
-      name: 'total',
-      label: 'Total c/IVA',
-      field: row => row.pivot.total * (1 + config.value.value / 100),
-      format: val => `$ ${val.toFixed(2)}`,
-      align: 'center'
-    })
-  }
+  //   cols.push({
+  //     name: 'total',
+  //     label: 'Total c/IVA',
+  //     field: row => row.pivot.total * (1 + config.value.value / 100),
+  //     format: val => `$ ${val.toFixed(2)}`,
+  //     align: 'center'
+  //   })
+  // }
 
   return cols
 })
@@ -456,6 +458,7 @@ const deleteProduct = (product) => {
 }
 
 const finallytck = async (pagos) => {
+
   $q.loading.show({ message: 'Realizando Ticket' })
   sale.value.payments = pagos
   // (Number(Number.parseFloat(modes.value.SFPA.val) + Number.parseFloat(modes.value.PFPA.val)) + Number.parseFloat(modes.value.VALE.val) - Number.parseFloat(props.total)).toFixed(2))
@@ -464,21 +467,20 @@ const finallytck = async (pagos) => {
     sale.value.subtotal = sale.value.products.reduce((a, c) => a + c.pivot.total, 0)
     sale.value.iva = config.value.value
     sale.value.total = Number(total.value * Number((1 + config.value.value / 100)).toFixed(2))
-    sale.value.products.forEach(a => {
-      a.pivot.iva = config.value.value
-      a.pivot.subtotal = a.pivot.total
-      a.pivot.total = a.pivot.total * (1 + config.value.value / 100)
-    })
+    sale.value.impuesto = Number(total.value * Number((config.value.value / 100))).toFixed(2)
   } else {
     sale.value.total = sale.value.products.reduce((a, c) => a + c.pivot.total, 0)
   }
 
   let data = {
     order: sale.value,
-    cashier: cashLYT.cash
+    cashier: cashLYT.cash,
+    config:config.value
   }
   console.log(data);
-  const resp = await cashApi.addSaleStandar(data);
+  const resp = await saleLocalApi.addSale(data)
+  console.log(resp)
+  // const resp = await cashApi.addSaleStandar(data);
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -553,6 +555,7 @@ const searchOrd = async (order) => {
         console.log(resp);
       }
     } else {
+      sale.value.order = order.valueVal;
       sale.value.dependiente = resp.staff
       sale.value.client = resp.client
       resp.products.forEach(newProduct => {

@@ -9,20 +9,22 @@
       </q-card-section>
       <q-card-section>
         <q-select v-model="cash.val.cashier.user" :options="cashiers" label="Cajero"
-          :option-label="opt => opt.staff.complete_name" option filled :disable="cash.val._status == 1" />
+          :option-label="opt => opt.staff.complete_name" option filled :disable="disableOpen" />
         <q-separator spaced inset vertical dark />
         <q-select v-model="cash.val.cashier.print" :options="printers" label="Impresora" option-label="name" filled
-          :disable="cash.val._status == 1" />
+          :disable="disableOpen" />
         <q-separator spaced inset vertical dark />
         <q-input v-model="cash.val.cashier.cash_start" type="number" label="Monto Inicial" filled
-          :disable="cash.val._status == 1" />
+          :disable="disableOpen" />
       </q-card-section>
       <q-card-actions align="left">
         <q-btn color="negative" icon="close" flat rounded @click="reset" />
         <q-space />
+        <!-- <div v-if="!disableOpen"> -->
         <q-btn color="positive" label="Abrir" @click="openCash" flat
-          v-if="cash.val._status == 2 && (VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'aux' || VDB.session.rol == 'root')" />
-        <q-btn color="positive" label="Ir" @click="redirect" flat v-if="cash.val._status == 1" />
+          v-if="cash.val._status == 2 && ['gen','aud','aux','root'].includes(VDB.session.rol) && !disableOpen" :disable="disableOpen || !cash.val.cashier.user || !cash.val.cashier.print" />
+        <q-btn color="positive" label="Ir" @click="redirect" flat v-if="cash.val?._status == 1"  />
+        <!-- </div> -->
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -77,6 +79,14 @@ const table = ref({
   pagination: { rowsPerPage: 0 }
 })
 
+const disableOpen = computed(() => {
+  const openDate = cash.value.val?.cashier?.open_date;
+  if (!openDate) return false;
+  const today = dayjs().format("YYYY-MM-DD");
+  const cashierDate = dayjs(openDate).format("YYYY-MM-DD");
+  console.log("Hoy:", today, "OpenDate:", cashierDate);
+  return cash.value.val?._status == 1 || today === cashierDate;
+});
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Cajas' });
@@ -102,16 +112,28 @@ const init = async () => {
 }
 
 const mosCash = (a, b) => {
-  console.log(b.name)
+  console.log(b)
+
   cash.value.state = true
+
+  const today = dayjs().format("YYYY-MM-DD")
+  const cashierDate = b.cashier?.open_date ? dayjs(b.cashier.open_date).format("YYYY-MM-DD") : null
+
+  console.log("Hoy:", today, "OpenDate:", cashierDate)
+
   if (b._status == 1) {
+    cash.value.val = b
+  } else if(b._status == 2 && today === cashierDate) {
     cash.value.val = b
   } else {
     nwOpnCash.value.id = b.id
     nwOpnCash.value.name = b.name
+    nwOpnCash.value.store = b.store
+    nwOpnCash.value._terminal = b._terminal
     cash.value.val = nwOpnCash.value
   }
 
+  console.log(cash.value.val);
 }
 
 const openCash = async () => {
@@ -120,7 +142,9 @@ const openCash = async () => {
     cashier: cash.value.val,
     uid: VDB.session.credentials.id
   }
+  console.log(data);
   const resp = await cashApi.openCash(data)
+  console.log(resp)
   if (resp.fail) {
     console.log(resp)
   } else {
