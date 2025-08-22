@@ -31,7 +31,7 @@
               <q-separator spaced inset vertical dark />
               <q-item-section>
                 <q-item-label class="text-bold text-center" caption> Recibe </q-item-label>
-                <q-item-label class="text-bold text-overline text-center "> {{ refund.val.receiptby.complete_name }}
+                <q-item-label class="text-bold text-overline text-center "> {{ refund.val?.receiptby?.complete_name }}
                 </q-item-label>
               </q-item-section>
             </q-item>

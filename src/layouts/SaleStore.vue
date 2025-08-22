@@ -469,7 +469,7 @@ const init = async () => {
   smonth.value.val = meses.filter(e => e.id === mes)[0]
   $q.loading.show({ message: "Cargando Informacion" });
   console.log("se inicia el init");
-  let url = `http://mx100-cedis-mkrqpwcczk.dynamic-m.com:3030/Assist/public/api/sales/getSale`
+  let url = `http://192.168.10.238:2902/Assist/public/api/sales/getSale`
   const resp = await axios.get(url);
   if (resp.error) {
     console.log(resp);
