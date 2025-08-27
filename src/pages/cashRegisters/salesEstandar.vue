@@ -184,16 +184,16 @@ const reut = ref({
   val: { id: 1, label: "Preventa", type: "number" },
   opts: [
     { id: 1, label: "Preventa", type: "number" },
-    { id: 2, label: "Particion", type: "number" },
-    { id: 3, label: "Presupuesto", type: "text" },
-    { id: 4, label: "Ticket", type: "number" },
+    // { id: 2, label: "Particion", type: "number" },
+    // { id: 3, label: "Presupuesto", type: "text" },
+    // { id: 4, label: "Ticket", type: "number" },
     // {id:1,label:"Preventa"},
   ],
   valueVal: null
 })
 const pivots = ref({
   amount: 0,
-  amountDelivered: 0,
+  amountDelivered: 1,
   price: 0,
   toDelivered: 0,
   total: 0,
@@ -218,7 +218,7 @@ const product = ref({
 });
 
 const sale = ref({
-  client:null,
+  client: null,
   dependiente: null,
   products: []
 })
@@ -320,33 +320,43 @@ const columns = computed(() => {
 
 const agregar = (ops) => {
   console.log(ops)
-  let inx = sale.value.products.findIndex(e => e.id == ops.id)
-  if (inx >= 0) {
-    product.value.val = sale.value.products[inx];
-    product.value.state = true
-    product.value.edit = true
+  let prices = ops.prices.map(e => e.pivot.price).includes(0)
+  if (!prices) {
+    // let inx = sale.value.products.findIndex(e => e.id == ops.id)
+    // if (inx >= 0) {
+      // product.value.val = sale.value.products[inx];
+      // product.value.state = true
+      // product.value.edit = true
+    // } else {
+      ops.pivot = pivots.value;
+      product.value.val = ops;
+      product.value.state = true
+      product.value.edit = false
+    // }
   } else {
-    ops.pivot = pivots.value;
-    product.value.val = ops;
-    product.value.state = true
-    product.value.edit = false
+    $q.notify({ message: 'El producto no tiene precio :/', type: 'negative', position: 'center' })
   }
-
 }
 
 const add = (opt) => {
   console.log(opt)
-  let inx = sale.value.products.findIndex(e => e.id == opt.id)
-  if (inx >= 0) {
-    product.value.val = sale.value.products[inx];
-    product.value.state = true
-    product.value.edit = true
+  let prices = opt.prices.map(e => e.pivot.price).includes(0)
+  if (!prices) {
+    // let inx = sale.value.products.findIndex(e => e.id == opt.id)
+    // if (inx >= 0) {
+      // product.value.val = sale.value.products[inx];
+      // product.value.state = true
+      // product.value.edit = true
+    // } else {
+      opt.pivot = pivots.value;
+      product.value.val = opt;
+      product.value.state = true
+      product.value.edit = false
+    // }
   } else {
-    opt.pivot = pivots.value;
-    product.value.val = opt;
-    product.value.state = true
-    product.value.edit = false
+    $q.notify({ message: 'El producto no tiene precio :/', type: 'negative', position: 'center' })
   }
+
 }
 
 const getProduct = (a, b) => {
@@ -458,7 +468,6 @@ const deleteProduct = (product) => {
 }
 
 const finallytck = async (pagos) => {
-
   $q.loading.show({ message: 'Realizando Ticket' })
   sale.value.payments = pagos
   // (Number(Number.parseFloat(modes.value.SFPA.val) + Number.parseFloat(modes.value.PFPA.val)) + Number.parseFloat(modes.value.VALE.val) - Number.parseFloat(props.total)).toFixed(2))
@@ -475,7 +484,7 @@ const finallytck = async (pagos) => {
   let data = {
     order: sale.value,
     cashier: cashLYT.cash,
-    config:config.value
+    config: config.value
   }
   console.log(data);
   const resp = await saleLocalApi.addSale(data)
@@ -506,7 +515,7 @@ const reset = () => {
   };
   pivots.value = {
     amount: 0,
-    amountDelivered: 0,
+    amountDelivered: null,
     price: 0,
     toDelivered: 0,
     total: 0,

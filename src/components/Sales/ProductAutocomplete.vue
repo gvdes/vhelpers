@@ -19,7 +19,6 @@
         popup-content-class="bg-darkl1">
         <template v-slot:no-option>
           <q-item>
-            <!-- <q-item-section avatar><q-img src="~/assets/chihuacry.png" width="50px" /></q-item-section> -->
             <q-item-section class="text-grey QuickRegular">Nada por aqui...</q-item-section>
           </q-item>
         </template>
@@ -32,30 +31,13 @@
         </template>
 
         <template v-slot:option="scope">
-          <!-- <q-item v-bind="scope.itemProps" v-on="scope.itemEvents" > -->
-          <q-item
-          v-bind="scope.itemProps"
-          @click="emite(scope.opt)"
-           :disable="block(scope.opt.stateToVal)">
-            <!-- <q-item-section avatar v-if="with_image">
-              <q-img src="~/assets/_boxprod.png" width="35px" />
-            </q-item-section> -->
-
+          <q-item v-bind="scope.itemProps" @click="emite(scope.opt)">
             <q-item-section>
               <div class="row items-center justify-between no-wrap QuickRegular">
                 <div class="col">
                   <div>{{ scope.opt.code }} <span class="text-grey-4 q-pl-md"> {{ scope.opt.name }}</span></div>
                   <div class="text--2 text-grey-5">{{ scope.opt.description }}</div>
-                  <div class="text--3">{{ scope.opt.stateToVal.state.name }}</div>
-                  <div class="text--3 text-amber-13" v-if="!scope.opt.stateToVal.own">Producto en conflicto con status
-                  </div>
-                  <!-- <div class="text--3">State branch: {{scope.opt.status}}</div>
-                                  <div class="text--3">StateToVal: {{scope.opt.stateToVal}}</div>
-                                  <div>{{block(scope.opt.stateToVal)}}</div> -->
                 </div>
-
-                <q-icon name="fas fa-circle" class="q-pl-md" :class="`bullet-${scope.opt.stateToVal.state.id}`"
-                  size="10px" />
               </div>
             </q-item-section>
           </q-item>
@@ -92,7 +74,7 @@ const props = defineProps({
   // "blockStates": { type: Array, default: () => [4, 5, 6] }
 })
 
-const emit = defineEmits(['input', 'similarcodes','agregar']);
+const emit = defineEmits(['input', 'similarcodes', 'agregar']);
 
 const data = ref({
   target: "",
@@ -105,8 +87,8 @@ const attrs = computed(() => {
   return {
     "autocomplete": data.value.target,
     "limit": props.limit,
-    "_workpoint":$user.session.store.id_viz,
-    "strict":data.read_barcode
+    "_workpoint": $user.session.store.id_viz,
+    "strict": data.value.read_barcode,
   }
 })
 const block = computed(() => { return st => props.checkState ? props.blockStates.some(e => e == st.state.id) : false; })
@@ -179,14 +161,13 @@ const similarCodes = (opts) => {
 }
 const search = () => {
   data.value.target.trim().toUpperCase();
-
   if (data.value.target.length) {
     data.value.iptsearch.processing = true;
-
+    console.log(attrs.value)
     dbproduct.autocomplete(attrs.value).then(done => {
       let resp = done.data;
 
-      switch (resp.length) {
+      switch (Object.keys(resp).length) {
         case 0:
           let code = data.value.target;
           $q.notify({
@@ -203,14 +184,9 @@ const search = () => {
 
         default:
           console.log("Perfecto, aqui esta tu producto");
-          console.log(resp[0])
-          selItem(resp[0]);
+          console.log(resp)
+          selItem(resp);
           break;
-
-        // default:
-        //   console.log(resp);
-        //   similarCodes(resp);
-        //   break;
       }
       data.value.target = "";
       data.value.iptsearch.processing = false;
@@ -228,13 +204,11 @@ const putFocus = () => {
 defineExpose({ focus: () => iptatc.value?.focus?.() })
 
 const emite = (a) => {
-  emit('agregar',a)
+  // console.log('Opción seleccionada:', a);
+  // data.value.target = a.id;       // asigna el valor al v-model
+  // iptatc.value.hidePopup?.();
+  emit('agregar', a)
 }
-
-
-
-
-
 </script>
 
 <style lang="scss" scoped>

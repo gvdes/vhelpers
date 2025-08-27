@@ -47,8 +47,25 @@
             <q-btn flat color="negative" icon="remove" class="text-h5"
               @click="product.pivot.amountDelivered > 1 ? product.pivot.amountDelivered-- : ''" />
 
-            <input type="number" min="1" v-model="product.pivot.amountDelivered" class="text-center exo"
-              style="width: 100px; font-size: 3em; border: none;" autofocus  @keydown.enter="edit ? editProduct() : addProduct()"/>
+            <q-input v-model.number="product.pivot.amountDelivered" type="number" outlined min="1" step="1"
+              input-class="text-center text-h3" style="width: 100px" autofocus
+              @keydown.enter="edit ? editProduct() : addProduct()"
+              @keypress="($event.key === '.' || $event.key === '-') && $event.preventDefault()" @update:model-value="val => {
+                if (!val) {
+                  product.pivot.amountDelivered = 1
+                }
+                else if (val < 1) {
+                  product.pivot.amountDelivered = 1
+                }
+                else if (!Number.isInteger(val)) {
+                  product.pivot.amountDelivered = Math.floor(val)
+                }
+              }" />
+
+            <!-- <q-input type="number" min="1" v-model="product.pivot.amountDelivered" class="text-center exo" step="1"
+              style="width: 100px; font-size: 3em; border: none;" autofocus  @keydown.enter="edit ? editProduct() : addProduct() " /> -->
+
+            <!-- <input /> -->
 
             <q-btn flat color="positive" icon="add" class="text-h5" @click="product.pivot.amountDelivered++" />
           </div>
@@ -90,10 +107,10 @@ const props = defineProps({
 
 
 
-const emit = defineEmits(['reset', 'addProduct', 'deleteProduct','editProduct'])
+const emit = defineEmits(['reset', 'addProduct', 'deleteProduct', 'editProduct'])
 
 const validDelivered = computed(() => !props.product.pivot.amountDelivered || props.product.pivot.amountDelivered <= 0)
-const totalPzs = computed(() => props.product.pivot._supply_by == 3 ? (props.product.pivot.amountDelivered * props.product.pieces) : props.product.pivot._supply_by == 2 ? (props.product.pivot.amountDelivered * 12) : props.product.pivot.amountDelivered)
+const totalPzs = computed(() => props.product.pivot.amountDelivered)
 
 
 const mostPrice = computed(() => {
@@ -106,9 +123,12 @@ const mostPrice = computed(() => {
 
 const selectPrice = computed(() => {
   if (props._price_list <= 3) {
-    if ((totalPzs.value >= props.product.pieces && (props.product.pivot._supply_by == 1 || props.product.pivot._supply_by == 2)) || props.product.pivot._supply_by == 3) {
+    // if ((totalPzs.value >= props.product.pieces && (props.product.pivot._supply_by == 1 || props.product.pivot._supply_by == 2)) || props.product.pivot._supply_by == 3) {
+    //   return 4;
+    // }
+    if (Resourse.verificarPrecioCaja(props.products, props.product, props.rules)) {
       return 4;
-    } else if (Resourse.verificarPrecioDocena(props.products, props.product, props.rules)) {
+    }  else if (Resourse.verificarPrecioDocena(props.products, props.product, props.rules)) {
       return 3;
     } else if (Resourse.verificarPrecioMayoreo(props.products, props.product, props.rules)) {
       return 2;
@@ -140,6 +160,9 @@ const editProduct = async () => {
 }
 
 const addProduct = async () => {
+  if (!props.product.pivot.amountDelivered || props.product.pivot.amountDelivered < 1) {
+    props.product.pivot.amountDelivered = 1
+  }
   $q.loading.show({ message: 'Agregando producto' })
   let price = props.product.prices.find(e => e.id == selectPrice.value).pivot.price
   let total = totalPzs.value * price

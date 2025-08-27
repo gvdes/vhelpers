@@ -107,7 +107,7 @@ import Vouchers from 'src/components/Cash/Voucher.vue';
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";
 import { exportFile, useQuasar, date } from 'quasar';
 import dayjs from 'dayjs';
-import { computed, ref, onMounted, watch } from 'vue';
+import { computed, ref, onMounted, watch, onBeforeUnmount } from 'vue';
 import cashApi from 'src/API/cashApi';
 import orderApi from 'src/API/orderApi';
 const VDB = useVDBStore();
@@ -188,7 +188,36 @@ onMounted(() => {
   if (!cashLYT.showtoolbar && $route.params.cid) {
     init()
   }
+  if (localStorage.getItem("app_open") === "true") {
+    // Ya existe otra sesión → NO cambiamos nada en localStorage
+    $q.notify({
+      message: "La aplicación ya está abierta en otra pestaña",
+      type: "negative",
+      position: "center"
+    })
+    $router.push("/")
+  } else {
+    localStorage.setItem("app_open", "true")
+    window.addEventListener("beforeunload", () => {
+      localStorage.setItem("app_open", "false")
+    })
+  }
+  window.addEventListener("storage", (event) => {
+    if (event.key === "app_open" && event.newValue === "true") {
+      $q.notify({
+        message: "Ya tienes la aplicación abierta en otra pestaña",
+        type: "warning",
+        position: "center"
+      })
+      $router.push("/")
+    }
+  })
+
 })
+onBeforeUnmount(() => {
+  localStorage.setItem("app_open", "false")
+});
+
 
 watch(() => $route.params.cid, (newVal) => {
   if (newVal) {

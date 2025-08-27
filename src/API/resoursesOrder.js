@@ -43,8 +43,6 @@ const verificarPrecioMayoreo = (prdts, product, rules) => {
 }
 
 const verificarPrecioDocena = (prdts, product, rules) => {
-  // console.log(product)
-  // console.log(prdts)
   const categoria = product.category.familia.seccion.id;
   const categoriaReglas = rules.find(e => e._category == categoria).rules;
   let model = 0;
@@ -54,11 +52,8 @@ const verificarPrecioDocena = (prdts, product, rules) => {
   if (!categoriaReglas) {
     return false;
   }
-
   let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
   let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  // console.log(prdts.filter(p => p.category.familia.id === product.category.familia.id));
-
   let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
   let inx = prdts.findIndex((e) => e.id == product.id);
   if (inx >= 0) {
@@ -69,10 +64,8 @@ const verificarPrecioDocena = (prdts, product, rules) => {
   } else {
     model = sameModel + Number(product.pivot.amountDelivered)
     family = sameFamily + Number(product.pivot.amountDelivered)
-    // console.log(family)
     distinct = distin + Number(product.pivot.amountDelivered)
   }
-  // console.log(family)
   for (const regla of categoriaReglas) {
     if (regla._type === 3) {
       if (regla.sameModel == 1 && model >= regla.min && (!regla.max || model <= regla.max)) {
@@ -89,6 +82,16 @@ const verificarPrecioDocena = (prdts, product, rules) => {
   return false
 }
 
+const verificarPrecioCaja = (prdts, product) => {
+  let model = 0;
+  let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  model = sameModel + Number(product.pivot.amountDelivered)
+  console.log(model)
+  if(model >= product.pieces){ return true}
+  return false
+}
+
+
 const actualizarPreciosProductos = async (products, order, rules) => {
   const productosCambiados = [];
 
@@ -103,7 +106,7 @@ const actualizarPreciosProductos = async (products, order, rules) => {
     let newPriceList = 0;
 
     if (order.client._price_list <= 3) {
-      if ((totalPzsTemp >= p.pieces && (p.pivot._supply_by == 1 || p.pivot._supply_by == 2)) || p.pivot._supply_by == 3) {
+      if (verificarPrecioCaja(products, p, rules)) {
         newPriceList = 4;
       } else if (verificarPrecioDocena(products, p, rules)) {
         newPriceList = 3;
@@ -165,7 +168,7 @@ const actualizarPreciosProductosSales = async (products,_price_list, rules,) => 
     let newPriceList = 0;
 
     if (_price_list <= 3) {
-      if ((totalPzsTemp >= p.pieces && (p.pivot._supply_by == 1 || p.pivot._supply_by == 2)) || p.pivot._supply_by == 3) {
+      if (verificarPrecioCaja(products, p, rules)) {
         newPriceList = 4;
       } else if (verificarPrecioDocena(products, p, rules)) {
         newPriceList = 3;
@@ -203,9 +206,9 @@ const actualizarPreciosProductosSales = async (products,_price_list, rules,) => 
 
 
 const totalPiezas = (pivot, pieces) => {
-  return pivot._supply_by == 3 ? (pivot.amountDelivered * pieces) : pivot._supply_by == 2 ? (pivot.amountDelivered * 12) : pivot.amountDelivered
+  return  pivot.amountDelivered
 }
 
 
 
-export default { verificarPrecioMayoreo, verificarPrecioDocena, actualizarPreciosProductos, actualizarPreciosProductosSales }
+export default { verificarPrecioMayoreo, verificarPrecioDocena, actualizarPreciosProductos, actualizarPreciosProductosSales,verificarPrecioCaja }
