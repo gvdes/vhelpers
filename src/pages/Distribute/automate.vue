@@ -88,7 +88,12 @@ const productTable = ref({
     { name: 'description', label: 'Descripcion', align: 'left', field: row => row.description },
     { name: 'supplyby', label: 'Surtir por ', align: 'left', field: row => { return row.pivot._supply_by == 1 ? 'Pieza' : row.pivot._supply_by == 3 ? 'Caja' : 'Docena' } },
     { name: 'amount', label: 'Cantidad', align: 'left', field: row => row.pivot.amount },
-    { name: 'piezas', label: 'Cantidad en Piezas', field: row => row.pivot.units }
+    { name: 'piezas', label: 'Cantidad en Piezas', align: 'left', field: row => row.pivot.units },
+    { name: 'transit', label: 'Transito', align: 'left', field: row => row.stocks[0]?.pivot.in_transit },
+    { name: 'stockSuc', label: 'Stock Sucursal', align: 'left', field: row => row.stocks[0]?.pivot.stock },
+    { name: 'min', label: 'MIN', align: 'left', field: row => row.stocks[0]?.pivot.min },
+    { name: 'max', label: 'MAX', align: 'left', field: row => row.stocks[0]?.pivot.max },
+
   ],
   filter: ''
 })
@@ -212,7 +217,11 @@ const exportTable = async () => {
       row.description,
       row.pivot._supply_by == 1 ? 'Pieza' : row.pivot._supply_by == 3 ? 'Caja' : 'Docena',
       row.pivot.amount,
-      row.pivot.units
+      row.pivot.units,
+      row.stocks[0]?.pivot.in_transit,
+      row.stocks[0]?.pivot.stock,
+      row.stocks[0]?.pivot.min,
+      row.stocks[0]?.pivot.max
     ])
   });
 
