@@ -333,17 +333,17 @@ const agregar = (ops) => {
   console.log(ops)
   let prices = ops.prices.map(e => e.pivot.price).includes(0)
   if (!prices) {
-    // let inx = sale.value.products.findIndex(e => e.id == ops.id)
-    // if (inx >= 0) {
-    // product.value.val = sale.value.products[inx];
-    // product.value.state = true
-    // product.value.edit = true
-    // } else {
+    let inx = sale.value.products.findIndex(e => e.id == ops.id)
+    if (inx >= 0) {
+    product.value.val = sale.value.products[inx];
+    product.value.state = true
+    product.value.edit = true
+    } else {
     ops.pivot = pivots.value;
     product.value.val = ops;
     product.value.state = true
     product.value.edit = false
-    // }
+    }
   } else {
     $q.notify({ message: 'El producto no tiene precio :/', type: 'negative', position: 'center' })
   }
@@ -353,17 +353,17 @@ const add = (opt) => {
   console.log(opt)
   let prices = opt.prices.map(e => e.pivot.price).includes(0)
   if (!prices) {
-    // let inx = sale.value.products.findIndex(e => e.id == opt.id)
-    // if (inx >= 0) {
-    // product.value.val = sale.value.products[inx];
-    // product.value.state = true
-    // product.value.edit = true
-    // } else {
+    let inx = sale.value.products.findIndex(e => e.id == opt.id)
+    if (inx >= 0) {
+    product.value.val = sale.value.products[inx];
+    product.value.state = true
+    product.value.edit = true
+    } else {
     opt.pivot = pivots.value;
     product.value.val = opt;
     product.value.state = true
     product.value.edit = false
-    // }
+    }
   } else {
     $q.notify({ message: 'El producto no tiene precio :/', type: 'negative', position: 'center' })
   }
@@ -612,12 +612,12 @@ const searchOrd = async (order) => {
         console.log(newProduct)
         const existing = sale.value.products.find(p => p.id === newProduct.id)
 
-        const newUnits = newProduct.pivot?.amountDelivered || 0
+        const newUnits = newProduct.pivot?.units || 0
         if (existing) {
           if (!existing.pivot) {
-            existing.pivot = { amountDelivered: 0 }
+            existing.pivot = { units: 0 }
           }
-          existing.pivot.amountDelivered += newUnits
+          existing.pivot.units += newUnits
         } else {
           sale.value.products.push({ ...newProduct })
         }

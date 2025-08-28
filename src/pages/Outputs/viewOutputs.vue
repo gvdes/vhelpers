@@ -198,7 +198,7 @@ const init = async () => {
   } else {
     console.log(resp)
     $q.loading.hide();
-    if (VDB.session.rol == 'aud' || VDB.session.rol == 'audc') {
+    if (VDB.session.rol == 'aud' || VDB.session.rol == 'audc' || VDB.session.rol == 'root') {
       salida.value = resp
       products.value = resp.bodie
       console.log(salida.value)
