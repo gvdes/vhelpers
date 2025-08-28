@@ -37,6 +37,21 @@
           </q-list>
         </q-menu>
       </q-btn>
+      <q-btn icon="delete_sweep" @click="sumPrices" flat round dense title="Eliminar Productos" />
+      <q-btn icon="notes" flat round dense title="Agregar Notas" >
+        <q-menu>
+          <q-list style="min-width: 100px">
+            <q-item>
+              <q-item-section>
+                <q-input v-model="sale.observation" type="text" label="Observacion" />
+              </q-item-section>
+            </q-item>
+            <q-separator />
+
+          </q-list>
+        </q-menu>
+      </q-btn>
+
 
     </q-toolbar>
     <q-card class="my-card ">
@@ -75,11 +90,23 @@
         </div>
       </q-card-section>
     </q-card>
-
+    <q-separator spaced inset vertical dark />
+    <q-input class="q-ml-md q-mr-md" v-model="table.filter" type="text" label="Buscar" filled dense/>
     <q-separator spaced inset vertical dark />
 
-    <q-table :rows="sale.products" :columns="columns" hide-bottom :pagination="table.pagination"
-      @row-click="getProduct" />
+    <div class="row q-ml-sm q-mr-sm">
+      <div class="col" v-if="bascketProductInVerified.length > 0">
+        <q-table :rows="bascketProductInVerified" :columns="columns" hide-bottom :pagination="table.pagination"
+          @row-click="getProduct" :filter="table.filter" />
+      </div>
+      <q-separator spaced inset vertical dark  v-if="bascketProductInVerified.length > 0" />
+      <div class="col" >
+        <q-table  :rows="bascketProductVerified" :columns="columns" hide-bottom :pagination="table.pagination"
+          @row-click="getProduct" :filter="table.filter" />
+
+      </div>
+    </div>
+
 
     <q-dialog v-model="product.state" persistent position="bottom">
       <viewProduct :product="product.val" :_price_list="clients.val ? clients.val._price_list : 1" :edit="product.edit"
@@ -231,8 +258,18 @@ const sale = ref({
     "store_name": null
   },
   dependiente: VDB.session.credentials.staff,
-  products: []
+  products: [],
+  observation:null,
 })
+
+const bascketProductVerified = computed(() => {
+  return (sale.value.products || []).filter(e => e.pivot.toDelivered > 0)
+})
+
+const bascketProductInVerified = computed(() => {
+  return (sale.value.products || []).filter(e => !e.pivot.toDelivered)
+})
+
 
 const endSale = ref(false)
 
@@ -248,7 +285,8 @@ const table = ref({
     { name: 'neto', label: 'Total', field: r => r.pivot.total, align: 'center' },
 
   ],
-  pagination: { rowsPerPage: 0 }
+  pagination: { rowsPerPage: 0 },
+  filter:null
 })
 const tableClients = ref({
   columns: [
@@ -335,14 +373,14 @@ const agregar = (ops) => {
   if (!prices) {
     let inx = sale.value.products.findIndex(e => e.id == ops.id)
     if (inx >= 0) {
-    product.value.val = sale.value.products[inx];
-    product.value.state = true
-    product.value.edit = true
+      product.value.val = sale.value.products[inx];
+      product.value.state = true
+      product.value.edit = true
     } else {
-    ops.pivot = pivots.value;
-    product.value.val = ops;
-    product.value.state = true
-    product.value.edit = false
+      ops.pivot = pivots.value;
+      product.value.val = ops;
+      product.value.state = true
+      product.value.edit = false
     }
   } else {
     $q.notify({ message: 'El producto no tiene precio :/', type: 'negative', position: 'center' })
@@ -355,14 +393,14 @@ const add = (opt) => {
   if (!prices) {
     let inx = sale.value.products.findIndex(e => e.id == opt.id)
     if (inx >= 0) {
-    product.value.val = sale.value.products[inx];
-    product.value.state = true
-    product.value.edit = true
+      product.value.val = sale.value.products[inx];
+      product.value.state = true
+      product.value.edit = true
     } else {
-    opt.pivot = pivots.value;
-    product.value.val = opt;
-    product.value.state = true
-    product.value.edit = false
+      opt.pivot = pivots.value;
+      product.value.val = opt;
+      product.value.state = true
+      product.value.edit = false
     }
   } else {
     $q.notify({ message: 'El producto no tiene precio :/', type: 'negative', position: 'center' })
@@ -507,7 +545,8 @@ const finallytck = async (pagos) => {
     console.log(resp);
     endSale.value = false;
     let current_sale = {
-      client:{ "id": 0,
+      client: {
+        "id": 0,
         "name": "PUBLICO EN GENERAL",
         "phone": "",
         "email": "",
@@ -516,9 +555,11 @@ const finallytck = async (pagos) => {
         "created_at": "2020-12-28T07:00:00.000000Z",
         "updated_at": null,
         "_price_list": 1,
-        "store_name": null},
-      dependiente:sale.value.dependiente,
-      products:[]
+        "store_name": null
+      },
+      dependiente: sale.value.dependiente,
+      products: [],
+      observation: null
     }
     sale.value = current_sale;
     // sale.value.client = {
@@ -627,6 +668,10 @@ const searchOrd = async (order) => {
       $q.loading.hide();
     }
   }
+}
+
+const sumPrices = () => {
+  sale.value.products = [];
 }
 
 
