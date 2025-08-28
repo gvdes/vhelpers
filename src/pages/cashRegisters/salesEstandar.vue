@@ -218,8 +218,19 @@ const product = ref({
 });
 
 const sale = ref({
-  client: null,
-  dependiente: null,
+  client: {
+    "id": 0,
+    "name": "PUBLICO EN GENERAL",
+    "phone": "",
+    "email": "",
+    "rfc": "",
+    "address": "{\"cp\": 6300, \"calle\": \"PLAZA DE LOS ANGELEES 5\", \"colonia\": \"Guerrero\", \"municipio\": \"Deleg. Cuauhtemoc CDMX\"}",
+    "created_at": "2020-12-28T07:00:00.000000Z",
+    "updated_at": null,
+    "_price_list": 1,
+    "store_name": null
+  },
+  dependiente: VDB.session.credentials.staff,
   products: []
 })
 
@@ -324,14 +335,14 @@ const agregar = (ops) => {
   if (!prices) {
     // let inx = sale.value.products.findIndex(e => e.id == ops.id)
     // if (inx >= 0) {
-      // product.value.val = sale.value.products[inx];
-      // product.value.state = true
-      // product.value.edit = true
+    // product.value.val = sale.value.products[inx];
+    // product.value.state = true
+    // product.value.edit = true
     // } else {
-      ops.pivot = pivots.value;
-      product.value.val = ops;
-      product.value.state = true
-      product.value.edit = false
+    ops.pivot = pivots.value;
+    product.value.val = ops;
+    product.value.state = true
+    product.value.edit = false
     // }
   } else {
     $q.notify({ message: 'El producto no tiene precio :/', type: 'negative', position: 'center' })
@@ -344,14 +355,14 @@ const add = (opt) => {
   if (!prices) {
     // let inx = sale.value.products.findIndex(e => e.id == opt.id)
     // if (inx >= 0) {
-      // product.value.val = sale.value.products[inx];
-      // product.value.state = true
-      // product.value.edit = true
+    // product.value.val = sale.value.products[inx];
+    // product.value.state = true
+    // product.value.edit = true
     // } else {
-      opt.pivot = pivots.value;
-      product.value.val = opt;
-      product.value.state = true
-      product.value.edit = false
+    opt.pivot = pivots.value;
+    product.value.val = opt;
+    product.value.state = true
+    product.value.edit = false
     // }
   } else {
     $q.notify({ message: 'El producto no tiene precio :/', type: 'negative', position: 'center' })
@@ -495,15 +506,45 @@ const finallytck = async (pagos) => {
   } else {
     console.log(resp);
     endSale.value = false;
-    sale.value = {
-      client: null,
-      dependiente: null,
-      products: []
+    let current_sale = {
+      client:{ "id": 0,
+        "name": "PUBLICO EN GENERAL",
+        "phone": "",
+        "email": "",
+        "rfc": "",
+        "address": "{\"cp\": 6300, \"calle\": \"PLAZA DE LOS ANGELEES 5\", \"colonia\": \"Guerrero\", \"municipio\": \"Deleg. Cuauhtemoc CDMX\"}",
+        "created_at": "2020-12-28T07:00:00.000000Z",
+        "updated_at": null,
+        "_price_list": 1,
+        "store_name": null},
+      dependiente:sale.value.dependiente,
+      products:[]
     }
+    sale.value = current_sale;
+    // sale.value.client = {
+    //   // client: {
+    //     "id": 0,
+    //     "name": "PUBLICO EN GENERAL",
+    //     "phone": "",
+    //     "email": "",
+    //     "rfc": "",
+    //     "address": "{\"cp\": 6300, \"calle\": \"PLAZA DE LOS ANGELEES 5\", \"colonia\": \"Guerrero\", \"municipio\": \"Deleg. Cuauhtemoc CDMX\"}",
+    //     "created_at": "2020-12-28T07:00:00.000000Z",
+    //     "updated_at": null,
+    //     "_price_list": 1,
+    //     "store_name": null
+    //   // },
+    //   // dependiente: null,
+    //   // products: []
+    // }
+    // sale.value.products = [];
+
+
     config.value.value = 0
     config.value.option = false
-    localStorage.removeItem('current_sale')
+    // localStorage.removeItem('current_sale')
     $q.loading.hide();
+
   }
 }
 
@@ -571,12 +612,12 @@ const searchOrd = async (order) => {
         console.log(newProduct)
         const existing = sale.value.products.find(p => p.id === newProduct.id)
 
-        const newUnits = newProduct.pivot?.units || 0
+        const newUnits = newProduct.pivot?.amountDelivered || 0
         if (existing) {
           if (!existing.pivot) {
-            existing.pivot = { units: 0 }
+            existing.pivot = { amountDelivered: 0 }
           }
-          existing.pivot.units += newUnits
+          existing.pivot.amountDelivered += newUnits
         } else {
           sale.value.products.push({ ...newProduct })
         }

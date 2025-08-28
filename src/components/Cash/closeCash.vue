@@ -13,7 +13,7 @@
         <div v-for="(mone, index) in closeBox.Monedas" class="">
           <div class="row flex justify-center">
             <div class="col text-overline">$ {{ mone.key }}</div>
-            <div class="col"><q-input v-model="mone.val" type="number" dense outlined /></div>
+            <div class="col"><q-input v-model="mone.val" type="number" dense outlined min="0" step="1" @keypress="onlyNumbers"  @blur="() => { if (mone.val === null || mone.val === '') mone.val = 0 }" /></div>
             <q-separator spaced inset vertical dark />
             <div class="col text-overline text-bold"> ${{ mone.key * mone.val }} </div>
             <q-separator spaced inset vertical dark />
@@ -27,7 +27,7 @@
         <div v-for="(mone, index) in closeBox.Billetes" class="">
           <div class="row flex justify-center">
             <div class="col text-overline">$ {{ mone.key }}</div>
-            <div class="col"><q-input v-model="mone.val" type="number" dense outlined /></div>
+            <div class="col"><q-input v-model="mone.val" type="number" dense outlined min="0" step="1" @keypress="onlyNumbers" @blur="() => { if (mone.val === null || mone.val === '') mone.val = 0 }"   /></div>
             <q-separator spaced inset vertical dark />
             <div class="col text-overline text-bold"> ${{ mone.key * mone.val }} </div>
             <q-separator spaced inset vertical dark />
@@ -38,8 +38,8 @@
 
     </q-card-section>
     <q-card-actions align="right">
-      <q-btn flat label="Cancelar" color="negative" @click="cashLYT.closeDialogModule()" />
-      <q-btn flat label="Cerrar Caja" color="positive" @click="boxClose" />
+      <q-btn flat label="Cancelar" color="negative" @click="cashLYT.closeDialogModule()"  />
+      <q-btn flat label="Cerrar Caja" color="positive" @click="boxClose" :disable="total != 5000" />
     </q-card-actions>
   </q-card>
 </template>
@@ -99,6 +99,11 @@ const boxClose = async () => {
     $router.push('/cashRegisters')
     cashLYT.closeDialogModule()
     $q.loading.hide();
+  }
+}
+const onlyNumbers = (e) => {
+  if (!/[0-9]/.test(e.key)) {
+    e.preventDefault()
   }
 }
 

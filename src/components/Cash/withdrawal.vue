@@ -19,7 +19,7 @@
     <q-card-actions>
       <q-btn flat icon="close" color="negative" @click="reset" />
       <q-space />
-      <q-btn flat icon="send" color="positive" @click="createdWidrawal" />
+      <q-btn flat icon="send" color="positive" @click="createdWidrawal" :disable="!validForm" />
     </q-card-actions>
   </q-card>
 
@@ -74,6 +74,8 @@ const table = ref({
   ],
   pagination:{rowsPerPage:0}
 })
+
+const validForm = computed(() => withdrawal.value.concept && withdrawal.value.import > 0 && withdrawal.value.providers.val )
 
 
 const consultWidrawal = async () => {
