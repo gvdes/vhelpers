@@ -22,7 +22,9 @@ const vizapi = axios.create({ baseURL: 'https://vizapp.gvizpru.com/api/LVH' });
 // const assist = axios.create({ baseURL: 'https://f8t8pzj4-1920.usw3.devtunnels.ms/Assist/public/api'});
 // const assist = axios.create({ baseURL: 'http://192.168.1.80:1920/Assist/public/api'});
 // const assist = axios.create({ baseURL: 'http://192.168.12.114:1920/Assist/public/api'});
-const assist = axios.create({ baseURL: 'http://192.168.10.238:2902/Assist/public/api'});
+// const assist = axios.create({ baseURL: 'http://192.168.10.238:2902/Assist/public/api'});
+const assist = axios.create({ baseURL: 'https://vhelpers.gvizpru.com/api/api'});
+
 
 
 
