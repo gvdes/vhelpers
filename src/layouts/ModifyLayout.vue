@@ -5,6 +5,11 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+    </q-header>
+
+    <q-page-container>
+      <!-- This is where pages get injected -->
+      <!-- <router-view /> -->
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">TICKETS</span></div>
         <q-btn color="primary" icon="add">
@@ -21,10 +26,6 @@
           </q-menu>
         </q-btn>
       </q-toolbar>
-    </q-header>
-    <q-page-container>
-      <!-- This is where pages get injected -->
-      <!-- <router-view /> -->
 
 
       <q-page class="bg-grey-3" padding>
@@ -274,7 +275,8 @@
                   <div class="row text-center items-center">
                     <div class="col"> Forma de pago: </div>
                     <div class="col"> <q-select class="col-3" v-model="modes.EFE.id" :options="paymeths"
-                        option-value="id" option-label="desc" dense filled label="Forma de pago" :option-disable="(val) => optionDisabled(val)">
+                        option-value="id" option-label="desc" dense filled label="Forma de pago"
+                        :option-disable="(val) => optionDisabled(val)">
                       </q-select> </div>
                   </div>
                   <q-separator spaced inset vertical dark />
@@ -293,12 +295,15 @@
                 </q-card-section>
                 <q-card-section>
                   <div class="row flex justify-center ">
-                    <div  class="col flex justify-center">
-                      <q-btn  color="primary" label="2ª Forma de pago" @click="()=> {dafpa = !dafpa; modes.DIG.val = 0; modes.DIG.id = null;  }" outline rounded dense size="md" style="width: 70%;"  />
+                    <div class="col flex justify-center">
+                      <q-btn color="primary" label="2ª Forma de pago"
+                        @click="() => { dafpa = !dafpa; modes.DIG.val = 0; modes.DIG.id = null; }" outline rounded dense
+                        size="md" style="width: 70%;" />
                     </div>
                     <div class="col" v-if="dafpa">
                       <q-select class="col-3" v-model="modes.DIG.id" :options="paymeths" label="Forma Pago"
-                        option-value="id" option-label="desc" dense filled :option-disable="(val) => optionDisable(val)">
+                        option-value="id" option-label="desc" dense filled
+                        :option-disable="(val) => optionDisable(val)">
                       </q-select>
                     </div>
                   </div>
@@ -446,7 +451,7 @@ const paymeths = [
   { id: "TSA", desc: "TARJETA C/D SANTANDER" },
   { id: "TDB", desc: "TRA/DEP BANCOMER" },
   { id: "TDA", desc: "TRA/DEP Santander" },
-  { id: "TDS", desc: "TRA/DEP Scotiabank" },
+  // { id: "TDS", desc: "TRA/DEP Scotiabank" },
   { id: "C30", desc: "CREDITO" },
 ]
 
@@ -458,14 +463,14 @@ const productos = computed(() => tickmod.value.body.product)
 const ala = computed(() => (((impresoras.value.val) && ((mod.value == "Devolucion" && motivo.value.length > 10) || (mod.value == "Reimpresion"))) || mod.value == "Modificacion"))
 const cambio = computed(() => (Number.parseFloat(modes.value.DIG.val) + Number.parseFloat(modes.value.EFE.val) + Number.parseFloat(val1.value)) - totm.value)
 const retirada = computed(() => {
-  if ((modes.value.DIG.id?.id != 'EFE' && Number.parseFloat(modes.value.DIG.val) && (Number.parseFloat(modes.value.DIG.val) > totm.value) && Number.parseFloat(modes.value.EFE.val) == 0) || (modes.value.EFE.id?.id != 'EFE' &&  Number.parseFloat(modes.value.EFE.val) && (Number.parseFloat(modes.value.EFE.val) > totm.value) && Number.parseFloat(modes.value.DIG.val) == 0)) {
+  if ((modes.value.DIG.id?.id != 'EFE' && Number.parseFloat(modes.value.DIG.val) && (Number.parseFloat(modes.value.DIG.val) > totm.value) && Number.parseFloat(modes.value.EFE.val) == 0) || (modes.value.EFE.id?.id != 'EFE' && Number.parseFloat(modes.value.EFE.val) && (Number.parseFloat(modes.value.EFE.val) > totm.value) && Number.parseFloat(modes.value.DIG.val) == 0)) {
     return true
   } else {
     return false
   }
 })
 
-const valpag = computed(() => cambio.value >= 0 && ((modes.value.EFE.id?.id && modes.value.EFE.val > 0 )|| (modes.value.DIG.id?.id  && modes.value.DIG.val > 0)) )
+const valpag = computed(() => cambio.value >= 0 && ((modes.value.EFE.id?.id && modes.value.EFE.val > 0) || (modes.value.DIG.id?.id && modes.value.DIG.val > 0)))
 
 
 const index = async () => {
@@ -495,7 +500,7 @@ const search = async () => {
   ticket.value.body = null;
   let ser = cashdesk.value;
   let fol = folio.value;
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let url = `http://${host}/access/public/modify/getTicket?serie=${ser}&folio=${fol}`;
 
 
@@ -516,7 +521,7 @@ const search = async () => {
 }
 
 const envia = async () => {
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
   if (mod.value == "Devolucion") {
     datenv.value = true
@@ -639,7 +644,7 @@ const cambiocliente = async () => {
   console.log("cambio de cliente");
   let client = clifac.value;
   console.log(client)
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let rux = `http://${host}/access/public/modify/getClient?client=${client}`;
   axios.get(rux)
     .then(done => {
@@ -676,7 +681,7 @@ const searchproduct = async () => {
   }
   let bpec = tickmod.value.body.product.findIndex((a) => a.ARTICULO == sarchpro.value)
   if (bpec == -1) {
-    let host = VDB.session.store.ip;
+    let host = VDB.session.store.ip_address;
     let impr = `http://${host}/access/public/modify/getProduct`;
     axios.get(impr, { params: envl })
       .then(done => {
@@ -744,7 +749,7 @@ const recalcular = () => {
     cliente: clmd,
     productos: prmod
   }
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   let riwo = `http://${host}/access/public/modify/getPrices`;
   axios.get(riwo, { params: envm })
     .then(done => {
@@ -780,7 +785,7 @@ const edpro = () => {
 const buscarvales = async () => {
   if (valecli.value.val == "SI") {
     console.log("Buscando vales");
-    let host = VDB.session.store.ip;
+    let host = VDB.session.store.ip_address;
     let impr = `http://${host}/access/public/modify/vales?price=${clifac.value}`;
     axios.get(impr)
       .then(done => {
@@ -808,8 +813,8 @@ const mosimp = () => stateimp.value = true
 
 
 const terminar = async () => {
-  $q.loading.show({message:'Realizando Devolucion'})
-  let host = VDB.session.store.ip;
+  $q.loading.show({ message: 'Realizando Devolucion' })
+  let host = VDB.session.store.ip_address;
   let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
   console.log("Realizando proceso de modificacion de tickeet");
   let tickdev = {
@@ -855,11 +860,11 @@ const terminar = async () => {
         color: "positive",
         position: "center"
       });
-  $q.loading.hide()
-  $q.loading.show({message:'Realizando Factura'})
+      $q.loading.hide()
+      $q.loading.show({ message: 'Realizando Factura' })
       let nwtck = `http://${host}/access/public/modify/nwtck`;
       axios.post(nwtck, ticknw)
-      // .then(r=> console.log(r));
+        // .then(r=> console.log(r));
         .then(p => {
 
           $q.notify({
@@ -935,26 +940,26 @@ const terminar = async () => {
 }
 
 const optionDisable = (val) => {
-  if(val.id == modes.value.EFE.id?.id){
+  if (val.id == modes.value.EFE.id?.id) {
     return true
   }
   return false
 }
 
 const optionDisabled = (val) => {
-  if(val.id == modes.value.DIG.id?.id){
+  if (val.id == modes.value.DIG.id?.id) {
     return true
   }
   return false
 }
 
-if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
+// if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
   index()
-}else{
-  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
-  $router.replace('/');
+// } else {
+//   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+//   $router.replace('/');
 
-}
+// }
 
 
 index();

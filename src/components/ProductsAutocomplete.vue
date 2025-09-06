@@ -15,7 +15,7 @@
     <template v-else>
       <q-select dense filled color="blue-13" class="text-uppercase col" ref="iptatc" use-input hide-dropdown-icon
         option-value="id" option-label="id" hide-selected behavior="menu" v-model="data.target" :input-debounce="400"
-        autofocus :options="data.options" :type="data.iptsearch.type" @filter="autocomplete" @input="selItem"
+        autofocus :options="data.options" :type="data.iptsearch.type" @filter="autocomplete"
         popup-content-class="bg-darkl1">
         <template v-slot:no-option>
           <q-item>
@@ -84,9 +84,11 @@ const props = defineProps({
   "with_locations": { default: null, type: Boolean },
   "with_image": { default: null, type: Boolean },
   "with_prices": { default: null, type: Boolean },
+  "with_prices_Invoice": { default: null, type: Boolean },
   "with_stock": { default: null, type: Boolean },
   "checkState": { default: true, type: Boolean },
   "workpointStatus": { default: null, type: [Array, String] },
+  "withHistoric":{ default: null, type: Boolean },
   "wkpToVal": { default: null, type: Number },
   "blockStates": { type: Array, default: () => [4, 5, 6] }
 })
@@ -110,6 +112,7 @@ const attrs = computed(() => {
     "with_stock": props.with_stock,
     "check_stock": props.check_stock,
     "with_prices": props.with_prices,
+    "withHistoric": props.withHistoric,
     "_celler": props._celler,
     "limit": props.limit,
     "_workpoint_status": props.workpointStatus,
@@ -191,6 +194,7 @@ const search = () => {
     data.value.iptsearch.processing = true;
 
     dbproduct.autocomplete(attrs.value).then(done => {
+      console.log(attrs.value)
       let resp = done.data;
 
       switch (resp.length) {
@@ -208,15 +212,16 @@ const search = () => {
           putFocus();
           break;
 
-        case 1:
+        default:
           console.log("Perfecto, aqui esta tu producto");
+          console.log(resp[0])
           selItem(resp[0]);
           break;
 
-        default:
-          console.log(resp);
-          similarCodes(resp);
-          break;
+        // default:
+        //   console.log(resp);
+        //   similarCodes(resp);
+        //   break;
       }
       data.value.target = "";
       data.value.iptsearch.processing = false;
@@ -228,6 +233,8 @@ const putFocus = () => {
   console.log("putFocus ejecutada!!");
   iptatc.value.focus();
 }
+
+defineExpose({ focus: () => iptatc.value?.focus?.() })
 
 const emite = (a) => {
   emit('agregar',a)

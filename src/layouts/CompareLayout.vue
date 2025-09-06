@@ -4,23 +4,24 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+
+
+    <q-page-container>
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Comparativo</span>
         </div>
         <q-btn color="primary" icon="delete" flat @click="reset" :disable="!secciones.val" />
       </q-toolbar>
-    </q-header>
-
-
-    <q-page-container>
       <q-page padding>
         <q-card class="my-card">
           <q-card-section class="row">
-            <q-select class="col" v-model="secciones.val" :options="secciones.opts" label="Seccion" option-label="name" multiple
-              filled @blur="report" />
+            <q-select class="col" v-model="secciones.val" :options="secciones.opts" label="Seccion" option-label="name"
+              multiple filled @blur="report" />
             <q-separator spaced inset vertical dark />
             <q-select class="col" v-model="categories.familias.val" :options="categories.familias.opts" label="Familia"
-              filled option-label="name" :disable="!secciones.val" @update:model-value="categorys" >
+              filled option-label="name" :disable="!secciones.val" @update:model-value="categorys">
               <template v-if="categories.familias.val" v-slot:append>
                 <q-icon name="cancel" @click.stop.prevent="categories.familias.val = null" class="cursor-pointer" />
               </template>
@@ -38,7 +39,7 @@
 
         <q-table :rows="bascket" :columns="table.columns" :pagination="table.pagination">
           <template v-slot:top-right>
-            <q-btn color="primary" icon-right="archive" flat @click="exportTable" :disable="bascket.length <= 0 " />
+            <q-btn color="primary" icon-right="archive" flat @click="exportTable" :disable="bascket.length <= 0" />
           </template>
         </q-table>
 
@@ -106,7 +107,7 @@ const table = ref({
     { name: 'total', label: 'Total', align: 'center', field: row => Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) },
     { name: 'totalcj', label: 'Total Cajas', align: 'center', sortable: true, field: row => Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)) },
     { name: 'Sucursal', label: `${VDB.session.store.name}`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock) },
-    { name: 'Sucursal', label: `Surtir En`, align: 'center', field: row => row.stocks.filter(e => e.id == 1 ).map(e => e.pivot.stock) > 0 ? "Cedis" : "Texcoco" },
+    { name: 'Sucursal', label: `Surtir En`, align: 'center', field: row => row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock) > 0 ? "Cedis" : "Texcoco" },
 
   ],
   pagination: {
@@ -143,7 +144,7 @@ const report = async () => {
   let section = []
   secciones.value.val.forEach(e => section.push(e.name))
   console.log(Array.isArray(section))
-  const resp = await dbCompare.getData(sid, {sections:section})
+  const resp = await dbCompare.getData(sid, { sections: section })
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -200,7 +201,7 @@ const exportTable = async () => {
       Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)),
       Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)),
       row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)[0],
-      row.stocks.filter(e => e.id == 1 ).map(e => e.pivot.stock)[0] > 0 ? "Cedis" : "Texcoco"
+      row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)[0] > 0 ? "Cedis" : "Texcoco"
     ])
   );
 
@@ -220,13 +221,12 @@ const exportTable = async () => {
   downloadExcel();
 }
 
-if(VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root' ){
+// if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
   init()
-}else{
-  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
-  $router.replace('/');
+// } else {
+//   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+//   $router.replace('/');
 
-}
-init()
+// }
 
 </script>

@@ -8,36 +8,46 @@
 
     <q-page-container>
       <!-- This is where pages get injected -->
-
-
       <q-page class="flex flex-center" padding>
-        <q-list separator>
-          <q-select v-model="stores.val" :options="stores.opts" label="Selecciona Sucursal" option-label="name" filled
-            @update:model-value="changeStore" v-if="VDB.session.rol == 'aud' || VDB.session.rol == 'root'" />
-          <div class="q-py-md text-center">
-            <div class="text-h4 text-indigo-10">Menu</div>
-            <div class="text-grey-5">Vhelpers</div>
+        <div class="row q-pa-md q-gutter-md">
+          <div class="col">
+            <div class="text-h4 text-grey-8 text-center">
+              <div>Hola</div>
+              <div class="text-primary">{{ VDB.session.name }}</div>
+              <span class="text-primary"></span>
+            </div>
+            <div class="text-center anek-lg text-h5 text-grey-6">{{ greeting }}</div>
+            <div class="q-py-lg text-center">
+              <q-btn flat
+                @click="() => { mosAvatar.state = !mosAvatar.state; mosAvatar.val = VDB.session.credentials.avatar }">
+                <q-img :src="`/avatares/${VDB.session.credentials.avatar}`" style="width: 170px;" />
+              </q-btn>
+            </div>
           </div>
-
-          <q-item clickable v-ripple v-for="(module, idx) in appmodules" :key="idx" :to="module.path">
-            <!-- <q-item-section top avatar>
-              <q-avatar color="primary" text-color="white" icon="bluetooth" />
-            </q-item-section> -->
-            <q-item-section>
-              <q-item-label class="text-h6">{{ module.name }}</q-item-label>
-              <q-item-label caption>{{ module.desc }}</q-item-label>
-            </q-item-section>
-            <q-item-section avatar>
-              <q-avatar flat color="transparent" text-color="primary" icon="arrow_forward" />
-            </q-item-section>
-            <!-- <q-item-section side top>
-              <q-item-label caption>5 min ago</q-item-label>
-              <q-icon name="star" color="yellow" />
-            </q-item-section> -->
-          </q-item>
-        </q-list>
+        </div>
       </q-page>
       <!-- <router-view /> -->
+      <q-dialog v-model="mosAvatar.state" persistent>
+        <q-card>
+          <q-card-section>
+            <div class="row q-gutter-md justify-center q-pa-md">
+              <div v-for="(avatar, index) in mosAvatar.opts" :key="index" class="relative-position"
+                style="width: 100px; height: 100px; cursor: pointer" @click="selectAvatar(avatar)">
+                <q-img :src="`/avatares/${avatar}`" :alt="avatar" style="width: 100px; height: 100px"
+                  class="rounded-borders" />
+                <q-icon v-if="mosAvatar.val === avatar" name="check_circle" color="" size="sm"
+                  class="absolute-bottom-right q-mt-sm q-mr-sm" />
+              </div>
+            </div>
+          </q-card-section>
+          <q-card-actions>
+            <q-btn flat label="OK" @click="changeAvatar" color="positive" />
+            <q-btn flat label="Cancelar" v-close-popup color="negative" />
+          </q-card-actions>
+        </q-card>
+
+      </q-dialog>
+
     </q-page-container>
 
   </q-layout>
@@ -48,181 +58,92 @@ import { useVDBStore } from 'src/stores/VDB'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router';
 import UserToolbar from 'src/components/UserToolbar.vue';
+import authsApi from "src/API/auth.js";
 import { exportFile, useQuasar } from 'quasar';
 
 const VDB = useVDBStore();
 const $router = useRouter();
 const user = VDB.session;
 const $q = useQuasar();
-
-
-
-
-// const appmodules = VDB.modules;
-
-const stores = ref({
-  val: VDB.session.store,
+const mosAvatar = ref({
+  val: null,
+  state: false,
   opts: [
-    {
-      "id": 1,
-      "name": "CEDIS SP",
-      "alias": "CDS",
-      "ip": "192.168.10.53:1619",
-      "id_viz": 1
-    },
-    {
-      "id": 3,
-      "name": "San Pablo 1",
-      "alias": "SP1",
-      "ip": "192.168.100.250:1619",
-      "id_viz": 3
-    },
-    {
-      "id": 4,
-      "name": "San Pablo 2",
-      "alias": "SP2",
-      "ip": "192.168.60.253:1619",
-      "id_viz": 4
-    },
-    {
-      "id": 6,
-      "name": "San Pablo C",
-      "alias": "SPC",
-      "ip": "192.168.60.249:1619",
-      "id_viz": 17
-    },
-    {
-      "id": 7,
-      "name": "Sotano",
-      "alias": "SOT",
-      "ip": "192.168.150.253:1619",
-      "id_viz": 19
-    },
-    {
-      "id": 8,
-      "name": "Correo 1",
-      "alias": "CR1",
-      "ip": "192.168.30.253:1619",
-      "id_viz": 5
-    },
-    {
-      "id": 9,
-      "name": "Correo 2",
-      "alias": "CR2",
-      "ip": "192.168.50.253:1619",
-      "id_viz": 6
-    },
-    {
-      "id": 10,
-      "name": "Ramon C 1",
-      "alias": "RA1",
-      "ip": "192.168.10.46:1619",
-      "id_viz": 9
-    },
-    {
-      "id": 11,
-      "name": "Ramon C 2",
-      "alias": "RA2",
-      "ip": "192.168.10.232:1619",
-      "id_viz": 10
-    },
-    {
-      "id": 12,
-      "name": "Bolivia",
-      "alias": "BOL",
-      "ip": "192.168.10.92:1619",
-      "id_viz": 13
-    },
-    {
-      "id": 13,
-      "name": "Brasil 1",
-      "alias": "BR1",
-      "ip": "192.168.10.177:1619",
-      "id_viz": 11
-    },
-    {
-      "id": 16,
-      "name": "Apartado 1",
-      "alias": "AP1",
-      "ip": "192.168.10.55:1619",
-      "id_viz": 7
-    },
-    {
-      "id": 17,
-      "name": "Apartado 2",
-      "alias": "AP2",
-      "ip": "192.168.20.249:1619",
-      "id_viz": 8
-    },
-    {
-      "id": 18,
-      "name": "Puebla",
-      "alias": "PUE",
-      "ip": "192.168.90.253:1619",
-      "id_viz": 18
-    },
-    {
-      "id": 20,
-      "name": "Corregidora",
-      "alias": "CRG",
-      "ip": "192.168.130.2:1619",
-      "id_viz": 23
-    },
-    {
-      "id": 19,
-      "name": "Ecommerce",
-      "alias": "ECO",
-      "ip": "192.168.10.191:1619",
-      "id_viz": 20
-    }
+    'avatar0.png',
+    'avatar1.png',
+    'avatar2.png',
+    'avatar3.png',
+    'avatar4.png',
+    'avatar5.png',
+    'avatar6.png',
+    'avatar7.png',
+    'avatar8.png',
+    'avatar9.png',
+    'avatar10.png',
+    'avatar11.png',
+    'avatar12.png',
+    'avatar13.png',
+    'avatar14.png',
+    'avatar15.png',
+    'avatar16.png',
+    'avatar17.png',
+    'avatar18.png',
+    'avatar19.png',
+    'avatar20.png',
+    'avatar21.gif',
+    'avatar22.png',
+    'avatar23.png',
+    'avatar24.png',
+    'avatar25.png',
   ]
 })
+const greetings = ref([
+  "Que gusto verte!",
+  "Excelente dia!",
+  "Que sea un gran dia!",
+  "Paciencia crack, paciencia.",
+  "Como va todo?",
+  "Empecemos...",
+  "Manos a la obra!",
+  "Exito!",
+  "Vacaciones??... pff...",
+  "Si buscas resultados distintos, no hagas siempre lo mismo.",
+  "Quien tiene claro un porque? Puede superar casi cualquier cómo"
+]);
 
-const appmodules = computed(() => {
-  // return  user.rol == 'caj' ? VDB.authsCashiers : VDB.modules
-  if (user.rol == 'caj') {
-    return VDB.authsCashiers
-  } else if (user.rol == 'aux') {
-    return VDB.authsAux
-  } else if (user.rol == 'gen') {
-    return VDB.authGen
-  } else if (user.rol == 'adm') {
-    return VDB.authAdm
-  } else if (user.rol == 'root') {
-    return VDB.autRoot
-  } else if (user.rol == 'aud') {
-    return VDB.autAud
-  } else if (user.rol == 'ven') {
-    return VDB.authsSeller
-  } else if (user.rol == 'floor') {
-    return VDB.authsFloor
-  }else if (user.rol == 'dir') {
-    return VDB.authdir
-  }
-})
 
-if (appmodules.length > 1) {
-  console.log("vamo a seleccionar modulo");
-} else {
-  console.log(appmodules.length)
-  const mod = appmodules[0];
-  if (mod) {
-    $router.replace(mod.path);
-  }
+const greeting = computed(() => greetings.value[Math.floor(Math.random() * greetings.value.length)]);
+const avatar = computed(() => Math.floor(Math.random() * 6));
 
+const selectAvatar = (avatar) => {
+  mosAvatar.value.val = avatar
 }
 
-const changeStore = () => {
-  $q.loading.show({ message: 'Cambiando sucursal' })
-  VDB.session.store = stores.value.val
-  VDB.setSession({
-    ...VDB.session,
-    store: stores.value.val
-  })
 
-  console.log(VDB.session)
-  $q.loading.hide()
-
+const changeAvatar = async () => {
+  $q.loading.show({message:'Cambiando Avatar :)'})
+  let data = {
+    id: VDB.session.credentials.id,
+    avatar: mosAvatar.value.val
+  }
+  const resp = await authsApi.changeAvatar(data);
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp);
+    VDB.setSession({
+      ...VDB.session,
+      credentials: {
+        ...VDB.session.credentials,
+        avatar: mosAvatar.value.val
+      }
+    })
+    mosAvatar.value.val = null
+    mosAvatar.value.state = false
+    $q.notify({type:'positive',icon:'check'})
+    $q.loading.hide()
+  }
 }
+
 
 </script>

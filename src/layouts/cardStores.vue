@@ -6,24 +6,26 @@
         <q-header class="bg-grey-3 text-dark " bordered>
           <UserToolbar />
           <q-separator />
-          <q-toolbar class="justify-between">
-            <div>
-              <span class="text-grey">Helpers</span>
-              <q-icon name="navigate_next" color="primary" />
-              <span class="text-h6">Tarjetas</span>
-            </div>
-            <div class="row">
-              <q-select v-model="sucursales.val" :options="sucursales.opts" option-label="name" label="Sucursal" outlined
-                dense @update:model-value="optTarj"/>
-                <q-separator spaced inset vertical dark />
-              <q-select v-model="terminales.val" :options="terminales.opts" option-label="DESTER" label="Caja" outlined
-                dense  />
-                <q-separator spaced inset vertical dark />
-              <q-input v-model="fechas" type="date"  outlined dense @update:model-value="getDayCard" :disable="sucursales.val == null || sucursales.val == 'SELECCIONA SUCURSAL'" />
-            </div>
-          </q-toolbar>
+
 
         </q-header>
+        <q-toolbar class="justify-between">
+          <div>
+            <span class="text-grey">Helpers</span>
+            <q-icon name="navigate_next" color="primary" />
+            <span class="text-h6">Tarjetas</span>
+          </div>
+          <div class="row">
+            <q-select v-model="sucursales.val" :options="sucursales.opts" option-label="name" label="Sucursal" outlined
+              dense @update:model-value="optTarj" />
+            <q-separator spaced inset vertical dark />
+            <q-select v-model="terminales.val" :options="terminales.opts" option-label="DESTER" label="Caja" outlined
+              dense />
+            <q-separator spaced inset vertical dark />
+            <q-input v-model="fechas" type="date" outlined dense @update:model-value="getDayCard"
+              :disable="sucursales.val == null || sucursales.val == 'SELECCIONA SUCURSAL'" />
+          </div>
+        </q-toolbar> F
 
         <div class="q-mb-lg row">
           <q-card class="my-card col" bordered>
@@ -31,9 +33,9 @@
               <div class="text-h6">Bauchers</div>
             </q-card-section>
             <q-card-section>
-              <div class="text-center text-h6">$ {{ tarjSuc.reduce((a, b) => Number(Number(a) + Number(b)).toFixed(2),
+              <div class="text-center text-h6">$ {{tarjSuc.reduce((a, b) => Number(Number(a) + Number(b)).toFixed(2),
                 0)
-                }}</div>
+              }}</div>
             </q-card-section>
           </q-card>
           <q-separator spaced inset vertical dark />
@@ -42,8 +44,8 @@
               <div class="text-h6">Cobros</div>
             </q-card-section>
             <q-card-section>
-              <div class="text-center text-h6">$ {{ tertar.reduce((a, b) =>
-                Number(Number(a) + Number(b.TARJETAS)).toFixed(2), 0) }}</div>
+              <div class="text-center text-h6">$ {{tertar.reduce((a, b) =>
+                Number(Number(a) + Number(b.TARJETAS)).toFixed(2), 0)}}</div>
             </q-card-section>
           </q-card>
           <q-separator spaced inset vertical dark />
@@ -52,9 +54,9 @@
               <div class="text-h6">Diferencia</div>
             </q-card-section>
             <q-card-section>
-              <div class="text-center text-h6">$ {{ Number(Number(tarjSuc.reduce((a, b) =>
+              <div class="text-center text-h6">$ {{Number(Number(tarjSuc.reduce((a, b) =>
                 Number(Number(a) + Number(b)).toFixed(2), 0)) - Number(tertar.reduce((a, b) =>
-                  Number(Number(a) + Number(b.TARJETAS)).toFixed(2), 0))).toFixed(2) }}</div>
+                  Number(Number(a) + Number(b.TARJETAS)).toFixed(2), 0))).toFixed(2)}}</div>
             </q-card-section>
           </q-card>
         </div>
@@ -145,8 +147,8 @@ const terminales = ref({
   opts: []
 });
 const sucursales = ref({
-  val:'SELECCIONA SUCURSAL',
-  opts:[]
+  val: 'SELECCIONA SUCURSAL',
+  opts: []
 })
 const columns = ref([
   { name: 'bauchers', label: 'Baucher', field: row => row }
@@ -260,13 +262,13 @@ const onSubmit = () => {
 };
 
 const index = async () => {
- const fech =  date.formatDate(new Date(),'YYYY-MM-DD')
+  const fech = date.formatDate(new Date(), 'YYYY-MM-DD')
   console.log("Recibiendo Datos :)")
   $q.loading.show({ message: 'Obteniendo datos' });
-  let host = VDB.session.store.ip;
-  const resp =  ApiAssist.index()
+  let host = VDB.session.store.ip_address;
+  const resp = ApiAssist.index()
   console.log(resp);
-  resp.then(r =>{
+  resp.then(r => {
     console.log(r)
     fechas.value = fech
     sucursales.value.opts = r
@@ -277,7 +279,7 @@ const index = async () => {
 const optTarj = async (row) => {
   console.log(row.ip_address)
   $q.loading.show({ message: 'Obteniendo datos' });
-  // let host = VDB.session.store.ip;
+  // let host = VDB.session.store.ip_address;
   let riwo = `http://${row.ip_address}/access/public/reports/getCashCard`;
   axios.get(riwo)
     .then(r => {
@@ -295,7 +297,7 @@ const getDayCard = async (date) => {
 
   console.log(date);
   $q.loading.show({ message: 'Obteniendo datos' });
-  // let host = VDB.session.store.ip;
+  // let host = VDB.session.store.ip_address;
   let riwo = `http://${sucursales.value.val.ip_address}/access/public/reports/getCashCard/${date}`;
   axios.get(riwo)
     .then(r => {
@@ -501,10 +503,10 @@ const generarCombinaciones = (array) => {
   return resultado;
 }
 
-if (VDB.session.rol == 'root' || VDB.session.rol == 'adm' ) {
+// if (VDB.session.rol == 'root' || VDB.session.rol == 'adm') {
   index()
-} else {
-  $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
-  $router.replace('/');
-}
+// } else {
+//   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+//   $router.replace('/');
+// }
 </script>

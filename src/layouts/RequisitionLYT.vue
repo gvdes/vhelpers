@@ -1,14 +1,15 @@
 <template>
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
 
-    <q-header class="transparent text-dark" bordered>
-      <UserToolbar />
-      <q-separator />
-      <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Resurtido</span>
-        </div>
-      </q-toolbar>
-    </q-header>
+    <!-- <q-header class="transparent text-dark" bordered> -->
+    <UserToolbar />
+    <q-separator />
+
+    <!-- </q-header> -->
+    <q-toolbar class="justify-between">
+      <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Resurtido</span>
+      </div>
+    </q-toolbar>
 
     <q-dialog v-model="printers.state">
       <q-card class="my-card">
@@ -33,11 +34,18 @@
       <q-page padding>
         <div class="row">
           <q-separator spaced inset vertical dark />
-          <q-select class="col" v-model="cedis.val" :options="cedis.opts" label="Pedido Para" option-label="name" filled
-            :disable="cedis.val != null" :option-disable="val => val.id == VDB.session.store.id_viz" />
+          <q-select class="col" v-model="typeSurti.val" :options="typeSurti.opts" label="Tipo" option-label="name"
+            filled dense @update:model-value="() => { cedis.val = null }" />
+          <q-separator spaced inset vertical dark />
+          <q-select class="col" v-model="cedis.val" :options="destiny" label="Pedido Para" filled dense
+            option-label="name" :disable="!typeSurti.val || cedis.val != null"
+            :option-disable="val => val.id == VDB.session.store.id_viz" />
           <q-separator spaced inset vertical dark />
           <q-select class="col" v-model="types.val" :options="types.opts" label="Tipo" filled :disable="!cedis.val"
-            @update:model-value="typeChange" />
+            dense @update:model-value="typeChange" />
+          <q-separator spaced inset vertical dark />
+          <q-select class="col" v-model="supply.val" :options="supply.opts" label="Surtir Por" filled dense
+            option-label="name" :disable="typeSurti.val.id == 1" @update:model-value="processProduct"  />
         </div>
 
         <q-separator spaced inset vertical dark />
@@ -120,7 +128,7 @@
               </q-item>
               <q-radio dense class="col" v-model="condition.state" val="minmax" label="Minimo y Maximo"
                 @update:model-value="processProduct" />
-                <q-radio dense class="col" v-model="condition.state" val="query" label="Consultas"
+              <q-radio dense class="col" v-model="condition.state" val="query" label="Consultas"
                 @update:model-value="processProduct" />
             </div>
           </q-card-section>
@@ -130,7 +138,8 @@
         <q-separator spaced inset vertical dark />
 
         <q-table :rows="bascket" :columns="table.columns" separator="cell" :filter="table.filter"
-          v-if="products.length > 0" flat bordered class="my-sticky-header-column-table" :visible-columns="table.visible">
+          v-if="products.length > 0" flat bordered class="my-sticky-header-column-table"
+          :visible-columns="table.visible">
           <template v-slot:top-right>
             <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Buscar">
               <template v-slot:append>
@@ -176,7 +185,7 @@
               </q-td>
               <q-td key="locations" :props="props">
 
-                {{ props.row.locations?.map(e => e.path).join(", ") }}
+                {{props.row.locations?.map(e => e.path).join(", ")}}
 
               </q-td>
               <q-td key="cedis" :props="props">
@@ -222,14 +231,10 @@
                 </q-popup-edit>
               </q-td>
               <q-td key="action" :props="props">
-
                 <q-btn color="negative" icon="delete" @click="delProduct(props.row)" flat />
-
               </q-td>
-
             </q-tr>
           </template>
-
         </q-table>
 
         <q-dialog v-model="newNotes.state" persistent>
@@ -273,7 +278,20 @@ const $q = useQuasar();
 const newNotes = ref({
   status: false
 })
-
+const typeSurti = ref({
+  val: { id: 1, name: 'Cedis' },
+  opts: [
+    { id: 1, name: 'Cedis' },
+    { id: 2, name: 'Sucursal' },
+  ]
+})
+const supply = ref({
+  val: { id: 3, name: 'Cajas' },
+  opts: [
+    { id: 1, name: 'Piezas' },
+    { id: 3, name: 'Cajas' },
+  ]
+})
 const cedis = ref({
   val: null,
   opts: []
@@ -353,10 +371,10 @@ const table = ref({
     { name: 'max', label: `Maximo`, align: 'center', sortable: true, field: row => row.max },
     { name: 'Percentge', label: `${VDB.session.store.name} % `, align: 'center', sortable: true, field: row => row.percentage },
     { name: 'required', label: 'Solicitado CJ', align: 'center', sortable: true, field: row => row.required },
-    { name: 'action',label:'Accion', align: 'center' }
+    { name: 'action', label: 'Accion', align: 'center' }
   ],
   filter: '',
-  visible: ['codigo','description','Seccion','Familia','Categoria','pieces','cedis','texcoco','Sucursal','required','action']
+  visible: ['codigo', 'description', 'Seccion', 'Familia', 'Categoria', 'pieces', 'cedis', 'texcoco', 'Sucursal', 'required', 'action']
 })
 
 const sections = computed(() => categories.value.all.filter(e => e.deep == 0))
@@ -390,13 +408,14 @@ const locaciones = computed(() => {
   }
 })
 
+const destiny = computed(() => cedis.value.opts.filter(e => e._type == typeSurti.value.val.id))
 
 const suggested = computed(() => {
   return products.value.map((product) => {
     let CajasCedis = Math.round(Number(product.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) / Number(product.pieces));
     let CajasTexcoco = Math.round(Number(product.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) / Number(product.pieces));
     let CajasBrasil = Math.round(Number(product.stocks.filter(e => e.id == 16).map(e => e.pivot.stock)) / Number(product.pieces));
-    let Sucursal = Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock));
+    let Sucursal = Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit));
     let Porcentaje = Math.round(Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)) * 100 / Number(product.pieces))
     return {
       id: product.id,
@@ -430,7 +449,7 @@ const suggested = computed(() => {
       } else {
         return (e.cedis + e.texcoco) > 0 && (e.sucursal <= e.min) && (e.min > 0)
       }
-    } else if(condition.value.state == 'query'){
+    } else if (condition.value.state == 'query') {
       return e
     }
 
@@ -607,8 +626,9 @@ const newRequsition = async () => {
     workpoint_to: cedis.value.val.id,
     products: bascket.value,
     notes: notes.value,
-    id_userviz: VDB.session.id,
-    type: 2
+    id_userviz: VDB.session.credentials.staff.id_va,
+    type: 2,
+    supply_by:supply.value.val.id
   }
   console.log(dat)
   const resp = await dbCompare.create(dat);
@@ -623,7 +643,7 @@ const newRequsition = async () => {
     locations.value.val = []
     categories.value.val = []
     $q.loading.hide()
-    window.location.reload();
+    // window.location.reload();
   }
 }
 
@@ -656,8 +676,6 @@ const print = async () => {
 
 const download = async () => {
   const workbook = new ExcelJS.Workbook();
-
-
   const worksheet = workbook.addWorksheet(`Resurtido`);
   console.log()
   worksheet.addTable({
@@ -743,25 +761,56 @@ const impre = async () => {
   }
 }
 
+// const processProduct = async () => {
+//   console.log(condition.value.state)
+//   if (products.value.length > 0) {
+//     if (condition.value.state == 'minmax') {
+//       return products.value.forEach(e => {
+//         // console.log(Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces)))
+//         let CajasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces));
+//         let maxCajas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces))
+//         if ((maxCajas - CajasSucursal) >= 1) {
+//           e.required = Math.round(maxCajas - CajasSucursal);
+//         } else {
+//           e.required = 1
+//         }
+//       })
+//     } else {
+//       return products.value.forEach(e => e.required = 1)
+//     }
+//   }
+// }
+
 const processProduct = async () => {
   console.log(condition.value.state)
   if (products.value.length > 0) {
     if (condition.value.state == 'minmax') {
-      return products.value.forEach(e => {
-        let CajasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)) / Number(e.pieces));
-        let maxCajas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces))
-        if ((maxCajas - CajasSucursal) >= 1) {
-          e.required = Math.round(maxCajas - CajasSucursal);
-        } else {
-          e.required = 1
-        }
-      })
-    } else {
+      if (supply.value.val.id == 3) {
+        return products.value.forEach(e => {
+          let CajasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces));
+          let maxCajas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces))
+          if ((maxCajas - CajasSucursal) >= 1) {
+            e.required = Math.round(maxCajas - CajasSucursal);
+          } else {
+            e.required = 1
+          }
+        })
+      } else {
+        return products.value.forEach(e => {
+          let piezasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)));
+          let maxPiezas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)))
+          if ((maxPiezas - piezasSucursal) >= 1) {
+            e.required = Math.round(maxPiezas - piezasSucursal);
+          } else {
+            e.required = 1
+          }
+        })
+      }
+    }
+    else {
       return products.value.forEach(e => e.required = 1)
     }
   }
-
-
 }
 
 init()

@@ -63,8 +63,8 @@ import { ref, computed } from 'vue';
     { id:"TDB", desc:"Transferencia/Deposito BBVA (Bancomer)" },
     { id:"TSA", desc:"Tarjeta Credito/Debito Santander" },
     { id:"TDA", desc:"Transferencia/Deposito Santander" },
-    { id:"TSC", desc:"Tarjeta Credito/Debito Scotiabank" },
-    { id:"TDS", desc:"Transferencia/Deposito Scotiabank" },
+    // { id:"TSC", desc:"Tarjeta Credito/Debito Scotiabank" },
+    // { id:"TDS", desc:"Transferencia/Deposito Scotiabank" },
   ];
 
   const $props = defineProps({

@@ -4,36 +4,38 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
-      <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Consulta Ventas</span></div>
-      </q-toolbar>
+
     </q-header>
+
 
     <q-page-container>
       <q-page padding>
+        <q-toolbar class="justify-between">
+          <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Consulta Ventas</span>
+          </div>
+        </q-toolbar>
         <div class="row justify-between" v-if="informe">
 
           <q-card class="my-card" @click="mosant">
 
             <q-card-section>
               <div class="text-h6 text-center">Ventas 2024</div>
-              <!-- <div class="text-h4 text-center">{{ Number(report.salesant / report.salesant * 100) + '%' }}</div> -->
-              <div class="text-h4 text-center">{{ Number(report.salesant * 1.10).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) }}</div>
+              <div class="text-h4 text-center">{{ Number(report.salesant / report.salesant * 100) + '%' }}</div>
+              <!-- <div class="text-h4 text-center">{{ Number(report.salesant * 1.10).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) }}</div> -->
 
             </q-card-section>
 
             <q-card-section>
               <div class="text-h6 text-center">Tickets 2024</div>
-              <div class="text-h4 text-center">{{ report.tiketsant }}</div>
+              <div class="text-h4 text-center">{{ Math.round(Number(report.tiketsant) * Number(VDB.session.store.increment),0)  }}</div>
             </q-card-section>
-
           </q-card>
 
           <q-card class="my-card" @click="mosant">
             <q-card-section>
               <div class="text-h6 text-center">Ventas 2025</div>
-              <!-- <div class="text-h4 text-center">{{  Number(report.salesact / Number(report.salesant *1.1) * 100).toFixed(2) + '%' }}</div> -->
-              <div class="text-h4 text-center">{{  Number(report.salesact).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</div>
+              <div class="text-h4 text-center">{{ Number(report.salesact / Number(report.salesant * VDB.session.store.increment) *100).toFixed(2) + '%' }}</div>
+              <!-- <div class="text-h4 text-center">{{  Number(report.salesact).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</div> -->
 
 
             </q-card-section>
@@ -47,27 +49,27 @@
           <q-card class="my-card" @click="mosant">
             <q-card-section>
               <div class="text-h6 text-center">Diferencia</div>
-              <!-- <div class="text-h4 text-center">{{  Number(Number(report.salesact / Number(report.salesant *1.1) * 100) - Number(Number(report.salesant *1.1) / Number(report.salesant *1.1) * 100)).toFixed(2) + '%'}}</div> -->
-              <div class="text-h4 text-center">{{  Number(report.salesact - Number(report.salesant *1.1)).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</div>
+              <div class="text-h4 text-center">{{ Number(Number(report.salesact / Number(report.salesant * VDB.session.store.increment) * 100) - Number(Number(report.salesant * VDB.session.store.increment) / Number(report.salesant * VDB.session.store.increment) * 100)).toFixed(2) + '%' }}</div>
+              <!-- <div class="text-h4 text-center">{{  Number(report.salesact - Number(report.salesant *1.1)).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</div> -->
 
             </q-card-section>
 
             <q-card-section>
               <div class="text-h6 text-center">Tickets Diferencia</div>
-              <div class="text-h4 text-center">{{ report.tiketsact - report.tiketsant }}</div>
+              <div class="text-h4 text-center">{{ report.tiketsact - Math.round(Number(report.tiketsant  * VDB.session.store.increment)) }}</div>
             </q-card-section>
           </q-card>
 
-            <q-card class="my-card" @click="moshoy" >
-              <q-card-section>
+          <q-card class="my-card" @click="moshoy">
+            <!-- <q-card-section>
                 <div class="text-h6 text-center">VENTA HOY </div>
                 <div class="text-h4 text-center">{{ Number.parseFloat(report.saleshoy).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) }}</div>
-              </q-card-section>
-              <q-card-section>
-                <div class="text-h6 text-center">Tickets Hoy</div>
-                <div class="text-h4 text-center">{{ report.hoytck }}</div>
-              </q-card-section>
-            </q-card>
+              </q-card-section> -->
+            <q-card-section>
+              <div class="text-h6 text-center">Tickets Hoy</div>
+              <div class="text-h4 text-center">{{ report.hoytck }}</div>
+            </q-card-section>
+          </q-card>
 
         </div>
 
@@ -76,8 +78,13 @@
           <div class="q-pa-md" v-for="(depvent, index) in report.ventasdepmonth" :key="index">
             <q-linear-progress size="25px" stripe rounded :value="depvent.VENTA / report.salesact" color="primary">
               <div class="absolute-full flex flex-center">
-                <!-- <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.salesact * 100).toFixed(2) + ')'" /> -->
-                <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   ( ' + Number.parseFloat(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" />
+
+                <!-- <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   ( ' + Number.parseFloat(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" /> -->
+                <q-badge color="white" text-color="accent" :label="depvent.NOMDEP" />
+                <q-badge color="white" text-color="accent"
+                  :label="'   (% ' + Number.parseFloat(depvent.VENTA / report.salesact * 100).toFixed(2) + ')'" />
+                <q-badge color="white" text-color="accent"
+                  :label="'   (' + Number.parseFloat(depvent.TICKETS).toFixed(0) + ' tcks)'" />
 
               </div>
             </q-linear-progress>
@@ -88,8 +95,13 @@
           <div class="q-pa-md" v-for="(depvent, index) in report.ventasdepday" :key="index">
             <q-linear-progress size="25px" stripe rounded :value="depvent.VENTA / report.saleshoy" color="primary">
               <div class="absolute-full flex flex-center">
-                <!-- <q-badge color="white" text-color="accent":label="depvent.NOMDEP + '   (% ' + Number.parseFloat(depvent.VENTA / report.saleshoy * 100).toFixed(2) + ')'" /> -->
-                <q-badge color="white" text-color="accent":label="depvent.NOMDEP + '   ( ' + Number(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" />
+                <q-badge color="white" text-color="accent" :label="depvent.NOMDEP" />
+                <!-- <q-badge color="white" text-color="accent" :label="depvent.NOMDEP + '   ( ' + Number(depvent.VENTA).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + ')'" /> -->
+                <q-badge color="white" text-color="accent"
+                  :label="'   (% ' + Number.parseFloat(depvent.VENTA / report.saleshoy * 100).toFixed(2) + ')'" />
+                <q-badge color="white" text-color="accent"
+                  :label="'   (' + Number.parseFloat(depvent.TICKETS).toFixed(0) + ' tcks)'" />
+
 
               </div>
             </q-linear-progress>
@@ -138,11 +150,12 @@ const load = ref(false);
 
 const index = async () => {
   load.value = true
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
+  // let host = '192.168.10.160:1619';
   let sale = `http://${host}/access/public/reports/getSales`;
   axios.get(sale)
     .then(done => {
-    console.log(done.data)
+      console.log(done.data)
       report.value = done.data
       console.log("datos obt")
       informe.value = true
@@ -164,12 +177,12 @@ const mosant = () => {
   barrashoy.value = false
 }
 
-if(VDB.session.rol == 'root' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' ){
+// if (VDB.session.rol == 'root' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'rrhh') {
   index()
-}else{
-  $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
-  $router.replace('/');
+// } else {
+//   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
+//   $router.replace('/');
 
-}
+// }
 
 </script>

@@ -3,18 +3,19 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+
+    <q-page-container>
       <q-toolbar class="justify-between">
         <div>
           Helpers <q-icon name="navigate_next" color="primary" />
           <span class="text-h6">Reporte Stocks</span>
         </div>
       </q-toolbar>
-    </q-header>
-
-    <q-page-container>
       <q-page padding>
 
-        <q-table :rows="allReport" :loading="loading" :columns="table.columns" :pagination="table.pagination"/>
+        <q-table :rows="allReport" :loading="loading" :columns="table.columns" :pagination="table.pagination" />
       </q-page>
     </q-page-container>
   </q-layout>
@@ -85,8 +86,8 @@ const init = async () => {
 };
 
 const index = async () => {
-  // let host = '192.168.10.53:1619';
-  let host = '192.168.10.160:1619';
+  let host = '192.168.10.53:1619';
+  // let host = '192.168.10.160:1619';
 
   let url = `http://${host}/storetools/public/api/Products/getReceived`;
   axios.get(url)
@@ -101,11 +102,11 @@ const index = async () => {
 }
 
 // Verificar permisos y cargar datos
-if (VDB.session.rol === "aux" || VDB.session.rol === "gen" || VDB.session.rol === "aud" || VDB.session.rol === "root") {
+// if (VDB.session.rol === "aux" || VDB.session.rol === "gen" || VDB.session.rol === "aud" || VDB.session.rol === "root") {
   index();
-} else {
-  $q.notify({ message: "No tienes acceso a esta página", type: "negative", position: "center" });
-  $router.replace("/");
-}
+// } else {
+//   $q.notify({ message: "No tienes acceso a esta página", type: "negative", position: "center" });
+//   $router.replace("/");
+// }
 
 </script>

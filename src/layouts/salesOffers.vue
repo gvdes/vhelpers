@@ -5,13 +5,14 @@
     <q-header class="transparent text-dark" bordered>
       <UserToolbar />
       <q-separator />
+
+    </q-header>
+    <q-page-container>
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Cobro Ofertas</span></div>
         <div>Total $<span class="text-bold">{{products.reduce((a, e) => a + e.amount * e.price?.pivot.price, 0)
-            }}</span> </div>
+        }}</span> </div>
       </q-toolbar>
-    </q-header>
-    <q-page-container>
       <q-page class="bg-grey-3" padding>
 
         <q-card class="my-card">
@@ -95,7 +96,7 @@
             v-if="editProduct.val.edit == true" />
           <q-btn flat icon="check" color="positive" v-close-popup @click="insertProduct"
             v-if="editProduct.val.edit == false"
-            :disable="editProduct.val.price?.pivot.price <=  0 || editProduct.val.notes.length <= 0" />
+            :disable="editProduct.val.price?.pivot.price <= 0 || editProduct.val.notes.length <= 0" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -245,6 +246,7 @@ const editProduct = ref({
   val: null,
   state: false
 })
+
 const pagos = ref({
   state: false,
   dafpa: false,
@@ -256,8 +258,8 @@ const paymeths = [
   { id: "TBA", desc: "TARJETA C/D BANCOMER" },
   { id: "TSA", desc: "TARJETA C/D SANTANDER" },
   { id: "TDB", desc: "TRA/DEP BANCOMER" },
-  { id: "TDA", desc: "TRA/DEP Santander" },
-  { id: "TDS", desc: "TRA/DEP Scotiabank" },
+  // { id: "TDA", desc: "TRA/DEP Santander" },
+  // { id: "TDS", desc: "TRA/DEP Scotiabank" },
   { id: "C30", desc: "CREDITO" },
 ]
 
@@ -281,7 +283,7 @@ const cambio = computed(() => (Number.parseFloat(modes.value.DIG.val) + Number.p
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Cajas' });
-  let host = VDB.session.store.ip;
+  let host = VDB.session.store.ip_address;
   // let host = '192.168.10.160:1619'
   console.log(VDB.session)
   let url = `http://${host}/access/public/reports/getTerminal`;
@@ -386,8 +388,8 @@ const optionDisable = (val) => {
 
 const terminar = async () => {
   // let host = '192.168.10.160:1619'
-  // $q.loading.show({message:"Realizando Ticket"});
-  let host = VDB.session.store.ip;
+  $q.loading.show({ message: "Realizando Ticket" });
+  let host = VDB.session.store.ip_address;
   let url = `http://${host}/access/public/modify/createTicket`;
   let by = `${VDB.session.name} - ${VDB.session.store.alias}`;
   let data = {
@@ -406,16 +408,16 @@ const terminar = async () => {
     console.log(resp.data);
     impresoras.value = {
       state: false,
-      val: null,
-      body: null
+      // val: null,
+      // body: null
     }
     terminales.value = {
       val: null,
-      opts: []
+      // opts: []
     }
     colab.value = {
       val: null,
-      opts: []
+      // opts: []
     };
     editProduct.value = {
       val: null,
@@ -428,7 +430,7 @@ const terminar = async () => {
     modes.value = { "EFE": { id: null, val: 0 }, "DIG": { id: null, val: 0 } };
     products.value = [];
     $q.notify({ message: resp.data.mssg, type: 'positive', position: 'center' })
-    // $q.loading.hide()
+    $q.loading.hide()
   }
 
 }

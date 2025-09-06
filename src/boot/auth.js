@@ -9,16 +9,16 @@ export default boot(async ({ router }) => {
   const VDB = useVDBStore();
 
   router.beforeEach((to, from, next) => {
-    console.log("Validando autenticacion...");
+    // console.log("Validando autenticacion...");
     let auth = LocalStorage.getItem("auth");
 
     if(auth){
-      console.log("ya hay autenticacion");
+      // console.log("ya hay autenticacion");
       VDB.setSession(auth);
-      console.log(to.path);
+      // console.log(to.path);
       if(to.path!='/auth'){ next(); }else{ next('/launcher'); }
     }else{
-      console.log("Porfavor inicie sesion");
+      // console.log("Porfavor inicie sesion");
       to.path=="/auth" ? next() : next('/auth');
     }
   })
