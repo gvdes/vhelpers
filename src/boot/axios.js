@@ -9,12 +9,12 @@ import axios from 'axios'
 // for each client)
 
 //conexion vizapi
-const vizapi = axios.create({ baseURL: 'http://192.168.10.189/vizapi/public/LVH' });
+// const vizapi = axios.create({ baseURL: 'http://192.168.10.189/vizapi/public/LVH' });
 // const vizapi = axios.create({ baseURL: 'http://192.168.10.160:1619/vizapi/public/LVH' });
 // const vizapi = axios.create({ baseURL: 'http://192.168.1.80:1619/vizapi/public/LVH' });
 // const vizapi = axios.create({ baseURL: 'http://192.168.10.189/vizapi/public/LVH' });// producccion
 // const vizapi = axios.create({ baseURL: 'http://192.168.10.160:1619/vizapi/public/LVH' }); // desarrollo
-// const vizapi = axios.create({ baseURL: 'http://192.168.12.114:1619/vizapi/public/LVH' });
+const vizapi = axios.create({ baseURL: 'https://vizapp.gvizpru.com/api/LVH' });
 
 //conexion Assist
 // const assist = axios.create({ baseURL: 'http://192.168.10.61:1619/Assist/public/api' });
