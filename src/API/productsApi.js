@@ -34,4 +34,7 @@ export default{
   highPrices (data) {
     return assist.post(`/Products/highPrices`,data).then(done => done.data).catch(fail => { return { fail } });
   },
+  checkLabel(data) {
+    return assist.post(`/Products/checkLabels`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }

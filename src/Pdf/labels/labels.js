@@ -342,7 +342,7 @@ const smallLabel = (data, nick, name, prices) => {
   });
 }
 
-const verticalLabel = (data, nick, name, prices) => {
+const verticalLabelNavidad = (data, nick, name, prices) => {
   return new Promise((resolve, reject) => {
     try {
       const products = data
@@ -1207,13 +1207,6 @@ const VerticalLabel = (data, nick, name, prices) => {
         }
       });
       console.log(data)
-      // const qrText = JSON.stringify(data.historic_prices.length == 1 ? data.historic_prices[0] : null) // o JSON.stringify({modelo: product.code, version: 'v1'})
-
-      // QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
-      //   if (err) throw err
-
-      //   doc.addImage(url, 'PNG', x + 80, y + 16, 15, 15) // ajusta la posición y tamaño
-      // })
       const doc = new jsPDF({ format: 'letter' });
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
@@ -1239,14 +1232,15 @@ const VerticalLabel = (data, nick, name, prices) => {
           doc.addPage(); // Agrega una nueva página cuando el índice es un múltiplo de totalLabelsPerPage
         }
         // doc.addImage(image, type, x, y, labelWidth, labelHeight); // Agrega la imagen
-        // const qrText = JSON.stringify(product.historic_prices.length == 1 ? {modelo: product.id, idChange: product.historic_prices[0].id} : null) // o JSON.stringify({modelo: product.code, version: 'v1'})
 
-        // QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
-        //   if (err) throw err
+        //se va a agregar tambien el qr brou
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? {modelo: product.id, idChange: product.historic_prices[0].id} : null) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
 
-        //   doc.addImage(url, 'PNG', x + 75, y + 20, 25, 25) // ajusta la posición y tamaño
-        // })
-        // doc.rect(x, y, labelWidth, labelHeight)//agrega rectangulo buey
+          doc.addImage(url, 'PNG', x + 75, y + 20, 25, 25) // ajusta la posición y tamaño
+        })
+        doc.rect(x, y, labelWidth, labelHeight)//agrega rectangulo buey
 
         // // doc.addImage(barcode(product.name), type, x + 75, y + 8, 15, 15); // Agrega el código de barras
         doc.setFontSize(30);
@@ -2023,4 +2017,4 @@ const plainMedium = (pdf, count, products, nick, zip) => {
 }
 
 
-export default { largeLabel, xtralargeLabel, mediumLabel, smallLabel, verticalLabel, toyBoys, toyGirls, xlargenina, xlargenino, Hlargenino, Hlargenina, xlargeExhnino, xlargeExhnina, HorizontalLabel, VerticalLabel, Paquetes };
+export default { largeLabel, xtralargeLabel, mediumLabel, smallLabel, verticalLabelNavidad, toyBoys, toyGirls, xlargenina, xlargenino, Hlargenino, Hlargenina, xlargeExhnino, xlargeExhnina, HorizontalLabel, VerticalLabel, Paquetes };
