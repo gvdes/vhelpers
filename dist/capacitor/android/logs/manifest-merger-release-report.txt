@@ -92,7 +92,7 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\hugog\.gradle\cach
 		ADDED from C:\fronts\vhelpers\src-capacitor\android\app\src\main\AndroidManifest.xml:5:9-35
 	android:theme
 		ADDED from C:\fronts\vhelpers\src-capacitor\android\app\src\main\AndroidManifest.xml:10:9-40
-activity#org.capacitor.quasar.app.MainActivity
+activity#com.gvizpru.vhelpers.MainActivity
 ADDED from C:\fronts\vhelpers\src-capacitor\android\app\src\main\AndroidManifest.xml:12:9-25:20
 	android:label
 		ADDED from C:\fronts\vhelpers\src-capacitor\android\app\src\main\AndroidManifest.xml:15:13-56
@@ -240,7 +240,7 @@ ADDED from [androidx.core:core:1.12.0] C:\Users\hugog\.gradle\caches\transforms-
 		ADDED from [androidx.core:core:1.12.0] C:\Users\hugog\.gradle\caches\transforms-3\4f7b0d764f8b5d0d84c4d0344e1adc27\transformed\core-1.12.0\AndroidManifest.xml:24:9-44
 	android:name
 		ADDED from [androidx.core:core:1.12.0] C:\Users\hugog\.gradle\caches\transforms-3\4f7b0d764f8b5d0d84c4d0344e1adc27\transformed\core-1.12.0\AndroidManifest.xml:23:9-81
-permission#org.capacitor.quasar.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+permission#com.gvizpru.vhelpers.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.12.0] C:\Users\hugog\.gradle\caches\transforms-3\4f7b0d764f8b5d0d84c4d0344e1adc27\transformed\core-1.12.0\AndroidManifest.xml:22:5-24:47
 	android:protectionLevel
 		ADDED from [androidx.core:core:1.12.0] C:\Users\hugog\.gradle\caches\transforms-3\4f7b0d764f8b5d0d84c4d0344e1adc27\transformed\core-1.12.0\AndroidManifest.xml:24:9-44
@@ -250,7 +250,7 @@ uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.12.0] C:\Users\hugog\.gradle\caches\transforms-3\4f7b0d764f8b5d0d84c4d0344e1adc27\transformed\core-1.12.0\AndroidManifest.xml:26:5-97
 	android:name
 		ADDED from [androidx.core:core:1.12.0] C:\Users\hugog\.gradle\caches\transforms-3\4f7b0d764f8b5d0d84c4d0344e1adc27\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
-uses-permission#org.capacitor.quasar.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission#com.gvizpru.vhelpers.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.12.0] C:\Users\hugog\.gradle\caches\transforms-3\4f7b0d764f8b5d0d84c4d0344e1adc27\transformed\core-1.12.0\AndroidManifest.xml:26:5-97
 	android:name
 		ADDED from [androidx.core:core:1.12.0] C:\Users\hugog\.gradle\caches\transforms-3\4f7b0d764f8b5d0d84c4d0344e1adc27\transformed\core-1.12.0\AndroidManifest.xml:26:22-94

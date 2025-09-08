@@ -5,11 +5,29 @@
       <div class="q-ml-sm">En que Formato deseas las etiquetas?</div>
     </q-card-section>
     <q-card-section>
-      <q-select v-model="mosPDF.val" :options="mosPDF.opts" label="Etiquetas" filled />
+      <q-select v-model="typeLabels.val" :options="typeLabels.opts" label="Formatos" filled />
     </q-card-section>
+    <q-card-section v-show="typeLabels.val">
+      <q-table :rows="pdfMost" grid :pagination="{ rowsPerPage: 0 }">
+        <template v-slot:item="props">
+          <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+            <q-card @click="pdf(props.row)">
+              <q-card-section>
+                <strong>{{ props.row.label }}</strong>
+              </q-card-section>
+              <q-separator />
+              <q-card-section>
+                <q-img :src="props.row.icon" />
+              </q-card-section>
+            </q-card>
+          </div>
+        </template>
+      </q-table>
+
+    </q-card-section>
+
     <q-card-actions align="right">
       <q-btn flat label="Cancel" color="negative" v-close-popup />
-      <q-btn flat label="Generar" color="positive" @click="pdf" :disable="mosPDF.val == null" />
     </q-card-actions>
   </q-card>
 </template>
@@ -31,40 +49,52 @@ import labels from 'src/Pdf/labels/labels.js'
 const VDB = useVDBStore();
 const $q = useQuasar();
 const props = defineProps({
-    products:{ type:Array, default:[] },
-    prices:{ type:Object, default:{} },
-  })
+  products: { type: Array, default: [] },
+  prices: { type: Object, default: {} },
+})
 
 const products = ref(props.products)
 const prices = ref(props.prices)
 
+const typeLabels = ref({
+  val: { id: 3, label: 'Plano' },
+  opts: [
+    { id: 1, label: 'Navidad' },
+    { id: 2, label: 'Juguete' },
+    { id: 3, label: 'Plano' },
+    { id: 4, label: 'Mochila' },
+  ]
+})
 
 
 const mosPDF = ref({
   val: null,
   opts: [
-    { id: 1, label: 'Navidad Extra Grande' },
-    { id: 2, label: 'Navidad Grande' },
-    { id: 3, label: 'Navidad Mediano' },
-    { id: 4, label: 'Navidad Pequeno' },
-    { id: 5, label: 'Navidad Vertical' },
-    { id: 6, label: 'Juguete Niño' },
-    { id: 7, label: 'Juguete Niña' },
-    { id: 8, label: 'Juguete Extra Niña' },
-    { id: 9, label: 'Juguete Extra Niño' },
-    { id: 10, label: 'Juguete Horizontal Niño' },
-    { id: 11, label: 'Juguete Horizontal Niña' },
-    { id: 12, label: 'Rectangular 9 x 2' },
-    { id: 15, label: 'Horizontal 9 x 2' },
-    { id: 13, label: 'Exhibicion Nino Mochila' },
-    { id: 14, label: 'Exhibicion Nina Mochila' },
-    { id: 16, label: 'Paquetes Mochila' },
+    { id: 1, label: 'Navidad Extra Grande', icon: '/icons/Navidad/Navidad6(2).png', type: 1 },//OK
+    { id: 2, label: 'Navidad Grande', type: 1, icon: '/icons/Navidad/Navidad6(2).png' },//OK
+    { id: 3, label: 'Navidad Mediano', type: 1, icon: '/icons/Navidad/Navidad9(1).png' },//OK
+    { id: 4, label: 'Navidad Pequeno', type: 1, icon: '/icons/Navidad/NaviSan(1).png' }, // OKP
+    { id: 5, label: 'Navidad Vertical', type: 1, icon: '/icons/Navidad/NavidadVer(2).png' },//OK
+    { id: 6, label: 'Juguete Niño', type: 2, icon: '/icons/Juguete/Ninio.png' },//OK
+    { id: 7, label: 'Juguete Niña', type: 2, icon: '/icons/Juguete/Ninia.png' },//OK
+    { id: 8, label: 'Juguete Extra Niña', type: 2, icon: '/icons/Juguete/xlargeninia.png' },//OK
+    { id: 9, label: 'Juguete Extra Niño', type: 2, icon: '/icons/Juguete/xlargeninio.png' },//OK
+    { id: 10, label: 'Juguete Horizontal Niño', type: 2, icon: '/icons/Juguete/Ninio.png' },//OK
+    { id: 11, label: 'Juguete Horizontal Niña', type: 2, icon: '/icons/Juguete/Ninia.png' },//OK
+    { id: 12, label: 'Rectangular 9 x 2', type: 3, icon: '/icons/Mochila/rectangular.png' },//OK
+    { id: 15, label: 'Horizontal 9 x 2', type: 3, icon: '/icons/Mochila/horizontal.png' },
+    { id: 13, label: 'Exhibicion Nino Mochila', type: 4, icon: '/icons/Mochila/ExhNINO.png' },//OK
+    { id: 14, label: 'Exhibicion Nina Mochila', type: 4, icon: '/icons/Mochila/ExhNINA.png' },//OK
+    { id: 16, label: 'Paquetes Mochila', type: 4, icon: '/icons/Mochila/STAR12_1.png' },//OK
 
   ]
 })
 
-const pdf = () => {
-  // console.log(products.value);
+const pdfMost = computed(() => mosPDF.value.opts.filter(e => e.type == typeLabels.value.val.id))
+
+const pdf = (b) => {
+  mosPDF.value.val = b;
+  // console.log(b.label);
   $q.loading.show({ message: 'Generando Etiquetas' })
   if (mosPDF.value.val.id == 1) {
     labels.xtralargeLabel(products.value, VDB.session.credentials.nick, mosPDF.value.val.label, prices.value)

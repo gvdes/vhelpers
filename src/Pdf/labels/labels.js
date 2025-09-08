@@ -55,6 +55,12 @@ const largeLabel = (data, nick, name, prices) => {
         doc.text(textLines, x + 10, y + 25); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 10, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 70, y + 33, 20, 20) // ajusta la posición y tamaño
+        })
         let ypri = y + 39
         let yprincrement = 7
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -141,6 +147,12 @@ const xtralargeLabel = (data, nick, name, prices) => {
         doc.setFontSize(12);
         let ypri = y + 39
         let yprincrement = 12
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 140, y + 40, 45, 45) // ajusta la posición y tamaño
+        })
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
           if (e.alias == "OFERTA") {
             doc.setFontSize(35);
@@ -225,6 +237,12 @@ const mediumLabel = (data, nick, name, prices) => {
         doc.text(textLines, x + 5, y + 25); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 37, y + 53, 18, 18) // ajusta la posición y tamaño
+        })
         let ypri = y + 40
         let yprincrement = 7
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -307,6 +325,12 @@ const smallLabel = (data, nick, name, prices) => {
         doc.setFont('helvetica', 'normal');
         doc.text(product.label.substring(0, 25), x + 15, y + 43); // descripcion de el producto
         doc.setFontSize(10);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 46, y + 30, 10, 10) // ajusta la posición y tamaño
+        })
         let ypri = y + 36
         let yprincrement = 12
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -393,6 +417,12 @@ const verticalLabelNavidad = (data, nick, name, prices) => {
         doc.text(textLines, x + 5, y + 22); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 20, y + 53, 10, 10) // ajusta la posición y tamaño
+        })
         let ypri = y + 35
         let yprincrement = 7
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -478,6 +508,17 @@ const toyBoys = (data, nick, name, prices) => {
         doc.text(textLines, x + 3, y + 25); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, {
+          errorCorrectionLevel: 'H', color: {
+            dark: '#000000',  // color de los puntos del QR
+            light: '#00000000' // fondo transparente (usa rgba o hex con alfa)
+          }
+        }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 20, y + 58, 15, 15) // ajusta la posición y tamaño
+        })
         let ypri = y + 40
         let yprincrement = 7
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -563,6 +604,12 @@ const toyGirls = (data, nick, name, prices) => {
         doc.text(textLines, x + 5, y + 25); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 50, y + 36, 12, 12) // ajusta la posición y tamaño
+        })
         let ypri = y + 40
         let yprincrement = 7
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -647,6 +694,12 @@ const xlargenina = (data, nick, name, prices) => {
         doc.text(textLines, x + 18, y + 31); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 10, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 140, y + 40, 45, 45) // ajusta la posición y tamaño
+        })
         let ypri = y + 39
         let yprincrement = 12
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -731,6 +784,12 @@ const xlargenino = (data, nick, name, prices) => {
         doc.text(textLines, x + 18, y + 31); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 10, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 140, y + 40, 45, 45) // ajusta la posición y tamaño
+        })
         let ypri = y + 39
         let yprincrement = 12
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -817,6 +876,18 @@ const Hlargenino = (data, nick, name, prices) => {
         doc.text(textLines, x + 5, y + 15); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, {
+          errorCorrectionLevel: 'H', color: {
+            dark: '#000000',  // color de los puntos del QR
+            light: '#00000000' // fondo transparente (usa rgba o hex con alfa)
+          }
+        }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 80, y + 30, 16, 16) // ajusta la posición y tamaño
+        })
+
         let ypri = y + 25
         let yprincrement = 7
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -902,6 +973,14 @@ const Hlargenina = (data, nick, name, prices) => {
         doc.text(textLines, x + 5, y + 25); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, {
+          errorCorrectionLevel: 'H',
+        }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 80, y + 13, 16, 16) // ajusta la posición y tamaño
+        })
         let ypri = y + 32
         let yprincrement = 7
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -985,6 +1064,12 @@ const xlargeExhnino = (data, nick, name, prices) => {
         doc.text(textLines, x + 100, y + 50, { align: 'center' }); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 10, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 163, y + 35, 30, 30) // ajusta la posición y tamaño
+        })
         let ypri = y + 50
         let yprincrement = 12
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -1072,6 +1157,12 @@ const xlargeExhnina = (data, nick, name, prices) => {
         doc.text(textLines, x + 100, y + 50, { align: 'center' }); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 10, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 152, y + 55, 30, 30) // ajusta la posición y tamaño
+        })
         let ypri = y + 50
         let yprincrement = 12
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -1162,6 +1253,17 @@ const HorizontalLabel = (data, nick, name, prices) => {
         doc.text(textLines, x + 1, y + 15, { align: 'left' }); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, {
+          errorCorrectionLevel: 'H', color: {
+            dark: '#000000',  // color de los puntos del QR
+            light: '#00000000' // fondo transparente (usa rgba o hex con alfa)
+          }
+        }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 40, y + 17, 15, 15) // ajusta la posición y tamaño
+        })
         let ypri = y + 5
         let yprincrement = 7
         product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
@@ -1234,7 +1336,7 @@ const VerticalLabel = (data, nick, name, prices) => {
         // doc.addImage(image, type, x, y, labelWidth, labelHeight); // Agrega la imagen
 
         //se va a agregar tambien el qr brou
-        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? {modelo: product.id, idChange: product.historic_prices[0].id} : null) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
         QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
           if (err) throw err
 
@@ -1340,6 +1442,12 @@ const Paquetes = (data, nick, name, prices) => {
         doc.text(textLines, x + 100, y + 52, { align: 'center' }); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 10, y + 25); // descripcion de el producto
         doc.setFontSize(12);
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+
+          doc.addImage(url, 'PNG', x + 27, y + 62, 30, 30) // ajusta la posición y tamaño
+        })
         let ypri = y + 50
         let yprincrement = 12
 
@@ -1394,7 +1502,7 @@ const Paquetes = (data, nick, name, prices) => {
               doc.setFont('helvetica', 'bold');
               doc.setFontSize(35);
               doc.text(e.alias, x + 60, ypri + i * yprincrement + 30);
-                doc.setFontSize(40);
+              doc.setFontSize(40);
               doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 115, ypri + i * yprincrement + 30);
             }
           });
