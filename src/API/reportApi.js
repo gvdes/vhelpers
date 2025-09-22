@@ -14,4 +14,7 @@ export default{
   obtReport(data){
     return assist.post(`/reports/obtReport`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  reportWarehouses(data){
+    return assist.post(`/reports/reportWarehouses`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 }

@@ -46,7 +46,7 @@ const largeLabel = (data, nick, name, prices) => {
         doc.setFontSize(30);
         doc.setFont('helvetica', 'bold');
         // doc.text(product.name, x + 10, y + 22); // se agrega codigo corto
-        doc.text(product.name, x + 61, y + 77); // se agrega codigo corto
+        doc.text(product.name, x + 61, y + 15); // se agrega codigo corto
 
         doc.setFontSize(14);
         doc.setFont('helvetica', 'normal');
@@ -59,7 +59,7 @@ const largeLabel = (data, nick, name, prices) => {
         QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
           if (err) throw err
 
-          doc.addImage(url, 'PNG', x + 70, y + 33, 20, 20) // ajusta la posición y tamaño
+          doc.addImage(url, 'PNG', x + 70, y + 57, 20, 20) // ajusta la posición y tamaño
         })
         let ypri = y + 39
         let yprincrement = 7
@@ -83,7 +83,7 @@ const largeLabel = (data, nick, name, prices) => {
         doc.text(`${product.code}`, x + 10, y + 12); // codigo de el producto
         doc.text(product.large, x + 18, y + 74); // largo de el producto
         doc.setFont('helvetica', 'normal');
-        doc.text(`${product.pieces} PZS`, x + 70, y + 12); // piezas por caja
+        doc.text(`${product.pieces} PZS`, x + 18, y + 69); // piezas por caja
         doc.setFontSize(6)
         doc.setFont('helvetica', 'normal');
         doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 19, y + 77); //ubicacion de exhibicion de el producto

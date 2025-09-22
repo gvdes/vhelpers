@@ -31,6 +31,14 @@ export default{
   synclient(){
     return assist.get(`/admincli/syncClient`).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  getClients(){
+    return assist.get(`/Client`).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+  getSalesC(data){
+    return assist.post(`/Client/getSalesC`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+
+
 
 
 }

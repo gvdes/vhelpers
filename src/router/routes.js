@@ -80,7 +80,7 @@ const routes = [
   {
     path: '/checkLabels',
     component: () => import('layouts/checkLavelsLYT.vue'),
-    meta: { moduleId: 54  }
+    meta: { moduleId: 54 }
   },
   {
     path: '/compare',
@@ -191,7 +191,7 @@ const routes = [
     meta: { moduleId: 56 }
   },
   {
-    path: '/clients',
+    path: '/Formclients',
     component: () => import('layouts/clientLYT.vue'),
     children: [
       { path: 'formClient', name: 'rcl', component: () => import('pages/clients/formCli.vue'), meta: { moduleId: 34 } },
@@ -208,6 +208,17 @@ const routes = [
       { path: ':cid/cash', name: 'cids', component: () => import('pages/cashRegisters/salesEstandar.vue'), meta: { moduleId: 30 } },
     ],
   },
+  {
+    path: '/report',
+    component: () => import('layouts/indicatorsLYT.vue'),
+    meta: { moduleId: 60 },
+    children: [
+      { path: 'warehouses', name: 'inw', component: () => import('pages/Report/Indicators/Warehouses.vue'), meta: { moduleId: 60 } },
+      // // { path: ':cid/automate', name: 'cidx', component: () => import('pages/cashRegisters/salesTpv.vue'),meta: { moduleId: 30 } },
+      // { path: ':cid/cash', name: 'cids', component: () => import('pages/cashRegisters/salesEstandar.vue'), meta: { moduleId: 30 } },
+    ],
+  },
+
 
   {
     path: '/verifyOrder',
@@ -294,6 +305,17 @@ const routes = [
       { path: 'prices', name: 'pricespr', component: () => import('pages/Products/pricesProducts.vue'), meta: { moduleId: 50 } },
       { path: 'modify', name: 'modipr', component: () => import('pages/Products/ModifyProducts.vue'), meta: { moduleId: 51 } },
 
+    ],
+  },
+  {
+    path: '/clients',
+    component: () => import('layouts/LYTClients.vue'),
+    meta: { moduleId: 57 },
+    children: [
+      { path: 'index', name: 'clinx', component: () => import('pages/clients/Index.vue'), meta: { moduleId: 57 } },
+      { path: 'regisCredit', name: 'clrc', component: () => import('pages/clients/RegisCredit.vue'), meta: { moduleId: 58 } },
+      { path: 'regisPayment', name: 'clprp', component: () => import('pages/clients/RegisPayment.vue'), meta: { moduleId: 59 } },
+      { path: 'wallet', name: 'clwl', component: () => import('pages/clients/RegisWallet.vue'), meta: { moduleId: 57 } },
     ],
   },
   // {
