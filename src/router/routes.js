@@ -318,6 +318,17 @@ const routes = [
       { path: 'wallet', name: 'clwl', component: () => import('pages/clients/RegisWallet.vue'), meta: { moduleId: 57 } },
     ],
   },
+  {
+    path: '/warehouse',
+    component: () => import('layouts/WarehouseLYT.vue'),
+    meta: { moduleId: 61 },
+    children: [
+      { path: 'locations', name: 'wub', component: () => import('pages/warehouse/locations.vue'), meta: { moduleId: 62 } },
+      { path: 'minmax', name: 'wmm', component: () => import('pages/warehouse/minmax.vue'), meta: { moduleId: 61 } },
+      { path: 'labels', name: 'wet', component: () => import('pages/warehouse/labels.vue'), meta: { moduleId: 63 } },
+
+    ],
+  },
   // {
   //   path: '/deposits',
   //   component: () => import('layouts/Deposits.vue'),

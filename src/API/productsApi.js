@@ -37,4 +37,13 @@ export default{
   checkLabel(data) {
     return assist.post(`/Products/checkLabels`,data).then(done => done.data).catch(fail => { return { fail } });
   },
+  setMin(data) {
+    return assist.post(`/Products/setMin`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  setMax(data) {
+    return assist.post(`/Products/setMax`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  setMassisveMinMax(data) {
+    return assist.post(`/Products/setMassisveMinMax`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }

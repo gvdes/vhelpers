@@ -107,7 +107,9 @@ const table = ref({
     { name: 'total', label: 'Total', align: 'center', field: row => Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) },
     { name: 'totalcj', label: 'Total Cajas', align: 'center', sortable: true, field: row => Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)) },
     { name: 'Sucursal', label: `${VDB.session.store.name}`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock) },
-    { name: 'Sucursal', label: `Surtir En`, align: 'center', field: row => row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock) > 0 ? "Cedis" : "Texcoco" },
+    { name: 'SucursalINTRANSIT', label: `${VDB.session.store.alias} en TRA`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit) },
+
+    { name: 'cediss', label: `Surtir En`, align: 'center', field: row => row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock) > 0 ? "Cedis" : "Texcoco" },
 
   ],
   pagination: {
