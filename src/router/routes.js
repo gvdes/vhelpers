@@ -74,8 +74,8 @@ const routes = [
     component: () => import('layouts/LabelsLayout.vue'),
     meta: { moduleId: 4 },
     children: [
-      { path: 'products', name: 'lprd', component: () => import('pages/Labels/products.vue'), meta: { moduleId: 29 } },
-      { path: 'locations', name: 'llct', component: () => import('pages/Labels/locations.vue'), meta: { moduleId: 29 } },
+      { path: 'products', name: 'lprd', component: () => import('pages/Labels/products.vue'), meta: { moduleId: 4 } },
+      { path: 'locations', name: 'llct', component: () => import('pages/Labels/locations.vue'), meta: { moduleId: 4 } },
     ],
   },
   {

@@ -257,8 +257,8 @@ const init = async () => {
 }
 
 const getReport = async () => {
-  $q.loading.show({message:'El reporte puede tardar unos minutos'})
-  loading.value = true
+  // $q.loading.show({message:'El reporte puede tardar unos minutos'})
+  // loading.value = true
   let data = {
     sections: categories.value.seccion.val?.map(e => e.id),
     familys: categories.value.familias.val?.map(e => e.id),
@@ -268,12 +268,12 @@ const getReport = async () => {
   const resp = await reportApi.reportWarehouses(data);
   if (resp.fail) {
     console.log(resp);
-    $q.notify({message:'No se pudo obtener el reporte comuniquese con soporte',type:'negative',position:'center'})
+    // $q.notify({message:'No se pudo obtener el reporte comuniquese con soporte',type:'negative',position:'center'})
   } else {
     console.log(resp);
-    report.value = resp;
-    loading.value = false
-    $q.loading.hide()
+    // report.value = resp;
+    // loading.value = false
+    // $q.loading.hide()
   }
 }
 
