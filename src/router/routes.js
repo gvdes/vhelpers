@@ -64,9 +64,6 @@ const routes = [
       { path: 'year', name: 'ryr', component: () => import('pages/Report/Sales/year.vue'), meta: { moduleId: 29 } },
     ],
   },
-
-
-
   {
     path: '/cardStores',
     component: () => import('layouts/cardStores.vue'),
@@ -75,7 +72,11 @@ const routes = [
   {
     path: '/labels',
     component: () => import('layouts/LabelsLayout.vue'),
-    meta: { moduleId: 4 }
+    meta: { moduleId: 4 },
+    children: [
+      { path: 'products', name: 'lprd', component: () => import('pages/Labels/products.vue'), meta: { moduleId: 29 } },
+      { path: 'locations', name: 'llct', component: () => import('pages/Labels/locations.vue'), meta: { moduleId: 29 } },
+    ],
   },
   {
     path: '/checkLabels',
@@ -325,7 +326,7 @@ const routes = [
     children: [
       { path: 'locations', name: 'wub', component: () => import('pages/warehouse/locations.vue'), meta: { moduleId: 62 } },
       { path: 'minmax', name: 'wmm', component: () => import('pages/warehouse/minmax.vue'), meta: { moduleId: 61 } },
-      { path: 'labels', name: 'wet', component: () => import('pages/warehouse/labels.vue'), meta: { moduleId: 63 } },
+      // { path: 'labels', name: 'wet', component: () => import('pages/warehouse/labels.vue'), meta: { moduleId: 63 } },
 
     ],
   },

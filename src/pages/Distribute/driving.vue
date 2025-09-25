@@ -83,9 +83,11 @@ const ordersdb = computed(() => {
     const isStore = part.requisition.to.id == VDB.session.store.id_viz;
     const isAlmacenista = ['gen', 'aux', 'alm', 'root','recp','gce'].includes(VDB.session.rol);
     if (isChofer && isStore) {
+      $restockStore.setButtonShow(false)
       return part._status === 6
     }
     if (isSameStore && isAlmacenista) {
+      $restockStore.setButtonShow(true)
       return part._status === 7;
     }
     return false;

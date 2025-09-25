@@ -63,6 +63,8 @@ const typeLabels = ref({
     { id: 2, label: 'Juguete' },
     { id: 3, label: 'Plano' },
     { id: 4, label: 'Mochila' },
+    { id: 5, label: 'Almacen' },
+
   ]
 })
 
@@ -86,7 +88,7 @@ const mosPDF = ref({
     { id: 13, label: 'Exhibicion Nino Mochila', type: 4, icon: '/icons/Mochila/ExhNINO.png' },//OK
     { id: 14, label: 'Exhibicion Nina Mochila', type: 4, icon: '/icons/Mochila/ExhNINA.png' },//OK
     { id: 16, label: 'Paquetes Mochila', type: 4, icon: '/icons/Mochila/STAR12_1.png' },//OK
-
+    { id: 17, label: 'Almacen', type: 5, icon: '/icons/Mochila/horizontal.png' },
   ]
 })
 
@@ -348,6 +350,22 @@ const pdf = (b) => {
       })
   } else if (mosPDF.value.val.id == 16) {
     labels.Paquetes(products.value, VDB.session.credentials.nick, mosPDF.value.val.label, prices.value)
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
+      })
+      .catch(r => {
+        console.log(r);
+        alert('Hubo un error al descargar las etiquetas')
+      })
+  } else if (mosPDF.value.val.id == 17) {
+    labels.HorizontalLabelwarehouse(products.value, VDB.session.credentials.nick, mosPDF.value.val.label)
       .then(r => {
         $q.notify({
           message: `Se Descargo las etiquetas Correctamente`,

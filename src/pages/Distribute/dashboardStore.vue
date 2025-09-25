@@ -82,7 +82,7 @@ const ordersdb = computed(() => $restockStore.ordersok.filter(o => o._workpoint_
 const init = async () => {
   $restockStore.setShowLYT(true)
   $restockStore.setTitle('Dashboard')
-  $restockStore.setButtonShow(false)
+  $restockStore.setButtonShow(true)
 }
 
 const mosPartition = (a, b) => {

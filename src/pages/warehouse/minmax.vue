@@ -142,7 +142,7 @@
 
     <q-footer reveal elevated bordered>
       <q-card class="my-card">
-        <ProductAutocomplete :checkState="false" @input="add" with_prices @agregar="agregar"
+        <ProductAutocomplete  @input="add" @agregar="agregar"
           :workpoint-status="'all'" />
       </q-card>
     </q-footer>
@@ -225,8 +225,7 @@ const add = (opt) => {
 const agregar = (ops) => {
   product.value.state = true;
   product.value.val = ops;
-
-  // Inicializamos inputs
+  console.log(ops)
   const stock = ops.stocks.find(e => e.id == VDB.session.store.id_viz);
   if (stock) {
     // aquí puedes dividir los valores reales para mostrar “base”
@@ -343,17 +342,15 @@ const readFile = () => {
 
     codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
       let codigo = cell.value;
-      if (!codigo) return; // si está vacío, saltar
+      if (!codigo) return;
 
       let minimo = parseFloat(worksheet.getCell(`B${rowNumber}`).value) || 0;
       let maximo = parseFloat(worksheet.getCell(`C${rowNumber}`).value) || 0;
       if (!datos[codigo]) {
         datos[codigo] = { minimo: 0, maximo: 0 };
       }
-
-      // sumamos ambos valores
-      datos[codigo].minimo += minimo;
-      datos[codigo].maximo += maximo;
+      datos[codigo].minimo = minimo;
+      datos[codigo].maximo = maximo;
     });
 
     let Diferencia = Object.keys(datos).map(codigo => ({
@@ -455,13 +452,10 @@ const setMassiveminmax = async () => {
 watch(
   [() => types.value.val, () => inputs.value.min, () => inputs.value.max],
   ([newType, newMin, newMax], [oldType, oldMin, oldMax]) => {
-    // Guardamos type en localStorage
     localStorage.setItem('minmaxType', JSON.stringify(newType));
-
-    // Recalculamos los valores reales
     calculateRealValues();
   },
-  { deep: true } // opcional, solo necesario si algún objeto interno cambia
+  { deep: true }
 );
 onMounted(() => {
   const savedSale = localStorage.getItem('minmaxType')
