@@ -4,7 +4,6 @@
       <q-toolbar-title>
         ALMACENES
       </q-toolbar-title>
-      <!-- <q-btn icon="refresh" flat rounded @click="init" /> -->
     </q-toolbar>
     <q-separator />
     <q-card class="my-card">
@@ -61,18 +60,15 @@ const categories = ref({
     val: [],
   }
 })
-const providers = ref({
-  opts: [],
-  val: null,
-})
-const makers = ref({
-  opts: [],
-  val: null,
-})
-const productFilt = ref('');
+
 const loading = ref(false)
 const report = ref([])
-const baseColumns = ref([
+
+const table = computed(() => ({
+  pagination: {
+    rowsPerPage: 10,
+  },
+  columns: [
   { name: 'code', label: 'CODIGO', field: r => r.code, align:'left' },
   { name: 'description', label: 'DESCRIPCION', field: r => r.description, align:'left' },
   { name: 'barcode', label: 'CB', field: r => r.barcode, align:'left' },
@@ -84,142 +80,17 @@ const baseColumns = ref([
   { name: 'maker', label: 'FABRICANTE', field: r => r.makers?.name, align:'left' },
   { name: 'pxc', label: 'PXC', field: r => r.pieces, align:'center' },
   {
-    name: 'ultfch', label: 'ULT FECH LL', field: r => r.purchases.length > 0 ? dayjs(r.purchases.reduce((a, b) => {
-      return new Date(b.created_at) > new Date(a) ? b.created_at : a
-    }, 0)).format('YYYY-MM-DD') : null, align:'center'
+    name: 'purchases', label: 'COMPRAS', field: r => r.PurchaseYear, align:'center'
   },
   {
-    name: 'purchases', label: 'COMPRAS', field: r =>
-      r.purchases.length > 0
-        ? r.purchases.reduce((a, e) => a + Number(e.pivot.amount), 0)
-        : null, align:'center'
+    name: `sales${Number(dayjs().format('YYYY')) - 1}`, label: `VENTAS ${dayjs().format('YYYY') - 1}`, field: r => r.SalesSubYear, align:'center'
   },
   {
-    name: 'totalpurchases', label: 'TC_$', field: r =>
-      r.purchases.length > 0
-        ? r.purchases.reduce((a, e) => a + Number(e.pivot.total), 0)
-        : null, align:'center'
+    name: `sales${dayjs().year}`, label: `VENTAS ${dayjs().format('YYYY')}`, field: r => r.SalesYear, align:'center'
   },
   {
-    name: `sales${Number(dayjs().format('YYYY')) - 1}`, label: `VENTAS ${dayjs().format('YYYY') - 1}`, field: r =>
-      r.sales.length > 0
-        ? r.sales.reduce((a, e) => {
-          return dayjs(e.created_at).format('YYYY') == dayjs().format('YYYY') - 1
-            ? a + Number(e.pivot.amount)
-            : a;
-        }, 0)
-        : null, align:'center'
-  },
-  {
-    name: `totalsales${Number(dayjs().format('YYYY')) - 1}`, label: `TV_$ ${dayjs().format('YYYY') - 1}`, field: r =>
-      r.sales.length > 0
-        ? r.sales.reduce((a, e) => {
-          return dayjs(e.created_at).format('YYYY') == dayjs().format('YYYY') - 1
-            ? a + Number(e.pivot.total)
-            : a;
-        }, 0)
-        : null, align:'center'
-  },
-  {
-    name: `sales${dayjs().year}`, label: `VENTAS ${dayjs().format('YYYY')}`, field: r =>
-      r.sales.length > 0
-        ? r.sales.reduce((a, e) => {
-          return dayjs(e.created_at).format('YYYY') === dayjs().format('YYYY')
-            ? a + Number(e.pivot.amount)
-            : a;
-        }, 0)
-        : null, align:'center'
-  },
-  {
-    name: `totalsales${dayjs().year}`, label: `TV_$ ${dayjs().format('YYYY')}`, field: r =>
-      r.sales.length > 0
-        ? r.sales.reduce((a, e) => {
-          return dayjs(e.created_at).format('YYYY') === dayjs().format('YYYY')
-            ? a + Number(e.pivot.total)
-            : a;
-        }, 0)
-        : null, align:'center'
-  },
-  {
-    name: 'stock', label: 'STOCK', field: r => r.stocks.length > 0 ? r.stocks.reduce((a, e) => a + Number(e.pivot.stock) + Number(e.pivot.fdt), 0) : null, align:'center'
-  },
-  {
-    name: 'totalstock', label: 'STOCK_$', field: r =>
-      r.stocks.length > 0
-        ? r.stocks.reduce((a, e) => a + Number(e.pivot.stock) + Number(e.pivot.fdt), 0) * r.cost
-        : null, align:'center'
-  },
-])
-
-const stockColumns = computed(() => {
-  if (report.value.length === 0) return []
-  const first = report.value[0]
-  return first.stocks.map(stock => ({
-    name: stock.alias.toLowerCase(),
-    label: stock.alias,
-    field: r => {
-      const st = r.stocks.find(s => s.alias === stock.alias)
-      return st ? Number(st.pivot.stock) +  Number(st.pivot.fdt) : 0
-    }, align:'center'
-  }))
-})
-
-const priceColumns = computed(() => {
-  if (report.value.length === 0) return []
-  const first = report.value[0]
-  return first.prices.map(price => ({
-    name: price.alias.toLowerCase(),
-    label: price.name,
-    field: r => {
-      const pr = r.prices.find(p => p.alias === price.alias)
-      return pr ? pr.pivot.price : 0
-    }, align:'center'
-  }))
-})
-
-
-
-const salesByWorkpointColumns = computed(() => {
-  if (report.value.length === 0) return []
-  const first = report.value[0]
-  const workpoints = []
-  report.value.forEach(r => {
-    r.sales.forEach(sale => {
-      const wp = sale.cash_register?.workpoint
-      if (wp && wp.active === 1 && !workpoints.find(w => w.id === wp.id)) {
-        workpoints.push(wp)
-      }
-    })
-  })
-
-  return workpoints.map(wp => ({
-    name: `sales_${wp.alias}`,
-    label: `Ventas ${wp.alias}`, // Nombre de la columna
-    field: r => {
-      return r.sales.reduce((a, sale) => {
-        if (
-          sale.cash_register?.workpoint?.id === wp.id &&
-          dayjs(sale.created_at).format('YYYY') === dayjs().format('YYYY') // Solo este año
-        ) {
-          return a + Number(sale.pivot.amount)
-        }
-        return a
-      }, 0)
-    }, align:'center'
-  }))
-})
-
-
-const table = computed(() => ({
-  pagination: {
-    rowsPerPage: 10,
-  },
-  columns: [
-    ...baseColumns.value,
-    ...stockColumns.value,
-    ...salesByWorkpointColumns.value,
-    {id:'cost',label:'COSTO', field: r => r.cost},
-    ...priceColumns.value
+    name: 'stock', label: 'STOCK', field: r => r.SumStock, align:'center'
+  }
   ]
 }))
 
@@ -257,8 +128,8 @@ const init = async () => {
 }
 
 const getReport = async () => {
-  // $q.loading.show({message:'El reporte puede tardar unos minutos'})
-  // loading.value = true
+  $q.loading.show({message:'El reporte puede tardar unos minutos'})
+  loading.value = true
   let data = {
     sections: categories.value.seccion.val?.map(e => e.id),
     familys: categories.value.familias.val?.map(e => e.id),
@@ -268,12 +139,12 @@ const getReport = async () => {
   const resp = await reportApi.reportWarehouses(data);
   if (resp.fail) {
     console.log(resp);
-    // $q.notify({message:'No se pudo obtener el reporte comuniquese con soporte',type:'negative',position:'center'})
+    $q.notify({message:'No se pudo obtener el reporte comuniquese con soporte',type:'negative',position:'center'})
   } else {
     console.log(resp);
-    // report.value = resp;
-    // loading.value = false
-    // $q.loading.hide()
+    report.value = resp;
+    loading.value = false
+    $q.loading.hide()
   }
 }
 
@@ -281,7 +152,6 @@ const exportData = async () => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Almacenes');
 
-  // 1️⃣ Definir las columnas desde tu table.value.columns
   const cols = table.value.columns.map(col => ({
     header: col.label, // encabezado
     key: col.name, // key única
@@ -289,7 +159,6 @@ const exportData = async () => {
   }));
   worksheet.columns = cols;
 
-  // 2️⃣ Generar las filas con los valores reales
   const rows = report.value.map(r => {
     const row = {};
     table.value.columns.forEach(col => {
@@ -304,12 +173,11 @@ const exportData = async () => {
     return row;
   });
 
-  // 3️⃣ Convertir las rows en un array de arrays (necesario para addTable)
   const rowsArray = rows.map(row =>
     table.value.columns.map(col => row[col.name])
   );
 
-  // 4️⃣ Agregar la tabla estructurada
+
   worksheet.addTable({
     name: 'AlmacenesTable', // nombre interno de la tabla
     ref: 'A1', // desde dónde empieza
@@ -324,8 +192,6 @@ const exportData = async () => {
     })),
     rows: rowsArray, // filas reales
   });
-
-  // 5️⃣ Ajustar el ancho de columnas automáticamente
   worksheet.columns.forEach(column => {
     let maxLength = 0;
     column.eachCell({ includeEmpty: true }, (cell) => {
@@ -336,8 +202,6 @@ const exportData = async () => {
     });
     column.width = maxLength < 10 ? 10 : maxLength;
   });
-
-  // 6️⃣ Descargar Excel
   const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer], {
     type:
