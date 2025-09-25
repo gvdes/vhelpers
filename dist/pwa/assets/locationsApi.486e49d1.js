@@ -1,1 +1,0 @@
-import{a}from"./axios.97eb91c6.js";var r={index(o){return a.get(`/locations/${o}`).then(t=>t.data).catch(t=>({fail:t}))},obtProductSections(o){return a.post("/locations/obtProductSections",o).then(t=>t.data).catch(t=>({fail:t}))},obtSections(o){return a.post("/locations/obtSections",o).then(t=>t.data).catch(t=>({fail:t}))}};export{r as l};

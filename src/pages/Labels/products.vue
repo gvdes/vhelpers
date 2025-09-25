@@ -499,6 +499,7 @@ const obtenerProductsSection = async (nivel) => {
       });
       $q.loading.hide();
     } else {
+      $q.loading.hide();
       $q.notify({ message: 'No Hay Articulos Ubicados x(', type: 'negative', position: 'center', icon: 'mood_bad' })
     }
   }
