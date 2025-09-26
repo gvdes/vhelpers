@@ -46,14 +46,10 @@
                 <div class="text-h4 text-center " style=" text-decoration: underline;">Datos Sucursal</div>
               </q-card-section>
               <q-input rounded outlined v-model="form.ticket" label="Ticket" mask="#-######" class="q-my-sm"> </q-input>
-              <q-select rounded outlined option-label="name" v-model="form.branch.val" :options="form.branch.opts"
-                @input="getStaff(form.branch.val.id)" label="Selecciona Sucursal" @update:model-value="fillAgents"
-                class="q-my-sm" />
-              <q-select rounded outlined v-if="form.branch.val" option-label="complete_name" v-model="form.agent.val"
-                :options="form.agent.opts" label="Quien atendio" class="q-my-sm" />
+              <q-select rounded outlined v-if="form.branch" option-label="complete_name" v-model="form.agent.val"
+                :options="fillAgents" label="Quien atendio" class="q-my-sm" />
               <q-select rounded outlined v-model="form.priceList.val" :options="form.priceList.opts"
                 label="Precio Otorgado" class="q-my-sm" />
-
               <q-input rounded outlined v-model="form.notes" label="Notas" class="q-my-sm"> </q-input>
             </div>
             <div v-if="isFormValid">
@@ -96,10 +92,12 @@
 import { ref, computed } from 'vue';
 import clientApi from 'src/API/clientApi.js';
 import { useQuasar } from 'quasar';
+import { useVDBStore } from 'stores/VDB';
+const VDB = useVDBStore();
 const $q = useQuasar();
 
-let sar = ref({ state: false });
-let cl_finder = ref({
+const sar = ref({ state: false });
+const cl_finder = ref({
   state: false,
   val: "",
   table: {
@@ -115,12 +113,9 @@ let cl_finder = ref({
   }
 });
 
-let client = ref([]);
 
-let form = ref({
-  branch: {
-    val: null, opts: []
-  },
+const form = ref({
+  branch: VDB.session.store,
   name: "",
   ticket: null,
   address: {
@@ -136,7 +131,6 @@ let form = ref({
   email: null,
   priceList: {
     val: null, opts: [
-      // { id: 1, label: "Menudeo" },
       { id: 2, label: "Mayoreo" },
       { id: 3, label: "Docena" },
       { id: 4, label: "Caja" },
@@ -152,11 +146,12 @@ let form = ref({
 
 /*decalracion de propiedades computadas*/
 
-let isFormValid = computed(() => (form.value.branch.val && form.value.priceList.val && (form.value.name && form.value.name.length > 4) && ((form.value.phone && form.value.phone.length == 12) || (form.value.email)) && form.value.agent && form.value.ticket && form.value.address.street && form.value.address.state && form.value.address.mun))
+const isFormValid = computed(() => ( form.value.priceList.val && (form.value.name && form.value.name.length > 4) && ((form.value.phone && form.value.phone.length == 12) || (form.value.email)) && form.value.agent && form.value.ticket && form.value.address.street && form.value.address.state && form.value.address.mun))
+const fillAgents = computed(() =>  form.value.agent.db.filter(e => e._store == VDB.session.store.id))
 
-let dataToSave = computed(() => {
+const dataToSave = computed(() => {
   return {
-    branch: form.value.branch.val,
+    branch: form.value.branch,
     name: form.value.name.toUpperCase(),
     ticket: form.value.ticket,
     address: form.value.address,
@@ -171,10 +166,9 @@ let dataToSave = computed(() => {
 const index = async () => {
   const resp = await clientApi.index()
   console.log(resp);
-  form.value.branch.opts = resp.branches
   form.value.agent.db = resp.agents
 }
-index();
+
 
 const saveQuote = async () => {
   form.value.state = true;
@@ -198,7 +192,7 @@ const saveQuote = async () => {
   } else {
     form.value.state = false;
     console.log(cli[inx]);
-    let exiscli = cli[inx].CODCLI + " - " + cli[inx].NOFCLI;
+    let  exiscli = cli[inx].CODCLI + " - " + cli[inx].NOFCLI;
     $q.notify({
       message: "El cliente existe ID " + exiscli,
       icon: 'close',
@@ -228,22 +222,15 @@ const clearForm = () => {
   form.value.notes = null
 }
 
-const fillAgents = v => {
-  form.value.agent.opts = form.value.agent.db.filter(e => e._store == v.id);
-}
-
-let searching = async () => {
+const searching = async () => {
   let sico = cl_finder.value.val;
-  // console.log(`'/admincli/getclient?q=${sico}'`)
   const resp = await clientApi.getClient(sico);
   console.log(resp);
   sar.value.state = true;
   cl_finder.value.table.rows = resp;
   cl_finder.value.state = true;
   console.log(resp);
-
-
 }
 
-
+index();
 </script>

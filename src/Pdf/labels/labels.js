@@ -1488,7 +1488,7 @@ const locationsWarehouse = (data, nick) => {
       const labelHeight = 31; // Alto de cada etiqueta
       const spacingX = 5; // Espaciado horizontal entre etiquetas
       const spacingY = 5; // Espaciado vertical entre etiquetas
-      const labelsPerRow = 1 ; // Número de etiquetas por fila
+      const labelsPerRow = 1; // Número de etiquetas por fila
       const labelsPerColumn = 7; // Número de etiquetas por columna
       const totalLabelsPerPage = labelsPerRow * labelsPerColumn;
       locations.forEach((location, index) => {
@@ -1512,14 +1512,19 @@ const locationsWarehouse = (data, nick) => {
         }, (err, url) => {
           if (err) throw err
           doc.setFontSize(8)
-          doc.text(`${location.path}`, x + 10, y + 28); // piezas por caja
+          doc.text(`${location.path}`, x + 15, y + 28); // piezas por caja
           doc.addImage(url, 'PNG', x + 10, y + 1, 26, 26) // ajusta la posición y tamaño
-          doc.text(`${location.path}`, x + 180, y + 28); // piezas por caja
+          doc.text(`${location.path}`, x + 170, y + 28); // piezas por caja
           doc.addImage(url, 'PNG', x + 165, y + 1, 26, 26) // ajusta la posición y tamaño
         })
         doc.setFontSize(60)
-        doc.text(`${location.alias}`, x +55, y + 20); // piezas por caja
+        doc.text(`${location.alias}`, x + 55, y + 20); // piezas por caja
         doc.text(`${location.alias}`, x + 110, y + 20); // piezas por caja
+        doc.setFontSize(8)
+
+        doc.text(`${location.id}`, x + 55, y + 28); // piezas por caja
+        doc.text(`${location.id}`, x + 110, y + 28); // piezas por caja
+
       });
       doc.save(`${nick} etiquetas ${name}`);
       resolve();
