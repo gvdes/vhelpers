@@ -203,6 +203,7 @@ const exportTable = async () => {
       Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)),
       Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)),
       row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)[0],
+      row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit),
       row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)[0] > 0 ? "Cedis" : "Texcoco"
     ])
   );
