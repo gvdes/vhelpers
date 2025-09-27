@@ -316,7 +316,7 @@ const routes = [
       { path: 'index', name: 'clinx', component: () => import('pages/clients/Index.vue'), meta: { moduleId: 57 } },
       { path: 'regisCredit', name: 'clrc', component: () => import('pages/clients/RegisCredit.vue'), meta: { moduleId: 58 } },
       { path: 'regisPayment', name: 'clprp', component: () => import('pages/clients/RegisPayment.vue'), meta: { moduleId: 59 } },
-      { path: 'wallet', name: 'clwl', component: () => import('pages/clients/RegisWallet.vue'), meta: { moduleId: 57 } },
+      // { path: 'wallet', name: 'clwl', component: () => import('pages/clients/RegisWallet.vue'), meta: { moduleId: 57 } },
     ],
   },
   {

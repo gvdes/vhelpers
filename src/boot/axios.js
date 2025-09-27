@@ -21,6 +21,7 @@ const vizapi = axios.create({ baseURL: 'http://192.168.10.189/vizapi/public/LVH'
 // const assist = axios.create({ baseURL: 'http://192.168.1.80:1920/Assist/public/api'});
 // const assist = axios.create({ baseURL: 'http://192.168.12.114:1920/Assist/public/api'});
 const assist = axios.create({ baseURL: 'http://192.168.10.238:2902/Assist/public/api'});
+const vizmedia = `https://mersbock.s3.us-east-2.amazonaws.com/vhelpers`;
 
 
 
@@ -39,4 +40,4 @@ export default boot(({ app }) => {
   //       so you can easily perform requests against your app's API
 })
 
-export { vizapi, assist }
+export { vizapi, assist, vizmedia }

@@ -17,6 +17,8 @@
       <q-card style="width: 900px; max-width: 100vw;">
         <q-card-section class="text-center text-bold text-h5">
           {{ moscli.val.name }}
+          <q-space />
+          <q-avatar size="150px"> <img :src="`${vizmedia}/client/${moscli.val.picture}`" > </q-avatar>
         </q-card-section>
         <q-card-section>
           <q-list bordered>
@@ -94,6 +96,7 @@ import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import clientApi from 'src/API/clientApi.js';//para dirigirme bro
 import { clientStore } from 'stores/ClientStore';
 import { exportFile, useQuasar } from 'quasar';
+import { vizmedia } from "boot/axios"
 import dayjs from 'dayjs';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'

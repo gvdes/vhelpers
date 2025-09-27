@@ -62,6 +62,9 @@
 
       </q-card>
       <q-card v-else>
+        <q-avatar size="300px" >
+          <img :src="`${vizmedia}/client/${wnd.row.picture}`">
+        </q-avatar>
         <q-card-section v-if="wnd.row._status == 0">
           <div class="text-h6 text-center ">Solicitud: {{ wnd.row.id }}</div>
           <div class="text-h5 text-left">Cliente</div>
@@ -91,6 +94,7 @@
     <q-dialog v-model="wndArchives.state" persistent>
       <QuotesArchive :quotes="qts_decline" @restore="restore" @destroy="destroy" />
     </q-dialog>
+
   </q-page>
 </template>
 
@@ -100,6 +104,7 @@ import { ref, computed } from 'vue'
 // import { api } from 'src/boot/axios';
 import { useQuasar } from 'quasar';
 import clientApi from 'src/API/clientApi.js';
+import { vizmedia } from "boot/axios"
 import QuotesArchive from 'src/components/Clientes/QuotesArchive.vue'
 const $q = useQuasar();
 
@@ -115,7 +120,6 @@ let qstates = {
   2: { label: "Rechazada", color: "text-red-14" },
   3: { label: "Sincronizadas", color: "text-deep-orange-10" },
   4: { label: "Eliminadas", color: "text-deep-orange-10" }
-
 }
 
 let wndArchives = ref({ state: false, row: null });

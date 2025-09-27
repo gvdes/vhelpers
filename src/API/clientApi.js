@@ -16,6 +16,9 @@ export default{
   create(data){
     return assist.post(`/admincli`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  updateImageClient(data){
+    return assist.post(`/admincli/updateImageClient`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
   addClient(data){
     return assist.post(`/admincli/addClient`,data).then( done=>done.data ).catch( fail =>  { return {fail}} );
   },
