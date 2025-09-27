@@ -191,6 +191,11 @@ const routes = [
     component: () => import('layouts/RefundStoreLYT.vue'),
     meta: { moduleId: 56 }
   },
+    {
+    path: '/productSeason',
+    component: () => import('layouts/productSeasonLYT.vue'),
+    meta: { moduleId: 63 }
+  },
   {
     path: '/Formclients',
     component: () => import('layouts/clientLYT.vue'),
