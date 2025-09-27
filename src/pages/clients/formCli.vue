@@ -228,6 +228,7 @@ const index = async () => {
 }
 
 const saveQuote = async () => {
+  $q.loading.show({message:'Creando Solicitud'})
   console.log(form.value)
   form.value.state = true;
   const formData = new FormData();
@@ -247,6 +248,7 @@ const saveQuote = async () => {
   } else {
     clearForm();
     form.value.state = false;
+    $q.loading.hide()
     $q.notify({
       message: "Formulario Enviado....",
       icon: 'check_circle',
@@ -295,6 +297,7 @@ const onRejectedExist = () => {
 }
 
 const updateImage = async () => {
+  $q.loading.show({message:'Actualizando Imagen'})
   const formData = new FormData();
   formData.append('id', moscli.value.val.id)
   formData.append('picture', moscli.value.val.pictureExist)
@@ -308,6 +311,7 @@ const updateImage = async () => {
     moscli.value.val.pictureExist = null
     moscli.value.val.picture = resp.image
     $q.notify({message:resp.mssg,type:'positive',position:'bottom'})
+    $q.loading.hide();
   }
 }
 
