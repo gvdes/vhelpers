@@ -434,12 +434,12 @@ const processProduct = async () => {
 const newRequi = () => {
   console.log('holi')
   if (pedidos.value.statue == 'cedis') {
-    newRequsition(1,bascketCed)
+    newRequsition(1,bascketCed.value)
   } else if (pedidos.value.statue == 'texcoco') {
-    newRequsition(2,bascketTex)
+    newRequsition(2,bascketTex.value)
   } else if (pedidos.value.statue == 'todos') {
-    newRequsition(1,bascketCed)
-    newRequsition(2,bascketTex)
+    newRequsition(1,bascketCed.value)
+    newRequsition(2,bascketTex.value)
   }
 }
 
