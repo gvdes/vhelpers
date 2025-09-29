@@ -163,7 +163,7 @@ const supply = ref({
 })
 const condition = ref({ state: 'percentage' })
 const percentage = ref({
-  val: 20
+  val: 0
 })
 const categories = ref({
   categorias: {
@@ -230,7 +230,7 @@ const suggested = computed(() => {
 })
 
 const bascket = computed(() => {
-  if (secciones.value.val) {
+  if (secciones.value.val && !categories.value.familias.val && !categories.value.categorias.val ) {
     return suggested.value.filter(e => e.category.familia.seccion.name == secciones.value.val)
   } else if (categories.value.familias.val && !categories.value.categorias.val) {
     return suggested.value.filter(e => e.category.familia.name == categories.value.familias.val)
