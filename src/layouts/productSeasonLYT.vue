@@ -21,7 +21,7 @@
               multiple filled @update:model-value="familys" dense />
             <q-separator spaced inset vertical dark />
             <q-select class="col" v-model="categories.familias.val" :options="categories.familias.opts" label="Familia"
-              filled option-label="name" :disable="!secciones.val" @update:model-value="categorys" dense>
+              filled option-label="name" :disable="!secciones.val" @update:model-value="categorys" dense multiple use-chips>
               <template v-if="categories.familias.val" v-slot:append>
                 <q-icon name="cancel" @click.stop.prevent="categories.familias.val = null" class="cursor-pointer" />
               </template>
@@ -71,16 +71,6 @@
 
         </q-card>
         <q-separator spaced inset vertical dark />
-        <!-- {{ bascketCed }} -->
-        <!-- <q-table :rows="bascket" :columns="table.columns" :pagination="table.pagination">
-          <template v-slot:top-right>
-            <q-btn color="primary" icon-right="send" flat @click="newNotes.state = !newNotes.state"
-              :disable="bascket.length == 0" v-if="condition.state !== 'query'" />
-            <q-btn color="primary" icon="print" flat @click="impre" :disable="bascket.length == 0" />
-            <q-btn color="primary" icon-right="archive" flat @click="exportTable" :disable="bascket.length <= 0" />
-          </template>
-        </q-table> -->
-
         <q-dialog v-model="newNotes.state" persistent>
           <q-card style="min-width: 350px">
             <q-card-section>
@@ -172,7 +162,7 @@ const categories = ref({
   },
   familias: {
     opts: [],
-    val: null
+    val: []
   }
 })
 const products = ref([])
@@ -188,6 +178,7 @@ const suggested = computed(() => {
     let CajasTexcoco = Math.round(Number(product.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) / Number(product.pieces));
     // let CajasBrasil = Math.round(Number(product.stocks.filter(e => e.id == 16).map(e => e.pivot.stock)) / Number(product.pieces));
     let Sucursal = Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit));
+    let SucCaj = Math.round(Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit)) / Number(product.pieces));
     let Porcentaje = Math.round(Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)) * 100 / Number(product.pieces))
     return {
       id: product.id,
@@ -204,6 +195,7 @@ const suggested = computed(() => {
       texcoco: CajasTexcoco,
       // brasil: CajasBrasil,
       sucursal: Sucursal,
+      sucCaj: SucCaj,
       percentage: Porcentaje,
       required: product.required,
       locations: product.locations
@@ -214,7 +206,7 @@ const suggested = computed(() => {
       if (VDB.session.store.id_viz == 1) {
         return (e.texcoco) > 0 && e.percentage <= percentage.value.val
       } else {
-        return (e.cedis + e.texcoco) > 0 && e.percentage <= percentage.value.val
+        return (e.cedis + e.texcoco  ) > 0 && e.percentage <= percentage.value.val && e.sucCaj == 0
       }
     } else if (condition.value.state == 'minmax') {
       if (VDB.session.store.id_viz == 1) {
@@ -232,8 +224,8 @@ const suggested = computed(() => {
 const bascket = computed(() => {
   if (secciones.value.val && !categories.value.familias.val && !categories.value.categorias.val) {
     return suggested.value.filter(e => e.category.familia.seccion.name == secciones.value.val)
-  } else if (categories.value.familias.val && !categories.value.categorias.val) {
-    return suggested.value.filter(e => e.category.familia.name == categories.value.familias.val)
+  } else if (categories.value.familias.val && secciones.value.val && !categories.value.categorias.val) {
+    return suggested.value.filter(e => categories.value.familias.val.includes(e.category.familia.name))
 
   } else if (categories.value.familias.val && categories.value.categorias.val) {
     return suggested.value.filter(e => e.category.familia.name == categories.value.familias.val && e.category.name == categories.value.categorias.val)
@@ -305,7 +297,7 @@ const init = async () => {
     processProduct()
     products.value.forEach(e => {
       const seccion = e.category.familia.seccion.name
-      console.log(seccion);
+      // console.log(seccion);
       if (seccion && !secciones.value.opts.includes(seccion)) {
         secciones.value.opts.push(seccion)
       }
@@ -408,7 +400,7 @@ const exportTable = async () => {
 }
 
 const processProduct = async () => {
-  console.log(condition.value.state)
+  // console.log(condition.value.state)
   if (products.value.length > 0) {
     if (condition.value.state == 'minmax') {
       if (supply.value.val.id == 3) {
