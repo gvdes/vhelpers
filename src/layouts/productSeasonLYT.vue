@@ -230,7 +230,7 @@ const suggested = computed(() => {
 })
 
 const bascket = computed(() => {
-  if (secciones.value.val && !categories.value.familias.val && !categories.value.categorias.val ) {
+  if (secciones.value.val && !categories.value.familias.val && !categories.value.categorias.val) {
     return suggested.value.filter(e => e.category.familia.seccion.name == secciones.value.val)
   } else if (categories.value.familias.val && !categories.value.categorias.val) {
     return suggested.value.filter(e => e.category.familia.name == categories.value.familias.val)
@@ -243,32 +243,30 @@ const bascket = computed(() => {
   }
 })
 
+const surtirEn = (product) => {
+  const piezas = Number(product.pieces) || 1
+
+  const stock1 = product.stocks
+    .filter(s => s.id === 1)
+    .reduce((sum, s) => sum + s.pivot.stock, 0)
+
+  const stock2 = product.stocks
+    .filter(s => s.id === 2)
+    .reduce((sum, s) => sum + s.pivot.stock, 0)
+
+  if (stock1 === 0 && stock2 === 0) return 'Cedis'
+  if ((stock1 / piezas) < 1 && (stock2 / piezas) >= 1) return 'Texcoco'
+  return 'Cedis'
+}
+
 const bascketCed = computed(() => {
   if (!bascket.value) return []
-  return bascket.value.filter(product => {
-    const stock1 = product.stocks
-      .filter(s => s.id === 1)
-      .reduce((sum, s) => sum + s.pivot.stock, 0)
-    const stock2 = product.stocks
-      .filter(s => s.id === 2)
-      .reduce((sum, s) => sum + s.pivot.stock, 0)
-    if (stock1 === 0 && stock2 === 0) return true
-
-    return stock1 >= stock2
-  })
+  return bascket.value.filter(product => surtirEn(product) === 'Cedis')
 })
 
 const bascketTex = computed(() => {
   if (!bascket.value) return []
-  return bascket.value.filter(product => {
-    const stock1 = product.stocks
-      .filter(s => s.id === 1)
-      .reduce((sum, s) => sum + s.pivot.stock, 0)
-    const stock2 = product.stocks
-      .filter(s => s.id === 2)
-      .reduce((sum, s) => sum + s.pivot.stock, 0)
-    return stock2 > stock1
-  })
+  return bascket.value.filter(product => surtirEn(product) === 'Texcoco')
 })
 
 
@@ -287,18 +285,7 @@ const table = ref({
     { name: 'Sucursal', label: `${VDB.session.store.name}`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock) },
     { name: 'SucursalINTRANSIT', label: `${VDB.session.store.alias} en TRA`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit) },
     {
-      name: 'cediss', label: `Surtir En`, align: 'center', field: row => {
-        const stock1 = row.stocks
-          .filter(s => s.id === 1)
-          .reduce((sum, s) => sum + s.pivot.stock, 0)
-        const stock2 = row.stocks
-          .filter(s => s.id === 2)
-          .reduce((sum, s) => sum + s.pivot.stock, 0)
-        if (stock1 === 0 && stock2 === 0) {
-          return 'Cedis'
-        }
-        return stock2 > stock1 ? 'Texcoco' : 'Cedis'
-      }
+      name: 'cediss', label: `Surtir En`, align: 'center', field: row => surtirEn(row)
     },
   ],
   pagination: {
@@ -370,6 +357,8 @@ const exportTable = async () => {
   const worksheet = workbook.addWorksheet('Comparativo');
   worksheet.addRow(table.value.columns.map(e => e.label));
   bascket.value.forEach(row => {
+    let surtirEn = 'Cedis'
+    const piezas = Number(row.pieces) || 1 // para no dividir entre 0
     const stock1 = row.stocks
       .filter(s => s.id === 1)
       .reduce((sum, s) => sum + s.pivot.stock, 0)
@@ -378,9 +367,11 @@ const exportTable = async () => {
       .filter(s => s.id === 2)
       .reduce((sum, s) => sum + s.pivot.stock, 0)
 
-    let surtirEn = 'Cedis'
-    if (!(stock1 === 0 && stock2 === 0)) {
-      surtirEn = stock2 > stock1 ? 'Texcoco' : 'Cedis'
+    if (stock1 === 0 && stock2 === 0) {
+      surtirEn = 'Cedis'
+    }
+    if ((stock1 / piezas) < 1 && (stock2 / piezas) >= 1) {
+      surtirEn = 'Texcoco'
     }
 
     worksheet.addRow([
@@ -451,21 +442,21 @@ const processProduct = async () => {
 const newRequi = () => {
   console.log('holi')
   if (pedidos.value.statue == 'cedis') {
-    newRequsition(1)
+    newRequsition(1,bascketCed)
   } else if (pedidos.value.statue == 'texcoco') {
-    newRequsition(2)
+    newRequsition(2,bascketTex)
   } else if (pedidos.value.statue == 'todos') {
-    newRequsition(1)
-    newRequsition(2)
+    newRequsition(1,bascketCed)
+    newRequsition(2,bascketTex)
   }
 }
 
-const newRequsition = async (cedis) => {
+const newRequsition = async (cedis,basProd) => {
   $q.loading.show({ message: 'Creando Pedido' })
   let dat = {
     workpoint_from: VDB.session.store.id_viz,
     workpoint_to: cedis,
-    products: bascket.value,
+    products: basProd,
     notes: notes.value,
     id_userviz: VDB.session.credentials.staff.id_va,
     type: 2,
