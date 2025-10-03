@@ -243,7 +243,7 @@ const caty = computed(() => {
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Secciones' });
-  const resp = await locationsApi.getInit(VDB.session.store.id);
+  const resp = await locationsApi.getInit(VDB.session.store.id_viz);
   if (!resp.fail) {
     console.log(resp)
     sections.value = resp.celler;

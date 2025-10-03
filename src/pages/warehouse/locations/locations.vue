@@ -158,7 +158,7 @@ const table = ref({
 })
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Secciones' });
-  const resp = await locationsApi.index(VDB.session.store.id);
+  const resp = await locationsApi.index(VDB.session.store.id_viz);
   if (!resp.fail) {
     sections.value = resp;
   } else {
