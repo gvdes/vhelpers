@@ -441,7 +441,7 @@ const suggested = computed(() => {
       if (VDB.session.store.id_viz == 1) {
         return (e.texcoco) > 0 && e.percentage <= percentage.value.val
       } else {
-        return (e.cedis + e.texcoco) > 0 && e.percentage <= percentage.value.val
+        return (e.cedis + e.texcoco) > 0 && e.percentage <= percentage.value.val && e.sucursal <= 0
       }
     } else if (condition.value.state == 'minmax') {
       if (VDB.session.store.id_viz == 1) {

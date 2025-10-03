@@ -1,6 +1,13 @@
 <template>
   <q-page padding>
-    <!-- content -->
+    <router-view />
+    <q-footer reveal elevated bordered>
+      <q-tabs v-model="tab" class="bg-white text-primary" dense>
+        <q-route-tab name="locations" icon="device_hub" label="Estructura" to="/warehouse/locations/sections" />
+        <q-route-tab name="products" icon="location_searching" label="Productos" to="/warehouse/locations/products" />
+        <q-route-tab name="delete" icon="art_track" label="Masivo" to="/warehouse/locations/massive" />
+      </q-tabs>
+    </q-footer>
   </q-page>
 </template>
 
@@ -19,14 +26,10 @@ import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
 import productsApi from 'src/API/productsApi';
+import locationsApi from 'src/API/locationsApi';
 import dbproduct from 'src/API/Product'
 
 const VDB = useVDBStore();
 const $q = useQuasar();
-const warehousStore = useWarehouse()
-warehousStore.setTitle('Ubicaciones')
-
-
-
-
+const tab = ref('locations')
 </script>

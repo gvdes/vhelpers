@@ -329,7 +329,16 @@ const routes = [
     component: () => import('layouts/WarehouseLYT.vue'),
     meta: { moduleId: 61 },
     children: [
-      { path: 'locations', name: 'wub', component: () => import('pages/warehouse/locations.vue'), meta: { moduleId: 62 } },
+      { path: 'locations',
+        name: 'wub',
+        component: () => import('pages/warehouse/locations.vue'),
+        children: [
+          { path: 'sections', name: 'wsct', component: () => import('pages/warehouse/locations/locations.vue'), meta: { moduleId: 61 } },
+          { path: 'products', name: 'wpt', component: () => import('pages/warehouse/locations/products.vue'), meta: { moduleId: 61 } },
+          { path: 'massive', name: 'wmss', component: () => import('pages/warehouse/locations/massive.vue'), meta: { moduleId: 61 } },
+
+        ],
+        meta: { moduleId: 62 } },
       { path: 'minmax', name: 'wmm', component: () => import('pages/warehouse/minmax.vue'), meta: { moduleId: 61 } },
       // { path: 'labels', name: 'wet', component: () => import('pages/warehouse/labels.vue'), meta: { moduleId: 63 } },
 

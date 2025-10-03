@@ -37,6 +37,7 @@
   "devDependencies": {
     "@quasar/app-vite": "^1.0.0",
     "@types/qrcode": "^1.5.5",
+    "@vue/devtools": "^8.0.2",
     "autoprefixer": "^10.4.2",
     "postcss": "^8.4.14",
     "workbox-build": "^6.5.4",

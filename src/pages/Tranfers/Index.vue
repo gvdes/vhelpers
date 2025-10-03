@@ -166,15 +166,15 @@ const reset = () => {
 }
 
 const optionDisable = (val) => {
+
   return (
     val.id === nwTransfer.value._origin.id ||
-    (VDB.session.rol !== 'aud' && val.id === 4)
+    ((VDB.session.rol !== 'aud'  && VDB.session.rol !== 'audc') && val.id === 4)
   );
 }
 
 const optionDisAud = (val) => {
-  console.log(val)
-  if (VDB.session.rol != 'aud' && val.id == 4) {
+  if (val.id == 4 && (VDB.session.rol != 'aud' && VDB.session.rol  != 'audc' )  ) {
     return true
   } else {
     return false

@@ -28,7 +28,7 @@
             @update:modelValue="obtLocations" />
           <q-separator spaced inset vertical dark />
           <div v-if="typeBus.val.id == 1" class="col">
-            <ProductAutocomplete @input="add" @agregar="agregar" />
+            <ProductAutocomplete @input="add" @agregar="agregar" with_prices />
           </div>
           <div v-if="typeBus.val.id == 2" class="col">
             <div class="row" v-if="sections.length > 0">
@@ -420,6 +420,8 @@ const readFile = async () => {
 
 const labelType = (_prices, ipack) => {
   let prices = [..._prices];
+    prices.sort((a, b) => a.pivot._type - b.pivot._type);
+    console.log(prices);
   const centro = prices.find(e => e.pivot._type == 4);
   const menudeo = prices.find(e => e.pivot._type == 1);
   if (centro.pivot.price == menudeo.pivot.price) {
@@ -459,7 +461,7 @@ const colorLabel = (type) => {
 const obtLocations = async () => {
   if (typeBus.value.val.id == 2) {
     $q.loading.show({ message: 'Obteniendo Secciones' })
-    const resp = await locationsApi.index(VDB.session.store.id)
+    const resp = await locationsApi.index(VDB.session.store.id_viz)
     if (resp.fail) {
       console.log(resp);
     } else {
