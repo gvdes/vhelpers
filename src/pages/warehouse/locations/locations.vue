@@ -328,9 +328,9 @@ watch(
       let maxIndex = 0
       existingChildren.forEach(c => {
         const numFromName = parseInt(c.name.replace(name, '').trim())
-        console.log(numFromName);
+        // console.log(numFromName);
         const numFromAlias = parseInt(c.alias.replace(alias, '').trim())
-        console.log(numFromAlias);
+        // console.log(numFromAlias);
         const candidate = Math.max(
           isNaN(numFromName) ? 0 : numFromName,
           isNaN(numFromAlias) ? 0 : numFromAlias
