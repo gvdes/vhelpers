@@ -1359,14 +1359,19 @@ const HorizontalLabelwarehouse = (data, nick, name) => {
         }, (err, url) => {
           if (err) throw err
 
-          doc.addImage(url, 'PNG', x + 70, y + 5, 25, 25) // ajusta la posición y tamaño
+          doc.addImage(url, 'PNG', x + 75, y + 3, 25, 25) // ajusta la posición y tamaño
         })
         doc.setFontSize(12);
         // doc.setFont('helvetica', 'bold');
         // doc.text(`${product.code}`, x + 1, y + 11, { align: 'left' }); // codigo de el producto
         doc.setFontSize(20);
         // doc.text(product.large, x + 1, y + 30); // largo de el producto
-        doc.text(`${product.name}`, x + 1, y + 28); // piezas por caja
+        doc.text(`${product.name}`, x + 1, y + 25);
+
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${product.variants?.map(e => `(${e.barcode})`).join('')}`, x + 1, y + 30);
+
         doc.setFontSize(4)
         doc.setFont('helvetica', 'normal');
         doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 18, y + 30); //ubicacion de exhibicion de el producto

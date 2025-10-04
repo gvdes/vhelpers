@@ -3,6 +3,9 @@
     <q-card class="my-card">
       <q-card-section>
         <div class="row" v-if="sections.length > 0">
+          <q-btn color="primary" icon="download" @click="downloadProducts" flat
+            :disable="selectedUbicacion ? false : true" />
+          <q-separator spaced inset vertical dark />
           <q-select class="col" v-model="selectedUbicacion" :options="sections" label="ALMACÉN" filled
             option-label="name" dense @update:model-value="initLevels" />
           <q-separator spaced inset vertical dark />
@@ -127,8 +130,10 @@ const VDB = useVDBStore();
 const $q = useQuasar();
 const warehousStore = useWarehouse()
 warehousStore.setTitle('Ubicaciones Estructura')
+const exportProducts = ref([]);
 const sections = ref([]);
 const selectedUbicacion = ref(null);
+const lvellast = ref(null);
 const create = ref({
   state: false,
   val: null,
@@ -287,6 +292,75 @@ const deleteLocations = async () => {
   }
 }
 
+const downloadProducts = async () => {
+  $q.loading.show({ message: 'Obeniendo Productos' })
+  let data = {
+    workpoint: VDB.session.store.id_viz,
+    section: lvellast.value.selected
+  }
+  const resp = await locationsApi.obtProduct(data)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    exportProducts.value = resp;
+    await exportTableProducts(exportProducts.value)
+    $q.loading.hide()
+  }
+}
+
+const exportTableProducts = async () => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Products');
+
+  const columns = [
+    { name: 'Codigo', filterButton: true },
+    { name: 'Descripcion', filterButton: true },
+    { name: 'Ubicaciones', filterButton: true },
+  ]
+  const rawData = exportProducts.value.map(e => {
+      return [
+      e.code,
+      e.description,
+      e.locations.map(e => e.path).join('|')
+      ]
+    })
+
+
+  worksheet.addTable({
+    name: 'Productos_Ubicados', // nombre interno de la tabla
+    ref: 'A1', // desde dónde empieza
+    headerRow: true,
+    style: {
+      theme: 'TableStyleMedium9', // estilo
+      showRowStripes: true,
+    },
+    columns: columns,
+    rows: rawData, // filas reales
+  });
+  worksheet.columns.forEach(column => {
+    let maxLength = 0;
+    column.eachCell({ includeEmpty: true }, (cell) => {
+      const columnLength = cell.value ? cell.value.toString().length : 10;
+      if (columnLength > maxLength) {
+        maxLength = columnLength;
+      }
+    });
+    column.width = maxLength < 10 ? 10 : maxLength;
+  });
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type:
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'almacenes.xlsx';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link)
+}
+
 init();
 watch(
   () => [
@@ -302,6 +376,7 @@ watch(
       const ultimoNivel = seleccionados[seleccionados.length - 1]
       const children = getChildren(ultimoNivel.selected)
       labels.value = children
+      lvellast.value = ultimoNivel;
     } else {
       labels.value = niveles.value[0]?.options || []
     }
@@ -317,14 +392,14 @@ watch(
         str.replace(/\d+$/, '').trim() === base.trim()
       console.log(create.value.type)
       let existingChildren = null
-      if(create.value.type){
-        existingChildren = selectedUbicacion.value.sections.filter(s => s.root == 0  && s.deep == 0) || [];
-      }else{
+      if (create.value.type) {
+        existingChildren = selectedUbicacion.value.sections.filter(s => s.root == 0 && s.deep == 0) || [];
+      } else {
         existingChildren = getChildren(create.value.val?.id)
       }
       // const
-        // .filter(c => normalizeBase(c.name, name) && normalizeBase(c.alias, alias))
-        // console.log(existingChildren)
+      // .filter(c => normalizeBase(c.name, name) && normalizeBase(c.alias, alias))
+      // console.log(existingChildren)
       let maxIndex = 0
       existingChildren.forEach(c => {
         const numFromName = parseInt(c.name.replace(name, '').trim())
@@ -353,7 +428,6 @@ watch(
         path: `${create.value.val?.path || ''}${create.value.val?.path ? '-' : ''} ${alias}`
       })
     }
-
     create.value.defaultView = rows
   },
   { deep: true }
