@@ -26,7 +26,7 @@ module.exports = configure(function (/* ctx */) {
       'auth',
       'socket',
       // 'firebase'
-      // 'axios',
+      'axios',
       // 'AccessDB'
     ],
 

@@ -13,14 +13,14 @@
           <div class="col">
             <div class="text-h4 text-grey-8 text-center">
               <div>Hola</div>
-              <div class="text-primary">{{ VDB.session.name }}</div>
+              <div class="text-primary">{{ VDB.session?.name }}</div>
               <span class="text-primary"></span>
             </div>
             <div class="text-center anek-lg text-h5 text-grey-6">{{ greeting }}</div>
             <div class="q-py-lg text-center">
               <q-btn flat
                 @click="() => { mosAvatar.state = !mosAvatar.state; mosAvatar.val = VDB.session.credentials.avatar }">
-                <q-img :src="`/avatares/${VDB.session.credentials.avatar}`" style="width: 170px;" />
+                <q-img :src="`/avatares/${VDB.session?.credentials.avatar}`" style="width: 170px;" />
               </q-btn>
             </div>
           </div>

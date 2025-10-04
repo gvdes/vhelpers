@@ -1,40 +1,48 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
-import { useQuasar, LocalStorage, Notify } from 'quasar'
-import { useRoute, useRouter } from "vue-router";
-const $router = useRouter()
+import { LocalStorage } from 'quasar'
 
+// const ipVizapi = 'http://192.168.10.160:1619'
+// const ipAssist = 'http://192.168.10.160:1920'
 
-//conexion vizapi
-const vizapi = axios.create({ baseURL: 'http://192.168.10.189/vizapi/public/LVH' });
-// const vizapi = axios.create({ baseURL: 'http://192.168.10.160:1619/vizapi/public/LVH' });
-// const vizapi = axios.create({ baseURL: 'http://192.168.1.80:1619/vizapi/public/LVH' });
+// const ipVizapi = 'http://192.168.10.189'
+// const ipAssist = 'http://192.168.10.238:2902'
 
-//conexion Assist
-// const assist = axios.create({ baseURL: 'http://192.168.10.61:1619/Assist/public/api' });
-// const assist = axios.create({ baseURL: 'http://192.168.10.160:1920/Assist/public/api' });
-const assist = axios.create({ baseURL: 'http://192.168.10.238:2902/Assist/public/api'});
+const ipVizapi = 'http://192.168.10.189'
+const ipAssist = 'http://192.168.10.189:1920'
+
+const vizapi = axios.create({ baseURL: `${ipVizapi}/vizapi/public/LVH` });
+const assist = axios.create({ baseURL: `${ipAssist}/assist/public/api` });
+// const assist = axios.create({ baseURL: `${ipAssist}/Assist/public/api` });
+
 const vizmedia = `https://mersbock.s3.us-east-2.amazonaws.com/vhelpers`;
 
-// assist.interceptors.response.use(
-//   response => response,
-//   error => {
-//     console.log(error);
-//     if (error.response && error.response.status === 401) {
-//       if (error.response.data === "Token expired.") {
-//         LocalStorage.remove('auth')
-//         Notify.create({ message: 'Tu sesion Expiro favor de ingresar de nuevo', type: 'negative', position: 'bottom' })
-//         $router.push('/auth')
-//       }
-//     }
-//     return Promise.reject(error)
-//   }
-// )
-
-export default boot(({ app }) => {
-  app.config.globalProperties.$axios = axios
-  app.config.globalProperties.$api = vizapi
-  app.config.globalProperties.$assist = assist
+export default boot(({ router }) => {
+  // Interceptor de assist
+  assist.interceptors.response.use(
+    response => response,
+    error => {
+      if (!error.response) {
+        console.error('Servidor no disponible o network error:', error.message)
+        alert('El servidor no está disponible. Verifica tu conexión o intenta más tarde.')
+        return Promise.reject(error)
+      }
+      if (error.response && error.response.status === 401) {
+        if (error.response.data === "Token expired.") {
+          LocalStorage.clear('auth')
+          alert('Tu sesión expiró, favor de ingresar de nuevo')
+          router.push('/auth')
+        }
+      } else if (error.response && error.response.status === 403) {
+        if (error.response.data.error === "Acceso denegado: IP no permitida") {
+          LocalStorage.clear('auth')
+          alert('Te estas conectando fuera de tu VPN')
+          router.push('/auth')
+        }
+      }
+      return Promise.reject(error)
+    }
+  )
 })
 
 export { vizapi, assist, vizmedia }
