@@ -315,13 +315,22 @@ watch(
     if (secuence) {
       const normalizeBase = (str, base) =>
         str.replace(/\d+$/, '').trim() === base.trim()
-
-      const existingChildren = getChildren(create.value.val?.id)
-        .filter(c => normalizeBase(c.name, name) && normalizeBase(c.alias, alias))
+      console.log(create.value.type)
+      let existingChildren = null
+      if(create.value.type){
+        existingChildren = selectedUbicacion.value.sections.filter(s => s.root == 0  && s.deep == 0) || [];
+      }else{
+        existingChildren = getChildren(create.value.val?.id)
+      }
+      // const
+        // .filter(c => normalizeBase(c.name, name) && normalizeBase(c.alias, alias))
+        // console.log(existingChildren)
       let maxIndex = 0
       existingChildren.forEach(c => {
         const numFromName = parseInt(c.name.replace(name, '').trim())
+        console.log(numFromName);
         const numFromAlias = parseInt(c.alias.replace(alias, '').trim())
+        console.log(numFromAlias);
         const candidate = Math.max(
           isNaN(numFromName) ? 0 : numFromName,
           isNaN(numFromAlias) ? 0 : numFromAlias
