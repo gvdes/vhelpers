@@ -81,7 +81,7 @@
           <q-separator spaced inset vertical dark />
           <div class="row q-ml-sm">
             <q-card class="col">
-              <ProductAutocomplete :checkState="false" @input="add" with_prices_Invoice with_stock @agregar="agregar"
+              <ProductAutocomplete :checkState="false" @input="add" with_prices_Invoice with_stock
                 with_locations />
             </q-card>
             <q-separator spaced inset vertical dark />
@@ -116,32 +116,32 @@ const table = ref({
   ]
 })
 const add = (opt) => {
-  //CODIGO DE BARRAS
-  // console.log(opt);
-  // getProduct(opt.id)
+  // CODIGO DE BARRAS
+  console.log(opt);
+  getProduct(opt.id)
 }
 
-const agregar = (ops) => {
-  //BUSQUEDA
-  // console.log(ops)
-  // getProduct(ops.id)
-}
-
-// const getProduct = async (id) => {
-//   $q.loading.show({ message: 'Obteniendo Datos' });
-//   product.value = null
-//   console.log(id)
-//   const resp = await productApi.getProduct(id)
-//   if (resp.fail) {
-//     console.log(resp);
-//   } else {
-//     $q.loading.hide();
-//     console.log(resp)
-//     resp.prices.push({ id: 8, alias: "COS", pivot: { price: resp.cost } })
-//     resp.prices.sort((a, b) => b.id - a.id);
-//     product.value = resp;
-//   }
+// const agregar = (ops) => {
+//   //BUSQUEDA
+//   // console.log(ops)
+//   // getProduct(ops.id)
 // }
+
+const getProduct = async (id) => {
+  $q.loading.show({ message: 'Obteniendo Datos' });
+  product.value = null
+  console.log(id)
+  const resp = await productApi.getProduct(id)
+  if (resp.fail) {
+    console.log(resp);
+  } else {
+    $q.loading.hide();
+    console.log(resp)
+    resp.prices.push({ id: 8, alias: "COS", pivot: { price: resp.cost } })
+    resp.prices.sort((a, b) => b.id - a.id);
+    product.value = resp;
+  }
+}
 
 
 </script>

@@ -24,7 +24,7 @@
             <q-btn size="md" flat padding="none" @click="toogleIptSearch" :icon="data.iptsearch.icon" color="grey-6" />
           </template>
           <template v-slot:option="scope">
-            <q-item v-bind="scope.itemProps">
+            <q-item v-bind="scope.itemProps"   @click="selItem(scope.opt)">
               <q-item-section>
                 <div class="row items-center justify-between no-wrap QuickRegular">
                   <div class="col">
@@ -89,7 +89,7 @@ const props = defineProps({
 const emit = defineEmits(['input', 'similarcodes', 'agregar']);
 let html5QrCode = null;
 const cameraActive = ref(false);
-
+const scanning  = ref(false)
 const types = ref({
   val: { id: 1, label: 'Autocomplete', icon: 'keyboard' },
   opts: [
@@ -169,10 +169,53 @@ const exactSearch = async () => {
       console.log(resp);
     } else {
       console.log(resp);
-
+      selItem(resp)
     }
   }
 }
+
+// const startCamera = async () => {
+//   if (html5QrCode) {
+//     console.log("La cámara ya está activa");
+//     return;
+//   }
+//   cameraActive.value = true;
+//   nextTick(() => {
+//     html5QrCode = new Html5Qrcode("reader");
+//     const config = {
+//       fps: 20, qrbox: viewfinderWidth => {
+//         const minEdgePercentage = 0.8; // 80% del ancho visible
+//         const edgeSize = Math.floor(viewfinderWidth * minEdgePercentage);
+//         return { width: edgeSize, height: edgeSize };
+//       }
+//     };
+
+//     html5QrCode.start(
+//       { facingMode: "environment" },
+//       config,
+//       async (decodedText) => {
+//         try {
+//           const qrdata = JSON.parse(decodedText);
+//           console.log(qrdata);
+//           if (qrdata.modelo) {
+//             data.value.buscar = qrdata.modelo;
+//             const resp = await dbproduct.scanSearch(attrs.value);
+//             if (resp.fail) {
+//               console.log(resp);
+//             } else {
+//               console.log(resp);
+//               selItem(resp)
+//             }
+
+//           }
+//         } catch (e) {
+//           console.log("QR inválido: " + decodedText);
+//         }
+//       }
+//     ).catch(err => console.log("Error al iniciar cámara: " + err.message));
+//     console.log("Cámara iniciada");
+//   });
+// };
 
 const startCamera = async () => {
   if (html5QrCode) {
@@ -180,31 +223,53 @@ const startCamera = async () => {
     return;
   }
   cameraActive.value = true;
+
   nextTick(() => {
     html5QrCode = new Html5Qrcode("reader");
-    const config = { fps: 20, qrbox: 130 };
+
+    const config = {
+      fps: 20,
+      qrbox: viewfinderWidth => {
+        const minEdgePercentage = 0.8;
+        const edgeSize = Math.floor(viewfinderWidth * minEdgePercentage);
+        return { width: edgeSize, height: edgeSize };
+      }
+    };
 
     html5QrCode.start(
       { facingMode: "environment" },
       config,
       async (decodedText) => {
+        if (scanning.value) return;
+        scanning.value = true;
+
         try {
           const qrdata = JSON.parse(decodedText);
           console.log(qrdata);
+
           if (qrdata.modelo) {
             data.value.buscar = qrdata.modelo;
             const resp = await dbproduct.scanSearch(attrs.value);
-            console.log(resp);
+
+            if (resp.fail) {
+              console.log(resp);
+            } else {
+              console.log(resp);
+              selItem(resp);
+              // emit('item-scanned', resp);
+            }
           }
         } catch (e) {
           console.log("QR inválido: " + decodedText);
+        } finally {
+          scanning.value = false;
         }
       }
     ).catch(err => console.log("Error al iniciar cámara: " + err.message));
+
     console.log("Cámara iniciada");
   });
 };
-
 const stopCamera = () => {
   if (!html5QrCode) {
     console.log("La cámara no estaba activa");
@@ -218,6 +283,10 @@ const stopCamera = () => {
   }).catch(err => console.log("Error al detener cámara: " + err.message));
 };
 
+const selItem = (opt) => {
+  data.value.buscar = '';
+  emit('input', opt);
+}
 
 const changeMod = (a, b) => {
   if (a.id == 3) {
