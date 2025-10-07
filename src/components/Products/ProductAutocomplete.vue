@@ -231,7 +231,7 @@ const startCamera = async () => {
     html5QrCode = new Html5Qrcode("reader");
 
     const config = {
-      fps: 20,
+      fps: 10,
       qrbox: viewfinderWidth => {
         const minEdgePercentage = 0.8;
         const edgeSize = Math.floor(viewfinderWidth * minEdgePercentage);
