@@ -228,12 +228,12 @@ const startCamera = async () => {
     html5QrCode = new Html5Qrcode("reader");
 
     const config = {
-      fps: 20
-      // qrbox: viewfinderWidth => {
-      //   const minEdgePercentage = 0.8;
-      //   const edgeSize = Math.floor(viewfinderWidth * minEdgePercentage);
-      //   return { width: edgeSize, height: edgeSize };
-      // }
+      fps: 20,
+      qrbox: viewfinderWidth => {
+        const minEdgePercentage = 0.8;
+        const edgeSize = Math.floor(viewfinderWidth * minEdgePercentage);
+        return { width: edgeSize, height: edgeSize };
+      }
     };
 
     html5QrCode.start(
@@ -302,15 +302,14 @@ const changeMod = (a, b) => {
 .camera-card {
   width: 410px;
   max-width: 90%;
-  /* border-radius: 1rem; */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .qr-reader {
-  width: 500px !important;
-  height: 90px !important;
-  /* border-radius: 1rem; */
-  overflow: hidden;
-  /* box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2); */
+  width: 90%;      /* ahora depende del padre */
+  max-width: 500px; /* opcional para desktop */
+  /* aspect-ratio: 1;  cuadrado, importante para QR */
+  /* overflow: hidden; */
+  /* position: relative; */
 }
 </style>
