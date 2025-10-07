@@ -95,7 +95,7 @@
 
 <script setup>
 import { useVDBStore } from 'stores/VDB';
-import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
+import ProductAutocomplete from 'src/components/Products/ProductAutocomplete.vue';// encabezado aoiida
 import UserToolbar from "src/components/UserToolbar.vue";
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";
 import { exportFile, useQuasar, date } from 'quasar';
@@ -117,31 +117,31 @@ const table = ref({
 })
 const add = (opt) => {
   //CODIGO DE BARRAS
-  console.log(opt);
-  getProduct(opt.id)
+  // console.log(opt);
+  // getProduct(opt.id)
 }
 
 const agregar = (ops) => {
   //BUSQUEDA
-  console.log(ops)
-  getProduct(ops.id)
+  // console.log(ops)
+  // getProduct(ops.id)
 }
 
-const getProduct = async (id) => {
-  $q.loading.show({ message: 'Obteniendo Datos' });
-  product.value = null
-  console.log(id)
-  const resp = await productApi.getProduct(id)
-  if (resp.fail) {
-    console.log(resp);
-  } else {
-    $q.loading.hide();
-    console.log(resp)
-    resp.prices.push({ id: 8, alias: "COS", pivot: { price: resp.cost } })
-    resp.prices.sort((a, b) => b.id - a.id);
-    product.value = resp;
-  }
-}
+// const getProduct = async (id) => {
+//   $q.loading.show({ message: 'Obteniendo Datos' });
+//   product.value = null
+//   console.log(id)
+//   const resp = await productApi.getProduct(id)
+//   if (resp.fail) {
+//     console.log(resp);
+//   } else {
+//     $q.loading.hide();
+//     console.log(resp)
+//     resp.prices.push({ id: 8, alias: "COS", pivot: { price: resp.cost } })
+//     resp.prices.sort((a, b) => b.id - a.id);
+//     product.value = resp;
+//   }
+// }
 
 
 </script>

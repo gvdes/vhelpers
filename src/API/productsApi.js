@@ -46,4 +46,13 @@ export default{
   setMassisveMinMax(data) {
     return assist.post(`/Products/setMassisveMinMax`,data).then(done => done.data).catch(fail => { return { fail } });
   },
+  autoCompleteProduct(data) {
+    return assist.post(`/Products/autoCompleteProduct`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  exactSearch(data) {
+    return assist.post(`/Products/exactSearch`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  scanSearch(data) {
+    return assist.post(`/Products/scanSearch`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }

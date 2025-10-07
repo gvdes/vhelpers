@@ -65,7 +65,6 @@ const init = async () => {
   $q.loading.hide();
 };
 
-
 const initLevels = () => {
   const allSections = selectedUbicacion.value.sections || [];
   deepMax.value = Math.max(...allSections.map(s => s.deep));

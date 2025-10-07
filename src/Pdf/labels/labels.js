@@ -1596,33 +1596,6 @@ const Paquetes = (data, nick, name, prices) => {
         })
         let ypri = y + 50
         let yprincrement = 12
-
-        // product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
-        //   if (e.alias == "OFERTA") {
-        //     doc.setFontSize(35);
-        //     doc.setFont('helvetica', 'bold');
-        //     doc.text('Unico Precio', x + 60, ypri + i * yprincrement + 10);// alias de el precio
-        //     doc.setFontSize(50);
-        //     doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 64, ypri + i * yprincrement + 35);// valor de el precio
-        //   } else {
-        //     if (e.id === 1 || e.id === 4) {
-        //       doc.setFont('helvetica', 'bold');
-        //       doc.setFontSize(35);
-        //       let mosPro = e.alias === 'CAJ' ? 'A PARTIR DE 12' : e.alias;
-        //       let xla = e.alias === 'CAJ' ? 20 : x + 60;
-        //       doc.text(mosPro, xla, ypri + i * yprincrement + 15); // alias del precio
-        //       doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 115, ypri + i * yprincrement + 15); // valor del precio
-        //     }
-        //     // doc.setFont('helvetica', 'bold');
-        //     // doc.setFontSize(35);
-        //     // let mosPro = e.alias == 'CAJ' ? 'A PARTIR DE 12' : e.alias;
-        //     // let xla = e.alias == 'CAJ' ? 20 : x + 60;
-        //     // // doc.setFontSize(fnts);
-        //     // doc.text(mosPro, xla, ypri + i * yprincrement + 15);// alias de el precio
-
-        //     // doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 115, ypri + i * yprincrement + 15);// valor de el precio
-        //   }
-        // })
         product.usedPrices
           .filter(item => prices.val.includes(item.id))             // los que están en prices.val
           .filter(e => e.alias === "OFERTA" || e.id === 1 || e.id === 4) // solo OFERTA, 1 y 4
@@ -1674,7 +1647,6 @@ const Paquetes = (data, nick, name, prices) => {
   });
 }
 
-
 const barcode = (text) => {
   const qrData = text;
   const qrOptions = {
@@ -1686,7 +1658,5 @@ const barcode = (text) => {
   QRCode.toCanvas(canvas, qrData, qrOptions);
   return canvas.toDataURL("image/png");
 }
-
-
 
 export default { largeLabel, xtralargeLabel, mediumLabel, smallLabel, verticalLabelNavidad, toyBoys, toyGirls, xlargenina, xlargenino, Hlargenino, Hlargenina, xlargeExhnino, xlargeExhnina, HorizontalLabel, VerticalLabel, Paquetes, HorizontalLabelwarehouse, locationsWarehouse };
