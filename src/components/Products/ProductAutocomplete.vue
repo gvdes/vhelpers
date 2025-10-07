@@ -24,7 +24,7 @@
             <q-btn size="md" flat padding="none" @click="toogleIptSearch" :icon="data.iptsearch.icon" color="grey-6" />
           </template>
           <template v-slot:option="scope">
-            <q-item v-bind="scope.itemProps"   @click="selItem(scope.opt)">
+            <q-item v-bind="scope.itemProps" @click="selItem(scope.opt)">
               <q-item-section>
                 <div class="row items-center justify-between no-wrap QuickRegular">
                   <div class="col">
@@ -52,6 +52,9 @@
           <q-card-section class="flex flex-center">
             <div id="reader" class="qr-reader"></div>
           </q-card-section>
+          <q-card-actions v-if="!html5QrCode">
+            <q-btn color="primary" flat icon="refresh" label="Buscar" @click="startCamera" />
+          </q-card-actions>
         </q-card>
       </div>
     </div>
@@ -89,7 +92,7 @@ const props = defineProps({
 const emit = defineEmits(['input', 'similarcodes', 'agregar']);
 let html5QrCode = null;
 const cameraActive = ref(false);
-const scanning  = ref(false)
+const scanning = ref(false)
 const types = ref({
   val: { id: 1, label: 'Autocomplete', icon: 'keyboard' },
   opts: [
@@ -255,6 +258,7 @@ const startCamera = async () => {
               console.log(resp);
             } else {
               console.log(resp);
+              stopCamera()
               selItem(resp);
               // emit('item-scanned', resp);
             }
@@ -306,8 +310,10 @@ const changeMod = (a, b) => {
 }
 
 .qr-reader {
-  width: 90%;      /* ahora depende del padre */
-  max-width: 500px; /* opcional para desktop */
+  width: 90%;
+  /* ahora depende del padre */
+  max-width: 500px;
+  /* opcional para desktop */
   /* aspect-ratio: 1;  cuadrado, importante para QR */
   /* overflow: hidden; */
   /* position: relative; */
