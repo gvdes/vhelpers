@@ -47,9 +47,12 @@
 
       </div>
 
-      <div v-if="types.val.id == 3">
-        <div v-if="cameraActive" id="reader"></div>
-
+      <div v-if="types.val.id == 3" class="flex flex-center q-pa-md">
+        <q-card class="camera-card">
+          <q-card-section class="flex flex-center">
+            <div id="reader" class="qr-reader"></div>
+          </q-card-section>
+        </q-card>
       </div>
     </div>
   </div>
@@ -179,7 +182,7 @@ const startCamera = async () => {
   cameraActive.value = true;
   nextTick(() => {
     html5QrCode = new Html5Qrcode("reader");
-    const config = { fps: 20, qrbox: 200 };
+    const config = { fps: 20, qrbox: 130 };
 
     html5QrCode.start(
       { facingMode: "environment" },
@@ -225,3 +228,20 @@ const changeMod = (a, b) => {
 }
 
 </script>
+
+<style>
+.camera-card {
+  width: 410px;
+  max-width: 90%;
+  /* border-radius: 1rem; */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.qr-reader {
+  width: 500px !important;
+  height: 90px !important;
+  /* border-radius: 1rem; */
+  overflow: hidden;
+  /* box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2); */
+}
+</style>
