@@ -228,12 +228,12 @@ const startCamera = async () => {
     html5QrCode = new Html5Qrcode("reader");
 
     const config = {
-      fps: 20,
-      qrbox: viewfinderWidth => {
-        const minEdgePercentage = 0.8;
-        const edgeSize = Math.floor(viewfinderWidth * minEdgePercentage);
-        return { width: edgeSize, height: edgeSize };
-      }
+      fps: 20
+      // qrbox: viewfinderWidth => {
+      //   const minEdgePercentage = 0.8;
+      //   const edgeSize = Math.floor(viewfinderWidth * minEdgePercentage);
+      //   return { width: edgeSize, height: edgeSize };
+      // }
     };
 
     html5QrCode.start(
