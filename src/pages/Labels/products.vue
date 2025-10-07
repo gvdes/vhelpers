@@ -24,8 +24,8 @@
       </q-card-section>
       <q-card-section>
         <div class="row">
-          <q-select style="width: 200px;" v-model="typeBus.val" :options="typeBus.opts" label="Tipo" filled dense
-            @update:modelValue="obtLocations" />
+          <q-select  style="width: 80px;" v-model="typeBus.val" :options="typeBus.opts" filled dense
+            @update:modelValue="obtLocations" hide-dropdown-icon />
           <q-separator spaced inset vertical dark />
           <div v-if="typeBus.val.id == 1" class="col">
             <ProductAutocomplete @input="add" @agregar="agregar" with_prices />
@@ -35,15 +35,15 @@
               <q-list dense>
                 <q-item>
                   <q-item-section>
-                    <q-item-label caption>Actualizados Hoy</q-item-label>
-                    <q-item-label class="flex flex-center"><q-checkbox v-model="updatedHoy" /></q-item-label>
+                    <q-item-label caption>ACT HOY</q-item-label>
+                    <q-item-label class="flex flex-center"><q-checkbox dense v-model="updatedHoy" /></q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
               <q-select class="col" v-model="selectedUbicacion" :options="sections" label="ALMACEN" filled
                 optionLabel="name" dense />
               <q-separator spaced inset vertical dark />
-              <selectsSections v-if="selectedUbicacion" class="col" :sections="selectedUbicacion.sections"
+              <selectsSections v-if="selectedUbicacion" :sections="selectedUbicacion.sections"
                 @obtProducts="obtenerProductsSection" />
             </div>
           </div>
