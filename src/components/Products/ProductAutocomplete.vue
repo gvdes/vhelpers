@@ -49,7 +49,7 @@
 
       <div v-if="types.val.id == 3" class="flex flex-center q-pa-md">
         <q-card class="camera-card">
-          <q-card-section class="flex flex-center">
+          <q-card-section class="flex flex-center" v-if="!html5QrCode">
             <div id="reader" class="qr-reader"></div>
           </q-card-section>
           <q-card-actions v-if="!html5QrCode">
