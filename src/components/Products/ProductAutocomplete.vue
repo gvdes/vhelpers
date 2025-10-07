@@ -1,20 +1,14 @@
 <template>
   <div class="QuickRegular row items-center text-black">
-    <q-select v-model="types.val" class="flex items-center justify-center" options-dense :options="types.opts" filled
-      style="width: 60px;" hide-dropdown-icon @update:model-value="changeMod">
-      <template v-slot:selected>
-        <q-avatar v-if="types.val" size="xl" text-color="primary" class="text-left flex items-left justify-left"
-          :icon="types.val.icon" />
-        <q-badge v-else>*no hay :{*</q-badge>
-      </template>
-      <template v-slot:option="scope">
-        <q-item v-bind="scope.itemProps" class="flex items-center justify-center">
-          <q-item-section avatar class="text-center">
-            <q-icon :name="scope.opt.icon" />
+    <q-btn-dropdown color="primary" dense flat :icon="types.val.icon" >
+      <q-list>
+        <q-item  v-for="opt in types.opts" :key="opt.id" clickable @click="types.val = opt; changeMod(opt)">
+          <q-item-section avatar>
+            <q-icon :name="opt.icon" />
           </q-item-section>
         </q-item>
-      </template>
-    </q-select>
+      </q-list>
+    </q-btn-dropdown>
     <div class="col">
       <div v-if="types.val.id == 1">
         <q-select v-model="data.buscar" hide-selected behavior="menu" :options="data.options" filled hide-dropdown-icon
@@ -49,12 +43,12 @@
 
       <div v-if="types.val.id == 3" class="flex flex-center q-pa-md">
         <q-card class="camera-card">
-          <q-card-section class="flex flex-center" v-if="!html5QrCode">
+          <q-card-section class="flex flex-center">
             <div id="reader" class="qr-reader"></div>
+            <div v-if="!cameraActive">
+              <q-btn color="primary" flat icon="refresh" label="Buscar" @click="startCamera" />
+            </div>
           </q-card-section>
-          <q-card-actions v-if="!html5QrCode">
-            <q-btn color="primary" flat icon="refresh" label="Buscar" @click="startCamera" />
-          </q-card-actions>
         </q-card>
       </div>
     </div>
@@ -63,7 +57,7 @@
 
 <script setup>
 import dbproduct from 'src/API/productsApi'
-import { ref, onMounted, computed, nextTick } from 'vue'
+import { ref, onMounted, computed, nextTick, onUnmounted } from 'vue'
 import { exportFile, useQuasar } from 'quasar';
 import { useVDBStore } from 'src/stores/VDB';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -221,11 +215,12 @@ const exactSearch = async () => {
 // };
 
 const startCamera = async () => {
+  cameraActive.value = true;
+
   if (html5QrCode) {
     console.log("La cámara ya está activa");
     return;
   }
-  cameraActive.value = true;
 
   nextTick(() => {
     html5QrCode = new Html5Qrcode("reader");
@@ -274,6 +269,20 @@ const startCamera = async () => {
     console.log("Cámara iniciada");
   });
 };
+
+
+const handleScanResult = async (model) => {
+  data.value.buscar = model
+  const resp = await dbproduct.scanSearch(attrs.value)
+  if (!resp.fail) {
+    stopCamera()
+    selItem(resp)
+  } else {
+    console.log("Error al buscar:", resp)
+  }
+}
+
+
 const stopCamera = () => {
   if (!html5QrCode) {
     console.log("La cámara no estaba activa");
@@ -293,12 +302,19 @@ const selItem = (opt) => {
 }
 
 const changeMod = (a, b) => {
+  data.value.buscar = ''
+  data.value.options = undefined
+
   if (a.id == 3) {
     startCamera();
   } else {
     stopCamera();
   }
 }
+
+onUnmounted(() => {
+  stopCamera()
+})
 
 </script>
 
