@@ -196,6 +196,14 @@ const routes = [
     component: () => import('layouts/productSeasonLYT.vue'),
     meta: { moduleId: 63 }
   },
+  //     {
+  //   path: '/preorders',
+  //   component: () => import('layouts/PreordersLYT.vue'),
+  //   children: [
+  //     { path: 'index', name: 'prin', component: () => import('pages/Preorder/index.vue'), meta: { moduleId: 64 } },
+  //     // { path: 'addClient', name: 'acl', component: () => import('pages/clients/addCli.vue'), meta: { moduleId: 64 } },
+  //   ],
+  // },
   {
     path: '/Formclients',
     component: () => import('layouts/clientLYT.vue'),

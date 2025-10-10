@@ -1,1 +1,0 @@
-import{a}from"./axios.3a4d6f1a.js";var s={trySignin(r){return a.post("/users/trySignin",r).then(t=>t.data).catch(t=>({fail:t}))},getResources(r){return a.get(`/users/getResources/${r}`).then(t=>t.data).catch(t=>({fail:t}))},changeAvatar(r){return a.post("/users/changeAvatar",r).then(t=>t.data).catch(t=>({fail:t}))}};export{s as a};

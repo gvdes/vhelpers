@@ -22,6 +22,7 @@
         Sucursal Destino
       </q-card-section>
       <q-card-section>
+        <!-- <q-select v-model="type.val" :options="type.opts" label="Tipo" filled /> -->
         <q-select v-model="invoice.to" :options="stores.filter(e => e._type == 1)" label="Oringen" filled dense
           option-label="name" />
         <q-separator spaced inset vertical dark />
@@ -68,6 +69,15 @@ const invoice = ref({
   notes: null,
   created_by: null
 })
+
+// const type = ref({
+//   val: {id:2, label:'Salida'},
+//   opts:[
+//     {id:1, label:'Nota'},
+//     {id:2, label:'Salida'},
+//     {id:3, label:'Traspaso'},
+//   ]
+// })
 
 const init = async () => {
   const resp = await invApi.index();

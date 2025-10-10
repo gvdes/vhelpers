@@ -1,14 +1,14 @@
 <template>
   <div class="QuickRegular row items-center text-black">
-    <q-btn-dropdown color="primary" dense flat :icon="types.val.icon" >
-      <q-list>
-        <q-item  v-for="opt in types.opts" :key="opt.id" clickable @click="types.val = opt; changeMod(opt)">
-          <q-item-section avatar>
-            <q-icon :name="opt.icon" />
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-btn-dropdown>
+      <q-btn-dropdown color="primary" dense flat :icon="types.val.icon">
+        <q-list>
+          <q-item v-for="opt in types.opts" :key="opt.id" clickable @click="types.val = opt; changeMod(opt)">
+            <q-item-section avatar>
+              <q-icon :name="opt.icon" />
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
     <div class="col">
       <div v-if="types.val.id == 1">
         <q-select v-model="data.buscar" hide-selected behavior="menu" :options="data.options" filled hide-dropdown-icon

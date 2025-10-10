@@ -53,8 +53,6 @@
 
     <q-separator spaced inset vertical dark />
 
-
-
     <q-table :rows="products" row-key="name" grid :filter="table.filter" :pagination="table.pagination"
       no-data-label="''">
       <template v-slot:top-right>
