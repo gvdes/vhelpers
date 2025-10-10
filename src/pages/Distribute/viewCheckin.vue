@@ -237,7 +237,7 @@ const counteds = computed(() => productsdb.value.filter(p => typeof p.pivot.toRe
 
 const basket = computed(() => {
   let target = finder.value.toUpperCase().trim();
-  return target.length ? productsdb.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)))) : productsdb.value;
+  return target.length ? productsdb.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)) || p.variants.some(e => e.barcode.toUpperCase().includes(target)))) : productsdb.value;
 });
 const totalpieces = computed(() => basket.value.reduce((am, p) => (am + (p.pivot._supply_by == 3 ? (p.pivot.amount * p.pieces) : p.pivot.amount)), 0));
 const diff = computed(() => productsdb.value.reduce((am, p) => am + Number(p.pivot.toReceived !== p.pivot.toDelivered), 0))
@@ -322,7 +322,7 @@ const openEditor = (item) => {
 const searchToSet = () => {
   let target = finder.value.toUpperCase().trim();
   if (target.length) {
-    let item = basket.value.length == 1 ? basket.value[0] : basket.value.find(p => (p.code == target || p.barcode == target));
+    let item = basket.value.length == 1 ? basket.value[0] : basket.value.find(p => (p.code == target || p.barcode == target ||  p.variants.some(e => e.barcode.toUpperCase().includes(target))));
     if (item) { openEditor(item); } else {
       $q.notify({
         message: `Sin coincidencias para <b>${target}</b>`,

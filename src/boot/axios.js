@@ -16,7 +16,7 @@ const ipAssist = 'http://192.168.10.189:1920'
 
 const vizapi = axios.create({ baseURL: `${ipVizapi}/vizapi/public/LVH` });
 const assist = axios.create({ baseURL: `${ipAssist}/assist/public/api` });
-// const assist = axios.create({ baseURL: `${ipAssist}/Assist/public/api/` });
+// const assist = axios.create({ baseURL: `${ipAssist}/Assist/public/api` });
 // const vizapi = axios.create({ baseURL: `${ipVizapi}/api/LVH` });
 // const assist = axios.create({ baseURL: `${ipAssist}/api/api/` });
 

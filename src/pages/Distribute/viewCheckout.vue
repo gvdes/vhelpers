@@ -326,11 +326,11 @@ const soldout = computed(() => counteds.value.filter(p => p.pivot.toDelivered ==
 const wstock = computed(() => counteds.value.filter(p => p.pivot.toDelivered > 0));
 const basket = computed(() => {
   let target = finder.value.toUpperCase().trim();
-  return target.length ? uncounteds.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)))) : uncounteds.value;
+  return target.length ? uncounteds.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)) ||  p.variants.some(e => e.barcode.toUpperCase().includes(target)))) : uncounteds.value;
 });
 const basketCheck = computed(() => {
   let target = finder.value.toUpperCase().trim();
-  return target.length ? counteds.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)))) : counteds.value;
+  return target.length ? counteds.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)) ||  p.variants.some(e => e.barcode.toUpperCase().includes(target)))) : counteds.value;
 });
 
 
@@ -367,7 +367,7 @@ const openEditor = (item) => {
 const searchToSet = () => {
   let target = finder.value.toUpperCase().trim();
   if (target.length) {
-    let item = basket.value.length == 1 ? basket.value[0] : basket.value.find(p => (p.code == target || p.barcode == target));
+    let item = basket.value.length == 1 ? basket.value[0] : basket.value.find(p => (p.code == target || p.barcode == target ||  p.variants.some(e => e.barcode.toUpperCase().includes(target))));
     if (item) { openEditor(item); } else {
       $q.notify({
         message: `Sin coincidencias para <b>${target}</b>`,
