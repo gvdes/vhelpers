@@ -65,6 +65,10 @@
                     <q-item-label class="text-caption text-center">FDT</q-item-label>
                     <q-item-label class="text-center">{{ product.stocks[0].pivot.fdt }}</q-item-label>
                   </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-caption text-center">TRA</q-item-label>
+                    <q-item-label class="text-center">{{ product.stocks[0].pivot.in_transit }}</q-item-label>
+                  </q-item-section>
                 </q-item>
               </q-list>
             </div>

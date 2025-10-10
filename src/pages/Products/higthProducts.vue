@@ -175,7 +175,7 @@ const table = ref({
     { name: 'nluz', label: 'NLUZ', field: r => r.nluces, align: 'left' },
     { name: 'unit_measures', label: 'UMC', field: r => r.umc.name, align: 'left' },
     { name: 'resurtible', label: 'P.Resurtible', field: r => r.pr, align: 'left' },
-    { name: 'person', label: 'MN / P', field: r => r.mnp.large, align: 'left' },
+    { name: 'person', label: 'MN / P', field: r => r.mnp?.large, align: 'left' },
   ]
 })
 
