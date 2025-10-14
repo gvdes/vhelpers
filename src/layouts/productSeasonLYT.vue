@@ -21,7 +21,8 @@
               multiple filled @update:model-value="familys" dense />
             <q-separator spaced inset vertical dark />
             <q-select class="col" v-model="categories.familias.val" :options="categories.familias.opts" label="Familia"
-              filled option-label="name" :disable="!secciones.val" @update:model-value="categorys" dense multiple use-chips>
+              filled option-label="name" :disable="!secciones.val" @update:model-value="categorys" dense multiple
+              use-chips>
               <template v-if="categories.familias.val" v-slot:append>
                 <q-icon name="cancel" @click.stop.prevent="categories.familias.val = null" class="cursor-pointer" />
               </template>
@@ -176,7 +177,7 @@ const suggested = computed(() => {
   return products.value.map((product) => {
     let CajasCedis = Math.round(Number(product.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) / Number(product.pieces));
     let CajasTexcoco = Math.round(Number(product.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) / Number(product.pieces));
-    // let CajasBrasil = Math.round(Number(product.stocks.filter(e => e.id == 16).map(e => e.pivot.stock)) / Number(product.pieces));
+    let CajasBrasil = Math.round(Number(product.stocks.filter(e => e.id == 16).map(e => e.pivot.stock)) / Number(product.pieces));
     let Sucursal = Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit));
     let SucCaj = Math.round(Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit)) / Number(product.pieces));
     let Porcentaje = Math.round(Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)) * 100 / Number(product.pieces))
@@ -193,7 +194,7 @@ const suggested = computed(() => {
       stocks: product.stocks,
       cedis: CajasCedis,
       texcoco: CajasTexcoco,
-      // brasil: CajasBrasil,
+      brasil: CajasBrasil,
       sucursal: Sucursal,
       sucCaj: SucCaj,
       percentage: Porcentaje,
@@ -206,7 +207,7 @@ const suggested = computed(() => {
       if (VDB.session.store.id_viz == 1) {
         return (e.texcoco) > 0 && e.percentage <= percentage.value.val
       } else {
-        return (e.cedis + e.texcoco  ) > 0 && e.percentage <= percentage.value.val && e.sucCaj == 0
+        return (e.cedis + e.texcoco) > 0 && e.percentage <= percentage.value.val && e.sucCaj == 0
       }
     } else if (condition.value.state == 'minmax') {
       if (VDB.session.store.id_viz == 1) {
@@ -275,10 +276,16 @@ const table = ref({
     { name: 'total', label: 'Total', align: 'center', field: row => Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) },
     { name: 'totalcj', label: 'Total Cajas', align: 'center', sortable: true, field: row => Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)) },
     { name: 'Sucursal', label: `${VDB.session.store.name}`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock) },
+    { name: 'min', label: `Minimo`, align: 'center', sortable: true, field: row => row.min },
+    { name: 'max', label: `Maximo`, align: 'center', sortable: true, field: row => row.max },
     { name: 'SucursalINTRANSIT', label: `${VDB.session.store.alias} en TRA`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit) },
+    { name: 'Percentge', label: `${VDB.session.store.name} % `, align: 'center', sortable: true, field: row => row.percentage },
+    { name: 'required', label: 'Solicitado CJ', align: 'center', sortable: true, field: row => row.required },
+
     {
       name: 'cediss', label: `Surtir En`, align: 'center', field: row => surtirEn(row)
     },
+    { name: 'action', label: 'Accion', align: 'center' },
   ],
   pagination: {
     rowsPerPage: 20
@@ -378,7 +385,11 @@ const exportTable = async () => {
       Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)),
       Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)),
       row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)[0],
+      row.min,
+      row.max,
       row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit)[0],
+      row.percentage,
+      row.required,
       surtirEn
     ])
   });
@@ -434,16 +445,16 @@ const processProduct = async () => {
 const newRequi = () => {
   console.log('holi')
   if (pedidos.value.statue == 'cedis') {
-    newRequsition(1,bascketCed.value)
+    newRequsition(1, bascketCed.value)
   } else if (pedidos.value.statue == 'texcoco') {
-    newRequsition(2,bascketTex.value)
+    newRequsition(2, bascketTex.value)
   } else if (pedidos.value.statue == 'todos') {
-    newRequsition(1,bascketCed.value)
-    newRequsition(2,bascketTex.value)
+    newRequsition(1, bascketCed.value)
+    newRequsition(2, bascketTex.value)
   }
 }
 
-const newRequsition = async (cedis,basProd) => {
+const newRequsition = async (cedis, basProd) => {
   $q.loading.show({ message: 'Creando Pedido' })
   let dat = {
     workpoint_from: VDB.session.store.id_viz,

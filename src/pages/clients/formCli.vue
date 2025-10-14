@@ -45,7 +45,7 @@
               </q-input>
               <q-separator spaced inset vertical dark />
               <q-uploader dense hide-upload-btn label="Fotografia" color="primary" accept=".jpg" @added="insertImage"
-                @removed="() => form.picture = null" ref="refe" class="full-width" max-file-size="8388608"
+                @removed="() => form.picture = null" ref="refe" class="full-width" max-file-size="2097152"
                 @rejected="Reject" />
               <q-card-section class="">
                 <div class="text-h4 text-center " style=" text-decoration: underline;">Datos Sucursal</div>
