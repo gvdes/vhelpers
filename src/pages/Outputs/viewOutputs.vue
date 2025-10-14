@@ -2,7 +2,7 @@
   <q-page padding v-if="salida">
     <q-header reveal bordered class="bg-white text-black">
       <q-toolbar class="justify-between">
-        <q-btn color="primary" icon="arrow_back" flat @click="$router.push('/transfers')" round />
+        <q-btn color="primary" icon="arrow_back" flat @click="$router.push('/outputs')" round />
         <div>{{ salida.store.name }} </div>
         <div class="row items-center">
           <div class="col"> {{ salida.warehouse.name }}</div> <q-icon name="arrow_forward" class="col" />

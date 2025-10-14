@@ -537,7 +537,10 @@ const pdfFactura = (ticket) => {
       let pagos = ticket.payments
       const doc = new jsPDF();
       let chunks = [];
-      const arreglo = products.map(producto => Object.values(producto));
+      // const arreglo = products.map(producto => Object.values(producto));
+      const arreglo = products
+        .sort((a, b) => a.ARTICULO.localeCompare(b.ARTICULO))
+        .map(producto => Object.values(producto));
       const paginas = Math.ceil(arreglo.length / 20);
       for (var i = 0; i < arreglo.length; i += 20) {
         chunks.push(arreglo.slice(i, i + 20));
@@ -870,7 +873,7 @@ const exportTck = async () => {
 }
 
 // if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
-  index()
+index()
 // } else {
 //   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
 //   $router.replace('/');
