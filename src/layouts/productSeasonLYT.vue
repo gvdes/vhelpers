@@ -63,10 +63,10 @@
             <q-btn color="primary" icon-right="archive" flat @click="exportTable" :disable="bascket.length <= 0" />
           </q-card-section>
           <q-card-section class="row">
-            <q-table class="col" v-if="bascketCed" :rows="bascketCed" :columns="table.columns"
+            <q-table title="Pedido Cedis SP" class="col" v-if="bascketCed" :rows="bascketCed" :columns="table.columns"
               :pagination="table.pagination" />
             <q-separator spaced inset vertical dark />
-            <q-table class="col" v-if="bascketTex" :rows="bascketTex" :columns="table.columns"
+            <q-table title="Pedido Cedis TX" class="col"  v-if="bascketTex" :rows="bascketTex" :columns="table.columns"
               :pagination="table.pagination" />
           </q-card-section>
 
