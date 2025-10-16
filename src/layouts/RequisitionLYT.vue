@@ -787,8 +787,8 @@ const processProduct = async () => {
     if (condition.value.state == 'minmax') {
       if (supply.value.val.id == 3) {
         return products.value.forEach(e => {
-          let CajasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces));
-          let maxCajas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces))
+          let CajasSucursal = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces);
+          let maxCajas = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces)
           if ((maxCajas - CajasSucursal) >= 1) {
             e.required = Math.round(maxCajas - CajasSucursal);
           } else {

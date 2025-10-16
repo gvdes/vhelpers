@@ -303,6 +303,7 @@ const init = async () => {
     products.value = resp.product_season
     processProduct()
     products.value.forEach(e => {
+      // console.log(i)
       const seccion = e.category.familia.seccion.name
       // console.log(seccion);
       if (seccion && !secciones.value.opts.includes(seccion)) {
@@ -416,9 +417,14 @@ const processProduct = async () => {
     if (condition.value.state == 'minmax') {
       if (supply.value.val.id == 3) {
         return products.value.forEach(e => {
-          let CajasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces));
-          let maxCajas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces))
-          if ((maxCajas - CajasSucursal) >= 1) {
+          let CajasSucursal = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces);
+          let maxCajas = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces)
+          if ((maxCajas - CajasSucursal) > 0) {
+            // console.log(e.code)
+            // console.log(maxCajas);
+            // console.log(CajasSucursal);
+            // console.log(maxCajas - CajasSucursal);
+            // console.log(Math.round(maxCajas - CajasSucursal));
             e.required = Math.round(maxCajas - CajasSucursal);
           } else {
             e.required = 1
