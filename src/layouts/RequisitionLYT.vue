@@ -431,6 +431,7 @@ const suggested = computed(() => {
       texcoco: CajasTexcoco,
       brasil: CajasBrasil,
       sucursal: Sucursal,
+      transito:Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit)),
       percentage: Porcentaje,
       required: product.required,
       locations: product.locations
@@ -699,13 +700,14 @@ const download = async () => {
       { name: 'Texcoco CJ', filterButton: true },
       { name: 'Brasil CJ', filterButton: true },
       { name: 'Sucursal', filterButton: true },
+      { name: 'Transito', filterButton: true },
       { name: 'MIN', filterButton: true },
       { name: 'MAX', filterButton: true },
       { name: 'Porcentaje', filterButton: true },
       { name: 'Solicitado', filterButton: true },
 
     ],
-    rows: bascket.value.map(e => { return [e.code, e.description, e.categories.familia.seccion.name, e.categories.familia.name, e.categories.name, e.pieces, e.locations.map(e => e.path).join(", "), e.cedis, e.texcoco, e.brasil, e.sucursal, e.min, e.max, e.percentage, e.required] }),
+    rows: bascket.value.map(e => { return [e.code, e.description, e.categories.familia.seccion.name, e.categories.familia.name, e.categories.name, e.pieces, e.locations.map(e => e.path).join(", "), e.cedis, e.texcoco, e.brasil, e.sucursal, e.transito , e.min, e.max, e.percentage, e.required] }),
   });
 
   worksheet.columns.forEach(column => {
@@ -761,25 +763,6 @@ const impre = async () => {
   }
 }
 
-// const processProduct = async () => {
-//   console.log(condition.value.state)
-//   if (products.value.length > 0) {
-//     if (condition.value.state == 'minmax') {
-//       return products.value.forEach(e => {
-//         // console.log(Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces)))
-//         let CajasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces));
-//         let maxCajas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces))
-//         if ((maxCajas - CajasSucursal) >= 1) {
-//           e.required = Math.round(maxCajas - CajasSucursal);
-//         } else {
-//           e.required = 1
-//         }
-//       })
-//     } else {
-//       return products.value.forEach(e => e.required = 1)
-//     }
-//   }
-// }
 
 const processProduct = async () => {
   console.log(condition.value.state)

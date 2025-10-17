@@ -265,7 +265,7 @@ const addProduct = async () => {
     _product: product.value.val.id,
     units: units.value,
     comments: '',
-    stock: product.value.val.stocks.find(e => e.id == VDB.session.store.id).pivot.gen,
+    stock: product.value.val.stocks.find(e => e.id == VDB.session.store.id_viz).pivot.gen,
     amount: 1,
     cost: product.value.val.cost,
     total: product.value.val.cost * units.value,
