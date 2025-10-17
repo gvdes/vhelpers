@@ -18,7 +18,6 @@
                   <q-item-label class="text-center text-overline text-caption"> <span class="text-bold">{{
                     props.row.requisition.from.name }}</span> (P: {{
                         props.row.requisition.id }})</q-item-label>
-
                 </q-item-section>
               </q-item>
             </q-list>
@@ -49,7 +48,6 @@
     <q-card>
       <q-card-section class="text-bold text-h5 items-center">
         Particion {{ mosPartition.val.id }}
-
       </q-card-section>
       <q-card-section class="text-center">
         Que Desesas Hacer ?

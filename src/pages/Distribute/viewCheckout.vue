@@ -187,6 +187,9 @@
           <div>EL pedido ya no podra editarse y se emitira la salida correspondiente</div>
           <div>en factusol</div>
         </q-card-section>
+        <q-card-section>
+        <q-select v-model="warehouseSel.val" :options="warehouseSel.opts" label="Almacen Destino" filled />
+        </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="Canclear" color="negative" rounded v-close-popup no-caps />
           <q-btn flat label="Emitir Factura" color="positive" rounded @click="nextState" :disable="lockbutton" />
@@ -250,6 +253,12 @@ const $router = useRouter();
 const $q = useQuasar();
 const $restockStore = useRestockStore();
 const VDB = useVDBStore()
+const warehouseSel = ref({
+  val: 'GEN',
+  opts: [
+    'GEN', 'EMP'
+  ]
+})
 
 // const user_socket = usrSkt;
 
@@ -412,7 +421,7 @@ const nextState = async () => {
     let data = {
     partition: $route.params.chk,
     verified: VDB.session.credentials.staff.id,
-    warehouse: 'GEN',
+    warehouse: warehouseSel.value.val,
     state: 6
   }
   console.log(data);
