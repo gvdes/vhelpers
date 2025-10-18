@@ -1,4 +1,4 @@
-<template>
+-<template>
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
 
     <q-header class="transparent text-dark" bordered>
@@ -62,12 +62,15 @@
             <q-btn color="primary" icon="print" flat @click="impre" :disable="bascket.length == 0" />
             <q-btn color="primary" icon-right="archive" flat @click="exportTable" :disable="bascket.length <= 0" />
           </q-card-section>
-          <q-card-section class="row">
-            <q-table title="Pedido Cedis SP" class="col" v-if="bascketCed" :rows="bascketCed" :columns="table.columns"
+          <q-card-section>
+            <q-table v-if="bascket" :rows="bascket" :columns="table.columns"
+              :pagination="table.pagination" />
+            <!-- <q-separator spaced inset vertical dark />
+            <q-table title="Pedido Cedis BR"  v-if="bascketBra" :rows="bascketBra" :columns="table.columns"
               :pagination="table.pagination" />
             <q-separator spaced inset vertical dark />
-            <q-table title="Pedido Cedis TX" class="col"  v-if="bascketTex" :rows="bascketTex" :columns="table.columns"
-              :pagination="table.pagination" />
+            <q-table title="Pedido Cedis TX"  v-if="bascketTex" :rows="bascketTex" :columns="table.columns"
+              :pagination="table.pagination" /> -->
           </q-card-section>
 
         </q-card>
@@ -77,7 +80,7 @@
             <q-card-section>
               <q-radio left-label v-model="pedidos.statue" val="cedis" label="Cedis" />
               <q-radio left-label v-model="pedidos.statue" val="texcoco" label="Texcoco" />
-              <q-radio left-label v-model="pedidos.statue" val="todos" label="Todos" />
+              <q-radio left-label v-model="pedidos.statue" val="brasil" label="Brasil" />
             </q-card-section>
             <q-card-section>
               <div class="text-h6">Agrega una nota</div>
@@ -236,19 +239,38 @@ const bascket = computed(() => {
   }
 })
 
+// const surtirEn = (product) => {
+//   const piezas = Number(product.pieces) || 1
+
+//   const stock1 = product.stocks
+//     .filter(s => s.id === 1)
+//     .reduce((sum, s) => sum + s.pivot.stock, 0)
+
+//   const stock2 = product.stocks
+//     .filter(s => s.id === 2)
+//     .reduce((sum, s) => sum + s.pivot.stock, 0)
+
+//   const stock3 = product.stocks
+//     .filter(s => s.id === 21)
+//     .reduce((sum, s) => sum + s.pivot.stock, 0)
+
+//   if (stock1 === 0 && stock2 === 0) return 'Cedis'
+//   if ((stock1 / piezas) < 1 && (stock2 / piezas) >= 1) return 'Texcoco'
+//   return 'Cedis'
+// }
+
 const surtirEn = (product) => {
   const piezas = Number(product.pieces) || 1
 
-  const stock1 = product.stocks
-    .filter(s => s.id === 1)
-    .reduce((sum, s) => sum + s.pivot.stock, 0)
+  const stock1 = product.stocks.filter(s => s.id === 1).reduce((sum, s) => sum + s.pivot.stock, 0)
+  const stock2 = product.stocks.filter(s => s.id === 2).reduce((sum, s) => sum + s.pivot.stock, 0)
+  const stock3 = product.stocks.filter(s => s.id === 16).reduce((sum, s) => sum + s.pivot.stock, 0)
 
-  const stock2 = product.stocks
-    .filter(s => s.id === 2)
-    .reduce((sum, s) => sum + s.pivot.stock, 0)
+  if (stock1 >= 0 && stock2 === 0 && stock3 === 0) return 'Cedis'
+  if (stock1 >= 0 && stock2 === 0 && stock3 >= 1) return 'Brasil'
 
-  if (stock1 === 0 && stock2 === 0) return 'Cedis'
   if ((stock1 / piezas) < 1 && (stock2 / piezas) >= 1) return 'Texcoco'
+  // if ((stock3 / piezas) >= 1) return 'Brasil'
   return 'Cedis'
 }
 
@@ -261,6 +283,10 @@ const bascketTex = computed(() => {
   if (!bascket.value) return []
   return bascket.value.filter(product => surtirEn(product) === 'Texcoco')
 })
+const bascketBra = computed(() => {
+  if (!bascket.value) return []
+  return bascket.value.filter(product => surtirEn(product) === 'Brasil')
+})
 
 
 const table = ref({
@@ -272,6 +298,7 @@ const table = ref({
     { name: 'family', label: 'Familia', align: 'left', field: row => row.category.familia.name },
     { name: 'category', label: 'Categoria', align: 'left', field: row => row.category.name },
     { name: 'cedis', label: 'Cedis', align: 'center', field: row => row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock) },
+    { name: 'brasil', label: 'Brasil', align: 'center', field: row => row.stocks.filter(e => e.id == 16).map(e => e.pivot.stock) },
     { name: 'texcoco', label: 'Texcoco', align: 'center', field: row => row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock) },
     { name: 'total', label: 'Total', align: 'center', field: row => Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) },
     { name: 'totalcj', label: 'Total Cajas', align: 'center', sortable: true, field: row => Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)) },
@@ -281,14 +308,13 @@ const table = ref({
     { name: 'SucursalINTRANSIT', label: `${VDB.session.store.alias} en TRA`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit) },
     { name: 'Percentge', label: `${VDB.session.store.name} % `, align: 'center', sortable: true, field: row => row.percentage },
     { name: 'required', label: 'Solicitado CJ', align: 'center', sortable: true, field: row => row.required },
-
     {
       name: 'cediss', label: `Surtir En`, align: 'center', field: row => surtirEn(row)
     },
     { name: 'action', label: 'Accion', align: 'center' },
   ],
   pagination: {
-    rowsPerPage: 20
+    rowsPerPage: 5
   }
 })
 
@@ -362,9 +388,11 @@ const exportTable = async () => {
     const stock1 = row.stocks
       .filter(s => s.id === 1)
       .reduce((sum, s) => sum + s.pivot.stock, 0)
-
     const stock2 = row.stocks
       .filter(s => s.id === 2)
+      .reduce((sum, s) => sum + s.pivot.stock, 0)
+    const stock3 = row.stocks
+      .filter(s => s.id === 16)
       .reduce((sum, s) => sum + s.pivot.stock, 0)
 
     if (stock1 === 0 && stock2 === 0) {
@@ -373,7 +401,7 @@ const exportTable = async () => {
     if ((stock1 / piezas) < 1 && (stock2 / piezas) >= 1) {
       surtirEn = 'Texcoco'
     }
-
+    if (stock1 >= 0 && stock2 === 0 && stock3 >= 1) surtirEn = 'Brasil'
     worksheet.addRow([
       row.code,
       row.description,
@@ -382,6 +410,7 @@ const exportTable = async () => {
       row.category.familia.name,
       row.category.name,
       row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)[0],
+      row.stocks.filter(e => e.id == 16).map(e => e.pivot.stock)[0],
       row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)[0],
       Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)),
       Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)),
@@ -420,11 +449,6 @@ const processProduct = async () => {
           let CajasSucursal = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces);
           let maxCajas = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces)
           if ((maxCajas - CajasSucursal) > 0) {
-            // console.log(e.code)
-            // console.log(maxCajas);
-            // console.log(CajasSucursal);
-            // console.log(maxCajas - CajasSucursal);
-            // console.log(Math.round(maxCajas - CajasSucursal));
             e.required = Math.round(maxCajas - CajasSucursal);
           } else {
             e.required = 1
@@ -451,12 +475,12 @@ const processProduct = async () => {
 const newRequi = () => {
   console.log('holi')
   if (pedidos.value.statue == 'cedis') {
-    newRequsition(1, bascketCed.value)
+    newRequsition(1, bascket.value)
   } else if (pedidos.value.statue == 'texcoco') {
-    newRequsition(2, bascketTex.value)
-  } else if (pedidos.value.statue == 'todos') {
-    newRequsition(1, bascketCed.value)
-    newRequsition(2, bascketTex.value)
+    newRequsition(2, bascket.value)
+  } else if (pedidos.value.statue == 'brasil') {
+    newRequsition(16, bascket.value)
+    // newRequsition(2, bascketTex.value)
   }
 }
 
