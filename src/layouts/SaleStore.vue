@@ -469,13 +469,13 @@ const init = async () => {
   smonth.value.val = meses.filter(e => e.id === mes)[0]
   $q.loading.show({ message: "Cargando Informacion" });
   console.log("se inicia el init");
-  let url = `http://192.168.10.238:2902/Assist/public/api/sales/getSale`
-  const resp = await axios.get(url);
+  // let url = `http://192.168.10.238:2902/Assist/public/api/sales/getSale`
+  const resp = await ApiAssist.index();
   if (resp.error) {
     console.log(resp);
   } else {
     console.log(resp);
-    stores.value = resp.data;
+    stores.value = resp;
     getSale(stores.value, mes);
   }
 };
