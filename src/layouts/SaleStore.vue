@@ -409,6 +409,7 @@ import UserToolbar from "src/components/UserToolbar.vue";
 import ApiAssist from "src/API/assistApi";
 import { useVDBStore } from "src/stores/VDB";
 import axios from "axios"; //para dirigirme bro
+
 const $q = useQuasar();
 const $route = useRoute();
 const $router = useRouter();
@@ -470,13 +471,14 @@ const init = async () => {
   $q.loading.show({ message: "Cargando Informacion" });
   console.log("se inicia el init");
   // let url = `http://192.168.10.238:2902/Assist/public/api/sales/getSale`
-  const resp = await ApiAssist.index();
+  const resp = await ApiAssist.GetReportVhelp(mes);
   if (resp.error) {
     console.log(resp);
   } else {
     console.log(resp);
     stores.value = resp;
-    getSale(stores.value, mes);
+    // getSale(stores.value, mes);
+    $q.loading.hide();
   }
 };
 
@@ -509,9 +511,18 @@ const getSale = async (sucursales, mes) => {
 //   $router.replace('/');
 // }
 
-const ObtReport = () => {
-  stores.value.map(e => e.sales = null);
-  getSale(stores.value, smonth.value.val.id)
+const ObtReport = async () => {
+  stores.value = []
+  $q.loading.show({message:'Obteniendo Datos'})
+  const resp = await ApiAssist.GetReportVhelp(smonth.value.val.id);
+  if (resp.error) {
+    console.log(resp);
+  } else {
+    console.log(resp);
+    stores.value = resp;
+    $q.loading.hide()
+    // getSale(stores.value, mes);
+  }
 }
 
 const mostInf = (rows) => {
