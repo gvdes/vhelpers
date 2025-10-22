@@ -1,6 +1,9 @@
 <template>
   <q-page padding>
-    <!-- content -->
+    <q-card class="my-card">
+      <q-card-section>
+      </q-card-section>
+    </q-card>
   </q-page>
 </template>
 
@@ -15,6 +18,16 @@ import RestockApi from 'src/API/RestockApi.js';
 import { useQuasar, date } from 'quasar';
 import { $sktRestock } from 'boot/socket';
 const layoutProduct = useProductStore();
-layoutProduct.setTitle('Modificacion de Tickets')
+layoutProduct.setTitle('Modificacion de Articulos')
+
+
+const optionsModify = ref({
+  val:null,
+  opts:[
+    {id:1,label:"Importar Cambios"},
+    {id:2,label:"Familiarizacion"},
+
+  ]
+})
 
 </script>
