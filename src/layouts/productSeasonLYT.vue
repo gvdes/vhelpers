@@ -226,9 +226,10 @@ const suggested = computed(() => {
 })
 
 const bascket = computed(() => {
-  if (secciones.value.val && !categories.value.familias.val && !categories.value.categorias.val) {
-    return suggested.value.filter(e => e.category.familia.seccion.name == secciones.value.val)
-  } else if (categories.value.familias.val && secciones.value.val && !categories.value.categorias.val) {
+  // if (secciones.value.val && !categories.value.familias.val && !categories.value.categorias.val) {
+  //   return suggested.value.filter(e => e.category.familia.seccion.name == secciones.value.val)
+  // } else
+   if (categories.value.familias.val && !categories.value.categorias.val) {
     return suggested.value.filter(e => categories.value.familias.val.includes(e.category.familia.name))
 
   } else if (categories.value.familias.val && categories.value.categorias.val) {
