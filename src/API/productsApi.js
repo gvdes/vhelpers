@@ -55,4 +55,7 @@ export default{
   scanSearch(data) {
     return assist.post(`/Products/scanSearch`, data).then(done => done.data).catch(fail => { return { fail } });
   },
+  getReportProvider(data) {
+    return assist.post(`/Products/getReportProvider`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }

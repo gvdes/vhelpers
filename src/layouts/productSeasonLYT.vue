@@ -17,11 +17,11 @@
       <q-page padding>
         <q-card class="my-card">
           <q-card-section class="row">
-            <q-select class="col" v-model="secciones.val" :options="secciones.opts" label="Seccion" option-label="name"
-              multiple filled @update:model-value="familys" dense />
+            <!-- <q-select class="col" v-model="secciones.val" :options="secciones.opts" label="Seccion" option-label="name"
+              multiple filled @update:model-value="familys" dense /> -->
             <q-separator spaced inset vertical dark />
             <q-select class="col" v-model="categories.familias.val" :options="categories.familias.opts" label="Familia"
-              filled option-label="name" :disable="!secciones.val" @update:model-value="categorys" dense multiple
+              filled option-label="name"  @update:model-value="categorys" dense multiple
               use-chips>
               <template v-if="categories.familias.val" v-slot:append>
                 <q-icon name="cancel" @click.stop.prevent="categories.familias.val = null" class="cursor-pointer" />
@@ -166,7 +166,7 @@ const categories = ref({
   },
   familias: {
     opts: [],
-    val: []
+    val: null
   }
 })
 const products = ref([])
@@ -261,16 +261,12 @@ const bascket = computed(() => {
 
 const surtirEn = (product) => {
   const piezas = Number(product.pieces) || 1
-
   const stock1 = product.stocks.filter(s => s.id === 1).reduce((sum, s) => sum + s.pivot.stock, 0)
   const stock2 = product.stocks.filter(s => s.id === 2).reduce((sum, s) => sum + s.pivot.stock, 0)
   const stock3 = product.stocks.filter(s => s.id === 16).reduce((sum, s) => sum + s.pivot.stock, 0)
-
   if (stock1 >= 0 && stock2 === 0 && stock3 === 0) return 'Cedis'
   if (stock1 >= 0 && stock2 === 0 && stock3 >= 1) return 'Brasil'
-
   if ((stock1 / piezas) < 1 && (stock2 / piezas) >= 1) return 'Texcoco'
-  // if ((stock3 / piezas) >= 1) return 'Brasil'
   return 'Cedis'
 }
 
@@ -327,7 +323,6 @@ const init = async () => {
   } else {
     console.log(resp)
     products.value = resp.product_season
-    processProduct()
     products.value.forEach(e => {
       // console.log(i)
       const seccion = e.category.familia.seccion.name
@@ -336,11 +331,15 @@ const init = async () => {
         secciones.value.opts.push(seccion)
       }
       const familia = e.category.familia.name
+
       if (familia && !categories.value.familias.opts.includes(familia)) {
+                    console.log(familia);
         categories.value.familias.opts.push(familia)
       }
+
     })
     $q.loading.hide();
+        processProduct()
   }
   console.log(resp)
 }

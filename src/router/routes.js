@@ -318,7 +318,7 @@ const routes = [
       { path: 'create', name: 'mngpr', component: () => import('pages/Products/higthProducts.vue'), meta: { moduleId: 49 } },
       { path: 'prices', name: 'pricespr', component: () => import('pages/Products/pricesProducts.vue'), meta: { moduleId: 50 } },
       { path: 'modify', name: 'modipr', component: () => import('pages/Products/ModifyProducts.vue'), meta: { moduleId: 51 } },
-
+      { path: 'requisition', name: 'rmopr', component: () => import('pages/Products/RequisitionProducts.vue'), meta: { moduleId: 65 } },
     ],
   },
   {
