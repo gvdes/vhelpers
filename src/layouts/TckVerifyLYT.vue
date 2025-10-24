@@ -27,30 +27,30 @@
           </q-btn>
         </q-toolbar>
         <div v-if="ticket.state">
-          <div class="row justify-center">
+          <div>
             <transition name="bounce">
-              <q-card style="width: 700px; max-width: 80vw;">
+              <q-card>
                 <q-card-section>
                   <q-list>
                     <q-item>
                       <q-item-section>
-                        <q-item-label>Fecha:</q-item-label>
-                        <q-item-label>{{ ticket.head.fecha }}</q-item-label>
+                        <q-item-label caption class="text-center">Fecha:</q-item-label>
+                        <q-item-label class="text-bold text-center">{{ ticket.head.fecha }}</q-item-label>
                       </q-item-section>
                       <q-separator spaced inset vertical dark />
                       <q-item-section>
-                        <q-item-label>Ticket:</q-item-label>
-                        <q-item-label>{{ ticket.head.ticket }}</q-item-label>
+                        <q-item-label caption class="text-center">Ticket:</q-item-label>
+                        <q-item-label class="text-bold text-center">{{ ticket.head.ticket }}</q-item-label>
                       </q-item-section>
                       <q-separator spaced inset vertical dark />
                       <q-item-section>
-                        <q-item-label>Cliente:</q-item-label>
-                        <q-item-label>{{ ticket.head.cliente }}</q-item-label>
+                        <q-item-label caption class="text-center">Cliente:</q-item-label>
+                        <q-item-label class="text-bold text-center">{{ ticket.head.cliente }}</q-item-label>
                       </q-item-section>
                       <q-separator spaced inset vertical dark />
                       <q-item-section>
-                        <q-item-label>Total:</q-item-label>
-                        <q-item-label>{{ ticket.head.total }}</q-item-label>
+                        <q-item-label caption class="text-center">Total:</q-item-label>
+                        <q-item-label class="text-bold text-center">{{ ticket.head.total }}</q-item-label>
                       </q-item-section>
                     </q-item>
                   </q-list>
@@ -63,7 +63,7 @@
           <div class="row">
             <q-card class="my-card col">
               <q-card-section>
-                <div class="text-h6 text-center">Articulos Por Validar</div>
+                <div class=" text-center">X Validar</div>
               </q-card-section>
               <q-card-section class="text-center text-h4">
                 {{ invalidBascket.length }}
@@ -73,7 +73,7 @@
 
             <q-card class="my-card col">
               <q-card-section>
-                <div class="text-h6 text-center">Articulos Validados</div>
+                <div class=" text-center">Validados</div>
               </q-card-section>
               <q-card-section class="text-center text-h4">
                 {{ validBacket.length }}
@@ -83,10 +83,19 @@
             <q-separator spaced inset vertical dark />
             <q-card class="my-card col">
               <q-card-section>
-                <div class="text-h6 text-center">Diferencias</div>
+                <div class=" text-center">Dif</div>
               </q-card-section>
               <q-card-section class="text-center text-h4">
                 {{ticket.body.reduce((a, v) => a + Number(v.diferencia), 0)}}
+              </q-card-section>
+            </q-card>
+            <q-separator spaced inset vertical dark />
+            <q-card class="my-card col">
+              <q-card-section>
+                <div class=" text-center">Cajas</div>
+              </q-card-section>
+              <q-card-section class="text-center text-h4">
+                {{ticket.body.reduce((a, v) => a + Number(v.conteo), 0)}}
               </q-card-section>
             </q-card>
 
@@ -94,42 +103,48 @@
 
           <q-separator spaced inset vertical dark />
 
-          <div class="row justify-center">
-            <q-card class="my-card col" style="width: 700px; max-width: 80vw;">
+          <div class="justify-center">
+            <q-card class="my-card">
+              <q-card-actions>
+                <div> Productos Revisados</div>
+                <q-separator spaced inset vertical dark />
+                <div class="text-center text-bold">{{ validBacket.length }}</div>
+                <q-space />
+                <q-btn color="grey" round flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                  @click="expanded = !expanded" />
+              </q-card-actions>
+              <q-slide-transition>
+                <div v-show="expanded">
+                  <q-separator />
+                  <q-card-section class="text-subtitle2">
+                    <q-card-section>
+                      <q-table flat :rows="validBacket" :columns="table.columns"
+                        :visible-columns="table.visibleColumnstwo" no-data-label="No hay datos :("
+                        :pagination="table.pagination" @row-click="selectProduct" hide-bottom>
+                      </q-table>
+                    </q-card-section>
+                  </q-card-section>
+                </div>
+              </q-slide-transition>
+
+            </q-card>
+            <q-card class="my-card">
               <q-card-section>
                 <q-table flat title="Productos Sin Revisar" :rows="invalidBascket" :columns="table.columns"
                   :visible-columns="table.visibleColumns" no-data-label="No hay datos :(" :pagination="table.pagination"
-                  @row-click="selectProduct">
+                  @row-click="selectProduct" hide-bottom>
                   <template v-slot:top>
-                    <div class="text-h6"> Productos Sin Revisar</div>
+                    <div> Productos Sin Revisar</div>
                     <q-space />
-
                     <q-select v-model="table.visibleColumns" multiple outlined dense options-dense
                       :display-value="$q.lang.table.columns" emit-value map-options :options="table.columns"
                       option-value="name" options-cover style="min-width: 150px" />
                   </template>
-
                 </q-table>
               </q-card-section>
             </q-card>
             <q-separator spaced inset vertical dark />
-            <q-card class="my-card col" style="width: 700px; max-width: 80vw;">
-              <q-card-section>
-                <q-table flat title="Productos Revisados" :rows="validBacket" :columns="table.columns"
-                  :visible-columns="table.visibleColumnstwo" no-data-label="No hay datos :("
-                  :pagination="table.pagination" @row-click="selectProduct">
-                  <template v-slot:top>
-                    <div class="text-h6"> Productos Revisados</div>
-                    <q-space />
 
-                    <q-select v-model="table.visibleColumnstwo" multiple outlined dense options-dense
-                      :display-value="$q.lang.table.columns" emit-value map-options :options="table.columns"
-                      option-value="name" options-cover style="min-width: 150px" />
-                  </template>
-
-                </q-table>
-              </q-card-section>
-            </q-card>
           </div>
         </div>
 
@@ -139,28 +154,24 @@
               <div class="row justify-between">
                 <div class="text-left">
                   <div class="text--3">CCO: {{ validProduct.val.corto }}</div>
-                  <!-- <div class="text-h6">{{ wndCounter.item.code }}</div> -->
+                  <div class="text-h6">{{ validProduct.val.codigo }}</div>
                 </div>
                 <div class="text-right">
-                  <div class="text-bold">{{ validProduct.val.codigo }}</div>
-                  <div class="text--2">{{ validProduct.val.cb }}</div>
+                  <div class="text-bold">CAJAS</div>
+                  <div class="text--2">{{ Math.round(validProduct.val.cantidad / validProduct.val.pxc) }}</div>
                 </div>
               </div>
             </q-card-section>
-
             <q-separator />
-
             <q-card-section>{{ validProduct.val.descripcion }}</q-card-section>
             <q-form @submit.prevent="setDeliveryProduct">
               <q-card-section>
                 <div class="row">
-
                   <div class="text-center col">
                     <div>Cajas</div>
                     <q-input dense borderless v-model="validProduct.val.conteo" type="number" min="0"
-                      input-class="text-h6 text-center" ref="iptcounter" />
+                      input-class="text-h6 text-center" ref="iptcounter" autofocus />
                   </div>
-
                   <div class="text-center col">
                     <div>PXC</div>
                     <q-input dense borderless v-model="validProduct.val.pxc" type="number" min="0"
@@ -325,10 +336,11 @@ const validProduct = ref({
   state: false,
   val: null
 })
+const expanded = ref(false)
 const opts = ref([]);
 
 const table = ref({
-  pagination: { rowsPerPage: 10 },
+  pagination: { rowsPerPage: 0 },
   visibleColumns: ['code', 'description'],
   visibleColumnstwo: ['code', 'description', 'checkout', 'diferencia'],
   columns: [
@@ -567,7 +579,7 @@ const terminar = async () => {
 
 // if (VDB.session.rol == 'aux' || VDB.session.rol == 'gen' || VDB.session.rol == 'aud' || VDB.session.rol == 'root') {
 //   console.log('Acceso Validado')
-  index()
+index()
 // } else {
 //   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
 //   $router.replace('/');

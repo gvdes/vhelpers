@@ -26,6 +26,8 @@ const optionsModify = ref({
   opts:[
     {id:1,label:"Importar Cambios"},
     {id:2,label:"Familiarizacion"},
+    {id:2,label:"DesFamiliarizacion"},
+
 
   ]
 })

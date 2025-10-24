@@ -22,8 +22,9 @@
 
         <div v-if="fpas.state">
 
-          <q-table class="my-sticky-header-table" title="Fromas de Pago" :rows="fpas.body" row-key="name"
-            :filter="fpas.filter" separator="cell" @row-click="mostck" :columns="table">
+          <q-table class="my-sticky-header-table" title="Fromas de Pago" :rows="fpas.body" row-key="TICKET"
+            :filter="fpas.filter" separator="cell" @row-click="mostck" :columns="table"
+            :selected-rows-label="getSelectedString" selection="multiple" v-model:selected="tcks">
 
             <template v-slot:top-right>
               <div class="row">
@@ -35,6 +36,12 @@
 
                 <q-separator spaced inset vertical dark />
                 <div class="col"> <q-btn color="primary" icon="archive" dense no-caps flat round @click="exportTable" />
+                  <q-btn class="col" color="primary" icon="print" dense no-caps flat round
+                    @click="impresoras.state = !impresoras.state" v-if="tcks.length > 0" />
+                  <q-btn class="col" color="primary" icon="picture_as_pdf" dense no-caps flat round
+                    @click="pdfFormat.state = !pdfExport.state" v-if="tcks.length > 0" />
+                  <!-- <q-btn class="col" color="primary" icon="sim_card_download" dense no-caps flat round
+                    @click="impresoras.state = !impresoras.state" v-if="tcks.length > 0" /> -->
                 </div>
               </div>
 
@@ -100,7 +107,7 @@
               <div class="text-h6 text-center">Impresora</div>
             </q-card-section>
             <q-card-section>
-              <q-form @submit="imptck" class="q-gutter-md">
+              <q-form @submit="() => (tcks.length > 0 ? impMassiveTcks() : imptck())" class="q-gutter-md">
                 <q-select dense option-label="name" v-model="impresoras.val" :options="impresoras.body"
                   label="Impresora" filled autofocus style="width: 200px" />
                 <div>
@@ -143,7 +150,8 @@
             </q-card-section>
             <q-card-actions align="right">
               <q-btn flat label="Cancel" color="negative" v-close-popup />
-              <q-btn flat label="Seleccionar" color="positive" @click="pdfExport" :disable="!pdfFormat.val" />
+              <q-btn flat label="Seleccionar" color="positive"
+                @click="() => (tcks.length > 0 ? pdfExportMassive() : pdfExport())" :disable="!pdfFormat.val" />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -211,6 +219,9 @@ const imp = ref(false);
 const date = ref(false);
 
 const fechas = ref(null);
+const tcks = ref([]);
+
+
 
 const pdfFormat = ref({
   state: false,
@@ -240,6 +251,36 @@ const imptck = () => {
     })
     .catch(r => r);
 }
+const impMassiveTcks = () => {
+  $q.loading.show({ messasge: 'Impimiendo Tickets' })
+  tcks.value.forEach((e, index) => {
+    setTimeout(() => {
+      let split = e.TICKET.split('-')
+      let impdat = {
+        type: "Reimpresion",
+        serie: split[0],
+        folio: split[1],
+        print: impresoras.value.val.ip_address
+      }
+      imp.value = true;
+      let host = VDB.session.store.ip_address;
+      // let host = stores.value.val.ip_address;
+      let url = `http://${host}/access/public/modify/newmod`;
+      axios.post(url, impdat)
+        .then(r => {
+          console.log(r)
+        })
+        .catch(r => r);
+    }, index * 5000)
+    impresoras.value.state = false
+    $q.loading.hide()
+
+  })
+
+
+}
+
+
 
 const index = async () => {
   console.log("Recibiendo Datos :)")
@@ -283,6 +324,10 @@ const impre = async () => {
       icon: 'error'
     })
   }
+}
+
+const getSelectedString = () => {
+  return tcks.value.length === 0 ? '' : `${tcks.value.length} ticket${tcks.value.length > 1 ? 's' : ''} seleccionados de  ${fpas.value.body.length}`
 }
 
 const wrapCsvValue = (val, formatFn, row) => {
@@ -424,6 +469,70 @@ const pdfExport = () => {
     .catch(f =>
       console.log(f)
     )
+
+}
+
+const pdfExportMassive = () => {
+  // $q.loading.show({ message: 'Importando Ticket' })
+  // $q.loading.show({ messasge: 'Impimiendo Tickets' })
+  tcks.value.forEach((e, index) => {
+    setTimeout(() => {
+      // console.log(e)
+      let host = VDB.session.store.ip_address;
+      // let host = '192.168.10.160:1619'
+      let ticket = e.TICKET
+      const dat = `http://${host}/access/public/modify/getTicket/${ticket}`;
+      axios.get(dat)
+        .then(r => {
+          if (pdfFormat.value.val.id == 1) {
+            pdfFactura(r.data)
+              .then(r => {
+                $q.notify({
+                  message: `El ticket ${ticket} se descargo correctamente`,
+                  type: `positive`,
+                  position: `center`,
+                })
+                // pdfFormat.value.state = false
+                // pdfFormat.value.val = null
+                // $q.loading.hide()
+              })
+              .catch(f => {
+                $q.notify({
+                  message: `El ticket ${ticket} no se descargo correctamente`,
+                  type: `negative`,
+                  position: `center`,
+                })
+                console.log(f);
+              })
+          } else if (pdfFormat.value.val.id == 2) {
+            pdfTicket(r.data)
+              .then(r => {
+                $q.notify({
+                  message: `El ticket ${ticket} se descargo correctamente`,
+                  type: `positive`,
+                  position: `center`,
+                })
+                // pdfFormat.value.state = false
+                // pdfFormat.value.val = null
+
+
+              })
+              .catch(f => {
+                $q.notify({
+                  message: `El ticket ${ticket} no se descargo correctamente`,
+                  type: `negative`,
+                  position: `center`,
+                })
+                console.log(f);
+              })
+          }
+        })
+        .catch(f =>
+          console.log(f)
+        )
+    }, index * 5000)
+    $q.loading.hide()
+  })
 
 }
 
