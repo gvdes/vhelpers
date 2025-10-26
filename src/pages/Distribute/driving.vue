@@ -83,20 +83,23 @@ const ordersdb = computed(() => {
     const isStore = part.requisition.to.id == VDB.session.store.id_viz;
     const isAlmacenista = ['gen', 'aux', 'alm', 'root','recp','gce'].includes(VDB.session.rol);
     if (isChofer && isStore) {
+      $restockStore.setTitle('Por Enviar')
       $restockStore.setButtonShow(false)
       return part._status === 6
     }
     if (isSameStore && isAlmacenista) {
+      $restockStore.setTitle('En camino')
       $restockStore.setButtonShow(true)
       return part._status === 7;
     }
     return false;
   });
 })
-const init = async () => {
-  $restockStore.setTitle('En Camino')
-  $restockStore.setButtonShow(false)
-}
+// const init = async () => {
+
+//   $restockStore.setTitle('')
+//   $restockStore.setButtonShow(false)
+// }
 
 const printForPartition = async data => {
   $q.loading.show({ message: "..." });
