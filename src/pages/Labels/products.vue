@@ -192,7 +192,7 @@ import locationsApi from 'src/API/locationsApi';
 import dbproduct from 'src/API/Product'
 import axios from 'axios';//para dirigirme bro
 import { exportFile, useQuasar } from 'quasar';
-import { computed, ref } from 'vue';
+import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { assist } from "src/boot/axios";
 import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
@@ -504,5 +504,24 @@ const obtenerProductsSection = async (nivel) => {
     }
   }
 }
+
+watch(
+  () => products.value,
+  (val) => {
+    localStorage.setItem('applabels', JSON.stringify(val))
+  },
+  { deep: true }
+)
+
+onMounted(() => {
+  const savedlabel = localStorage.getItem('applabels')
+  if (savedlabel) {
+    products.value = JSON.parse(savedlabel)
+  }
+  // window.addEventListener('keydown', handleKeyDown)
+})
+onBeforeUnmount(() => {
+  // window.removeEventListener('keydown', handleKeyDown)
+})
 
 </script>
