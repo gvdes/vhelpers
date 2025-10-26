@@ -164,7 +164,7 @@ const nextState = async () => {
     partition.value = null
   }
 }
-init();
+// init();
 
 const colorsets = (partitionStore) => {
   switch (partitionStore) {
