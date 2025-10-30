@@ -249,7 +249,8 @@ const routes = [
     children: [
       { path: 'dashboard', component: () => import('pages/Distribute/dashboard.vue'), meta: { moduleId: 37 } },
       { path: 'compare', component: () => import('pages/Distribute/Compare.vue'), meta: { moduleId: 43 } },
-      { path: 'dashboardStore', component: () => import('pages/Distribute/dashboardStore.vue'), meta: { moduleId: 42 } },
+      { path: 'dashboardStore', component: () => import('pages/Distribute/dashboardStore.vue'),  meta: { moduleId: 42 } },
+      { path: 'dashboardStore/:rid', component: () => import('pages/Distribute/viewNewRequisition.vue'), meta: { moduleId: 42 } },
       { path: 'report', component: () => import('pages/Distribute/report.vue'), meta: { moduleId: 44 } },
       { path: 'reportStore', component: () => import('pages/Distribute/reportStore.vue'), meta: { moduleId: 45 } },
       { path: 'automate', component: () => import('pages/Distribute/automate.vue'), meta: { moduleId: 46 } },

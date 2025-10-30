@@ -12,14 +12,20 @@
         <template v-slot:item="props">
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
             <q-list bordered :class="colorsets(props.row)">
+              <!-- <div><q-badge :class="colorsets(props.row)" :label="`P-${props.row.requisition.id}`" /></div> -->
+
               <q-item clickable v-ripple @click="() => { mosPartition.state = true; mosPartition.val = props.row }">
                 <q-item-section>
                   <q-item-label class="text-center text-bold">{{ props.row.id }}</q-item-label>
                   <q-item-label class="text-center text-overline text-caption"> <span class="text-bold">{{
-                    props.row.requisition.from.name }}</span> (P: {{
-                        props.row.requisition.id }})</q-item-label>
+                    props.row.requisition.from.name }}</span> {{ `P-${props.row.requisition.id}` }} </q-item-label>
                 </q-item-section>
+                <div>
+                  <q-badge :color="props.row._blocked ? 'negative' : 'positive'" />
+                </div>
               </q-item>
+              <div>( {{ props.row.status.name }} )</div>
+
             </q-list>
           </div>
         </template>
@@ -104,6 +110,7 @@ const init = async () => {
   $restockStore.setShowLYT(true)
   $restockStore.setTitle('Verificacion')
   $restockStore.setButtonShow(false)
+  $restockStore.setButtonShowAdd(false)
 }
 
 const printForPartition = async data => {
@@ -185,35 +192,45 @@ const nextState = async () => {
   console.log(partition.value)
   // let ext = ordersdb.value.findIndex(e => e.id == partition.value);
   let ext = ordersdb.value.find(e => e.id == partition.value);
-  if (ext._status == 5) {
-    $router.push(`/distribute/checkout/${ext.id}`)
-  } else if (ext._status == 4) {
-    $q.loading.show({ message: "Terminando, espera..." });
-    let data = { id: ext.id, state: 5, suply: ext._suplier_id }
-    console.log(data);
-    let resp = await RestockApi.nextStatePartition(data)
-    console.log(resp)
-    if (resp.status == 200) {
-      console.log(ext.requisition._status)
-      if (resp.data.partitionsEnd > resp.data.partition.requisition._status) {
-        let nes = { id: resp.data.partition._requisition, state: resp.data.partitionsEnd };
-        const nxt = await RestockApi.nextState(nes);
-        $sktRestock.emit("order_refresh", { order: nxt.data });
-        console.log(nxt.data);
+  console.log(ext._blocked)
+  if (ext._blocked != 1) {
+    if (ext._status == 5) {
+      $router.push(`/distribute/checkout/${ext.id}`)
+    } else if (ext._status == 4) {
+      $q.loading.show({ message: "Terminando, espera..." });
+      let data = { id: ext.id, state: 5, suply: ext._suplier_id }
+      console.log(data);
+      let resp = await RestockApi.nextStatePartition(data)
+      console.log(resp)
+      if (resp.status == 200) {
+        console.log(ext.requisition._status)
+        if (resp.data.partitionsEnd > resp.data.partition.requisition._status) {
+          let nes = { id: resp.data.partition._requisition, state: resp.data.partitionsEnd };
+          const nxt = await RestockApi.nextState(nes);
+          $sktRestock.emit("order_refresh", { order: nxt.data });
+          console.log(nxt.data);
+        }
+        $sktRestock.emit("orderpartition_refresh", { order: resp.data.partition })
+        $router.push(`/distribute/checkout/${resp.data.partition.id}`)
+      } else {
+        console.log(resp)
+        alert(resp.data.message)
       }
-      $sktRestock.emit("orderpartition_refresh", { order: resp.data.partition })
-      $router.push(`/distribute/checkout/${resp.data.partition.id}`)
-    } else { console.log(resp) }
-    $q.loading.hide();
-  }else{
-    $q.notify({ message: 'No se encuentra tu pedido', type: 'negative', position: 'bottom' })
+      $q.loading.hide();
+    } else {
+      $q.notify({ message: 'No se encuentra tu pedido', type: 'negative', position: 'bottom' })
+      partition.value = null
+    }
+  } else {
+    $q.notify({ message: 'El pedido se esta validando', type: 'negative', position: 'bottom' })
     partition.value = null
   }
+
 }
 
 const colorsets = (partitionStore) => {
-  let status = partitionStore.status ==  4 ? '11' : '10'
-  let cltext = partitionStore.status ==  4 ? 'text-dark' : 'text-white'
+  let status = partitionStore.status == 4 ? '11' : '10'
+  let cltext = partitionStore.status == 4 ? 'text-dark' : 'text-white'
 
   // console.log(partitionStore.requisition.from.id)
   let store = partitionStore.requisition.from.id;

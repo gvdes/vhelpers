@@ -1,11 +1,11 @@
 <template>
   <q-page padding>
     <div>
-      <q-table :rows="ordersdb" row-key="name" grid :pagination="pagination" hide-bottom>
+      <q-table :rows="ordersdb" row-key="name" grid :pagination="pagination" hide-bottom >
         <template v-slot:item="props" bordered>
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-            <q-list bordered>
-              <q-expansion-item dense icon="list" :label="`${props.row.id.toString()} (${props.row.status.name})`"
+            <q-list bordered @click="continuePedido(props.row)" >
+              <q-expansion-item :header-class="`${colorCellState[props.row.status.id - 1]}`" dense icon="list" :label="`${props.row.id.toString()} (${props.row.status.name})`"
                 :caption="`${props.row.to.name} (${props.row.notes})`">
                 <q-separator />
                 <q-table hide-bottom flat :rows="props.row.partition" :columns="table.columns"
@@ -79,16 +79,40 @@ const table = ref({
   pagination: { rowsPerPage: 10 }
 })
 const ordersdb = computed(() => $restockStore.ordersok.filter(o => o._workpoint_from == VDB.session.store.id_viz))
+
+
+const continuePedido = (b) => {
+  if(b._status == 1){
+    $router.push(`/distribute/dashboardStore/${b.id}`)
+  }
+}
+
+
 const init = async () => {
   $restockStore.setShowLYT(true)
   $restockStore.setTitle('Dashboard')
   $restockStore.setButtonShow(true)
+  $restockStore.setButtonShowAdd(true)
+
 }
 
 const mosPartition = (a, b) => {
   viewPartition.value.state = true
   viewPartition.value.val = b
 }
+
+const colorCellState = [
+  'text-grey-5',
+  'text-h6 text-red',
+  'text-indigo',
+  '4',
+  '5',
+  'text-pink-7',
+  'text-orange-8',
+  '8',
+  'text-primary',
+  'text-positive'
+];
 
 
 init();

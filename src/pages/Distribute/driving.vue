@@ -85,11 +85,13 @@ const ordersdb = computed(() => {
     if (isChofer && isStore) {
       $restockStore.setTitle('Por Enviar')
       $restockStore.setButtonShow(false)
+      $restockStore.setButtonShowAdd(false)
       return part._status === 6
     }
     if (isSameStore && isAlmacenista) {
       $restockStore.setTitle('En camino')
       $restockStore.setButtonShow(true)
+      $restockStore.setButtonShowAdd(false)
       return part._status === 7;
     }
     return false;

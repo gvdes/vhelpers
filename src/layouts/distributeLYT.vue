@@ -14,7 +14,12 @@
         <div class="row">
           <q-btn color="white" round unelevated flat icon="sync" @click="init" />
           <div class="col row">
-            <q-btn color="primary" icon="event" @click="stateDate = !stateDate" flat round v-if="store.showButton" />
+            <q-btn class="col" color="primary" icon="event" @click="stateDate = !stateDate" flat round
+              v-if="store.showButton" />
+            <q-separator spaced inset vertical dark />
+            <q-btn class="col" color="primary" icon="add" @click="addRequisition.state = !addRequisition.state"
+              v-if="store.showButtonAdd" />
+
           </div>
         </div>
       </q-toolbar>
@@ -39,6 +44,38 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="addRequisition.state">
+      <q-card class="my-card" style="width: 400px; max-width: 50vw;">
+        <q-card-section class="text-center text-bold text-h6">
+          Nuevo Pedido
+        </q-card-section>
+        <q-card-section :class="!ismobile ? 'row' : ''">
+          <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.suply_by.val"
+            :options="addRequisition.suply_by.opts" label="Cedis" filled option-label="alias" dense />
+          <q-separator spaced inset vertical dark />
+          <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.warehouse.val"
+            :options="addRequisition.warehouse.opts" label="Almacen" filled dense />
+          <q-separator spaced inset vertical dark />
+          <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.types.val"
+            :options="addRequisition.types.opts" label="Tipo" filled dense />
+        </q-card-section>
+        <q-card-section v-if="addRequisition.types?.val?.id != 1">
+          <q-input v-model="addRequisition.folio" :type="addRequisition.types.val.id == 3 ? 'text' : 'number'"
+            :label="addRequisition.types.val.id == 3 ? 'Ticket' : 'Folio'"
+            :mask="addRequisition.types.val.id == 3 ? '#-######' : ''" filled dense :error="foioError" :error-message="foioErrorMssg"   />
+        </q-card-section>
+        <q-card-section>
+          <q-input v-model="addRequisition.notes" type="text" label="Notas" filled dense />
+        </q-card-section>
+        <q-card-section>
+          <q-card-actions align="right">
+            <q-btn flat icon="close" color="negative" @click="addRequisition.state = !addRequisition.state" />
+            <q-btn flat icon="check" color="positive" @click="addRequired" :disable="foioError"  />
+          </q-card-actions>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
@@ -50,7 +87,7 @@ import { useVDBStore } from 'stores/VDB';
 import { useRoute, useRouter } from 'vue-router';
 import dayjs from 'dayjs';
 import RestockApi from 'src/API/RestockApi.js';
-import { useQuasar, date } from 'quasar';
+import { useQuasar, date, AddressbarColor } from 'quasar';
 import { $sktRestock } from 'boot/socket';
 const store = useRestockStore();
 
@@ -61,6 +98,30 @@ const $restockStore = useRestockStore();
 const $q = useQuasar();
 const VDB = useVDBStore()
 const stateDate = ref(false)
+const addRequisition = ref({
+  state: false,
+  folio: null,
+  notes: null,
+  types: {
+    val: { id: 1, label: 'Manual' },
+    opts: [
+      { id: 1, label: 'Manual' },
+      { id: 3, label: 'Venta' },
+      { id: 4, label: 'Preventa' },
+    ],
+  },
+  suply_by: {
+    val: null,
+    opts: $restockStore.cedis
+  },
+  warehouse: {
+    val: { id: 'GEN', label: 'General' },
+    opts: [
+      { id: 'GEN', label: 'General' },
+      { id: 'EMP', label: 'Empaques' },
+    ]
+  }
+})
 const optranges = ref({
   val: { from: null, to: null }
 });
@@ -80,6 +141,30 @@ const user_socket = {
   },
   workpoint: VDB.session.store
 }
+
+
+const ismobile = computed(() => $q.platform.is.mobile);
+
+const foioError = computed(() => {
+  if(addRequisition.value.types.val.id == 3 && addRequisition.value.folio?.length != 8 ){
+    return true
+  }else if(addRequisition.value.types.val.id == 4 && !addRequisition.value.folio ){
+    return true
+  }else{
+    return false
+  }
+})
+
+const foioErrorMssg = computed(() => {
+  if(addRequisition.value.types.val.id == 3 && addRequisition.value.folio?.length != 8 ){
+    return 'reduerda ingresar 0'
+  }else if(addRequisition.value.types.val.id == 4 && !addRequisition.value.folio ){
+    return 'debe de tener minimo un caracter'
+  }else{
+    return ''
+  }
+})
+
 const init = async () => {
   $restockStore.setShowLoad(true)
   $q.loading.show({ message: "Cargado vista..." });
@@ -97,6 +182,8 @@ const init = async () => {
     // $restockStore.setUsers(req.staff)
     $restockStore.fillPartitions(req.partitions)
     $restockStore.setShowLoad(false)
+    $restockStore.setCedis(req.cedis)
+    addRequisition.value.suply_by.val = req.cedis[0];
     console.log("%cMainLayout listo!!", "font-size:2em;color:orange;");
     $q.loading.hide();
   }
@@ -112,6 +199,47 @@ const buscas = async () => {
   $restockStore.fillPartitions(req.partitions)
   console.log("%cMainLayout listo!!", "font-size:2em;color:orange;");
   $q.loading.hide();
+}
+
+
+const addRequired = async () => {
+  $q.loading.show({ message: 'Creando Pedido' })
+  addRequisition.value.workpointFrom = VDB.session.store.id_viz;
+  addRequisition.value.created_by = VDB.session.credentials.staff.id_va
+  console.log(addRequisition.value)
+  const resp = await RestockApi.newRequisition(addRequisition.value)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    $q.loading.hide();
+    $sktRestock.emit('creating', { order: resp.requisition })
+    addRequisition.value = {
+      state: false,
+      folio: null,
+      notes: null,
+      types: {
+        val: { id: 1, label: 'Manual' },
+        opts: [
+          { id: 1, label: 'Manual' },
+          { id: 3, label: 'Venta' },
+          { id: 4, label: 'Preventa' },
+        ],
+      },
+      suply_by: {
+        val: $restockStore.cedis[0],
+        opts: $restockStore.cedis
+      },
+      warehouse: {
+        val: { id: 'GEN', label: 'General' },
+        opts: [
+          { id: 'GEN', label: 'General' },
+          { id: 'EMP', label: 'Empaques' },
+        ]
+      }
+    }
+    $router.push(`/distribute/dashboardStore/${resp.requisition.id}`)
+  }
 }
 
 
@@ -172,14 +300,17 @@ const sktPartitionCreate = async skt => {
 
 const sktPartitionDelete = async skt => {
   console.log(skt)
-    let oid = skt.id;
-    let requisition = skt._requisition
-    let cmd = $restockStore.deleteParition(oid);
-    let cmdd = $restockStore.deleteParitionOrder(oid,requisition);
+  let oid = skt.id;
+  let requisition = skt._requisition
+  let cmd = $restockStore.deleteParition(oid);
+  let cmdd = $restockStore.deleteParitionOrder(oid, requisition);
 
 }
 
-const sktOrderUpdate = skt => { $restockStore.orderUpdate(skt); }
+const sktOrderUpdate = skt => {
+  console.log(skt)
+  $restockStore.orderUpdate(skt);
+ }
 
 const sktOrderChangeState = async skt => {
   if (skt.order.to.id === VDB.session.store.id_viz) {
@@ -194,6 +325,8 @@ const sktOrderChangeState = async skt => {
   }
 
 }
+
+const ChangeStatus = skt => { $restockStore.setStatusPartition(skt); }
 
 const sktOrderOrderFresh = async skt => {
   console.log(skt)
@@ -221,7 +354,7 @@ onMounted(async () => {
   $sktRestock.on("orderpartition_refresh", sktOrderPartFresh);
   $sktRestock.on("sktPartitionCreate", sktPartitionCreate);
   $sktRestock.on("sktPartitionDelete", sktPartitionDelete);
-
+  $sktRestock.on("ChangeStatus", ChangeStatus);
   await nextTick();
   window.layoutReady = true;
   await init()
@@ -237,6 +370,8 @@ onBeforeUnmount(() => {
   $sktRestock.off("orderpartition_refresh", sktOrderPartFresh);
   $sktRestock.on("sktPartitionCreate", sktPartitionCreate);
   $sktRestock.on("sktPartitionDelete", sktPartitionDelete);
+  $sktRestock.on("ChangeStatus", ChangeStatus);
+
 })
 
 

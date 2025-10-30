@@ -187,9 +187,9 @@
           <div>EL pedido ya no podra editarse y se emitira la salida correspondiente</div>
           <div>en factusol</div>
         </q-card-section>
-        <q-card-section>
+        <!-- <q-card-section>
         <q-select v-model="warehouseSel.val" :options="warehouseSel.opts" label="Almacen Destino" filled />
-        </q-card-section>
+        </q-card-section> -->
         <q-card-actions align="right">
           <q-btn flat label="Canclear" color="negative" rounded v-close-popup no-caps />
           <q-btn flat label="Emitir Factura" color="positive" rounded @click="nextState" :disable="lockbutton" />
@@ -235,9 +235,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { ref, onMounted, computed, nextTick, onUnmounted } from 'vue';
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import InvoicePdf from 'src/Pdf/Invoices/invoices.js';
+// import { ipAssist } from "boot/axios.js"
 import dayjs from 'dayjs';
 import RestockApi from 'src/API/RestockApi.js';
 import invApi from 'src/API/invoicesApi.js';
@@ -335,24 +336,26 @@ const soldout = computed(() => counteds.value.filter(p => p.pivot.toDelivered ==
 const wstock = computed(() => counteds.value.filter(p => p.pivot.toDelivered > 0));
 const basket = computed(() => {
   let target = finder.value.toUpperCase().trim();
-  return target.length ? uncounteds.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)) ||  p.variants.some(e => e.barcode.toUpperCase().includes(target)))) : uncounteds.value;
+  return target.length ? uncounteds.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)) || p.variants.some(e => e.barcode.toUpperCase().includes(target)))) : uncounteds.value;
 });
 const basketCheck = computed(() => {
   let target = finder.value.toUpperCase().trim();
-  return target.length ? counteds.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)) ||  p.variants.some(e => e.barcode.toUpperCase().includes(target)))) : counteds.value;
+  return target.length ? counteds.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)) || p.variants.some(e => e.barcode.toUpperCase().includes(target)))) : counteds.value;
 });
 
 
 const init = async () => {
   $restockStore.setShowLYT(false)
   $q.loading.show({ message: "Cargando..." });
-  console.log("Iniciando...");
+  // console.log("Iniciando...");
+  // console.log($restockStore.partitions.find(e => e.id == $route.params.chk));
   const response = await RestockApi.partition($route.params.chk);
   console.log(response);
   if (response.status == 200) {
     productsdb.value = response.data.order.products;
     ostate.value = response.data.order.status;
     order.value = response.data.order
+    // console.log(order.value);
     $q.loading.hide();
   } else { displayErrRequest(response); }
 }
@@ -376,7 +379,7 @@ const openEditor = (item) => {
 const searchToSet = () => {
   let target = finder.value.toUpperCase().trim();
   if (target.length) {
-    let item = basket.value.length == 1 ? basket.value[0] : basket.value.find(p => (p.code == target || p.barcode == target ||  p.variants.some(e => e.barcode.toUpperCase().includes(target))));
+    let item = basket.value.length == 1 ? basket.value[0] : basket.value.find(p => (p.code == target || p.barcode == target || p.variants.some(e => e.barcode.toUpperCase().includes(target))));
     if (item) { openEditor(item); } else {
       $q.notify({
         message: `Sin coincidencias para <b>${target}</b>`,
@@ -418,10 +421,10 @@ const nextState = async () => {
   console.log(order.value.requisition._workpoint_from)
   wndNextState.value.state = false;
   // let data = { id: $route.params.chk, state: 6, suply: order.value._suplier_id }
-    let data = {
+  let data = {
     partition: $route.params.chk,
     verified: VDB.session.credentials.staff.id,
-    warehouse: warehouseSel.value.val,
+    warehouse: order.value._warehouse,
     state: 6
   }
   console.log(data);
@@ -457,7 +460,7 @@ const nextState = async () => {
 
 
 const createInvoiceFS = async (partition) => {
-  $q.loading.show({message:'Realizando Salida'});
+  $q.loading.show({ message: 'Realizando Salida' });
   const resp = await invApi.addInvoiceFS(partition);
   console.log(resp);
   if (resp.fail) {
@@ -479,7 +482,7 @@ const createInvoiceFS = async (partition) => {
 }
 
 const createTransferFS = async (partition) => {
-  $q.loading.show({message:'Realizando Salida'});
+  $q.loading.show({ message: 'Realizando Salida' });
   const resp = await invApi.addTransferFS(partition);
   if (resp.fail) {
     if (resp.fail.status == 503) {
@@ -498,6 +501,44 @@ const createTransferFS = async (partition) => {
   }
 }
 
+const lockPartition = async () => {
+  const resp = await RestockApi.lockPartition($route.params.chk)
+  console.log(resp);
+   $sktRestock.emit('ChangeStatus', { id: $route.params.chk, status: 1 })
+}
+
+
+const unlockPartition = async () => {
+  const resp = await RestockApi.unlockPartition(order.value.id)
+  console.log(resp);
+   $sktRestock.emit('ChangeStatus', { id: $route.params.chk, status: 0 })
+}
 init();
+
+
+onMounted(() => {
+  lockPartition()
+  const handleUnload = () => {
+    const url = `http://192.168.10.189:1920/assist/public/api/restock/partitions/${$route.params.chk}/unlock`
+    // const url = `http://192.168.10.160:1920/Assist/public/api/restock/partitions/${order.value.id}/unlock`
+
+    navigator.sendBeacon(url)
+  }
+  window.addEventListener('beforeunload', handleUnload)
+  window._handleUnload = handleUnload
+})
+
+onBeforeRouteLeave(async (to, from, next) => {
+  await unlockPartition()
+  window.removeEventListener('beforeunload', window._handleUnload)
+  next()
+})
+
+onUnmounted(async () => {
+  await unlockPartition()
+  window.removeEventListener('beforeunload', window._handleUnload)
+})
+
+
 
 </script>

@@ -102,6 +102,7 @@ const init = async () => {
   $restockStore.setShowLYT(true)
   $restockStore.setTitle('Validacion')
   $restockStore.setButtonShow(false)
+  $restockStore.setButtonShowAdd(false)
 }
 
 const printForPartition = async data => {

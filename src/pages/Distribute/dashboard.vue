@@ -52,6 +52,7 @@ const stateDate = ref(false)
 const init = async () => {
   $restockStore.setTitle('Dashboard')
   $restockStore.setButtonShow(true)
+  $restockStore.setButtonShowAdd(false)
 
 }
 const freshOrder = order => {

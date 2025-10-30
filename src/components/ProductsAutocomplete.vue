@@ -86,6 +86,7 @@ const props = defineProps({
   "with_prices": { default: null, type: Boolean },
   "with_prices_Invoice": { default: null, type: Boolean },
   "with_stock": { default: null, type: Boolean },
+  "with_stock_cedis": { default: null, type: Number },
   "checkState": { default: true, type: Boolean },
   "workpointStatus": { default: null, type: [Array, String] },
   "withHistoric":{ default: null, type: Boolean },
@@ -115,6 +116,7 @@ const attrs = computed(() => {
     "withHistoric": props.withHistoric,
     "_celler": props._celler,
     "limit": props.limit,
+    "with_stock_cedis":props.with_stock_cedis,
     "_workpoint_status": props.workpointStatus,
     "_workpoint":$user.session.store.id_viz
   }
@@ -142,7 +144,7 @@ const autocomplete = (val, update, abort) => {
   if (val.trim().length > 1) {
     data.value.target = val.toUpperCase().trim();
     console.log(data.value.target)
-
+    console.log(attrs.value)
     dbproduct.autocomplete(attrs.value).then(done => {
       console.log(done);
       let options = done.data.map(p => {

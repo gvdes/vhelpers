@@ -1,6 +1,6 @@
 <template>
 
-  <q-table :rows="filtRef" grid :columns="table.columns" :filter="table.filter" >
+  <q-table :rows="filtRef" grid :columns="table.columns" :filter="table.filter">
     <template v-slot:top-left>
       <div class="text-bold text-centerz">{{ fechas }}</div>
     </template>
@@ -81,7 +81,7 @@
             <q-separator vertical />
             <div class="col">
               <div class="text-caption">{{ props.row._type == 1 ? 'ABONO' : 'ENTRADA' }}</div>
-              <div class="text-bold">{{  props.row._type == 1 ? props.row.season_ticket : props.row.entry}}</div>
+              <div class="text-bold">{{ props.row._type == 1 ? props.row.season_ticket : props.row.entry }}</div>
             </div>
           </q-card-section>
         </q-card>
@@ -154,12 +154,12 @@ const table = ref({
 const filtRef = computed(() => {
   if (statusFil.value && !fechas.value) {
     return props.refunds.filter(e => e.status.id == statusFil.value.id)
-  } else if(!statusFil.value && fechas.value){
+  } else if (!statusFil.value && fechas.value) {
     return props.refunds.filter(e => dayjs(e.created_at).format('YYYY/MM/DD') == fechas.value)
-  }else if(statusFil.value && fechas.value){
-    return props.refunds.filter(e => dayjs(e.created_at).format('YYYY/MM/DD') == fechas.value &&  e.status.id == statusFil.value.id)
-  }else{
-   return  props.refunds
+  } else if (statusFil.value && fechas.value) {
+    return props.refunds.filter(e => dayjs(e.created_at).format('YYYY/MM/DD') == fechas.value && e.status.id == statusFil.value.id)
+  } else {
+    return props.refunds
   }
 })
 
@@ -195,6 +195,8 @@ const mosRow = (b) => {
     console.log('se va a recibir')
     ReceiptRefund.value.state = true
     ReceiptRefund.value.val = b
+  } else if (b.status.id == 3 && b.storeto.id == VDB.session.store.id) {
+    $router.push(`/refunds/verified/${b.id}`);
   } else if (b.status.id == 4) {
     $q.notify({ message: 'No se puede abrir la devolucion', type: 'negative', position: 'center' })
   }
@@ -204,7 +206,7 @@ const nextState = async (rows) => {
   $q.loading.show({ message: 'Cambiando Estado' })
   let data = {
     id: rows.id,
-    uid:VDB.session.id,
+    uid: VDB.session.id,
   }
   const resp = await refundsApi.nexState(data)
   if (resp.fail) {
@@ -220,6 +222,8 @@ const genPdf = (refund) => {
   pdfRefund.refund(refund)
 
 }
+
+
 
 
 
