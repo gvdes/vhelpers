@@ -1,4 +1,4 @@
-import { vizapi } from "src/boot/axios";
+import { assist } from "src/boot/axios";
 
 export default{
 
@@ -7,11 +7,11 @@ export default{
     let to = dateranges.to;
     let from = dateranges.from;
 
-    return vizapi.get(`/ciclicos?v=${_view}&store=${store}`).then( done=>done.data ).catch( fail => { return {fail}} );
+    return assist.get(`/ciclicos?v=${_view}&store=${store}`).then( done=>done.data ).catch( fail => { return {fail}} );
     // return "Esta es la base";
   },
   find(folio,store){
-    return vizapi.get(`/ciclicos/${folio}?store=${store}`).then( done=>done.data ).catch( fail => { return {fail}; } );
+    return assist.get(`/ciclicos/${folio}?store=${store}`).then( done=>done.data ).catch( fail => { return {fail}; } );
   }
 
 }

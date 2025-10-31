@@ -1,6 +1,4 @@
 import { assist } from "src/boot/axios";
-import { vizapi } from "src/boot/axios";
-
 
 export default {
   index(data) {
@@ -59,18 +57,10 @@ export default {
     let burl = "/invoices/print/forsupply";
     return assist.post(burl, data).then(done => done).catch(fail => fail.response);
   },
-  // printKey(data){
-  //   let burl = "/restock/print/key";
-  //   return vizapi.post(burl,data).then( done => done ).catch( fail => fail.response);
-  // },
-  createAutomate(data) {
+  createAutomate(data) {//
     let burl = "/restock/create";
-    return vizapi.post(burl, data).then(done => done).catch(fail => fail.response);
+    return assist.post(burl, data).then(done => done).catch(fail => fail.response);
   },
-  // suc(){
-  //   let burl = "/restock/suc";
-  //   return vizapi.get(burl).then( done => done ).catch( fail => fail.response);
-  // },
   getStoresAutomate() {
     let burl = "/invoices/getStoresAutomate";
     return assist.get(burl).then(done => done).catch(fail => fail.response);
@@ -81,7 +71,7 @@ export default {
   },
   nextStep(data) {
     let burl = "/restock/nextStep";
-    return vizapi.post(burl, data).then(done => done).catch(fail => fail.response);
+    return assist.post(burl, data).then(done => done).catch(fail => fail.response);
   },
   sendMessageDiff(data) {
     let burl = "/invoices/sendMessageDiff";

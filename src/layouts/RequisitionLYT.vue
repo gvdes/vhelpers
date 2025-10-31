@@ -164,18 +164,17 @@
                 {{ props.row.description }}
               </q-td>
               <q-td key="Seccion" :props="props">
-
-                {{ props.row.categories.familia.seccion.name }}
+                {{ props.row.category?.familia?.seccion?.name }}
 
               </q-td>
               <q-td key="Familia" :props="props">
 
-                {{ props.row.categories.familia.name }}
+                {{ props.row.category?.familia?.name }}
 
               </q-td>
               <q-td key="Categoria" :props="props">
 
-                {{ props.row.categories.name }}
+                {{ props.row.category?.name }}
 
               </q-td>
               <q-td key="pieces" :props="props">
@@ -358,9 +357,9 @@ const table = ref({
   columns: [
     { name: 'codigo', required: true, label: 'Codigo', align: 'left', sortable: true, field: row => row.code },
     { name: 'description', label: 'Descripcion', align: 'left', sortable: true, field: row => row.description },
-    { name: 'Seccion', label: 'Seccion', align: 'left', sortable: true, field: row => row.categories.familia.seccion.name },
-    { name: 'Familia', label: 'Familia', align: 'left', sortable: true, field: row => row.categories.familia.name },
-    { name: 'Categoria', label: 'Categoria', align: 'left', sortable: true, field: row => row.categories.name },
+    { name: 'Seccion', label: 'Seccion', align: 'left', sortable: true, field: row => row.category?.familia?.seccion?.name },
+    { name: 'Familia', label: 'Familia', align: 'left', sortable: true, field: row => row.category?.familia?.name },
+    { name: 'Categoria', label: 'Categoria', align: 'left', sortable: true, field: row => row.category?.name },
     { name: 'pieces', label: 'PXC', align: 'center', sortable: true, field: row => row.pieces },
     { name: 'locations', label: 'Ubicacion', align: 'center', sortable: true, field: row => row.locations },
     { name: 'cedis', label: 'Ced CJ', align: 'center', sortable: true, field: row => row.cedis },
@@ -423,7 +422,7 @@ const suggested = computed(() => {
       code: product.code,
       cost: product.cost,
       description: product.description,
-      categories: product.categories,
+      category: product.category,
       pieces: product.pieces,
       min: Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.min)),
       max: Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)),
@@ -592,15 +591,15 @@ const reportLocations = async () => {
     console.log(resp);
     products.value = resp
     products.value.forEach(e => {
-      const seccion = e.categories.familia.seccion
+      const seccion = e.category.familia.seccion
       if (seccion && !categoriesLocations.value.seccion.opts.map(e => e.id).includes(seccion.id)) {
         categoriesLocations.value.seccion.opts.push(seccion)
       }
-      const familia = e.categories.familia
+      const familia = e.category.familia
       if (familia && !categoriesLocations.value.familias.opts.map(e => e.id).includes(familia.id)) {
         categoriesLocations.value.familias.opts.push(familia)
       }
-      const categoria = e.categories
+      const categoria = e.category
       if (categoria && !categoriesLocations.value.categorias.opts.map(e => e.id).includes(categoria.id)) {
         categoriesLocations.value.categorias.opts.push(categoria)
       }
@@ -707,7 +706,7 @@ const download = async () => {
       { name: 'Solicitado', filterButton: true },
 
     ],
-    rows: bascket.value.map(e => { return [e.code, e.description, e.categories.familia.seccion.name, e.categories.familia.name, e.categories.name, e.pieces, e.locations.map(e => e.path).join(", "), e.cedis, e.texcoco, e.brasil, e.sucursal, e.transito , e.min, e.max, e.percentage, e.required] }),
+    rows: bascket.value.map(e => { return [e.code, e.description, e.category?.familia?.seccion?.name, e.category?.familia?.name, e.category?.name, e.pieces, e.locations.map(e => e.path).join(", "), e.cedis, e.texcoco, e.brasil, e.sucursal, e.transito , e.min, e.max, e.percentage, e.required] }),
   });
 
   worksheet.columns.forEach(column => {

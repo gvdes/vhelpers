@@ -41,7 +41,6 @@ import dayjs from 'dayjs';
 import { computed, ref, onMounted, watch } from 'vue';
 import cashApi from 'src/API/cashApi';
 import saleLocalApi from 'src/API/saleLocalApi';
-import orderApi from 'src/API/orderApi';
 const VDB = useVDBStore();
 const $q = useQuasar();
 const $router = useRouter();

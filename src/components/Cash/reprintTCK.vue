@@ -27,7 +27,6 @@ import { exportFile, useQuasar, date } from 'quasar';
 import dayjs from 'dayjs';
 import { computed, ref, onMounted, watch } from 'vue';
 import cashApi from 'src/API/cashApi';
-import orderApi from 'src/API/orderApi';
 import saleLocalApi from 'src/API/saleLocalApi';
 const VDB = useVDBStore();
 const $q = useQuasar();

@@ -83,10 +83,10 @@ const products = ref([])
 
 const bascket = computed(() => {
   if (categories.value.familias.val && !categories.value.categorias.val) {
-    return products.value.filter(e => e.categories.familia.name == categories.value.familias.val)
+    return products.value.filter(e => e.category.familia.name == categories.value.familias.val)
 
   } else if (categories.value.familias.val && categories.value.categorias.val) {
-    return products.value.filter(e => e.categories.familia.name == categories.value.familias.val && e.categories.name == categories.value.categorias.val)
+    return products.value.filter(e => e.category.familia.name == categories.value.familias.val && e.category.name == categories.value.categorias.val)
   }
   else {
     return products.value
@@ -99,9 +99,9 @@ const table = ref({
     { name: 'code', label: 'Codigo', align: 'left', field: row => row.code },
     { name: 'description', label: 'Descripcion', align: 'left', field: row => row.description },
     { name: 'pxc', label: 'PXC', align: 'center', field: row => row.pieces },
-    { name: 'section', label: 'Seccion', align: 'left', field: row => row.categories.familia.seccion.name },
-    { name: 'family', label: 'Familia', align: 'left', field: row => row.categories.familia.name },
-    { name: 'category', label: 'Categoria', align: 'left', field: row => row.categories.name },
+    { name: 'section', label: 'Seccion', align: 'left', field: row => row.category.familia.seccion.name },
+    { name: 'family', label: 'Familia', align: 'left', field: row => row.category.familia.name },
+    { name: 'category', label: 'Categoria', align: 'left', field: row => row.category.name },
     { name: 'cedis', label: 'Cedis', align: 'center', field: row => row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock) },
     { name: 'texcoco', label: 'Texcoco', align: 'center', field: row => row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock) },
     { name: 'total', label: 'Total', align: 'center', field: row => Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) },
@@ -153,7 +153,7 @@ const report = async () => {
     console.log(resp);
     products.value = resp
     products.value.forEach(e => {
-      const familia = e.categories.familia.name
+      const familia = e.category.familia.name
       if (familia && !categories.value.familias.opts.includes(familia)) {
         categories.value.familias.opts.push(familia)
       }
@@ -165,7 +165,7 @@ const report = async () => {
 const categorys = () => {
   categories.value.categorias.val = null
   if (categories.value.familias.val) {
-    categories.value.categorias.opts = bascket.value.map(e => e.categories.name).filter((v, i, s) => s.indexOf(v) === i)
+    categories.value.categorias.opts = bascket.value.map(e => e.category.name).filter((v, i, s) => s.indexOf(v) === i)
   } else {
     return []
   }
@@ -195,9 +195,9 @@ const exportTable = async () => {
       row.code,
       row.description,
       row.pieces,
-      row.categories.familia.seccion.name,
-      row.categories.familia.name,
-      row.categories.name,
+      row.category.familia.seccion.name,
+      row.category.familia.name,
+      row.category.name,
       row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)[0],
       row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)[0],
       Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)),

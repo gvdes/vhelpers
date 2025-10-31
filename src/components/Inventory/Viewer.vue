@@ -17,9 +17,13 @@
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="log">
           <div class="text-h6">Log</div>
-          <div v-for="(det,idx) in log" :key="idx">
+          <q-table
+            :rows="log"
+            :columns="tproducts.columnsLog"
+          />
+          <!-- <div v-for="(det,idx) in log" :key="idx">
             <pre>{{ det }}</pre>
-          </div>
+          </div> -->
         </q-tab-panel>
         <q-tab-panel name="body">
           <q-table flat
@@ -45,7 +49,8 @@ import CDB from 'src/API/cicsdb';
 import XLSX from 'exceljs';
 import fsaver from "file-saver";
 import dayjs from 'dayjs';
-
+import { exportFile, useQuasar } from 'quasar';
+const $q = useQuasar();
 const $props = defineProps({
   folio:[String, Number],
   store:[String, Number],
@@ -71,6 +76,13 @@ const tproducts = ref({
     { name:"sat", field:row => row.ordered.stocks_end ?? '--', label:"SAT", align:"center" },
     { name:"ufus", field:row => (row.ordered.stocks_acc-row.ordered.stocks), label:"UF/US", align:"center" },
     { name:"locs", field:row => row.locations.map( l => l.path ).join(', '), label:"Ubicacion (es)", align:"left" },
+  ],
+  columnsLog:[
+    { name:"id", field:"id", label:"ID", align:"left" },
+    { name:"name", field:"name", label:"Nombre", align:"left" },
+    { name:"responsable", field:r=> r.details.responsable, label:"Responsable", align:"left" },
+    { name:"fecha", field:"created_at", label:"Fecha", align:"left" },
+
   ]
 });
 
@@ -83,9 +95,11 @@ const startsat = computed(() => "");
 const endsat = computed(() => "");
 
 const findInv = async() => {
+  $q.loading.show({message:'Obteniendo Informacion'})
   const response = await CDB.find(folio, store);
   console.log(response);
   response.fail ? errorsearch.value=response.fail : inv.value=response.inventory;
+  $q.loading.hide()
 }
 
 findInv();

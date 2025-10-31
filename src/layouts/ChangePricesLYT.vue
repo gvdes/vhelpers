@@ -152,9 +152,9 @@ const table = ref({
     { name: 'code', label: 'CODIGO', field: row => row.code, align: 'left', sortable: true },
     { name: 'barcode', label: 'CB', field: row => row.barcode, align: 'left', sortable: true },
     { name: 'description', label: 'DESCRIPCION', field: row => row.description, align: 'left', sortable: true },
-    { name: 'section', label: 'SECCION', field: row => row.categories.familia.seccion.name, align: 'left', sortable: true },
-    { name: 'family', label: 'FAMILIA', field: row => row.categories.familia.name, align: 'left', sortable: true },
-    { name: 'category', label: 'CATEGORIA', field: row => row.categories.name, align: 'left', sortable: true },
+    { name: 'section', label: 'SECCION', field: row => row.category.familia.seccion.name, align: 'left', sortable: true },
+    { name: 'family', label: 'FAMILIA', field: row => row.category.familia.name, align: 'left', sortable: true },
+    { name: 'category', label: 'CATEGORIA', field: row => row.category.name, align: 'left', sortable: true },
     { name: 'locations', label: 'UBICACION', field: row => row.locations?.map(e => e.path).join('/'), align: 'center', sortable: true },
     ...priceColumns.value,
     ...stocksColumns.value
@@ -180,13 +180,13 @@ const filterPrices = computed(() => products.value.filter(e => e.prices.some(i =
 
 const bascket = computed(() => {
   if (categories.value?.seccion?.val && !categories.value?.seccion?.familia?.val) {
-    return filterPrices.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
+    return filterPrices.value.filter(e => e.category?.familia?.seccion?.id === categories.value.seccion.val.id);
   }
   else if (categories.value?.seccion?.val && categories.value?.seccion?.familia?.val && !categories.value?.seccion?.familia?.categorias?.val) {
-    return filterPrices.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
+    return filterPrices.value.filter(e => e.category?.familia?.seccion?.id === categories.value.seccion.val.id);
   }
   else if (categories.value?.seccion?.val && categories.value?.seccion?.familia?.val && categories.value?.seccion?.familia?.categorias?.val) {
-    return filterPrices.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
+    return filterPrices.value.filter(e => e.category?.familia?.seccion?.id === categories.value.seccion.val.id);
   }
   else {
     return filterPrices.value;
@@ -228,15 +228,15 @@ const init = async () => {
       e.type = _labelType.type;
       e.usedPrices = _labelType.prices;
 
-      const seccion = e.categories.familia.seccion
+      const seccion = e.category.familia.seccion
       if (seccion && !categories.value.seccion.opts.map(e => e.id).includes(seccion.id)) {
         categories.value.seccion.opts.push(seccion)
       }
-      const familia = e.categories.familia
+      const familia = e.category.familia
       if (familia && !categories.value.familias.opts.map(e => e.id).includes(familia.id)) {
         categories.value.familias.opts.push(familia)
       }
-      const categoria = e.categories
+      const categoria = e.category
       if (categoria && !categories.value.categorias.opts.map(e => e.id).includes(categoria.id)) {
         categories.value.categorias.opts.push(categoria)
       }
@@ -284,15 +284,15 @@ const buscas = async () => {
       e.type = _labelType.type;
       e.usedPrices = _labelType.prices;
 
-      const seccion = e.categories.familia.seccion
+      const seccion = e.category.familia.seccion
       if (seccion && !categories.value.seccion.opts.map(e => e.id).includes(seccion.id)) {
         categories.value.seccion.opts.push(seccion)
       }
-      const familia = e.categories.familia
+      const familia = e.category.familia
       if (familia && !categories.value.familias.opts.map(e => e.id).includes(familia.id)) {
         categories.value.familias.opts.push(familia)
       }
-      const categoria = e.categories
+      const categoria = e.category
       if (categoria && !categories.value.categorias.opts.map(e => e.id).includes(categoria.id)) {
         categories.value.categorias.opts.push(categoria)
       }

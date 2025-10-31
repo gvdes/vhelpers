@@ -38,8 +38,9 @@
       <q-page padding>
         <q-card class="my-card" flat>
           <q-table :title="`Inventarios del ${dispDateInit} al ${dispDateEnd} [ ${inventoriesdb.length} ]`"
-            :rows="inventories" :columns="invtable.cols" row-key="id" @row-click="rowclicked" />
+            :rows="inventoriesdb" :columns="invtable.cols" row-key="id" @row-click="rowclicked" />
         </q-card>
+
 
         <q-dialog v-model="wndViewer.state" full-width>
           <InvViewer :folio="wndViewer.folio" :store="$user.session.store.id_viz" />
@@ -85,7 +86,7 @@ const invtable = ref({
     },
     { name: "models", field: "products_count", label: "Modelos" },
     { name: "type", field: row => row.type.name, label: "Tipo" },
-    { name: "warehouse", field: row => row.settings ? row.settings.warehouse.name : '---', label: "Almacen" },
+    { name: "warehouse", field: row => row.settings ? JSON.parse(row.settings).warehouse.name : '---', label: "Almacen" },
   ]
 });
 
@@ -101,7 +102,7 @@ const dateranges = ref({
   to: dayjs(Date.now()).endOf('day')// seteamos la fecha final, por default al inicio del dia actual
 });
 
-const inventories = computed(() => inventoriesdb.value.map(i => { i.settings = JSON.parse(i.settings); return i; }));
+// const inventories = computed(() => inventoriesdb.value.map(i => {; return i; }));
 
 const cansearch = computed(() => (folio.value && folio.value.length));
 const dispDateInit = computed(() => dateranges.value.from.format("YYYY/MM/DD")); // despliega la fecha de inicio

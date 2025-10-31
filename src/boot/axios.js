@@ -2,22 +2,16 @@ import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 import { LocalStorage } from 'quasar'
 
-// const ipVizapi = 'http://192.168.10.160:1619'
 // const ipAssist = 'http://192.168.10.160:1920'
 
-// const ipVizapi = 'http://192.168.10.189'
 // const ipAssist = 'http://192.168.10.238:2902'
 
-const ipVizapi = 'http://192.168.10.189'
 const ipAssist = 'http://192.168.10.189:1920'
 
-// const ipVizapi = 'https://vizapp.gvizpru.com'
 // const ipAssist = 'https://vhelpers.gvizpru.com'
 
-const vizapi = axios.create({ baseURL: `${ipVizapi}/vizapi/public/LVH` });
 const assist = axios.create({ baseURL: `${ipAssist}/assist/public/api` });
 // const assist = axios.create({ baseURL: `${ipAssist}/Assist/public/api` });
-// const vizapi = axios.create({ baseURL: `${ipVizapi}/api/LVH` });
 // const assist = axios.create({ baseURL: `${ipAssist}/api/api/` });
 
 
@@ -51,4 +45,4 @@ export default boot(({ router }) => {
   )
 })
 
-export { vizapi, assist, vizmedia }
+export {  assist, vizmedia }

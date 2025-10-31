@@ -89,7 +89,6 @@ import { useVDBStore } from 'stores/VDB';
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";
 import { exportFile, useQuasar, date } from 'quasar';
 import { computed, ref } from 'vue';
-import orderApi from 'src/API/orderApi';
 import Resourse from 'src/API/resoursesOrder';
 
 const VDB = useVDBStore();
