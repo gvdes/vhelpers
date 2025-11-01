@@ -14,7 +14,11 @@
         </div>
       </q-toolbar>
       <div class="text-center">
-        {{ VDB.session.credentials.staff.complete_name }}
+        <!-- {{ VDB.session.credentials.staff.complete_name }} -->
+      </div>
+      <q-separator spaced inset vertical dark />
+      <div class=" q-ml-lg q-mr-lg">
+        <q-select v-model="dependients.val" :options="dependients.opts" label="Colaborador" option-label="complete_name" filled />
       </div>
       <q-separator spaced inset vertical dark />
       <div class=" q-ml-lg q-mr-lg row">
@@ -55,6 +59,10 @@ const impresoras = ref({
   opts: []
 });
 const number = ref(1)
+const dependients = ref({
+  opts:[],
+  val:VDB.session.credentials.staff
+});
 
 const impre = async () => {
   let idstore = VDB.session.store.id;
@@ -69,15 +77,28 @@ const impre = async () => {
     impresoras.value.opts = resp
     console.log("Impresoras listas :)")
   }
+}
 
-
+const init = async () => {
+  $q.loading.show({message:'OBTENIENDO COLABORADORES'})
+  let idstore = VDB.session.store.id;
+  console.log(idstore)
+  const resp = await printApi.getColab(idstore)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    dependients.value.opts = resp
+    console.log("Impresoras listas :)")
+    $q.loading.hide()
+  }
 }
 
 const printFich = async () => {
   $q.loading.show({message:'Imprimiendo'})
   let data = {
     print:impresoras.value.val.ip_address,
-    staff:VDB.session.credentials.staff,
+    staff:dependients.value.val,
     amount:number.value
   }
   const resp = await printApi.PrintAttention(data)
@@ -100,4 +121,5 @@ if (LUP) {
   impresoras.value.val = LUP.printer;
 }
 impre()
+init()
 </script>
