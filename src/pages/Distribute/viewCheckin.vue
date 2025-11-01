@@ -239,7 +239,7 @@ const basket = computed(() => {
   let target = finder.value.toUpperCase().trim();
   return target.length ? productsdb.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)) || p.variants.some(e => e.barcode.toUpperCase().includes(target)))) : productsdb.value;
 });
-const totalpieces = computed(() => basket.value.reduce((am, p) => (am + (p.pivot._supply_by == 3 ? (p.pivot.amount * p.pieces) : p.pivot.amount)), 0));
+const totalpieces = computed(() => basket.value.reduce((am, p) => (am + (p.pivot._supply_by == 3 ? (p.pivot.amount * p.pivot.ipack) : p.pivot.amount)), 0));
 const diff = computed(() => productsdb.value.reduce((am, p) => am + Number(p.pivot.toReceived !== p.pivot.toDelivered), 0))
 
 const init = async () => {
