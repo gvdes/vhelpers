@@ -17,13 +17,15 @@
         {{ VDB.session.credentials.staff.complete_name }}
       </div>
       <q-separator spaced inset vertical dark />
-      <div class=" q-ml-lg q-mr-lg ">
-        <q-select v-model="impresoras.val" :options="impresoras.opts" label="Impresora" filled option-label="name"
+      <div class=" q-ml-lg q-mr-lg row">
+        <q-select class="col" v-model="impresoras.val" :options="impresoras.opts" label="Impresora" filled option-label="name"
           @update:model-value="selected" />
+          <q-separator spaced inset vertical dark />
+          <q-input v-model="number" type="number" label="Cantidad" filled :min="1" />
       </div>
       <q-separator spaced inset vertical dark />
       <div class="flex justify-center">
-        <q-btn rounded flat color="primary" icon="print" size="xl" :disabled="!impresoras.val" @click="printFich" />
+        <q-btn rounded flat color="primary" icon="print" size="xl" :disabled="!impresoras.val" @click="printFich"  />
       </div>
       <router-view />
     </q-page-container>
@@ -52,6 +54,7 @@ const impresoras = ref({
   val: null,
   opts: []
 });
+const number = ref(1)
 
 const impre = async () => {
   let idstore = VDB.session.store.id;
@@ -74,7 +77,8 @@ const printFich = async () => {
   $q.loading.show({message:'Imprimiendo'})
   let data = {
     print:impresoras.value.val.ip_address,
-    staff:VDB.session.credentials.staff
+    staff:VDB.session.credentials.staff,
+    amount:number.value
   }
   const resp = await printApi.PrintAttention(data)
   if(resp.fail){
