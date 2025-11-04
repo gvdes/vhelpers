@@ -55,10 +55,11 @@
 
 <script setup>
 import { useVDBStore } from 'src/stores/VDB'
-import { computed, ref } from 'vue'
+import { computed, ref ,onMounted} from 'vue'
 import { useRouter } from 'vue-router';
 import UserToolbar from 'src/components/UserToolbar.vue';
 import authsApi from "src/API/auth.js";
+// import { requestPermission } from 'boot/firebase'
 import { exportFile, useQuasar } from 'quasar';
 
 const VDB = useVDBStore();
@@ -145,5 +146,10 @@ const changeAvatar = async () => {
   }
 }
 
+
+
+// onMounted(async () => {
+//   await requestPermission()
+// })
 
 </script>

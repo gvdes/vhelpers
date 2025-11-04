@@ -16,4 +16,7 @@ export default{
   reportWarehouses(data){
     return assist.post(`/reports/reportWarehouses`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  getProductsDown(data){
+    return assist.post(`/reports/getProductsDown`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 }

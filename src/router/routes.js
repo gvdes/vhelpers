@@ -228,6 +228,8 @@ const routes = [
     meta: { moduleId: 60 },
     children: [
       { path: 'warehouses', name: 'inw', component: () => import('pages/Report/Indicators/Warehouses.vue'), meta: { moduleId: 60 } },
+      { path: 'productDown', name: 'psv', component: () => import('pages/Report/Indicators/productDown.vue'), meta: { moduleId: 67 } },
+
       // // { path: ':cid/automate', name: 'cidx', component: () => import('pages/cashRegisters/salesTpv.vue'),meta: { moduleId: 30 } },
       // { path: ':cid/cash', name: 'cids', component: () => import('pages/cashRegisters/salesEstandar.vue'), meta: { moduleId: 30 } },
     ],

@@ -1,7 +1,4 @@
-
-
-
-// // import { initializeApp } from "firebase/app";
+// import { initializeApp } from "firebase/app";
 // importScripts("https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js")
 // importScripts("https://www.gstatic.com/firebasejs/10.14.0/firebase-messaging-compat.js")
 
