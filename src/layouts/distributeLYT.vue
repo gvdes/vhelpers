@@ -112,7 +112,7 @@ const addRequisition = ref({
   },
   suply_by: {
     val: null,
-    opts: $restockStore.cedis
+    opts: []
   },
   warehouse: {
     val: { id: 'GEN', label: 'General' },
@@ -144,7 +144,6 @@ const user_socket = {
 
 
 const ismobile = computed(() => $q.platform.is.mobile);
-
 const foioError = computed(() => {
   if(addRequisition.value.types.val.id == 3 && addRequisition.value.folio?.length != 8 ){
     return true
@@ -183,6 +182,8 @@ const init = async () => {
     $restockStore.fillPartitions(req.partitions)
     $restockStore.setShowLoad(false)
     $restockStore.setCedis(req.cedis)
+    // supply_cedis.value = req.cedis
+    addRequisition.value.suply_by.opts = req.cedis;
     addRequisition.value.suply_by.val = req.cedis[0];
     console.log("%cMainLayout listo!!", "font-size:2em;color:orange;");
     $q.loading.hide();
