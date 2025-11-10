@@ -39,5 +39,11 @@ export default {
   },
   getOrderCash(data) {
     return assist.post(`/preorders/getOrderCash`, data).then(done => done.data).catch(fail => { return { fail } });
-  }
+  },
+  create(data) {
+    return assist.post(`/preorders/create`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  orderCatalog(data) {
+    return assist.post(`/preorders/orderCatalog`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }

@@ -103,6 +103,16 @@ const routes = [
   //   component: () => import('layouts/AsssitLYT.vue'),
   // },
   {
+    path: '/catalog',
+    component: () => import('layouts/Catalog.vue'),
+    meta: { moduleId: 68 },
+    children: [
+      { path: '', name: 'sinx', component: () => import('pages/Catalog/index.vue'), meta: { moduleId: 68 } },
+      { path: ':sid', name: 'sidca', component: () => import('pages/Catalog/viewCatalog.vue'), meta: { moduleId: 68 } },
+      { path: ':sid/:fid', name: 'fidca', component: () => import('pages/Catalog/viewCatalogFamily.vue'), meta: { moduleId: 68 } },
+    ],
+  },
+  {
     path: '/budgets',
     component: () => import('layouts/budgetsLYT.vue'),
     meta: { moduleId: 15 }
@@ -191,7 +201,7 @@ const routes = [
     component: () => import('layouts/RefundStoreLYT.vue'),
     meta: { moduleId: 56 }
   },
-    {
+  {
     path: '/productSeason',
     component: () => import('layouts/productSeasonLYT.vue'),
     meta: { moduleId: 63 }
@@ -251,7 +261,7 @@ const routes = [
     children: [
       { path: 'dashboard', component: () => import('pages/Distribute/dashboard.vue'), meta: { moduleId: 37 } },
       { path: 'compare', component: () => import('pages/Distribute/Compare.vue'), meta: { moduleId: 43 } },
-      { path: 'dashboardStore', component: () => import('pages/Distribute/dashboardStore.vue'),  meta: { moduleId: 42 } },
+      { path: 'dashboardStore', component: () => import('pages/Distribute/dashboardStore.vue'), meta: { moduleId: 42 } },
       { path: 'dashboardStore/:rid', component: () => import('pages/Distribute/viewNewRequisition.vue'), meta: { moduleId: 42 } },
       { path: 'report', component: () => import('pages/Distribute/report.vue'), meta: { moduleId: 44 } },
       { path: 'reportStore', component: () => import('pages/Distribute/reportStore.vue'), meta: { moduleId: 45 } },
@@ -340,7 +350,8 @@ const routes = [
     component: () => import('layouts/WarehouseLYT.vue'),
     meta: { moduleId: 61 },
     children: [
-      { path: 'locations',
+      {
+        path: 'locations',
         name: 'wub',
         component: () => import('pages/warehouse/locations.vue'),
         children: [
@@ -349,7 +360,8 @@ const routes = [
           { path: 'massive', name: 'wmss', component: () => import('pages/warehouse/locations/massive.vue'), meta: { moduleId: 61 } },
 
         ],
-        meta: { moduleId: 62 } },
+        meta: { moduleId: 62 }
+      },
       { path: 'minmax', name: 'wmm', component: () => import('pages/warehouse/minmax.vue'), meta: { moduleId: 61 } },
       // { path: 'labels', name: 'wet', component: () => import('pages/warehouse/labels.vue'), meta: { moduleId: 63 } },
 

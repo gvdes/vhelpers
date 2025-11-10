@@ -369,9 +369,9 @@ onBeforeUnmount(() => {
   $sktRestock.off("order_changestate", sktOrderChangeState);
   $sktRestock.off("order_refresh", sktOrderOrderFresh);
   $sktRestock.off("orderpartition_refresh", sktOrderPartFresh);
-  $sktRestock.on("sktPartitionCreate", sktPartitionCreate);
-  $sktRestock.on("sktPartitionDelete", sktPartitionDelete);
-  $sktRestock.on("ChangeStatus", ChangeStatus);
+  $sktRestock.off("sktPartitionCreate", sktPartitionCreate);
+  $sktRestock.off("sktPartitionDelete", sktPartitionDelete);
+  $sktRestock.off("ChangeStatus", ChangeStatus);
 
 })
 
