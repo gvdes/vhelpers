@@ -44,13 +44,33 @@
             <span class="q-ml-sm">Nevo Pedido</span>
           </q-card-section>
           <q-card-section>
-            <q-form @submit="createOrder">
+            <!-- <q-form @submit="createOrder"> -->
+              <q-select v-model="dependients.val" :options="dependients.optsFil" label="Vendedor" option-label="nick"
+                use-input hide-selected filled fill-input input-debounce="0" @filter="filterFn" dense>
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section>
+                      <q-item-label>{{ `${scope.opt.names} ${scope.opt.surname_mat} ${scope.opt.surname_pat}` }}</q-item-label>
+                      <q-item-label caption>{{ scope.opt.nick }} ({{ scope.opt.id_tpv }})</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
+
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      APOCO AUN NO TE DICEN?
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+              <q-separator spaced inset vertical dark />
               <q-input v-model="addOrder.order.name" type="text" label="Nombre Cliente">
                 <template v-slot:prepend>
                   <q-icon name="person_add" />
                 </template>
               </q-input>
-            </q-form>
+            <!-- </q-form> -->
           </q-card-section>
           <q-card-actions align="right">
             <q-btn flat label="Cancelar" color="negative" v-close-popup />
@@ -89,7 +109,9 @@
               <div class="col-6 col-md-3">
                 <q-card flat bordered class="q-pa-sm text-center">
                   <div class="text-grey">Creado por</div>
-                  <div class="text-bold">{{ VDB.session.credentials.staff.complete_name }}</div>
+                  <div class="text-bold">{{ $catalogStore.order.created_by.names}}</div>
+                  <div class="text-bold">{{ `${$catalogStore.order.created_by.surname_pat} ${$catalogStore.order.created_by.surname_mat}` }}</div>
+
                 </q-card>
               </div>
               <div class="col-6 col-md-3">
@@ -196,10 +218,16 @@ const viewOrder = ref(false)
 const addOrder = ref({
   state: false,
   order: {
-    _created_by: VDB.session.credentials.staff.id_va,
+    _created_by: null,
     _workpoint: VDB.session.store.id_viz,
     name: null
   }
+})
+
+const dependients = ref({
+  val: null,
+  opts: [],
+  optsFil: null
 })
 
 const user_socket = {
@@ -240,14 +268,15 @@ const isMain = computed(() => $route.name === 'sinx')
 const isCatalog = computed(() => $route.name === 'fidca')
 
 const init = async () => {
-  const resp = await catalogApi.getPrinters(VDB.session.store.id_viz);
+  const resp = await catalogApi.getPrinters(VDB.session.store);
   if (resp.fail) {
     console.log(resp)
     alert('Hay Problema para recibir las impresoras')
   } else {
     console.log(resp)
     $catalogStore.setPrinters(resp)
-    printers.value.opts = resp
+    printers.value.opts = resp.printers
+    dependients.value.opts = resp.users
     const savedPrinter = localStorage.getItem('selectedPrinter');
     if (savedPrinter) {
       const parsed = JSON.parse(savedPrinter);
@@ -267,6 +296,7 @@ const goBack = () => {
 }
 
 const createOrder = async () => {
+  addOrder.value.order._created_by = dependients.value.val.id
   console.log(addOrder.value.order)
   $q.loading.show({ message: 'Creando Pedido' })
   const resp = await orderApi.create(addOrder.value.order)
@@ -339,6 +369,25 @@ const nextState = async () => {
     window.location.reload()
   }
 
+}
+
+const filterFn = (val, update, abort) => {
+  update(() => {
+    const needle = val.toLowerCase()
+    // dependients.value.optsFil = dependients.value.opts.filter(v => v.staff.complete_name.toLowerCase().indexOf(needle) > -1)
+    dependients.value.optsFil = dependients.value.opts.filter(v => {
+      let complete_name = `${v.names} ${v.surname_pat} ${v.surname_mat}`
+      // console.log(complete_name)
+      if (/^\d+$/.test(needle)) {
+        return (
+          String(v.id_tpv).includes(needle) || // busca en ID
+         complete_name.toLowerCase().includes(needle)
+        )
+      }
+      return complete_name.toLowerCase().includes(needle)
+    })
+
+  })
 }
 
 

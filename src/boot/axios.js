@@ -4,7 +4,7 @@ import { LocalStorage } from 'quasar'
 
 // const ipAssist = 'http://192.168.10.160:1920'
 
-// const ipAssist = 'http://192.168.10.238:2902'
+// const ipAssist = 'http://192.168.10.238:2902'ESTEYANO
 
 const ipAssist = 'http://192.168.10.189:1920'
 
