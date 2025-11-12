@@ -58,4 +58,10 @@ export default{
   getReportProvider(data) {
     return assist.post(`/Products/getReportProvider`, data).then(done => done.data).catch(fail => { return { fail } });
   },
+  updateImgProduct(data) {
+    return assist.post(`/Products/updateImgProduct`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  massiveUpdateImg(data) {
+    return assist.post(`/Products/massiveUpdateImg`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }

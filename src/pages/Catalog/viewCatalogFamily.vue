@@ -1,12 +1,6 @@
 <template>
   <q-page padding>
     <q-table :rows="filteredProducts" row-key="id" grid :pagination="table.pagination" :filter="table.filter">
-
-      <!-- <template v-slot:top-right>
-        <q-separator spaced inset vertical dark />
-
-</template> -->
-
       <template v-slot:top>
         <div class="row justify-end q-gutter-sm full-width">
           <q-select v-model="stocks.val" :options="stocks.opts" label="Stocks" dense outlined class="col-auto"
@@ -56,22 +50,31 @@
                   <div class="text-caption">{{props.row.stocks.find(e => e.id == 2).alias}}
                     <div class="text-caption">{{props.row.stocks.find(e => e.id == 2).pivot.stock}}</div>
                   </div>
-
-
                 </div>
-
-
               </div>
             </q-card-section>
             <q-separator />
-            <q-card-section class="row items-stretch">
-              <div class="col-6 flex flex-center" v-if="props.row.imgcover">
+            <q-card-section class="row items-stretch" tyle="min-height: 260px;">
+
+              <!-- <div class="col-6 flex flex-center" v-if="props.row.imgcover"
+                @click="mosImage(`${vizmedia}/Products/${props.row.id}/${props.row.imgcover}`)">
                 <q-img :src="`${vizmedia}/Products/${props.row.id}/${props.row.imgcover}`" spinner-color="primary"
-                  style="max-height: 250px; max-width: 100%; object-fit: contain;" :ratio="1" />
+                  style="width: 100%; height: 100%; max-height: 250px; object-fit: contain;" />
               </div>
               <div v-else class="col-6 flex flex-center">
                 <q-img :src="`${vizmedia}/Products/sinpicture.png`" spinner-color="primary"
-                  style="max-height: 250px; max-width: 100%; object-fit: contain;" :ratio="1" />
+                  style="width: 100%; height: 100%; max-height: 250px; object-fit: contain;" />
+              </div> -->
+
+              <div class="col-6 flex flex-center bg-grey-2" v-if="props.row.imgcover"
+                @click="mosImage(`${vizmedia}/Products/${props.row.id}/${props.row.imgcover}`)" style="height: 100%;">
+                <q-img :src="`${vizmedia}/Products/${props.row.id}/${props.row.imgcover}`" spinner-color="primary"
+                  style="width: 100%; height: 100%; max-height: 250px; object-fit: contain;" />
+              </div>
+
+              <div v-else class="col-6 flex flex-center bg-grey-2" style="height: 100%;">
+                <q-img :src="`${vizmedia}/Products/sinpicture.png`" spinner-color="primary"
+                  style="width: 100%; height: 100%; max-height: 250px; object-fit: contain;" />
               </div>
 
 
@@ -144,8 +147,13 @@
         </q-page-sticky>
       </template>
     </q-table>
-
-
+    <q-dialog v-model="image.state">
+      <q-card flat class="bg-transparent" style="width: 700px; max-width: 80vw;">
+        <q-card-section class="flex flex-center">
+          <q-img :src="image.val" spinner-color="primary" style="width: 100%; height: 100%; object-fit: contain;" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
 
   </q-page>
@@ -170,7 +178,10 @@ const $q = useQuasar();
 const VDB = useVDBStore()
 
 
-
+const image = ref({
+  state: false,
+  val: null
+})
 const products = ref([])
 const table = ref({
   pagination: { rowsPerPage: 12 },
@@ -212,17 +223,6 @@ const filteredProducts = computed(() => {
     }
     return matchCategory && matchStock
   })
-// })
-
-
-
-
-
-  // if (categories.value.val) {
-  //   return products.value.filter(e => e._category == categories.value.val.id)
-  // } else {
-  //   return products.value
-  // }
 })
 
 const init = async () => {
@@ -252,6 +252,11 @@ const init = async () => {
     products.value = baseProducts
     $q.loading.hide()
   }
+}
+
+const mosImage = (url) => {
+  image.value.state = true,
+    image.value.val = url
 }
 
 const addProduct = (row) => {
