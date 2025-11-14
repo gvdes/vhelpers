@@ -101,20 +101,22 @@
                 MED:
                 <span class="text-bold">{{ props.row.large }}</span>
               </div>
-              <div class="col" v-if="$catalogStore.orderState">
+              <div class="col" v-if="$catalogStore.orderState || $catalogStore.requisitionState">
                 <div class="col " v-if="!props.row.pivot">
                   <q-btn
                     :color="props.row.stocks.reduce((a, v) => a + Number(v.pivot.stock), 0) <= 0 ? 'negative' : 'primary'"
                     rounded
                     :label="props.row.stocks.reduce((a, v) => a + Number(v.pivot.stock), 0) <= 0 ? 'Agotado' : 'Agregar'"
-                    @click="addProduct(props.row)" size="sm"
-                    :disable="props.row.stocks.reduce((a, v) => a + Number(v.pivot.stock), 0) <= 0" />
+                    @click="$catalogStore.orderState ? addProduct(props.row) : addProductRequisition(props.row)"
+                    size="sm" :disable="props.row.stocks.reduce((a, v) => a + Number(v.pivot.stock), 0) <= 0" />
                 </div>
                 <div class="col " v-else>
                   <q-btn-group rounded class="bg-primary">
-                    <q-btn size="sm" color="primary" icon="remove" @click="decreaseAmount(props.row)" />
+                    <q-btn size="sm" color="primary" icon="remove"
+                      @click="$catalogStore.orderState ? decreaseAmount(props.row) : decreaseAmountRequisition(props.row)" />
                     <div class="q-ml-md q-mr-md text-white bg-primary">{{ props.row.pivot.amount }}</div>
-                    <q-btn size="sm" color="primary" icon="add" @click="increaseAmount(props.row)" />
+                    <q-btn size="sm" color="primary" icon="add"
+                      @click="$catalogStore.orderState ? increaseAmount(props.row) : increaseAmountRequisition(props.row)" />
                   </q-btn-group>
                 </div>
               </div>
@@ -243,6 +245,14 @@ const init = async () => {
         }
       }
     }
+    if ($catalogStore.requisitionState) {
+      for (const product of baseProducts) {
+        const inRequisition = $catalogStore.requisition.products.find(p => p.id === product.id)
+        if (inRequisition) {
+          product.pivot = inRequisition.pivot
+        }
+      }
+    }
     products.value = baseProducts
     $q.loading.hide()
   }
@@ -291,6 +301,47 @@ const decreaseAmount = (row) => {
     $catalogStore.updateProduct(row)
   }
 }
+
+
+
+const addProductRequisition = (row) => {
+  const newPivot = {
+    _requisition: $catalogStore.requisition.id,//ok
+    _product: row.id,//ok
+    amount: 1,//ook
+    _supply_by: 1,//ok
+    units: 1,//ok
+    cost: row.prices.find(e => e.id == 1).pivot.price,//ok
+    total: row.prices.find(e => e.id == 1).pivot.price,//ok
+    comments: null,
+    stock: row.stocks.find(e => e.id == 1).pivot.stock,//ok
+    ipack: null,
+  }
+
+  row.pivot = { ...newPivot }
+  $catalogStore.pushProductRequisition(row)
+}
+
+const increaseAmountRequisition = (row) => {
+  row.pivot.amount++
+  row.pivot.units++
+  row.pivot.total = row.pivot.amount * row.pivot.price
+  $catalogStore.updateProductRequisition(row)
+}
+
+const decreaseAmountRequisition = (row) => {
+  row.pivot.amount--
+  row.pivot.units--
+  if (row.pivot.amount <= 0) {
+    delete row.pivot
+    $catalogStore.removeProductRequisition(row.id)
+  } else {
+    row.pivot.total = row.pivot.amount * row.pivot.price
+    $catalogStore.updateProductRequisition(row)
+  }
+}
+
+
 const handleSwipe = ({ evt, ...newInfo }) => {
   let min = 1;
   let max = pagesNumber.value

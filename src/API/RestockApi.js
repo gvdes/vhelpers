@@ -73,6 +73,10 @@ export default {
     let burl = "/restock/nextStep";
     return assist.post(burl, data).then(done => done).catch(fail => fail.response);
   },
+  nextStepCatalog(data) {
+    let burl = "/restock/nextStepCatalog";
+    return assist.post(burl, data).then(done => done).catch(fail => fail.response);
+  },
   sendMessageDiff(data) {
     let burl = "/invoices/sendMessageDiff";
     return assist.post(burl, data).then(done => done).catch(fail => fail.response);
@@ -135,6 +139,10 @@ export default {
   },
   newRequisition(data) {
     let burl = `invoices/newRequisition`;
+    return assist.post(burl, data).then(done => done.data).catch(fail => fail);
+  },
+  newRequisitionPreventa(data) {
+    let burl = `invoices/newRequisitionPreventa`;
     return assist.post(burl, data).then(done => done.data).catch(fail => fail);
   },
   getRequired(data) {
