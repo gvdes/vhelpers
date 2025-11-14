@@ -1,11 +1,12 @@
 <template>
   <q-page padding>
     <div>
-      <q-table :rows="ordersdb" row-key="name" grid :pagination="pagination" hide-bottom >
+      <q-table :rows="ordersdb" row-key="name" grid :pagination="pagination" :filter="filter" hide-bottom>
         <template v-slot:item="props" bordered>
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-            <q-list bordered @click="continuePedido(props.row)" >
-              <q-expansion-item :header-class="`${colorCellState[props.row.status.id - 1]}`" dense icon="list" :label="`${props.row.id.toString()} (${props.row.status.name})`"
+            <q-list bordered @click="continuePedido(props.row)">
+              <q-expansion-item :header-class="`${colorCellState[props.row.status.id - 1]}`" dense icon="list"
+                :label="`${props.row.id.toString()} (${props.row.status.name})`"
                 :caption="`${props.row.to.name} (${props.row.notes})`">
                 <q-separator />
                 <q-table hide-bottom flat :rows="props.row.partition" :columns="table.columns"
@@ -14,20 +15,29 @@
             </q-list>
           </div>
         </template>
+        <template v-slot:top>
+          <div class="row justify-end q-gutter-sm full-width">
+            <q-input dense debounce="300" v-model="filter" placeholder="Buscar" class="col-auto" outlined>
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
+        </template>
       </q-table>
     </div>
 
     <q-dialog v-model="viewPartition.state" persistent>
       <q-card>
         <q-card-section class="text-center text-h6">
-         ID: {{ viewPartition.val.id }}
+          ID: {{ viewPartition.val.id }}
         </q-card-section>
         <q-card-section class="text-center text-bold">
           {{ viewPartition.val.status.name }}
         </q-card-section>
         <q-card-section>
-          <q-list bordered v-for="(log,index) in viewPartition.val.log" :key="index">
-            <q-item >
+          <q-list bordered v-for="(log, index) in viewPartition.val.log" :key="index">
+            <q-item>
               <q-item-section>{{ log.name }}</q-item-section>
               <q-item-section>{{ JSON.parse(log.pivot.details).responsable }}</q-item-section>
               <q-item-section>{{ dayjs(log.pivot.updated_at).format('YYYY/MM/DD HH:mm:ss') }}</q-item-section>
@@ -67,6 +77,7 @@ const viewPartition = ref({
 
 
 const pagination = ref({ rowsPerPage: [0] })
+const filter = ref(null)
 const table = ref({
   columns: [
     { name: 'id', label: 'ID', field: r => r.id, align: 'center' },
@@ -82,7 +93,7 @@ const ordersdb = computed(() => $restockStore.ordersok.filter(o => o._workpoint_
 
 
 const continuePedido = (b) => {
-  if(b._status == 1){
+  if (b._status == 1) {
     $router.push(`/distribute/dashboardStore/${b.id}`)
   }
 }
