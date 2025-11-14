@@ -1,6 +1,7 @@
 <template>
   <q-page padding>
-    <q-table :rows="filteredProducts" row-key="id" grid :pagination="table.pagination" :filter="table.filter">
+    <q-table :rows="filteredProducts" row-key="id" grid :pagination="table.pagination" :filter="table.filter"
+      v-model:pagination="table.pagination">
       <template v-slot:top>
         <div class="row justify-end q-gutter-sm full-width">
           <q-select v-model="stocks.val" :options="stocks.opts" label="Stocks" dense outlined class="col-auto"
@@ -28,7 +29,9 @@
 
 
       <template v-slot:item="props">
-        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4" v-touch-swipe.mouse="handleSwipe">
+
+          <!-- <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4"> -->
           <q-card flat bordered>
             <q-card-section class="text-center row ">
               <div class="col">
@@ -56,15 +59,7 @@
             <q-separator />
             <q-card-section class="row items-stretch" tyle="min-height: 260px;">
 
-              <!-- <div class="col-6 flex flex-center" v-if="props.row.imgcover"
-                @click="mosImage(`${vizmedia}/Products/${props.row.id}/${props.row.imgcover}`)">
-                <q-img :src="`${vizmedia}/Products/${props.row.id}/${props.row.imgcover}`" spinner-color="primary"
-                  style="width: 100%; height: 100%; max-height: 250px; object-fit: contain;" />
-              </div>
-              <div v-else class="col-6 flex flex-center">
-                <q-img :src="`${vizmedia}/Products/sinpicture.png`" spinner-color="primary"
-                  style="width: 100%; height: 100%; max-height: 250px; object-fit: contain;" />
-              </div> -->
+
 
               <div class="col-6 flex flex-center bg-grey-2" v-if="props.row.imgcover"
                 @click="mosImage(`${vizmedia}/Products/${props.row.id}/${props.row.imgcover}`)" style="height: 100%;">
@@ -155,7 +150,6 @@
       </q-card>
     </q-dialog>
 
-
   </q-page>
 </template>
 
@@ -184,7 +178,7 @@ const image = ref({
 })
 const products = ref([])
 const table = ref({
-  pagination: { rowsPerPage: 12 },
+  pagination: { rowsPerPage: 12, page: 1 },
   filter: ''
 })
 const stocks = ref({
@@ -202,7 +196,7 @@ const categories = ref({
 });
 
 
-// const bascketCategories = computed(() => {
+const pagesNumber = computed(() => Math.ceil(products.value.length / table.value.pagination.rowsPerPage));
 const filteredProducts = computed(() => {
   return products.value.filter(product => {
     const matchCategory = categories.value.val
@@ -254,6 +248,8 @@ const init = async () => {
   }
 }
 
+
+
 const mosImage = (url) => {
   image.value.state = true,
     image.value.val = url
@@ -295,7 +291,15 @@ const decreaseAmount = (row) => {
     $catalogStore.updateProduct(row)
   }
 }
-
+const handleSwipe = ({ evt, ...newInfo }) => {
+  let min = 1;
+  let max = pagesNumber.value
+  if (newInfo.direction == 'left' && table.value.pagination.page < max) {
+    table.value.pagination.page++
+  } else if (newInfo.direction == 'right' && table.value.pagination.page > min) {
+    table.value.pagination.page--
+  }
+}
 onMounted(() => {
   init()
 })
