@@ -184,7 +184,7 @@ const table = ref({
   filter: ''
 })
 const stocks = ref({
-  val: null,
+  val: { id: 2, label: 'Mayor a 1' },
   opts: [{ id: 1, label: 'Agotados' },
   { id: 2, label: 'Mayor a 1' },
   { id: 3, label: 'Mayor a 25' },
