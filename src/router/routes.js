@@ -206,14 +206,6 @@ const routes = [
     component: () => import('layouts/productSeasonLYT.vue'),
     meta: { moduleId: 63 }
   },
-  //     {
-  //   path: '/preorders',
-  //   component: () => import('layouts/PreordersLYT.vue'),
-  //   children: [
-  //     { path: 'index', name: 'prin', component: () => import('pages/Preorder/index.vue'), meta: { moduleId: 64 } },
-  //     // { path: 'addClient', name: 'acl', component: () => import('pages/clients/addCli.vue'), meta: { moduleId: 64 } },
-  //   ],
-  // },
   {
     path: '/Formclients',
     component: () => import('layouts/clientLYT.vue'),
@@ -345,6 +337,15 @@ const routes = [
       { path: 'regisCredit', name: 'clrc', component: () => import('pages/clients/RegisCredit.vue'), meta: { moduleId: 58 } },
       { path: 'regisPayment', name: 'clprp', component: () => import('pages/clients/RegisPayment.vue'), meta: { moduleId: 59 } },
       // { path: 'wallet', name: 'clwl', component: () => import('pages/clients/RegisWallet.vue'), meta: { moduleId: 57 } },
+    ],
+  },
+  {
+    path: '/preorders',
+    component: () => import('layouts/PreordersLYT.vue'),
+    meta: { moduleId: 64 },
+    children: [
+      { path: 'index', name: 'inx', component: () => import('pages/Preorders/Index.vue'), meta: { moduleId: 57 } },
+      { path: 'checkin', name: 'prvchk', component: () => import('pages/Preorders/Checkin.vue'), meta: { moduleId: 57 } },
     ],
   },
   {

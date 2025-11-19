@@ -13,6 +13,9 @@ export default {
   getOrderAdd(data, oid) {
     return assist.get(`/preorders/getOrderAdd/${data}`, { params: oid }).then(done => done.data).catch(fail => { return { fail } });
   },
+  getOrders(sid) {
+    return assist.get(`/preorders/getOrders/${sid}`).then(done => done.data).catch(fail => { return { fail } });
+  },
   editProduct(data) {
     return assist.post(`/preorders/editProduct`, data).then(done => done.data).catch(fail => { return { fail } });
   },

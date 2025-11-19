@@ -53,6 +53,7 @@ import { useVDBStore } from 'stores/VDB';
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import dbCompare from 'src/API/compareApi'
 import axios from 'axios';//para dirigirme bro
+import dayjs from 'dayjs';
 import { exportFile, useQuasar } from 'quasar';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
@@ -102,6 +103,7 @@ const table = ref({
     { name: 'section', label: 'Seccion', align: 'left', field: row => row.category.familia.seccion.name },
     { name: 'family', label: 'Familia', align: 'left', field: row => row.category.familia.name },
     { name: 'category', label: 'Categoria', align: 'left', field: row => row.category.name },
+    { name: 'purchase', label: 'ULT LL', align: 'left', field: row => row.ultll ?  dayjs(row.ultll).format('DD-MM-YYYY') : null },
     { name: 'cedis', label: 'Cedis', align: 'center', field: row => row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock) },
     { name: 'texcoco', label: 'Texcoco', align: 'center', field: row => row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock) },
     { name: 'total', label: 'Total', align: 'center', field: row => Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) },
@@ -198,6 +200,7 @@ const exportTable = async () => {
       row.category.familia.seccion.name,
       row.category.familia.name,
       row.category.name,
+      row.ultll ?  dayjs(row.ultll).format('DD-MM-YYYY') : null,
       row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)[0],
       row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)[0],
       Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)),
