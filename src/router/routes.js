@@ -344,8 +344,8 @@ const routes = [
     component: () => import('layouts/PreordersLYT.vue'),
     meta: { moduleId: 64 },
     children: [
-      { path: 'index', name: 'inx', component: () => import('pages/Preorders/Index.vue'), meta: { moduleId: 57 } },
-      { path: 'checkin', name: 'prvchk', component: () => import('pages/Preorders/Checkin.vue'), meta: { moduleId: 57 } },
+      { path: 'index', name: 'inx', component: () => import('pages/Preorders/Index.vue'), meta: { moduleId: 64 } },
+      { path: 'checkin', name: 'prvchk', component: () => import('pages/Preorders/Checkin.vue'), meta: { moduleId: 66 } },
     ],
   },
   {
