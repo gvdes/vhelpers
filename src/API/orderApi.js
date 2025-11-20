@@ -40,6 +40,9 @@ export default {
   nextStateFinish(data) {
     return assist.post(`/preorders/nextStateFinish`, data).then(done => done.data).catch(fail => { return { fail } });
   },
+  nextStepCheck(data) {
+    return assist.post(`/preorders/nextStepCheck`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
   getOrderCash(data) {
     return assist.post(`/preorders/getOrderCash`, data).then(done => done.data).catch(fail => { return { fail } });
   },

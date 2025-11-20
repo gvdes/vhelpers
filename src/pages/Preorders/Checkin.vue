@@ -3,21 +3,22 @@
     <div>
       <div class="flex justify-center">
         <div class="text-center " :style="`width: 50%;`">
-          <q-form @submit="nextState(order)">
-            <q-input v-model="order" type="number" label="Pedido" autofocus rounded outlined />
+          <q-form @submit="nextState(orderInput)">
+            <q-input v-model="orderInput" type="number" label="Pedido" autofocus rounded outlined />
           </q-form>
         </div>
       </div>
+
       <q-table :rows="checkin" grid :pagination="pagination" hide-bottom>
         <template v-slot:item="props">
           <div class="q-pa-xs col-xs-12 col-sm-2 col-sm-1">
             <q-list bordered>
-              <q-item clickable v-ripple @dblclick="nextState(props.row.id)" >
+              <q-item clickable v-ripple @dblclick="nextState(props.row.id)">
                 <q-item-section>
-                  <q-item-label class="text-center text-bold text-h4">{{ props.row.id }}</q-item-label>
-                  <q-item-label class="text-center text-overline text-caption"> <span class="text-bold text-h6">{{
+                  <q-item-label class="text-center text-bold text-h5">{{ props.row.id }}</q-item-label>
+                  <q-item-label class="text-center text-overline text-caption"> <span class="text-bold  q-mr-md">{{
                     props.row.name }} </span>
-                    <span class="q-ml-md">{{ `P-${props.row.products_count}` }}</span> </q-item-label>
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -40,18 +41,60 @@ import { useOrderStore } from 'stores/OrderStore';
 import { useQuasar } from 'quasar';
 import UserToolbar from "src/components/UserToolbar.vue";
 import { $sktOrders } from 'boot/socket';
+import { $sktRestock } from 'boot/socket';
 const $route = useRoute();
 const $router = useRouter();
 const $orderStore = useOrderStore();
+$orderStore.setTitle('Checkout');
 const $q = useQuasar();
 const VDB = useVDBStore()
 
-const order = ref(null)
+const user_socket = {
+  profile: {
+    me: {
+      id: VDB.session.credentials.staff.id_va,
+      nick: VDB.session.credentials.nick,
+      picture: '',
+      names: VDB.session.credentials.staff.complete_name,
+      surname_pat: '',
+      surname_mat: '',
+      change_password: false,
+      _rol: VDB.session.credentials._rol
+    },
+    workpoint: VDB.session.store
+  },
+  workpoint: VDB.session.store
+};
+$sktRestock.connect();
+$sktRestock.emit("joinat", user_socket);
+
+
+const orderInput = ref(null)
 const pagination = ref({ rowsPerPage: [0] })
 const checkin = computed(() => $orderStore.orders.filter(e => e._status == 3));
 
-const nextState = (order) => {
-  console.log(order)
+const nextState = async (order) => {
+  $q.loading.show({ message: 'Cambiando Estado' })
+  let orderChange = $orderStore.orders.find(e => e.id == order);
+  const resp = await orderApi.nextStepCheck({ id: order })
+  if (resp.fail) {
+    console.log(resp);
+  } else {
+    $q.loading.hide();
+    console.log(resp)
+    let restock = resp.requisition
+    if (restock) {
+        $sktRestock.emit("creating", { order: resp.requisition.requisition });
+        $sktRestock.emit("partitionCreate", resp.requisition.partition);
+        // $sktRestock.disconnect();
+    }
+    let socketData = { order: orderChange, newstate: resp.status }
+    console.log(socketData);
+
+    $sktOrders.emit('order_update', socketData)
+    $orderStore.addOrUpdate(socketData)
+    orderInput.value = null
+  }
 }
 
 

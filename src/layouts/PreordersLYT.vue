@@ -6,7 +6,7 @@
     </q-header>
     <q-page-container>
       <q-toolbar class="justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6"></span>
+        <div>Helpers <q-icon name="navigate_next" color="primary" /> {{ $orderStore.title }} <span class="text-h6"></span>
         </div>
       </q-toolbar>
       <router-view />
@@ -27,6 +27,7 @@ import { useOrderStore } from 'stores/OrderStore';
 import { useQuasar } from 'quasar';
 import UserToolbar from "src/components/UserToolbar.vue";
 import { $sktOrders } from 'boot/socket';
+
 const $route = useRoute();
 const $router = useRouter();
 const $orderStore = useOrderStore();
@@ -80,23 +81,28 @@ const joinedat = socket => {
 }
 const newjoin = socket =>{
   console.log(socket)
+
 }
 
 const order_add = socket => {
   console.log(socket)
+  $orderStore.addOrUpdate(socket);
 }
 const order_update = socket =>{
   console.log(socket)
+  $orderStore.addOrUpdate(socket);
 }
 
 
 const init = async () => {
+  $q.loading.show({message:'Obteniendo datos'})
   const resp = await orderApi.getOrders(VDB.session.store.id_viz)
   if(resp.fail){
     console.log(resp)
   }else{
     console.log(resp)
     $orderStore.setOrders(resp);
+    $q.loading.hide()
   }
 }
 
