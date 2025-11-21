@@ -47,6 +47,7 @@ const getRoom = (rol) => {
 
     case 4:
     case 24:
+    case 28:
       return 'supply';
 
     default:

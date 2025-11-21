@@ -76,8 +76,14 @@ const checkin = computed(() => $orderStore.orders.filter(e => e._status == 3));
 const nextState = async (order) => {
   $q.loading.show({ message: 'Cambiando Estado' })
   let orderChange = $orderStore.orders.find(e => e.id == order);
+
   const resp = await orderApi.nextStepCheck({ id: order })
   if (resp.fail) {
+    if(resp.fail.status == 404){
+      $q.loading.hide();
+      orderInput.value = null
+      $q.notify({message:resp.fail.response.data.msg, type:'negative', position:'top'})
+    }
     console.log(resp);
   } else {
     $q.loading.hide();
@@ -88,7 +94,7 @@ const nextState = async (order) => {
         $sktRestock.emit("partitionCreate", resp.requisition.partition);
         // $sktRestock.disconnect();
     }
-    let socketData = { order: orderChange, newstate: resp.status }
+    let socketData = { order: resp.order, newstate: resp.status }
     console.log(socketData);
 
     $sktOrders.emit('order_update', socketData)
