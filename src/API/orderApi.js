@@ -13,8 +13,11 @@ export default {
   getOrderAdd(data, oid) {
     return assist.get(`/preorders/getOrderAdd/${data}`, { params: oid }).then(done => done.data).catch(fail => { return { fail } });
   },
-  getOrders(sid) {
-    return assist.get(`/preorders/getOrders/${sid}`).then(done => done.data).catch(fail => { return { fail } });
+  getSettings(sid) {
+    return assist.get(`/preorders/getSettings/${sid}`).then(done => done.data).catch(fail => { return { fail } });
+  },
+  getOrders(data) {
+    return assist.post(`/preorders/getOrders`,data).then(done => done.data).catch(fail => { return { fail } });
   },
   editProduct(data) {
     return assist.post(`/preorders/editProduct`, data).then(done => done.data).catch(fail => { return { fail } });
@@ -51,5 +54,23 @@ export default {
   },
   orderCatalog(data) {
     return assist.post(`/preorders/orderCatalog`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  changeStatusCash(data) {
+    return assist.post(`/preorders/changeStatusCash`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  changeConfig(data) {
+    return assist.post(`/preorders/changeConfig`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  getOrderPrv(data) {
+    return assist.post(`/preorders/getOrderPrv`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  nextStepPrv(data) {
+    return assist.post(`/preorders/nextStepPrv`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  reimpresionClientTicket(data) {
+    return assist.post(`/preorders/reimpresionClientTicket`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  reimpresion(data) {
+    return assist.post(`/preorders/reimpresion`, data).then(done => done.data).catch(fail => { return { fail } });
   },
 }

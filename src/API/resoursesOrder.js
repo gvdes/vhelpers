@@ -22,9 +22,9 @@ const verificarPrecioMayoreo = (prdts, product, rules) => {
     distinct = distin
 
   } else {
-    model = sameModel + Number(product.pivot.amountDelivered)
-    family = sameFamily + Number(product.pivot.amountDelivered)
-    distinct = distin + Number(product.pivot.amountDelivered)
+    model = sameModel + Number(product.pivot.units)
+    family = sameFamily + Number(product.pivot.units)
+    distinct = distin + Number(product.pivot.units)
   }
   for (const regla of categoriaReglas) {
     if (regla._type === 2) {
@@ -62,9 +62,9 @@ const verificarPrecioDocena = (prdts, product, rules) => {
     distinct = distin
 
   } else {
-    model = sameModel + Number(product.pivot.amountDelivered)
-    family = sameFamily + Number(product.pivot.amountDelivered)
-    distinct = distin + Number(product.pivot.amountDelivered)
+    model = sameModel + Number(product.pivot.units)
+    family = sameFamily + Number(product.pivot.units)
+    distinct = distin + Number(product.pivot.units)
   }
   for (const regla of categoriaReglas) {
     if (regla._type === 3) {
@@ -85,7 +85,7 @@ const verificarPrecioDocena = (prdts, product, rules) => {
 const verificarPrecioCaja = (prdts, product) => {
   let model = 0;
   let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  model = sameModel + Number(product.pivot.amountDelivered)
+  model = sameModel + Number(product.pivot.units)
   console.log(model)
   if(model >= product.pieces){ return true}
   return false
@@ -94,14 +94,14 @@ const verificarPrecioCaja = (prdts, product) => {
 
 const actualizarPreciosProductos = async (products, order, rules) => {
   const productosCambiados = [];
-
+  console.log(order)
   for (const p of products) {
     // console.log(p)
     const totalPzsTemp = p.pivot._supply_by == 3
-      ? (p.pivot.amountDelivered * p.pieces)
+      ? (p.pivot.amount * p.pieces)
       : p.pivot._supply_by == 2
-        ? (p.pivot.amountDelivered * 12)
-        : p.pivot.amountDelivered;
+        ? (p.pivot.amount * 12)
+        : p.pivot.amount;
 
     let newPriceList = 0;
 
@@ -160,10 +160,10 @@ const actualizarPreciosProductosSales = async (products,_price_list, rules,) => 
   for (const p of products) {
     // console.log(p)
     const totalPzsTemp = p.pivot._supply_by == 3
-      ? (p.pivot.amountDelivered * p.pieces)
+      ? (p.pivot.amount * p.pieces)
       : p.pivot._supply_by == 2
-        ? (p.pivot.amountDelivered * 12)
-        : p.pivot.amountDelivered;
+        ? (p.pivot.amount * 12)
+        : p.pivot.amount;
 
     let newPriceList = 0;
 
@@ -206,7 +206,7 @@ const actualizarPreciosProductosSales = async (products,_price_list, rules,) => 
 
 
 const totalPiezas = (pivot, pieces) => {
-  return  pivot.amountDelivered
+  return  pivot.units
 }
 
 
