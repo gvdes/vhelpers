@@ -106,7 +106,7 @@
           Selecciona Impresora
         </q-card-section>
         <q-card-section class="">
-          <q-select v-model="$orderStore.printers.val" :options="$orderStore.printers.opts" label="Impresoras" option-label="name" filled />
+          <q-select v-model="$orderStore.printers.val" :options="$orderStore.printers.opts.filter(e => e._type == 1)" label="Impresoras" option-label="name" filled />
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="Cancelar" color="primary" v-close-popup />
