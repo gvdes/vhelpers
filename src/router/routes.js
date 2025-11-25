@@ -349,7 +349,7 @@ const routes = [
       { path: 'settings', name: 'setpr', component: () => import('pages/Preorders/Config.vue'), meta: { moduleId: 70 } },
       { path: 'pedidos', name: 'preo', component: () => import('pages/Preorders/Preorders.vue'), meta: { moduleId: 71 }},
       { path: 'pedidos/:oid', name: 'prwid', component: () => import('pages/Preorders/Viewpreorders.vue'), meta: { moduleId: 71 }},
-      { path: 'warehouse', name: 'prwha', component: () => import('pages/Preorders/Warehouse.vue'), meta: { moduleId: 71 }},
+      { path: 'warehouse', name: 'prwha', component: () => import('pages/Preorders/Warehouse.vue'), meta: { moduleId: 72 }},
 
     ],
   },
