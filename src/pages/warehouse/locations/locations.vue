@@ -276,7 +276,13 @@ const deleteLocations = async () => {
   $q.loading.show({ message: 'eliminando Seccion' })
   console.log(deleteLc.value.val)
   console.log(selectedUbicacion.value)
-  const resp = await locationsApi.deleteSection(deleteLc.value.val)
+  let data = {
+    id:deleteLc.value.val.id,
+    id_viz: VDB.session.credentials.staff.id_va,
+  }
+  console.log(data)
+
+  const resp = await locationsApi.deleteSection(data)
   if (resp.fail) {
     console.log(resp);
   } else {

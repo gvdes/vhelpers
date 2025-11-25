@@ -27,41 +27,45 @@ export const useOrderStore = defineStore('layout', {
   state: () => ({
     title: null,
     orders: [],
-    units:{
-      opts:[],
-      val:null
+    units: {
+      opts: [],
+      val: null
     },
-    printers:{
-      opts:[],
-      val:null
+    printers: {
+      opts: [],
+      val: null
     },
 
-    rules:[],
-    socket_user: {
-      profile: {
-        me: {
-          id: VDB.session.credentials.staff.id_va,
-          nick: VDB.session.credentials.nick,
-          picture: '',
-          names: VDB.session.credentials.staff.complete_name,
-          surname_pat: '',
-          surname_mat: '',
-          change_password: false,
-          _rol: VDB.session.credentials._rol
-        },
-        workpoint: VDB.session.store
-      },
-      workpoint: VDB.session.store,
-      room: getRoom(VDB.session.credentials._rol)
-    },
-    showLyt:true
+    rules: [],
+    showLyt: true
   }),
 
-  // getters: {
-  //   doubleCount (state) {
-  //     return state.counter * 2
-  //   }
-  // },
+  getters: {
+    socket_user(state) {
+      const creds = VDB.session.credentials;
+      const store = VDB.session.store;
+
+      if (!creds || !creds.staff) return null;
+
+      return {
+        profile: {
+          me: {
+            id: creds.staff.id_va,
+            nick: creds.nick,
+            picture: '',
+            names: creds.staff.complete_name,
+            surname_pat: '',
+            surname_mat: '',
+            change_password: false,
+            _rol: creds._rol
+          },
+          workpoint: store
+        },
+        workpoint: store,
+        room: getRoom(creds._rol)
+      }
+    }
+  },
 
   actions: {
     setTitle(data) { this.title = data },
@@ -83,16 +87,16 @@ export const useOrderStore = defineStore('layout', {
         }
       }
     },
-    setshowLyt(data){
+    setshowLyt(data) {
       this.showLyt = data
     },
-    setPrinters(data){
+    setPrinters(data) {
       this.printers.opts = data
     },
-    setRules(data){
+    setRules(data) {
       this.rules = data
     },
-    setUnits(data){
+    setUnits(data) {
       this.units.opts = data;
       this.units.val = data.find(e => e.id == 1)
     }

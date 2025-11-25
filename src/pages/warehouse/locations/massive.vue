@@ -110,7 +110,7 @@
           Resultados de Importacion Eliminado Masivo
         </q-card-section>
         <q-card-section>
-          <q-table :rows="massiveDelete.val"/>
+          <q-table :rows="massiveDelete.val" />
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="OK" color="primary" v-close-popup />
@@ -303,7 +303,8 @@ const deleteSectionProducts = async () => {
   $q.loading.show({ message: 'Eliminando Ubicaciones' })
   let data = {
     products: productSection.value.val.map(e => e.id),
-    section: lvellast.value.selected
+    section: lvellast.value.selected,
+    id_viz: VDB.session.credentials.staff.id_va,
   }
   console.log(data);
   const resp = await locationsApi.deleteSectionProducts(data);
@@ -349,8 +350,8 @@ const deleteCategoriesLocations = async () => {
         product: e.id,
         locations: e.locations.map(i => i.id)
       }
-
     }),
+    id_viz: VDB.session.credentials.staff.id_va,
   }
   const resp = await locationsApi.deleteCategoriesLocations(data);
   if (resp.fail) {
@@ -394,8 +395,12 @@ const readFileCreate = () => {
       _workpoint: VDB.session.store.id_viz
     }))
     console.log(sendData)
+    let sendDb = {
+      products: sendData,
+      id_viz: VDB.session.credentials.staff.id_va,
+    }
 
-    const resp = await locationsApi.addMassiveLocation(sendData)
+    const resp = await locationsApi.addMassiveLocation(sendDb)
     if (resp.fail) {
       console.log(resp);
     } else {
@@ -428,8 +433,12 @@ const readFileDelete = () => {
       _workpoint: VDB.session.store.id_viz
     }))
     console.log(sendData)
+    let sendDb = {
+      products: sendData,
+      id_viz: VDB.session.credentials.staff.id_va,
+    }
     if (sendData.length) {
-      const resp = await locationsApi.deleteMassiveLocation(sendData)
+      const resp = await locationsApi.deleteMassiveLocation(sendDb)
       if (resp.fail) {
         console.log(resp);
       } else {

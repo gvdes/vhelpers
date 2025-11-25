@@ -6,7 +6,8 @@
     </q-header>
     <q-page-container>
       <q-toolbar class="justify-between" v-if="$orderStore.showLyt">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> {{ $orderStore.title }} <span class="text-h6"></span>
+        <div>Helpers <q-icon name="navigate_next" color="primary" /> {{ $orderStore.title }} <span
+            class="text-h6"></span>
         </div>
       </q-toolbar>
       <router-view />
@@ -33,6 +34,7 @@ const $router = useRouter();
 const $orderStore = useOrderStore();
 const $q = useQuasar();
 const VDB = useVDBStore()
+let joined = false;
 
 
 const getRoom = (rol) => {
@@ -58,7 +60,7 @@ const getRoom = (rol) => {
 const joinedat = socket => {
   console.log(socket);
 }
-const newjoin = socket =>{
+const newjoin = socket => {
   console.log(socket)
 
 }
@@ -68,30 +70,30 @@ const order_add = socket => {
   console.log(socket)
   $orderStore.addOrUpdate(socket);
 }
-const order_update = socket =>{
+const order_update = socket => {
   console.log(socket)
   $orderStore.addOrUpdate(socket);
-  if(socket.order._status == 5 && $route.path === '/preorders/warehouse'){
+  if (socket.order._status == 5 && $route.path === '/preorders/warehouse') {
     console.log('aqui suena')
     appsounds.play()
-  }else{
+  } else {
     console.log('aqui no suena')
   }
 }
 
 
 const init = async () => {
-  $q.loading.show({message:'Obteniendo datos'})
+  $q.loading.show({ message: 'Obteniendo datos' })
   let data = {
-    uid:VDB.session.credentials.staff.id_va,
-    wid:VDB.session.store.id_viz,
-    view:getRoom(VDB.session.credentials._rol)
+    uid: VDB.session.credentials.staff.id_va,
+    wid: VDB.session.store.id_viz,
+    view: getRoom(VDB.session.credentials._rol)
   }
   console.log(data)
   const resp = await orderApi.getOrders(data)
-  if(resp.fail){
+  if (resp.fail) {
     console.log(resp)
-  }else{
+  } else {
     console.log(resp)
     $orderStore.setOrders(resp.orders);
     $orderStore.setPrinters(resp.prints);
@@ -102,21 +104,66 @@ const init = async () => {
 }
 
 
-onMounted(async () => {
-init()
-$sktOrders.connect();
-$sktOrders.emit("join", $orderStore.socket_user);
-$sktOrders.on('joinedat',joinedat)
-$sktOrders.on('newjoin',newjoin)
-$sktOrders.on('order_add',order_add)
-$sktOrders.on('order_update',order_update)
+// onMounted(async () => {
+//   init()
+//   // $sktOrders.connect();
+//   // $sktOrders.emit("join", $orderStore.socket_user);
+//   watch(
+//     () => $orderStore.socket_user,
+//     val => {
+//       if (val) {
+//         $sktOrders.connect();
+//         $sktOrders.emit("join", val);
+//       }
+//     },
+//     { immediate: true }
+//   )
+//   $sktOrders.on('joinedat', joinedat)
+//   $sktOrders.on('newjoin', newjoin)
+//   $sktOrders.on('order_add', order_add)
+//   $sktOrders.on('order_update', order_update)
 
+// })
+
+
+
+onMounted(() => {
+  init()
+
+  // Listener de conexión
+  $sktOrders.on("connect", () => {
+    if (!joined && $orderStore.socket_user) {
+      joined = true;
+      $sktOrders.emit("join", $orderStore.socket_user)
+    }
+  })
+
+  // Conexión
+  $sktOrders.connect()
+
+  // Watch para esperar a que exista el usuario
+  watch(
+    () => $orderStore.socket_user,
+    val => {
+      if (val && !joined && $sktOrders.connected) {
+        joined = true;
+        $sktOrders.emit("join", val)
+      }
+    },
+    { immediate: true }
+  )
+
+  // Listeners
+  $sktOrders.on('joinedat', joinedat)
+  $sktOrders.on('newjoin', newjoin)
+  $sktOrders.on('order_add', order_add)
+  $sktOrders.on('order_update', order_update)
 })
 
 onBeforeUnmount(() => {
-$sktOrders.off('joinedat',joinedat)
-$sktOrders.off('newjoin',newjoin)
-$sktOrders.off('order_add',order_add)
-$sktOrders.off('order_update',order_update)
+  $sktOrders.off('joinedat', joinedat)
+  $sktOrders.off('newjoin', newjoin)
+  $sktOrders.off('order_add', order_add)
+  $sktOrders.off('order_update', order_update)
 })
 </script>

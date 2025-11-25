@@ -27,11 +27,10 @@
                 <q-item-section>PXC</q-item-section>
                 <q-item-section>{{ product.val.pieces }}</q-item-section>
               </q-item>
-              <q-item>>
+              <q-item>
                 <q-item-section>
                   <q-item-label caption>GEN</q-item-label>
-                  <q-item-label overline>{{product.val.stocks.find(e => e.id ==
-                    VDB.session.store.id_viz).pivot.gen}}</q-item-label>
+                  <q-item-label overline>{{product.val.stocks.find(e => e.id == VDB.session.store.id_viz).pivot.gen}}</q-item-label>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label caption>EXH</q-item-label>
@@ -52,9 +51,9 @@
               </q-item>
             </q-list>
           </q-card-section>
-          <q-card-section>
-
-          </q-card-section>
+          <!-- <q-card-section>
+            {{ product.val.stocks.find(e => e.id == VDB.session.store.id_viz).pivot._status }}
+          </q-card-section> -->
 
           <q-card-section class="row">
             <q-input v-model="inputs.min" type="number" label="Minimo" class="col" filled input-class="text-center"
@@ -166,6 +165,7 @@ import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
 import productsApi from 'src/API/productsApi';
 import dbproduct from 'src/API/Product'
+import Product from 'src/API/Product';
 
 const VDB = useVDBStore();
 const $q = useQuasar();

@@ -158,6 +158,7 @@ const table = ref({
     { name: 'id', label: 'FOLIO', field: r => r.id, align: 'left', sortable:true },
     { name: 'client', label: 'CLIENTE', field: r => r.name, align: 'center', sortable:true },
     { name: 'status', label: 'ESTADO', field: r => r.status?.name, align: 'center', classes: r => `text-${colorStatus.value[r.status.id - 1]}`, sortable:true },
+    { name: 'created', label: 'HORA', field: r => dayjs(r.created_at).format('HH:mm:ss'), align: 'center', sortable:true },
   ],
   filter: null
 })

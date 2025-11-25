@@ -74,6 +74,7 @@ const table = ref({
     { name: 'created', label: 'Creado Por', field: r => `${r.created_by.names} ${r.created_by.surname_pat} ${r.created_by.surname_mat}`, align: 'left', sortable:true },
     { name: 'client', label: 'CLIENTE', field: r => r.name, align: 'left', sortable:true },
     { name: 'status', label: 'ESTADO', field: r => r.status?.name, align: 'center', classes: r => `text-${colorStatus.value[r.status.id - 1]}`, sortable:true },
+    { name: 'created', label: 'HORA', field: r => dayjs(r.created_at).format('HH:mm:ss'), align: 'center', sortable:true },
   ],
   filter: null
 })
