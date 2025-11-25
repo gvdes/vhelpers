@@ -40,7 +40,6 @@
             <!-- <q-item-section avatar v-if="with_image">
               <q-img src="~/assets/_boxprod.png" width="35px" />
             </q-item-section> -->
-
             <q-item-section>
               <div class="row items-center justify-between no-wrap QuickRegular">
                 <div class="col">
@@ -54,7 +53,7 @@
                                   <div>{{block(scope.opt.stateToVal)}}</div> -->
                 </div>
 
-                <q-icon name="fas fa-circle" class="q-pl-md" :class="`bullet-${scope.opt.stateToVal.state.id}`"
+                <q-icon name="fas fa-circle" class="q-pl-md" :class="`bullet-${scope.opt.stateToVal.state}`"
                   size="10px" />
               </div>
             </q-item-section>
@@ -121,7 +120,7 @@ const attrs = computed(() => {
     "_workpoint":$user.session.store.id_viz
   }
 })
-const block = computed(() => { return st => props.checkState ? props.blockStates.some(e => e == st.state.id) : false; })
+const block = computed(() => { return st => props.checkState ? props.blockStates.some(e => e == st.state) : false; })
 
 
 onMounted(() => {
@@ -150,8 +149,8 @@ const autocomplete = (val, update, abort) => {
       let options = done.data.map(p => {
         if (props.checkState) {
           if (props.wkpToVal) {
-            let wkp = p.stocks.find(s => s._workpoint == props.wkpToVal);
-            p.stateToVal = wkp ? { own: wkp, state: wkp.status } : { own: null, state: p.status };
+            let wkp = p.stocks.find(s => s.id == props.wkpToVal);
+            p.stateToVal = wkp ? { own: wkp, state: wkp.pivot._status } : { own: null, state: p.status };
           } else { p.stateToVal = { own: true, state: p.status }; }
         } else { p.stateToVal = { own: true, state: p.status }; }
 

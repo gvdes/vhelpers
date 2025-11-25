@@ -139,8 +139,8 @@
       <q-separator spaced inset vertical dark />
       <div class="row q-ml-sm">
         <q-card class="col">
-          <ProductAutocomplete :checkState="false" @input="add" with_prices @agregar="agregar"
-            :workpoint-status="[1, 2, VDB.session.store.id_viz]" />
+          <ProductAutocomplete :checkState="true" @input="add" with_prices @agregar="agregar"
+            :workpoint-status="[1, 2, VDB.session.store.id_viz]" :wkpToVal="VDB.session.store.id_viz" />
         </q-card>
         <q-separator spaced inset vertical dark />
         <div>

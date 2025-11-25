@@ -51,7 +51,7 @@ const getRoom = (rol) => {
       return 'supply';
 
     default:
-      return null;
+      return 'sales';
   }
 };
 
