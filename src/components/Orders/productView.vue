@@ -21,6 +21,14 @@
         </div>
       </div>
       <div class="text-subtitle2 col">{{ product.description }}</div>
+      <q-list class="q-mt-md q-mb-md">
+        <q-item>
+          <q-item-section v-for="(val, index) in product.stocks">
+            <q-item-label caption class="text-center"> {{ val.alias }}</q-item-label>
+            <q-item-label overline class="text-center">{{ val.pivot.stock }}</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
       <div class="item-center row">
         <div class="col text-subtitle2 text-center"
           v-for="(price, index) in product.prices.filter(e => mostPrice.includes(e.id))" :key="index">
@@ -77,7 +85,7 @@
             <q-item>
               <q-item-section class="text-left text-caption">Precio</q-item-section>
               <q-item-section class="text-bold text-center">{{product.prices.find(e => e.id == selectPrice).pivot.price
-                }}</q-item-section>
+              }}</q-item-section>
             </q-item>
             <q-item>
               <q-item-section class="text-left text-caption">Total</q-item-section>
@@ -237,7 +245,7 @@ onMounted(() => {
     props.product.pivot.amount = 1
   }
   // if (!props.product.pivot._supply_by) {
-    props.product.pivot.units = totalPzs.value
+  props.product.pivot.units = totalPzs.value
   // }
 
 })
