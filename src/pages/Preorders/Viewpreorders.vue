@@ -135,7 +135,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-footer reveal elevated bordered>
+    <q-footer reveal elevated bordered  v-if="order._status == 1" >
       <q-separator spaced inset vertical dark />
       <div class="row q-ml-sm">
         <q-card class="col">
@@ -148,6 +148,13 @@
         </div>
       </div>
       <q-separator spaced inset vertical dark />
+    </q-footer>
+    <q-footer  reveal elevated bordered v-else>
+        <q-card class="my-card">
+          <q-card-section class=" text-center text-bold bg-primary ">
+           El pedido ya esta terminado :/
+          </q-card-section>
+        </q-card>
     </q-footer>
     <input type="file" ref="inputFile" id="inputFile" @input="readFile" hidden accept=".xlsx,.xls" />
   </q-page>

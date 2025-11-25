@@ -64,7 +64,10 @@
         <q-card-actions align="right">
           <q-btn flat icon="close" color="negative" v-close-popup />
           <q-btn flat icon="print" color="positive" @click="print.state = !print.state" />
+          <q-btn flat icon="send" color="primary" @click="routPush"/>
           <q-btn flat label="Anexo" color="primary" @click="createAn"/>
+
+
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -247,6 +250,10 @@ const createAn = () => {
   viewOrder.value.state = false;
   viewOrder.value.val = null
   newAnexo();
+}
+
+const routPush = () => {
+   $router.push(`/preorders/pedidos/${viewOrder.value.val.id}`);
 }
 
 
