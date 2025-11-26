@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <q-header class="transparent text-dark" bordered>
+    <q-header :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'" bordered>
       <UserToolbar />
       <q-separator />
       <div class=" row justify-between">

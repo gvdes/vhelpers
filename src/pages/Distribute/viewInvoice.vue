@@ -35,7 +35,7 @@
 
   <q-dialog v-model="product.state" position="bottom">
     <q-card v-if="product.val">
-      <q-card-section class="bg-grey-3">
+      <q-card-section class="">
         <div class="row justify-between">
           <div class="text-left">
             <div class="text--3">ID: {{ product.val.id }}</div>

@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
-    <q-header class="transparent text-dark" bordered>
+    <q-header class="transparent " bordered>
       <UserToolbar />
     </q-header>
     <q-page-container>

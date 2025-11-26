@@ -2,7 +2,7 @@
   <q-page padding>
     <router-view />
     <q-footer reveal elevated bordered>
-      <q-tabs v-model="tab" class="bg-white text-primary" dense>
+      <q-tabs v-model="tab" :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'" dense>
         <q-route-tab name="locations" icon="device_hub" label="Estructura" to="/warehouse/locations/sections" />
         <q-route-tab name="products" icon="location_searching" label="Productos" to="/warehouse/locations/products" />
         <q-route-tab name="delete" icon="art_track" label="Masivo" to="/warehouse/locations/massive" />

@@ -53,7 +53,7 @@
                                   <div>{{block(scope.opt.stateToVal)}}</div> -->
                 </div>
 
-                <q-icon name="fas fa-circle" class="q-pl-md" :class="`bullet-${scope.opt.stateToVal.state}`"
+                <q-icon name="fas fa-circle" class="q-pl-md" :class="`bullet-${scope.opt.stateToVal.state + 1}`"
                   size="10px" />
               </div>
             </q-item-section>

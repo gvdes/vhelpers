@@ -9,12 +9,12 @@
     </q-header>
     <q-page-container>
 
-      <q-page class="bg-grey-3" padding>
+      <q-page class="" padding>
         <q-toolbar class="justify-between">
           <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">TICKETS</span></div>
           <q-btn color="primary" icon="add">
             <q-menu>
-              <div class="q-pa-md bg-grey-2 text-primary">Buscar Folio</div>
+              <div class="q-pa-md text-primary">Buscar Folio</div>
               <q-separator />
               <q-form dense @submit="search" class="q-gutter-md q-pa-md">
                 <q-select v-model="cashdesk" :options="cashdesks" label="Serie" autofocus />

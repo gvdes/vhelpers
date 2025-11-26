@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <q-header bordered class="bg-white text-dark">
+    <q-header bordered class="">
       <q-toolbar>
         <q-toolbar-title>
           Pedido {{ $route.params.chk }} <span class="text--3" v-if="order">- {{ order.requisition.from.alias }}</span>
@@ -12,7 +12,7 @@
       </q-toolbar>
       <q-separator />
       <div class="q-px-md q-py-sm">
-        <div class="col text-dark row justify-between ">
+        <div class="col  row justify-between ">
           <div>Productos: <b>{{ productsdb.length }}</b></div>
           <div>Piezas: <b>{{ totalpieces }}</b> </div>
         </div>

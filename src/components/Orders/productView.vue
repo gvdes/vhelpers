@@ -1,114 +1,147 @@
 <template>
-  <q-card>
-    <q-card-section class="item-center">
+  <q-card class="card-bg">
+
+    <q-card-section>
+
       <div class="row">
-        <div class="text-subtitle2 col text-bold text-left text-grey text-overline">
+        <div class="text-subtitle2 col text-bold text-left text-muted text-overline">
           {{ product.category.familia.seccion.name }}
         </div>
-        <div class="text-subtitle2 col text-bold text-center text-grey text-overline">
+        <div class="text-subtitle2 col text-bold text-center text-muted text-overline">
           {{ product.category.familia.name }}
         </div>
-        <div class="text-subtitle2 col text-bold text-right text-grey text-overline">
+        <div class="text-subtitle2 col text-bold text-right text-muted text-overline">
           {{ product.category.name }}
         </div>
       </div>
+
       <div class="row">
-        <div class="text-h6 col text-bold text-left">
+        <div class="text-h6 col text-bold text-left text-strong">
           {{ product.code }}
         </div>
-        <div class="text-h6 col text-bold text-right">
+        <div class="text-h6 col text-bold text-right text-strong">
           {{ product.name }}
         </div>
       </div>
-      <div class="text-subtitle2 col">{{ product.description }}</div>
+
+      <div class="text-subtitle2 col text-muted">
+        {{ product.description }}
+      </div>
+
+
       <q-list class="q-mt-md q-mb-md">
         <q-item>
-          <q-item-section v-for="(val, index) in product.stocks">
-            <q-item-label caption class="text-center"> {{ val.alias }}</q-item-label>
-            <q-item-label overline class="text-center">{{ val.pivot.stock }}</q-item-label>
+          <q-item-section v-for="(val, index) in product.stocks" :key="index">
+            <q-item-label caption class="text-center text-muted">
+              {{ val.alias }}
+            </q-item-label>
+            <q-item-label overline class="text-center text-strong">
+              {{ val.pivot.stock }}
+            </q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
+
       <div class="item-center row">
         <div class="col text-subtitle2 text-center"
           v-for="(price, index) in product.prices.filter(e => mostPrice.includes(e.id))" :key="index">
-          <div :class="price.id == selectPrice ? 'text-weight-bold' : 'text-caption text-strike'">
+          <div :class="price.id == selectPrice ? 'text-strong' : 'text-caption text-muted text-strike'">
             {{ price.alias }}
           </div>
-          <q-separator spaced inset vertical dark />
-          <div :class="price.id == selectPrice ? 'text-bold  text-blue-13' : 'text-caption'">
+
+          <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
+
+          <div :class="price.id == selectPrice ? 'text-bold text-price' : 'text-caption text-muted'">
             {{ price.pivot.price }}
           </div>
-          <q-separator spaced inset vertical dark />
+
+          <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
         </div>
       </div>
 
     </q-card-section>
+
+
     <q-card-section>
       <div class="row items-end">
         <div class="text-center">
           <div class="col q-pa-xs">
-            <div class="text-bold text-h6">Cantidad:</div>
+            <div class="text-bold text-h6 text-strong">Cantidad:</div>
+
             <q-btn flat color="positive" icon="add" class="text-h5" @click="product.pivot.amount++" />
-            <q-separator spaced inset vertical dark />
-            <div class="col column q-py-md">
-              <input type="number" min="1" v-model="product.pivot.amount" class="text-center exo"
-                style=" width: 100px; font-size: 3em; margin: auto auto; border: none;" />
+            <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
+
+            <div class="col column q-py-md bg-section" style="border-radius: 8px;">
+              <input type="number" min="1" v-model="product.pivot.amount" class="text-center exo clean-input"
+                style="width: 100px; font-size: 3em; margin:auto;" />
             </div>
-            <q-separator spaced inset vertical dark />
+
+            <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
+
             <q-btn flat color="negative" icon="remove" class="text-h5"
               @click="product.pivot.amount > 1 ? product.pivot.amount-- : ''" />
           </div>
         </div>
-        <q-separator spaced inset vertical dark />
+
+        <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
         <div class="col q-pa-xs">
           <q-select dense filled v-model="product.units" :options="units" label="Surtir por" option-label="name"
             @update:model-value="changeUnit" />
-          <q-separator spaced inset vertical dark />
+
+          <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
+
           <q-input dense filled v-model="product.pivot.comments" type="text" label="Notas" />
-          <q-separator spaced inset vertical dark />
+
+          <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
+
           <q-list dense>
-            <q-item class="bg-grey-11">
-              <q-item-section class="text-left text-caption">P x C</q-item-section>
-              <q-item-section class="text-bold text-center">{{ product.pieces }} pzs</q-item-section>
+
+            <q-item class="bg-highlight">
+              <q-item-section class="text-left text-caption text-muted">P x C</q-item-section>
+              <q-item-section class="text-bold text-center text-strong">{{ product.pieces }} pzs</q-item-section>
             </q-item>
+
             <q-item>
-              <q-item-section class="text-left text-caption">Cajas</q-item-section>
-              <q-item-section class="text-bold text-center">{{ Number(totalPzs / product.pieces).toFixed(1) }}
+              <q-item-section class="text-left text-caption text-muted">Cajas</q-item-section>
+              <q-item-section class="text-bold text-center text-strong">
+                {{ Number(totalPzs / product.pieces).toFixed(1) }}
               </q-item-section>
             </q-item>
-            <q-item class="bg-grey-11">
-              <q-item-section class="text-left text-caption">Unidades</q-item-section>
-              <q-item-section class="text-bold text-center">{{ totalPzs }}
-                pzs</q-item-section>
+
+            <q-item class="bg-highlight">
+              <q-item-section class="text-left text-caption text-muted">Unidades</q-item-section>
+              <q-item-section class="text-bold text-center text-strong">{{ totalPzs }} pzs</q-item-section>
             </q-item>
+
             <q-item>
-              <q-item-section class="text-left text-caption">Precio</q-item-section>
-              <q-item-section class="text-bold text-center">{{product.prices.find(e => e.id == selectPrice).pivot.price
-              }}</q-item-section>
+              <q-item-section class="text-left text-caption text-muted">Precio</q-item-section>
+              <q-item-section class="text-bold text-center text-price">
+                {{product.prices.find(e => e.id == selectPrice).pivot.price}}
+              </q-item-section>
             </q-item>
+
             <q-item>
-              <q-item-section class="text-left text-caption">Total</q-item-section>
-              <q-item-section class="text-bold text-center">{{product.prices.find(e => e.id == selectPrice).pivot.price
-                * totalPzs}} </q-item-section>
+              <q-item-section class="text-left text-caption text-muted">Total</q-item-section>
+              <q-item-section class="text-bold text-center text-strong">
+                {{product.prices.find(e => e.id == selectPrice).pivot.price * totalPzs}}
+              </q-item-section>
             </q-item>
+
           </q-list>
+
         </div>
       </div>
     </q-card-section>
-
-
     <q-card-actions>
       <q-btn flat icon="close" @click="reset" />
       <q-space />
       <q-btn flat icon="add" color="positive" v-if="!edit" @click="addProduct" :disable="validDelivered" />
       <q-btn flat icon="delete" color="negative" v-if="edit" @click="deleteProduct" />
       <q-btn flat icon="edit" color="warning" v-if="edit" @click="editProduct" :disable="validDelivered" />
-
     </q-card-actions>
+
   </q-card>
 </template>
-
 <script setup>
 import { useVDBStore } from 'stores/VDB';
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";

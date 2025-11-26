@@ -19,7 +19,7 @@
 
       <q-card flat style="width: 700px; max-width: 80vw;">
         <q-card-section>
-          <q-form @submit="saveQuote" class="q-gutter-md text-grey-10">
+          <q-form @submit="saveQuote" class="q-gutter-md ">
             <div>
               <q-card-section class="">
                 <div class="text-h4 text-center text-bold" style=" text-decoration: underline;">Datos cliente</div>

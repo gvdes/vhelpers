@@ -1,12 +1,12 @@
 <template>
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
-    <q-header class="bg-grey-3 text-dark" bordered>
+    <q-header class="" bordered>
       <UserToolbar />
       <q-separator />
       <q-toolbar class="justify-between row">
         <div class="col">
-          <span class="text-grey">Helpers</span>
-          <q-icon name="navigate_next" color="primary" />
+          <span class="">Helpers</span>
+          <q-icon name="navigate_next" color="" />
           <span class="text-h6">Información Producto</span>
         </div>
       </q-toolbar>

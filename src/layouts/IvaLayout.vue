@@ -2,7 +2,7 @@
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
 
     <!-- (Optional) The Header -->
-    <q-header class="transparent text-dark" bordered>
+    <q-header :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'" bordered>
       <UserToolbar />
       <q-separator />
       <!-- <q-toolbar class="justify-between">
@@ -32,7 +32,7 @@
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">IVA</span></div>
         <q-btn color="primary" icon="add">
           <q-menu>
-            <div class="q-pa-md bg-grey-2 text-primary">Buscar Folio</div>
+            <div class="q-pa-md text-primary">Buscar Folio</div>
             <q-separator />
             <q-form dense @submit="search" class="q-gutter-md q-pa-md">
               <q-select v-model="cashdesk" :options="cashdesks" label="Serie" autofocus />
@@ -44,7 +44,7 @@
           </q-menu>
         </q-btn>
       </q-toolbar>
-      <q-page class="bg-grey-3" padding>
+      <q-page class="" padding>
 
         <div class="row justify-center">
           <transition name="bounce">

@@ -105,7 +105,7 @@
 
     <q-dialog v-model="wndCounter.state" position="bottom" @hide="iptfinder.focus()">
       <q-card v-if="wndCounter.item">
-        <q-card-section class="bg-grey-3">
+        <q-card-section class="">
           <div class="row justify-between">
             <div class="text-left">
               <div class="text--3">ID: {{ wndCounter.item.id }}</div>

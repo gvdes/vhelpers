@@ -1,6 +1,6 @@
 <template>
   <q-page padding v-if="traspaso">
-    <q-header reveal bordered class="bg-white text-black">
+    <q-header reveal bordered :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'">
       <q-toolbar class="justify-between">
         <q-btn color="primary" icon="arrow_back" flat @click="$router.push('/transfers')" round />
         <div>{{ traspaso.store.name }} </div>

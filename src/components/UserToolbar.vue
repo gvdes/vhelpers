@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-sm transparent text-dark row items-center">
+  <div class="q-pa-sm  row items-center" :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'">
     <!-- <q-btn color="primary" icon="home" flat dense class="q-mr-sm" @click="$router.push('/')" /> -->
     <q-btn color="primary" icon="list" flat dense class="q-mr-sm" @click="drawerPr = !drawerPr" />
     <!-- <div class="col"  @click="$router.push('/')" ><span class="text-h6 text-pink">{{ user.credentials.nick }}</span></div> -->
@@ -29,24 +29,35 @@
           <q-btn color="primary" icon="home" flat dense class="col" @click="$router.push('/')" />
           <q-separator spaced inset vertical dark />
           <q-btn class="col" color="pink" icon="logout" no-caps flat @click="WSD.state = true" />
+          <q-separator spaced inset vertical dark />
+          <q-toggle v-model="$q.dark.mode" color="primary" :icon="$q.dark.mode ? 'light_mode' : 'dark_mode'  " keep-color @update:model-value="toggleDark"
+            class="col text-center" />
         </div>
         <q-separator />
         <q-separator spaced inset vertical dark />
         <template v-for="(menuItem, index) in VDB.modules" :key="index">
-          <q-expansion-item expand-separator :label="menuItem.name" :content-inset-level="0.5">
+          <q-expansion-item expand-separator :label="menuItem.name" :dark="$q.dark.isActive"
+            :header-class="$q.dark.isActive ? 'text-white' : 'text-dark'">
             <div v-for="(modul, inx) in menuItem.modules" :key="inx">
-              <q-item clickable v-ripple :to="`/${modul.path}`">
+              <q-item clickable v-ripple :to="`/${modul.path}`" :dark="$q.dark.isActive">
                 <q-item-section>
-                  <q-item-label class="text-dark tex-bold">{{ modul.name }}</q-item-label>
-                  <q-item-label caption>{{ modul.desc }}</q-item-label>
+                  <q-item-label :class="$q.dark.isActive ? 'text-white' : 'text-dark'">
+                    {{ modul.name }}
+                  </q-item-label>
+
+                  <q-item-label caption :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'">
+                    {{ modul.desc }}
+                  </q-item-label>
                 </q-item-section>
+
                 <q-item-section avatar>
-                  <q-avatar flat color="transparent" text-color="primary" icon="arrow_forward" />
+                  <q-avatar flat color="transparent" :text-color="$q.dark.isActive ? 'primary' : 'primary'"
+                    icon="arrow_forward" />
                 </q-item-section>
               </q-item>
-              <q-separator />
-            </div>
 
+              <q-separator :dark="$q.dark.isActive" />
+            </div>
           </q-expansion-item>
         </template>
 
@@ -121,6 +132,18 @@ const changeStore = () => {
   window.location.reload()
 
   $q.loading.hide()
+}
+
+// Restaurar modo guardado
+const saved = localStorage.getItem('mode')
+if (saved) {
+  $q.dark.set(saved === 'dark')
+}
+
+// Toggle del usuario
+const toggleDark = () => {
+  $q.dark.toggle()
+  localStorage.setItem('mode', $q.dark.isActive ? 'dark' : 'light')
 }
 
 init();

@@ -1,0 +1,90 @@
+/* ===========================
+   LIGHT THEME COLORS
+   =========================== */
+body.body--light {
+  --text-muted: #6b6b6b;
+  --text-strong: #1a1a1a;
+  --price: #0d6efd;
+  --separator: rgba(0,0,0,0.2);
+  --card-bg: #ffffff;
+  --section-bg: #f5f5f5;
+  --highlight-bg: #ececec;
+}
+
+
+/* ===========================
+   DARK THEME COLORS
+   =========================== */
+body.body--dark {
+  --text-muted: #c2c2c2;
+  --text-strong: #ffffff;
+  --price: #4dabf7;
+  --separator: rgba(255,255,255,0.25);
+  --card-bg: #1e1e1e;
+  --section-bg: #333333;
+  --highlight-bg: #444444;
+}
+
+/* ===========================
+   UTILITY HELPERS
+   =========================== */
+.text-muted {
+  color: var(--text-muted) !important;
+}
+.text-strong {
+  color: var(--text-strong) !important;
+}
+.text-price {
+  color: var(--price) !important;
+}
+.bg-section {
+  background-color: var(--section-bg) !important;
+}
+.bg-highlight {
+  background-color: var(--highlight-bg) !important;
+}
+.card-bg {
+  background-color: var(--card-bg) !important;
+}
+
+/* Color del texto del input */
+.input-text {
+  color: var(--text-strong) !important;
+}
+
+/* Evitar que el navegador ponga fondo negro en dark */
+.input-bg {
+  background: transparent !important;
+}
+
+/* En dark mode, algunos navegadores fuerzan bordes o sombras. Lo limpiamos */
+input[type="number"].clean-input {
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  border: none !important;
+}
+/* Tema Claro */
+body.body--light {
+  --text-strong: #1a1a1a;
+  --section-bg: #f2f2f2;
+}
+
+/* Tema Oscuro */
+body.body--dark {
+  --text-strong: #ffffff;
+  --section-bg: #333333;
+}
+
+.clean-input {
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  border: none !important;
+  background: transparent !important;
+  color: var(--text-strong) !important;
+}
+
+.bg-section {
+  background-color: var(--section-bg) !important;
+}

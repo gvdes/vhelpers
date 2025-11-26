@@ -2,7 +2,7 @@
   <q-page padding>
 
     <div class="q-mb-xl">
-      <q-list bordered class="text-bold bg-grey-11" dense>
+      <q-list bordered class="text-bold " dense>
         <q-item>
           <q-item-section avatar>
             <q-icon color="primary" name="list" />
@@ -25,7 +25,7 @@
 
 
     <div class="q-mb-xl">
-      <q-list bordered class="text-bold bg-grey-11" dense>
+      <q-list bordered class="text-bold " dense>
         <q-item>
           <q-item-section avatar>
             <q-icon color="primary" name="point_of_sale" />
