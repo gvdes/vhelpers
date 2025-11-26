@@ -35,8 +35,9 @@ export const useOrderStore = defineStore('layout', {
       opts: [],
       val: null
     },
-
+    users:[],
     rules: [],
+    process:[],
     showLyt: true
   }),
 
@@ -99,6 +100,12 @@ export const useOrderStore = defineStore('layout', {
     setUnits(data) {
       this.units.opts = data;
       this.units.val = data.find(e => e.id == 1)
+    },
+    setUsers(data){
+      this.users = data
+    },
+    setProcess(data){
+      this.process = data
     }
   }
 }

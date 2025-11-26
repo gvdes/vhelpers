@@ -99,6 +99,8 @@ const init = async () => {
     $orderStore.setPrinters(resp.prints);
     $orderStore.setUnits(resp.units);
     $orderStore.setRules(resp.rules);
+    $orderStore.setUsers(resp.user);
+    $orderStore.setProcess(resp.process);
     $q.loading.hide()
   }
 }
