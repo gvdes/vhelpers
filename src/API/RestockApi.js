@@ -57,6 +57,10 @@ export default {
     let burl = "/invoices/print/forsupply";
     return assist.post(burl, data).then(done => done).catch(fail => fail.response);
   },
+  printforsupplyStore(data) {
+    let burl = "/invoices/print/forsupplyStore";
+    return assist.post(burl, data).then(done => done).catch(fail => fail.response);
+  },
   createAutomate(data) {//
     let burl = "/restock/create";
     return assist.post(burl, data).then(done => done).catch(fail => fail.response);

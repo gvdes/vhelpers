@@ -1,8 +1,8 @@
 import { assist } from "src/boot/axios";
 
 export default{
-  index(idstore){
-    return assist.get(`/locations/${idstore}`).then( done=>done.data ).catch( fail => { return {fail}} );
+  index(data){
+    return assist.post(`/locations`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
   getInit(idstore){
     return assist.get(`/locations/getInit/${idstore}`).then( done=>done.data ).catch( fail => { return {fail}} );

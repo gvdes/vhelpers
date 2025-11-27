@@ -42,6 +42,8 @@ const getRoom = (rol) => {
     case 1:
     case 2:
     case 6:
+    case 12:
+
       return 'admins';
 
     case 8:

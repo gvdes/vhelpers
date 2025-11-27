@@ -24,7 +24,7 @@
 
       <q-card :class="!ismobile ? 'col my-card' : 'my-card'">
         <q-card-section>
-          <ProductAutocomplete @input="add" @agregar="agregar" with_locations />
+          <ProductAutocomplete @input="add" @agregar="agregar" :with_locations_loc="VDB.session.credentials._rol" />
         </q-card-section>
         <div v-if="product">
           <q-card-section class="item-center">
@@ -156,7 +156,11 @@ const valid = computed(() => product.value?.locations?.find(e => e.id == lvellas
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Secciones' });
-  const resp = await locationsApi.index(VDB.session.store.id_viz);
+  let data = {
+    _rol: VDB.session.credentials._rol,
+    _workpoint: VDB.session.store.id_viz
+  }
+  const resp = await locationsApi.index(data);
   if (!resp.fail) {
     sections.value = resp;
   } else {
@@ -232,7 +236,7 @@ const addLocations = async () => {
   }
 }
 const deleteLocation = async (_location) => {
-    console.log(VDB.session)
+  console.log(VDB.session)
   $q.loading.show({ message: 'Eliminando Ubicacion' });
   let data = {
     id_viz: VDB.session.credentials.staff.id_va,

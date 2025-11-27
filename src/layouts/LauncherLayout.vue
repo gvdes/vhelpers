@@ -96,6 +96,8 @@ const mosAvatar = ref({
     'avatar23.png',
     'avatar24.png',
     'avatar25.png',
+    'avatar26.png',
+    'avatar27.png',
   ]
 })
 const greetings = ref([

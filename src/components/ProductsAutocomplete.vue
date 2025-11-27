@@ -90,6 +90,7 @@ const props = defineProps({
   "workpointStatus": { default: null, type: [Array, String] },
   "withHistoric":{ default: null, type: Boolean },
   "wkpToVal": { default: null, type: Number },
+  "with_locations_loc":{ default: null, type: Number },
   "blockStates": { type: Array, default: () => [4, 5, 6] }
 })
 
@@ -109,6 +110,7 @@ const attrs = computed(() => {
     "_status": props._status,
     "_location": props._location,
     "with_locations": props.with_locations,
+    "with_locations_loc":props.with_locations_loc,
     "with_stock": props.with_stock,
     "check_stock": props.check_stock,
     "with_prices": props.with_prices,

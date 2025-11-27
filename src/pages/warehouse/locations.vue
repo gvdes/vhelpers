@@ -5,7 +5,7 @@
       <q-tabs v-model="tab" :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'" dense>
         <q-route-tab name="locations" icon="device_hub" label="Estructura" to="/warehouse/locations/sections" />
         <q-route-tab name="products" icon="location_searching" label="Productos" to="/warehouse/locations/products" />
-        <q-route-tab name="delete" icon="art_track" label="Masivo" to="/warehouse/locations/massive" />
+        <q-route-tab name="delete" icon="art_track" label="Masivo" to="/warehouse/locations/massive" v-if="mosMassisve" />
       </q-tabs>
     </q-footer>
   </q-page>
@@ -32,4 +32,6 @@ import dbproduct from 'src/API/Product'
 const VDB = useVDBStore();
 const $q = useQuasar();
 const tab = ref('locations')
+
+const mosMassisve =  computed(() => [1,2,5,6,12,22].includes(VDB.session.credentials._rol))
 </script>

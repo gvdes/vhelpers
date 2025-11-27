@@ -36,7 +36,14 @@
           <span class=" text-bold">{{order.products.reduce((a, v) => a + Number(Number(v.pivot.units) /
             Number(v.pieces)), 0)}}</span>
         </div>
+
       </div>
+              <q-separator spaced inset vertical dark />
+        <q-input dense debounce="300" v-model="table.filter" placeholder="Buscar" class="col-auto" outlined>
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
     </div>
     <q-separator spaced inset vertical dark />
 
@@ -201,7 +208,7 @@
     </q-dialog>
 
 
-    <q-footer reveal elevated bordered>
+    <q-footer reveal elevated bordered v-if="order._status == 1">
       <q-separator spaced inset vertical dark />
       <div class="row q-ml-sm">
         <div>
@@ -258,9 +265,9 @@ const product = ref({
   edit: false
 })
 const dataResponse = ref({
-  state:false,
-  notfound:[],
-  added:[]
+  state: false,
+  notfound: [],
+  added: []
 })
 const inputFile = ref(null)
 const table = ref({
@@ -371,7 +378,7 @@ const init = async () => {
     console.log(resp)
     order.value = resp.order
     units.value = resp.units
-    if(order.value._status != 1 ){ $router.push('/distribute/dashboardStore') }
+    // if(order.value._status != 1 ){ $router.push('/distribute/dashboardStore') }
   }
 }
 
@@ -455,7 +462,7 @@ const readFile = async () => {
     if (Diferencia.length) {
       let data = {
         codes: Diferencia,
-        _requisition:order.value.id
+        _requisition: order.value.id
       };
       $q.loading.show({ message: "Procesando archivo, espera.." });
       console.log(data)

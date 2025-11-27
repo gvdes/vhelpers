@@ -1,10 +1,11 @@
 <template>
   <q-page padding>
     <div>
-      <q-table :rows="ordersdb" row-key="name" grid :pagination="pagination" :filter="filter" hide-bottom>
+      <q-table :rows="ordersdb" row-key="name" grid :pagination="pagination" :filter="filter" hide-bottom
+        :filter-method="customFilter">
         <template v-slot:item="props" bordered>
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-            <q-list bordered @click="continuePedido(props.row)">
+            <q-list bordered @dblclick="mosOrder(props.row)">
               <q-expansion-item :header-class="`${colorCellState[props.row.status.id - 1]}`" dense icon="list"
                 :label="`${props.row.id.toString()} (${props.row.status.name})`"
                 :caption="`${props.row.to.name} (${props.row.notes})`">
@@ -26,7 +27,6 @@
         </template>
       </q-table>
     </div>
-
     <q-dialog v-model="viewPartition.state" persistent>
       <q-card>
         <q-card-section class="text-center text-h6">
@@ -50,9 +50,42 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="viewOrder.state" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="receipt_long" color="primary" text-color="white" />
+          <span class="q-ml-sm">{{ viewOrder.val.id }}</span>
+        </q-card-section>
+        <q-card-section class="text-h6">
+          Notas :
+          <span class="text-bold">{{ viewOrder.val.notes }}</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat icon="close" color="negative" v-close-popup />
+          <q-btn color="teal" flat icon="print" @click="print.state = !print.state"
+            :disabled="viewOrder.val._status == 1" />
+          <q-btn flat icon="send" color="blue" @click="continuePedido" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="print.state" persistent>
+      <q-card>
+        <q-card-section class="row items-center bg-primary text-white text-h6">
+          Selecciona Impresora
+        </q-card-section>
+        <q-card-section class="">
+          <q-select v-model="print.val" :options="prints" label="Impresoras" option-label="name" filled />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cancelar" color="primary" v-close-popup />
+          <q-btn flat label="Terminar" color="primary" @click="pritnOrder" :disabled="!print.val" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+
   </q-page>
-
-
 </template>
 
 <script setup>
@@ -74,7 +107,14 @@ const viewPartition = ref({
   state: false,
   val: null
 })
-
+const viewOrder = ref({
+  state: false,
+  val: null
+})
+const print = ref({
+  state: false,
+  val: null
+})
 
 const pagination = ref({ rowsPerPage: [0] })
 const filter = ref(null)
@@ -90,12 +130,14 @@ const table = ref({
   pagination: { rowsPerPage: 10 }
 })
 const ordersdb = computed(() => $restockStore.ordersok.filter(o => o._workpoint_from == VDB.session.store.id_viz))
+const prints = computed(() => $restockStore.printers.find(e => e.id == VDB.session.store.id_viz).printers)
 
+const continuePedido = () => {
+  // if (b._status == 1) {
+  $router.push(`/distribute/dashboardStore/${viewOrder.value.val.id}`)
+  // }else{
 
-const continuePedido = (b) => {
-  if (b._status == 1) {
-    $router.push(`/distribute/dashboardStore/${b.id}`)
-  }
+  // }
 }
 
 
@@ -124,6 +166,52 @@ const colorCellState = [
   'text-primary',
   'text-positive'
 ];
+
+const mosOrder = (b) => {
+  viewOrder.value.state = true
+  viewOrder.value.val = b
+}
+
+
+const customFilter = (rows, terms) => {
+  const t = terms.toUpperCase()
+
+  return rows.filter(row => {
+    const normalMatch = Object.values(row).some(val =>
+      String(val ?? '').toUpperCase().includes(t)
+    )
+    const partitionMatch =
+      row.partition?.some(part =>
+        part.products?.some(prod =>
+          prod.code?.toUpperCase().includes(t)
+        )
+      ) ?? false
+    return normalMatch || partitionMatch
+  })
+}
+
+
+const pritnOrder = async () => {
+  $q.loading.show({ message: "..." });
+  // console.log(data);
+  let data = {
+    ip: print.value.val.ip,
+    port: 9100,
+    order: viewOrder.value.val.id
+  }
+  const response = await RestockApi.printforsupplyStore(data);
+  console.log(response);
+  if (response.status == 200) {
+    let resp = response.data;
+    if (resp) {
+      $q.notify({ message: "Impresion correcta", icon: "done", color: "positive", position: "top" });
+      print.value.state = false
+    } else {
+      $q.notify({ message: `Sin conexion a <b>${data.name} <small>(${data.ip})</small></b>`, icon: "fas fa-bug", color: "negative", position: "center", html: true, timeout: 4000 });
+    }
+    $q.loading.hide();
+  } else { console.error(response); alert(`Error ${response.status}: ${response.data}`); }
+}
 
 
 init();

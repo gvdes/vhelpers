@@ -163,8 +163,13 @@ const table = ref({
 })
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Secciones' });
-  const resp = await locationsApi.index(VDB.session.store.id_viz);
+  let data = {
+    _rol:VDB.session.credentials._rol,
+    _workpoint:VDB.session.store.id_viz
+  }
+  const resp = await locationsApi.index(data);
   if (!resp.fail) {
+    console.log(resp)
     sections.value = resp;
   } else {
     console.log(resp);

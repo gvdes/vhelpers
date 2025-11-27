@@ -31,11 +31,25 @@
 
       <q-list class="q-mt-md q-mb-md">
         <q-item>
-          <q-item-section v-for="(val, index) in product.stocks" :key="index">
-            <q-item-label caption class="text-center text-muted">
+          <!-- <q-item-section v-for="(val, index) in product.stocks.sort((a, b) => a.id - b.id)" :key="index">
+            <q-item-label caption class="text-center " :class=" val.id == VDB.session.store.id ? 'text-bold text-blue' : 'text-caption' ">
               {{ val.alias }}
             </q-item-label>
-            <q-item-label overline class="text-center text-strong">
+            <q-item-label overline :class="val.pivot.stock < 0 ? 'text-red text-center text-bold' : ' text-center text-bold' val.id == VDB.session.store.id ? 'text-blue' : 'text-caption'">
+              {{ val.pivot.stock }}
+            </q-item-label>
+          </q-item-section> -->
+
+          <q-item-section v-for="(val, index) in [...product.stocks].sort((a, b) => a.id - b.id)" :key="index">
+            <q-item-label caption class="text-center"
+              :class="val.id == VDB.session.store.id ? 'text-bold text-blue' : 'text-caption'">
+              {{ val.alias }}
+            </q-item-label>
+
+            <q-item-label overline class="text-center text-bold" :class="[
+              val.pivot.stock < 0 ? 'text-red' : 'text-caption text-overline',
+              val.id == VDB.session.store.id ? 'text-blue' : 'text-caption'
+            ]">
               {{ val.pivot.stock }}
             </q-item-label>
           </q-item-section>
