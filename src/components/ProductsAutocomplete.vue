@@ -122,7 +122,7 @@ const attrs = computed(() => {
     "_workpoint":$user.session.store.id_viz
   }
 })
-const block = computed(() => { return st => props.checkState ? props.blockStates.some(e => e == st.state) : false; })
+const block = computed(() => { return st => props.checkState ? props.blockStates.some(e => e == st.state) && ![1,2,5,6,12,18,19,21,22,24].includes($user.session.credentials._rol) : false; })
 
 
 onMounted(() => {
