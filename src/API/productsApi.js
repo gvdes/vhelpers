@@ -64,4 +64,7 @@ export default{
   massiveUpdateImg(data) {
     return assist.post(`/Products/massiveUpdateImg`, data).then(done => done.data).catch(fail => { return { fail } });
   },
+  updateStatusProduct(data){
+    return assist.post(`/Products/updateStatusProduct`, data).then(done => done.data).catch(fail => { return { fail } });
+  }
 }

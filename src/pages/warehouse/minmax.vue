@@ -28,9 +28,18 @@
                 <q-item-section>{{ product.val.pieces }}</q-item-section>
               </q-item>
               <q-item>
+                <q-item-section>Estado</q-item-section>
+                <!-- {{ product.val.stateToVal.state }} -->
+                <q-item-section>
+                  <q-select v-model="product.val.stateToVal.state" option-value="id" :options="product_states.opts"
+                    filled dense @update:model-value="updateStatus" option-label="name" emit-value map-options />
+                </q-item-section>
+              </q-item>
+              <q-item>
                 <q-item-section>
                   <q-item-label caption>GEN</q-item-label>
-                  <q-item-label overline>{{product.val.stocks.find(e => e.id == VDB.session.store.id_viz).pivot.gen}}</q-item-label>
+                  <q-item-label overline>{{product.val.stocks.find(e => e.id ==
+                    VDB.session.store.id_viz).pivot.gen}}</q-item-label>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label caption>EXH</q-item-label>
@@ -141,8 +150,8 @@
 
     <q-footer reveal elevated bordered>
       <q-card class="my-card">
-        <ProductAutocomplete  @input="add" @agregar="agregar"
-          :workpoint-status="'all'" />
+        <ProductAutocomplete @input="add" @agregar="agregar" :workpoint-status="'all'" :checkState="true"
+          :wkpToVal="VDB.session.store.id_viz" />
       </q-card>
     </q-footer>
   </q-page>
@@ -176,6 +185,13 @@ const tab = ref('products')
 const product = ref({
   state: false,
   val: null
+})
+const product_states = ref({
+  opts: [
+    { id: 1, name: 'Disponible' },
+    { id: 3, name: 'Agotado' },
+    { id: 6, name: 'Bloqueado' },
+  ]
 })
 const excelImport = ref({
   state: false,
@@ -382,10 +398,10 @@ const readFile = () => {
                 multiplier = 12;
                 break;
               case 3:
-                multiplier = product.pieces || 1; // 👈 corregido
+                multiplier = product.pieces || 1;
                 break;
               case 4:
-                multiplier = (product.pieces || 1) / 2; // 👈 corregido
+                multiplier = (product.pieces || 1) / 2;
                 break;
             }
 
@@ -448,6 +464,24 @@ const setMassiveminmax = async () => {
   }
 }
 
+const updateStatus = async (a) => {
+  $q.loading.show({message:'Cambiando Estado'})
+  let data = {
+    _product: product.value.val.id,
+    _status: a,
+    wid: VDB.session.store.id_viz
+  }
+  console.log(data)
+  const resp = await productsApi.updateStatusProduct(data)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp);
+    $q.loading.hide();
+    $q.notify({ message: 'Estado Actualizado', type: 'positive', position: 'right' })
+  }
+
+}
 
 watch(
   [() => types.value.val, () => inputs.value.min, () => inputs.value.max],
