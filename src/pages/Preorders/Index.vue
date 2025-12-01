@@ -3,7 +3,7 @@
     <div :class="!ismobile ? 'row' : ''">
       <q-table :class="!ismobile ? 'col' : ''" :rows="filteredOrders" :columns="table.columns" :filter="table.filter"
         :pagination="pagination" row-key="id" :row-class="row => selectedOrder?.id === row.id ? 'bg-blue-1' : ''"
-        @row-click="onOrderClick"  >
+        @row-click="onOrderClick" @row-dblclick="routPush"  >
         <template v-slot:top-right>
           <q-select v-model="status" :options="$orderStore.process" label="Estado" filled style="width: 130px;" dense
             option-label="name">
@@ -73,7 +73,7 @@ import { $sktRestock } from 'boot/socket';
 const $route = useRoute();
 const $router = useRouter();
 const $orderStore = useOrderStore();
-$orderStore.setTitle('Inicio');
+$orderStore.setTitle('INICIO');
 $orderStore.setshowLyt(true);
 const $q = useQuasar();
 const VDB = useVDBStore()
@@ -172,6 +172,10 @@ const clearFilters = () => {
   selectedUser.value = null;
   selectedOrder.value = null;
   status.value = null;
+}
+
+const routPush = (a,b) => {
+   $router.push(`/preorders/pedidos/${b.id}`);
 }
 
 watch(status, () => {

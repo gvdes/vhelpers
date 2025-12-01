@@ -139,15 +139,15 @@
             <div class="text-center">
               <div class="col q-pa-xs">
                 <div class="text-bold text-h6">Cantidad:</div>
-                <q-btn flat color="positive" icon="add" class="text-h5" @click="product.val.pivot.amount++" />
+                <q-btn flat color="positive" icon="add" class="text-h5" @click="product.val.pivot.amount++" v-if="order.status.id == 1"/>
                 <q-separator spaced inset vertical dark />
                 <div class="col column q-py-md">
-                  <input type="number" min="1" v-model="product.val.pivot.amount" class="text-center exo"
-                    style=" width: 100px; font-size: 3em; margin: auto auto; border: none;" />
+                  <input type="number" min="1" v-model="product.val.pivot.amount" class="text-center exo clean-input"
+                    style=" width: 100px; font-size: 3em; margin: auto auto; border: none;" :disabled="order.status.id != 1" />
                 </div>
                 <q-separator spaced inset vertical dark />
                 <q-btn flat color="negative" icon="remove" class="text-h5"
-                  @click="product.val.pivot.amount > 1 ? product.val.pivot.amount-- : ''" />
+                  @click="product.val.pivot.amount > 1 ? product.val.pivot.amount-- : ''" v-if="order.status.id == 1"/>
               </div>
             </div>
             <q-separator spaced inset vertical dark />
@@ -158,13 +158,13 @@
               <q-input dense filled v-model="product.val.pivot.comments" type="text" label="Notas" />
               <q-separator spaced inset vertical dark />
               <q-list>
-                <q-item class="bg-grey-11">
+                <q-item class="">
                   <q-item-section class="text-left text-caption text-bold">STOCK {{product.val.stocks.find(e => e.id ==
                     order.to.id).alias}}</q-item-section>
                   <q-item-section class="text-bold text-center">{{ totalStock }} {{ product.val.units.id == 3 ? 'Cjs' :
                     product.val.units.id == 2 ? 'Dcns' : 'Pzs' }}</q-item-section>
                 </q-item>
-                <q-item class="bg-grey-11">
+                <q-item class="">
                   <q-item-section class="text-left text-caption">P x C</q-item-section>
                   <q-item-section class="text-bold text-center">{{ product.val.pieces }} pzs</q-item-section>
                 </q-item>
@@ -179,7 +179,7 @@
           </div>
         </q-card-section>
 
-        <q-card-actions>
+        <q-card-actions v-if="order.status.id == 1">
           <!-- <q-btn flat icon="close" @click="reset" /> -->
           <q-space />
           <q-btn flat icon="add" color="positive" v-if="!product.edit" @click="addProduct" />

@@ -37,7 +37,7 @@
 
     <q-dialog v-model="Anex.state" persistent>
       <q-card>
-        <q-card-section class="row items-center bg-primary text-white">
+        <q-card-section class="row items-center bg-teal text-white">
           <q-icon name="post_add" />
           <span class="q-ml-sm">Nuevo Anexo</span>
         </q-card-section>

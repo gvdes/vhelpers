@@ -27,7 +27,7 @@
 
       <div class="col row">
         <q-btn size="md" class="col" color="primary" icon="print" flat dense v-if="cstate && cstate.id >= 2">
-          <q-menu class="bg-grey-1 text-indigo-10" style="min-width:250px;">
+          <q-menu class="" style="min-width:250px;">
             <PrinterSelect @selected="printForSupply" :partition="false" />
           </q-menu>
         </q-btn>
@@ -118,7 +118,7 @@
                     <!-- <strong>{{ props.row }}</strong> -->
                     <q-separator spaced inset vertical dark />
                     <q-icon name="print" color="pink" size="sm" @click="partitionPrint(props.row)">
-                      <q-menu class="bg-grey-1 text-indigo-10" style="min-width:250px;">
+                      <q-menu class="" style="min-width:250px;">
                         <PrinterSelect @selectedPartition="printForPartition" :partition="true" />
                       </q-menu>
                     </q-icon>

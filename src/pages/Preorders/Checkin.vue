@@ -45,7 +45,7 @@ import { $sktRestock } from 'boot/socket';
 const $route = useRoute();
 const $router = useRouter();
 const $orderStore = useOrderStore();
-$orderStore.setTitle('Checkout');
+$orderStore.setTitle('Checkin');
 $orderStore.setshowLyt(true);
 const $q = useQuasar();
 const VDB = useVDBStore()

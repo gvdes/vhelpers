@@ -19,7 +19,8 @@
         <q-menu style="width: 100%">
           <q-card>
             <q-card-section class="q-pa-sm">
-              <q-select v-model="$orderStore.units.val" :options="$orderStore.units.opts" label="Pedir Por" filled option-label="name" dense />
+              <q-select v-model="$orderStore.units.val" :options="$orderStore.units.opts" label="Pedir Por" filled
+                option-label="name" dense :disable="order._status != 1" />
             </q-card-section>
             <!-- <q-card-actions align="center" class="q-pa-none">
               <q-btn dense flat icon="upload" color="primary" @click="clickFile" />
@@ -79,7 +80,7 @@
                     <span>{{ prod.name }}</span>
                   </div>
                   <span class="text-caption text-right text-grey-6">{{ prod.category.familia.name }} (pxc {{ prod.pieces
-                  }})</span>
+                    }})</span>
                 </div>
                 <div class="text--3 text-uppercase text-italic">
                 </div>
@@ -106,7 +107,8 @@
           Selecciona Impresora
         </q-card-section>
         <q-card-section class="">
-          <q-select v-model="$orderStore.printers.val" :options="$orderStore.printers.opts.filter(e => e._type == 1)" label="Impresoras" option-label="name" filled />
+          <q-select v-model="$orderStore.printers.val" :options="$orderStore.printers.opts.filter(e => e._type == 1)"
+            label="Impresoras" option-label="name" filled />
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="Cancelar" color="primary" v-close-popup />
@@ -116,7 +118,8 @@
     </q-dialog>
     <q-dialog v-model="product.state" persistent position="bottom">
       <viewProduct :product="product.val" :order="order" :edit="product.edit" @reset="reset" :products="order.products"
-        :rules="$orderStore.rules" @addProduct="addProdcut" @deleteProduct="deleteProduct" :units="$orderStore.units.opts" :unit="$orderStore.units.val" />
+        :rules="$orderStore.rules" @addProduct="addProdcut" @deleteProduct="deleteProduct"
+        :units="$orderStore.units.opts" :unit="$orderStore.units.val" />
     </q-dialog>
 
     <q-dialog v-model="dataResponse.state" persistent>
@@ -135,7 +138,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-footer reveal elevated bordered  v-if="order._status == 1" >
+    <q-footer reveal elevated bordered v-if="order._status == 1">
       <q-separator spaced inset vertical dark />
       <div class="row q-ml-sm">
         <q-card class="col">
@@ -149,12 +152,12 @@
       </div>
       <q-separator spaced inset vertical dark />
     </q-footer>
-    <q-footer  reveal elevated bordered v-else>
-        <q-card class="my-card">
-          <q-card-section class=" text-center text-bold bg-primary ">
-           El pedido ya esta terminado :/
-          </q-card-section>
-        </q-card>
+    <q-footer reveal elevated bordered v-else>
+      <q-card class="my-card">
+        <q-card-section class=" text-center text-bold bg-primary ">
+          El pedido ya esta terminado :/
+        </q-card-section>
+      </q-card>
     </q-footer>
     <input type="file" ref="inputFile" id="inputFile" @input="readFile" hidden accept=".xlsx,.xls" />
   </q-page>
@@ -212,15 +215,16 @@ const pivots = ref({
 const printers = ref({
   state: false,
   val: null,
-  opts:[]
+  opts: []
 })
 
 const init = async () => {
-  $q.loading.show({message:'Obtenidendo datos'})
+  $q.loading.show({ message: 'Obtenidendo datos' })
   let data = {
     pedido: $route.params.oid,
     store: VDB.session.store.id_viz,
-    uid: VDB.session.credentials.staff.id_va
+    uid: VDB.session.credentials.staff.id_va,
+    _rol: VDB.session.credentials._rol
   }
   const resp = await orderApi.getOrderPrv(data)
   if (resp.fail) {
@@ -242,8 +246,10 @@ const agregar = (opt) => {
   let inx = order.value.products.findIndex(e => e.id == opt.id)
   if (inx >= 0) {
     // producto ya existe en el pedido: abrir edición
-    opt.units = $orderStore.units.opts.find(e => e.id == opt.pivot._supply_by)
+    // order.value.products[inx]
+    // opt.units = $orderStore.units.opts.find(e => e.id == opt.pivot._supply_by)
     product.value.val = order.value.products[inx];
+    // console.log(product.value.val)
     product.value.state = true
     product.value.edit = true
   } else {
@@ -262,14 +268,14 @@ const add = (opt) => {
   let inx = order.value.products.findIndex(e => e.id == opt.id)
   if (inx >= 0) {
     // producto ya existe en el pedido: abrir edición
-    opt.units = $orderStore.units.opts.find(e => e.id == opt.pivot._supply_by)
+    // opt.units = $orderStore.units.opts.find(e => e.id == opt.pivot._supply_by)
     product.value.val = order.value.products[inx];
     product.value.state = true
     product.value.edit = true
   } else {
     pivots.value._supply_by = $orderStore.units.val.id
     opt.pivot = { ...pivots.value }
-        console.log(opt.pivot)
+    console.log(opt.pivot)
     opt.units = $orderStore.units.val
     product.value.val = opt;
     product.value.state = true
@@ -372,7 +378,7 @@ const readFile = async () => {
 }
 
 const nextState = async () => {
-  $q.loading.show({message:'Mandando Pedido'})
+  $q.loading.show({ message: 'Mandando Pedido' })
   let data = {
     id: order.value.id,
     _printer: $orderStore.printers.val

@@ -82,29 +82,31 @@
           <div class="col q-pa-xs">
             <div class="text-bold text-h6 text-strong">Cantidad:</div>
 
-            <q-btn flat color="positive" icon="add" class="text-h5" @click="product.pivot.amount++" />
+            <q-btn flat color="positive" icon="add" class="text-h5" @click="product.pivot.amount++"
+              :disabled="order._status != 1" />
             <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
 
             <div class="col column q-py-md bg-section" style="border-radius: 8px;">
               <input type="number" min="1" v-model="product.pivot.amount" class="text-center exo clean-input"
-                style="width: 100px; font-size: 3em; margin:auto;" />
+                style="width: 100px; font-size: 3em; margin:auto;" :disabled="order._status != 1" />
             </div>
 
             <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
 
             <q-btn flat color="negative" icon="remove" class="text-h5"
-              @click="product.pivot.amount > 1 ? product.pivot.amount-- : ''" />
+              @click="product.pivot.amount > 1 ? product.pivot.amount-- : ''" :disabled="order._status != 1" />
           </div>
         </div>
 
         <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
         <div class="col q-pa-xs">
           <q-select dense filled v-model="product.units" :options="units" label="Surtir por" option-label="name"
-            @update:model-value="changeUnit" />
+            @update:model-value="changeUnit" :disable="order._status != 1" />
 
           <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
 
-          <q-input dense filled v-model="product.pivot.comments" type="text" label="Notas" />
+          <q-input dense filled v-model="product.pivot.comments" type="text" label="Notas"
+            :disable="order._status != 1" />
 
           <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
 
@@ -149,9 +151,12 @@
     <q-card-actions>
       <q-btn flat icon="close" @click="reset" />
       <q-space />
-      <q-btn flat icon="add" color="positive" v-if="!edit" @click="addProduct" :disable="validDelivered" />
-      <q-btn flat icon="delete" color="negative" v-if="edit" @click="deleteProduct" />
-      <q-btn flat icon="edit" color="warning" v-if="edit" @click="editProduct" :disable="validDelivered" />
+      <div v-if="order._status == 1">
+        <q-btn flat icon="add" color="positive" v-if="!edit" @click="addProduct" :disable="validDelivered" />
+        <q-btn flat icon="delete" color="negative" v-if="edit" @click="deleteProduct" />
+        <q-btn flat icon="edit" color="warning" v-if="edit" @click="editProduct" :disable="validDelivered" />
+      </div>
+
     </q-card-actions>
 
   </q-card>
