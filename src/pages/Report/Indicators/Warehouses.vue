@@ -23,7 +23,7 @@
       </q-card-section>
     </q-card>
     <q-separator spaced inset vertical dark />
-    <q-table :rows="report" :pagination="table.pagination" :loading="loading" :columns="table.columns">
+    <q-table :rows="report" :pagination="table.pagination" :loading="loading" :columns="columns">
       <template v-slot:top-right>
         <q-btn :disable="report.value" color="primary" icon="download" flat @click="exportData" />
       </template>
@@ -47,6 +47,7 @@ import dayjs from 'dayjs';
 const VDB = useVDBStore();
 const $q = useQuasar();
 
+const columns = ref([])
 
 const categories = ref({
   all: [],
@@ -68,43 +69,90 @@ const table = computed(() => ({
   pagination: {
     rowsPerPage: 10,
   },
-  columns: [
-    { name: 'code', label: 'CODIGO', field: r => r.code, align: 'left' },
-    { name: 'description', label: 'DESCRIPCION', field: r => r.description, align: 'left' },
-    { name: 'barcode', label: 'CB', field: r => r.barcode, align: 'left' },
-    { name: 'section', label: 'SECCION', field: r => r.category.familia.seccion.name, align: 'left' },
-    { name: 'family', label: 'FAMILIA', field: r => r.category.familia.name, align: 'left' },
-    { name: 'category', label: 'CATEGORIA', field: r => r.category.name, align: 'left' },
-    { name: 'mennav', label: 'MEDNAV/PERS', field: r => r.large, align: 'left' },
-    { name: 'provider', label: 'PROVEEDOR', field: r => r.providers.name, align: 'left' },
-    { name: 'maker', label: 'FABRICANTE', field: r => r.makers?.name, align: 'left' },
-    { name: 'pxc', label: 'PXC', field: r => r.pieces, align: 'center' },
-    {
-      name: 'purchases', label: 'COMPRAS', field: r => r.PurchaseYear, align: 'center'
-    },
-    {
-      name: 'purchasesPXC', label: 'COMPRAS PXC ', field: r => Number(Number(r.PurchaseYear) / Number(r.pieces)).toFixed(2), align: 'center'
-    },
-    {
-      name: `sales${Number(dayjs().format('YYYY')) - 1}`, label: `VENTAS ${dayjs().format('YYYY') - 1}`, field: r => r.SalesSubYear, align: 'center'
-    },
-    {
-      name: `sales${Number(dayjs().format('YYYY')) - 1} PXC`, label: `VENTAS ${dayjs().format('YYYY') - 1} PXC`, field: r => Number(Number(r.SalesSubYear) / Number(r.pieces)).toFixed(2), align: 'center'
-    },
-    {
-      name: `sales${dayjs().year}`, label: `VENTAS ${dayjs().format('YYYY')}`, field: r => r.SalesYear, align: 'center'
-    },
-    {
-      name: `sales${dayjs().year}`, label: `VENTAS ${dayjs().format('YYYY')}`, field: r => Number(Number(r.SalesYear) / Number(r.pieces)).toFixed(2), align: 'center'
-    },
-    {
-      name: 'stock', label: 'STOCK', field: r => r.SumStock, align: 'center'
-    },
-    {
-      name: 'stock PXC', label: 'STOCK PXC', field: r => Number(Number(r.SumStock) / Number(r.pieces)).toFixed(2), align: 'center'
-    }
-  ]
+  // columns: [
+  //   { name: 'code', label: 'CODIGO', field: r => r.code, align: 'left' },
+  //   { name: 'description', label: 'DESCRIPCION', field: r => r.description, align: 'left' },
+  //   { name: 'barcode', label: 'CB', field: r => r.barcode, align: 'left' },
+  //   { name: 'section', label: 'SECCION', field: r => r.category.familia.seccion.name, align: 'left' },
+  //   { name: 'family', label: 'FAMILIA', field: r => r.category.familia.name, align: 'left' },
+  //   { name: 'category', label: 'CATEGORIA', field: r => r.category.name, align: 'left' },
+  //   { name: 'mennav', label: 'MEDNAV/PERS', field: r => r.large, align: 'left' },
+  //   { name: 'provider', label: 'PROVEEDOR', field: r => r.providers.name, align: 'left' },
+  //   { name: 'maker', label: 'FABRICANTE', field: r => r.makers?.name, align: 'left' },
+  //   { name: 'pxc', label: 'PXC', field: r => r.pieces, align: 'center' },
+  //   {
+  //     name: 'purchases', label: 'COMPRAS', field: r => r.PurchaseYear, align: 'center'
+  //   },
+  //   {
+  //     name: 'purchasesPXC', label: 'COMPRAS PXC ', field: r => Number(Number(r.PurchaseYear) / Number(r.pieces)).toFixed(2), align: 'center'
+  //   },
+  //   {
+  //     name: `sales${Number(dayjs().format('YYYY')) - 1}`, label: `VENTAS ${dayjs().format('YYYY') - 1}`, field: r => r.SalesSubYear, align: 'center'
+  //   },
+  //   {
+  //     name: `sales${Number(dayjs().format('YYYY')) - 1} PXC`, label: `VENTAS ${dayjs().format('YYYY') - 1} PXC`, field: r => Number(Number(r.SalesSubYear) / Number(r.pieces)).toFixed(2), align: 'center'
+  //   },
+  //   {
+  //     name: `sales${dayjs().year}`, label: `VENTAS ${dayjs().format('YYYY')}`, field: r => r.SalesYear, align: 'center'
+  //   },
+  //   {
+  //     name: `sales${dayjs().year}`, label: `VENTAS ${dayjs().format('YYYY')}`, field: r => Number(Number(r.SalesYear) / Number(r.pieces)).toFixed(2), align: 'center'
+  //   },
+  //   {
+  //     name: 'stock', label: 'STOCK', field: r => r.SumStock, align: 'center'
+  //   },
+  //   {
+  //     name: 'stock PXC', label: 'STOCK PXC', field: r => Number(Number(r.SumStock) / Number(r.pieces)).toFixed(2), align: 'center'
+  //   }
+  // ]
 }))
+
+const baseColumns = [
+  { name: 'code', label: 'CODIGO', field: r => r.code, align: 'left' },
+  { name: 'description', label: 'DESCRIPCION', field: r => r.description, align: 'left' },
+  { name: 'barcode', label: 'CB', field: r => r.barcode, align: 'left' },
+  { name: 'section', label: 'SECCION', field: r => r.category.familia.seccion.name, align: 'left' },
+  { name: 'family', label: 'FAMILIA', field: r => r.category.familia.name, align: 'left' },
+  { name: 'category', label: 'CATEGORIA', field: r => r.category.name, align: 'left' },
+  { name: 'mennav', label: 'MEDNAV/PERS', field: r => r.large, align: 'left' },
+  { name: 'provider', label: 'PROVEEDOR', field: r => r.providers.name, align: 'left' },
+  { name: 'maker', label: 'FABRICANTE', field: r => r.makers?.name, align: 'left' },
+  { name: 'pxc', label: 'PXC', field: r => r.pieces, align: 'center' },
+  { name: 'purchases', label: 'COMPRAS', field: r => r.PurchaseYear, align: 'center' },
+  { name: 'purchasesPXC', label: 'COMPRAS PXC', field: r => Number(r.PurchaseYear / r.pieces).toFixed(2), align: 'center' },
+  { name: `sales${dayjs().year() - 1}`, label: `VENTAS ${dayjs().year() - 1}`, field: r => r.SalesSubYear, align: 'center' },
+  { name: `sales${dayjs().year() - 1} PXC`, label: `VENTAS ${dayjs().year() - 1} PXC`, field: r => Number(r.SalesSubYear / r.pieces).toFixed(2), align: 'center' },
+  { name: `sales${dayjs().year()}`, label: `VENTAS ${dayjs().year()}`, field: r => r.SalesYear, align: 'center' },
+  { name: `sales${dayjs().year()} PXC`, label: `VENTAS ${dayjs().year()} PXC`, field: r => Number(r.SalesYear / r.pieces).toFixed(2), align: 'center' },
+  { name: 'stock', label: 'STOCK', field: r => r.SumStock, align: 'center' },
+  { name: 'stock PXC', label: 'STOCK PXC', field: r => Number(r.SumStock / r.pieces).toFixed(2), align: 'center' }
+]
+
+// ahora agregamos las columnas dinámicas por sucursal
+const  generateColumns = (products) => {
+  const sucursales = []
+  products.forEach(p => {
+    if (p.stocks) {
+      p.stocks.forEach(s => {
+        if (!sucursales.find(x => x.id === s.id)) {
+          sucursales.push(s)
+        }
+      })
+    }
+  })
+
+  const sucursalColumns = sucursales.map(s => ({
+    name: `s_${s.alias}`,
+    label: `${s.alias}`,
+    field: r => {
+      const stockSucursal = r.stocks?.find(x => x.id === s.id)
+      return stockSucursal ? stockSucursal.pivot.stock : 0
+    },
+    align: 'center'
+  }))
+
+  return [...baseColumns, ...sucursalColumns]
+}
 
 const sections = computed(() => categories.value.all.filter(e => e.deep == 0))
 const families = computed(() => {
@@ -155,6 +203,7 @@ const getReport = async () => {
   } else {
     console.log(resp);
     report.value = resp;
+    columns.value = generateColumns(report.value)
     loading.value = false
     $q.loading.hide()
   }
