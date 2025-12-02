@@ -247,7 +247,7 @@ const exportData = async () => {
       theme: 'TableStyleMedium9', // estilo
       showRowStripes: true,
     },
-    columns: table.value.columns.map(col => ({
+    columns: columns.value.map(col => ({
       name: col.label, // encabezado visible
       filterButton: true, // habilitar filtros
     })),

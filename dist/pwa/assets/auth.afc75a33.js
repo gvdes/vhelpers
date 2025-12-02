@@ -1,0 +1,1 @@
+import{b as h,u as i,P as s}from"./index.b909a2e6.js";import{a as m}from"./axios.af1ce7ca.js";var c=h(async({router:o})=>{const r=i();o.beforeEach((t,f,a)=>{let e=s.getItem("auth");if(e){let u=s.getItem("auth").token;m.defaults.headers.common.Authorization="Bearer "+u,r.setSession(e),t.path!="/auth"?a():a("/launcher")}else t.path=="/auth"?a():a("/auth")})});export{c as default};
