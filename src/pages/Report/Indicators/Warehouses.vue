@@ -129,7 +129,7 @@ const baseColumns = [
 ]
 
 // ahora agregamos las columnas dinámicas por sucursal
-const  generateColumns = (products) => {
+const generateColumns = (products) => {
   const sucursales = []
   products.forEach(p => {
     if (p.stocks) {
@@ -213,7 +213,7 @@ const exportData = async () => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Almacenes');
 
-  const cols = table.value.columns.map(col => ({
+  const cols = columns.value.map(col => ({
     header: col.label, // encabezado
     key: col.name, // key única
     width: 15
@@ -222,7 +222,7 @@ const exportData = async () => {
 
   const rows = report.value.map(r => {
     const row = {};
-    table.value.columns.forEach(col => {
+    columns.value.forEach(col => {
       let val;
       if (typeof col.field === 'function') {
         val = col.field(r);
@@ -235,7 +235,7 @@ const exportData = async () => {
   });
 
   const rowsArray = rows.map(row =>
-    table.value.columns.map(col => row[col.name])
+    columns.value.map(col => row[col.name])
   );
 
 
