@@ -6,9 +6,25 @@
     </q-header>
     <q-page-container>
       <q-toolbar class="justify-between" v-if="$orderStore.showLyt">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> {{ $orderStore.title }} <span
-            class="text-h6"></span>
+        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">{{ $orderStore.title }}
+          </span>
         </div>
+        <q-btn color="primary" icon="event" flat v-if="$orderStore.showEvent">
+          <q-menu>
+            <q-card class="my-card">
+              <q-card-section>
+                <div>
+                  <div class="q-pb-sm text-center">
+                  </div>
+                  <q-date v-model="obtranges" range minimal />
+                </div>
+              </q-card-section>
+              <q-card-actions vertical align="center">
+                <q-btn flat label="Obtener" color="positive" @click="buscas" />
+              </q-card-actions>
+            </q-card>
+          </q-menu>
+        </q-btn>
       </q-toolbar>
       <router-view />
     </q-page-container>
@@ -36,14 +52,14 @@ const $q = useQuasar();
 const VDB = useVDBStore()
 let joined = false;
 
-
+const obtranges = ref({ from: null, to: null })
 const getRoom = (rol) => {
   switch (rol) {
     case 1:
     case 2:
     case 6:
     case 12:
-
+    case 22:
       return 'admins';
 
     case 8:
@@ -69,6 +85,7 @@ const newjoin = socket => {
 }
 
 
+
 const order_add = socket => {
   console.log(socket)
   $orderStore.addOrUpdate(socket);
@@ -87,10 +104,13 @@ const order_update = socket => {
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo datos' })
+  let fecha = dayjs(new Date()).format("YYYY/MM/DD")
+  obtranges.value = { from: fecha, to: fecha }
   let data = {
     uid: VDB.session.credentials.staff.id_va,
     wid: VDB.session.store.id_viz,
-    view: getRoom(VDB.session.credentials._rol)
+    view: getRoom(VDB.session.credentials._rol),
+    date: obtranges.value
   }
   console.log(data)
   const resp = await orderApi.getOrders(data)
@@ -108,29 +128,29 @@ const init = async () => {
   }
 }
 
-
-// onMounted(async () => {
-//   init()
-//   // $sktOrders.connect();
-//   // $sktOrders.emit("join", $orderStore.socket_user);
-//   watch(
-//     () => $orderStore.socket_user,
-//     val => {
-//       if (val) {
-//         $sktOrders.connect();
-//         $sktOrders.emit("join", val);
-//       }
-//     },
-//     { immediate: true }
-//   )
-//   $sktOrders.on('joinedat', joinedat)
-//   $sktOrders.on('newjoin', newjoin)
-//   $sktOrders.on('order_add', order_add)
-//   $sktOrders.on('order_update', order_update)
-
-// })
-
-
+const buscas = async () => {
+  $q.loading.show({ message: 'Obteniendo datos' })
+  let data = {
+    uid: VDB.session.credentials.staff.id_va,
+    wid: VDB.session.store.id_viz,
+    view: getRoom(VDB.session.credentials._rol),
+    date: obtranges.value
+  }
+  console.log(data)
+  const resp = await orderApi.getOrders(data)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    $orderStore.setOrders(resp.orders);
+    $orderStore.setPrinters(resp.prints);
+    $orderStore.setUnits(resp.units);
+    $orderStore.setRules(resp.rules);
+    $orderStore.setUsers(resp.user);
+    $orderStore.setProcess(resp.process);
+    $q.loading.hide()
+  }
+}
 
 onMounted(() => {
   init()

@@ -60,6 +60,8 @@ const $router = useRouter();
 const $orderStore = useOrderStore();
 $orderStore.setTitle('ALMACEN');
 $orderStore.setshowLyt(true);
+$orderStore.setShowEvent(true);
+
 const $q = useQuasar();
 const VDB = useVDBStore()
 const pagination = ref({ rowsPerPage:20 })

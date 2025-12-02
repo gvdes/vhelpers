@@ -66,6 +66,8 @@ const $router = useRouter();
 const $orderStore = useOrderStore();
 $orderStore.setTitle('CONFIGURACION');
 $orderStore.setshowLyt(true);
+$orderStore.setShowEvent(false);
+
 const $q = useQuasar();
 const VDB = useVDBStore()
 

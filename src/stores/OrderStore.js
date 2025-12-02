@@ -38,7 +38,8 @@ export const useOrderStore = defineStore('layout', {
     users:[],
     rules: [],
     process:[],
-    showLyt: true
+    showLyt: true,
+    showEvent:false,
   }),
 
   getters: {
@@ -106,6 +107,9 @@ export const useOrderStore = defineStore('layout', {
     },
     setProcess(data){
       this.process = data
+    },
+    setShowEvent(data){
+      this.showEvent = data
     }
   }
 }

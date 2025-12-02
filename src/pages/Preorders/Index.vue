@@ -75,6 +75,8 @@ const $router = useRouter();
 const $orderStore = useOrderStore();
 $orderStore.setTitle('INICIO');
 $orderStore.setshowLyt(true);
+$orderStore.setShowEvent(true);
+
 const $q = useQuasar();
 const VDB = useVDBStore()
 const selectedUser = ref(null);   // usuario filtrado

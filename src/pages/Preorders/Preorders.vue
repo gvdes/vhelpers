@@ -120,6 +120,8 @@ const $router = useRouter();
 const $orderStore = useOrderStore();
 $orderStore.setTitle('PEDIDOS');
 $orderStore.setshowLyt(true);
+$orderStore.setShowEvent(false);
+
 const $q = useQuasar();
 const VDB = useVDBStore()
 const pagination = ref({ rowsPerPage:20 })
