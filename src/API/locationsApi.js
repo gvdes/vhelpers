@@ -40,4 +40,10 @@ export default{
   deleteMassiveLocation(data){
     return assist.post(`/locations/deleteMassiveLocation`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  reportLocations(data){
+    return assist.post(`/locations/reportLocations`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+  reportMinMax(data){
+    return assist.post(`/locations/reportMinMax`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 }

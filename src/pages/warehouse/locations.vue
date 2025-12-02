@@ -32,6 +32,9 @@ import dbproduct from 'src/API/Product'
 const VDB = useVDBStore();
 const $q = useQuasar();
 const tab = ref('locations')
+const warehousStore = useWarehouse()
+warehousStore.setshowReportLocations(true);
+warehousStore.setshowReportMinMax(false);
 
 const mosMassisve =  computed(() => [1,2,5,6,12,22].includes(VDB.session.credentials._rol))
 </script>

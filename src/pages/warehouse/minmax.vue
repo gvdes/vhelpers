@@ -180,6 +180,8 @@ const VDB = useVDBStore();
 const $q = useQuasar();
 const warehousStore = useWarehouse()
 warehousStore.setTitle('Minimos Y Maximos')
+warehousStore.setshowReportLocations(false);
+warehousStore.setshowReportMinMax(true);
 const inputFile = ref(null)
 const tab = ref('products')
 const product = ref({
