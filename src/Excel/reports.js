@@ -130,7 +130,10 @@ const conStockUbicados = async (data) => {
       "Exhibición":e.stocks[0].pivot.exh,
       "Maximo":e.stocks[0].pivot.max,
       "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      // "locations":e.locations.map(e => e.path).join('/'),
+      "UGeneral":e.bodega?.map(e => e.path).join('/'),
+      "UExhibicion":e.ventas?.map(e => e.path).join('/'),
+
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -183,7 +186,9 @@ const conStockSinUbicar = async (data) => {
       "Exhibición":e.stocks[0].pivot.exh,
       "Maximo":e.stocks[0].pivot.max,
       "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      // "locations":e.locations.map(e => e.path).join('/'),
+      "UGeneral":e.bodega?.map(e => e.path).join('/'),
+      "UExhibicion":e.ventas?.map(e => e.path).join('/'),
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -289,7 +294,9 @@ const sinStockUbicados = async (data) => {
       "Exhibición":e.stocks[0].pivot.exh,
       "Maximo":e.stocks[0].pivot.max,
       "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      // "locations":e.locations.map(e => e.path).join('/'),
+      "UGeneral":e.bodega?.map(e => e.path).join('/'),
+      "UExhibicion":e.ventas?.map(e => e.path).join('/'),
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
