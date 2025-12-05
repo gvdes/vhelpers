@@ -16,7 +16,7 @@
                   <div>
                     <div class="q-pb-sm text-center">
                     </div>
-                    <q-date v-model="obtranges" range minimal />
+                    <q-date v-model="dateranges" range minimal />
                   </div>
                 </q-card-section>
                 <q-card-actions vertical align="center">
@@ -25,7 +25,7 @@
               </q-card>
             </q-menu>
           </q-btn>
-          <q-btn color="primary" icon="search" dense flat>
+          <!-- <q-btn color="primary" icon="search" dense flat>
             <q-menu>
               <div class="q-pa-md">Buscar Inventario</div>
               <q-separator />
@@ -36,7 +36,7 @@
                 </div>
               </q-form>
             </q-menu>
-          </q-btn>
+          </q-btn> -->
           <q-separator spaced inset vertical dark />
           <q-btn color="primary" icon="add" outline @click="newCyclecount.state = !newCyclecount.state" />
         </div>
@@ -118,11 +118,11 @@ const dateranges = ref({ from: null, to: null });
 
 
 const cansearch = computed(() => (folio.value && folio.value.length));
-const search = () => {
-  console.log("searching folio");
-  wndViewer.value.folio = folio.value;
-  wndViewer.value.state = true;
-}
+// const search = () => {
+//   console.log("searching folio");
+//   wndViewer.value.folio = folio.value;
+//   wndViewer.value.state = true;
+// }
 
 const init = async () => {
   // console.log($user.session);
@@ -192,7 +192,25 @@ const createCyclecount = async () => {
   }
 }
 
-const buscas = () => {
+const buscas = async() => {
+  // console.log($user.session);
+  $q.loading.show({ message: "Obteniendo Datos..." });
+  let data = {
+    store: VDB.session.store.id_viz,
+    suc: VDB.session.store.id,
+    date: dateranges.value
+  }
+  const resp = await CDB.index(data);
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    cycleStore.setCyclecount(resp.inventories)
+    cycleStore.setUsers(resp.colab)
+    cycleStore.setSections(resp.secciones)
+    cycleStore.setLocations(resp.locations)
+    $q.loading.hide();
+  }
 
 }
 
@@ -217,7 +235,7 @@ const countingconfirmed = data => {
 }
 const endingCounting = data => {
   cycleStore.updateCyclecounts(data.counter)
-  $q.notify({message:`Termino el conteo ${data.user.me.names}`})
+  $q.notify({ message: `Termino el conteo ${data.user.me.names}` })
   $router.push('/ciclicos/counted');
 }
 
