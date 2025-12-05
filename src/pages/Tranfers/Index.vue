@@ -121,7 +121,7 @@ const nwTransfer = ref({
 
 
 const validTransfer = computed(() => nwTransfer.value._origin && nwTransfer.value._destiny && nwTransfer.value.notes)
-const userWarehouse = computed(() => VDB.session.rol !== 'alm' && VDB.session.rol !== 'vld'  ? warehouses.value.filter(w => [1, 2, 3, 4].includes(w.id)) : warehouses.value.filter(w => [5, 6, 7,8,9].includes(w.id)))
+const userWarehouse = computed(() => VDB.session.rol !== 'alm' && VDB.session.rol !== 'vld' && VDB.session.rol !== 'gce'  ? warehouses.value.filter(w => [1, 2, 3, 4].includes(w.id)) : warehouses.value.filter(w => [5, 6, 7,8,9].includes(w.id)))
 
 const index = async () => {
   console.log("Recibiendo Datos :)")
@@ -219,7 +219,7 @@ const direct = (transfer) => {
   ) {
     $router.push(`transfers/${oid}`);
   } else if (
-   ( VDB.session.rol == 'alm' || VDB.session.rol == 'vld'  ) &&
+   ( VDB.session.rol == 'alm' || VDB.session.rol == 'vld' || VDB.session.rol == 'gce'   ) &&
     ([5, 6,7].includes(transfer.destiny.id) || [5, 6,7].includes(transfer.origin.id))
   ) {
     $router.push(`transfers/${oid}`);
