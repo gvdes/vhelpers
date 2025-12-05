@@ -60,7 +60,7 @@
               <q-card-section>
                 <q-table :rows="product.details" hideBottom :columns="table.columns" :pagination="{ rowsPerPage: 0 }">
                   <template v-slot:bottom-row>
-                    <q-tr class="text-bold bg-yellow-12">
+                    <q-tr class="text-bold text-dark bg-yellow-12">
                       <q-td class="text-center">
                         Total
                       </q-td>

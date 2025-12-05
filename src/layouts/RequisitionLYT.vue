@@ -810,14 +810,14 @@ init()
 
   td:first-child
     /* bg color is important for td; just specify one */
-    background-color: #FBFBFB
+
 
   tr th
     position: sticky
     /* higher than z-index for td below */
     z-index: 2
     /* bg color is important; just specify one */
-    background: #FBFBFB
+
 
   /* this will be the loading indicator */
   thead tr:last-child th

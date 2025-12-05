@@ -24,7 +24,7 @@
       </q-card-section>
       <q-card-section>
         <div class="row">
-          <q-select  style="width: 80px;" v-model="typeBus.val" :options="typeBus.opts" filled dense
+          <q-select style="width: 80px;" v-model="typeBus.val" :options="typeBus.opts" filled dense
             @update:modelValue="obtLocations" hide-dropdown-icon />
           <q-separator spaced inset vertical dark />
           <div v-if="typeBus.val.id == 1" class="col">
@@ -43,7 +43,7 @@
               <q-select class="col" v-model="selectedUbicacion" :options="sections" label="ALMACEN" filled
                 optionLabel="name" dense />
               <q-separator spaced inset vertical dark />
-              <selectsSections v-if="selectedUbicacion" :sections="selectedUbicacion.sections"
+              <selectsSections class="col" v-if="selectedUbicacion" :sections="selectedUbicacion.sections"
                 @obtProducts="obtenerProductsSection" />
             </div>
           </div>
@@ -418,8 +418,8 @@ const readFile = async () => {
 
 const labelType = (_prices, ipack) => {
   let prices = [..._prices];
-    prices.sort((a, b) => a.pivot._type - b.pivot._type);
-    console.log(prices);
+  prices.sort((a, b) => a.pivot._type - b.pivot._type);
+  console.log(prices);
   const centro = prices.find(e => e.pivot._type == 4);
   const menudeo = prices.find(e => e.pivot._type == 1);
   if (centro.pivot.price == menudeo.pivot.price) {
@@ -459,7 +459,12 @@ const colorLabel = (type) => {
 const obtLocations = async () => {
   if (typeBus.value.val.id == 2) {
     $q.loading.show({ message: 'Obteniendo Secciones' })
-    const resp = await locationsApi.index(VDB.session.store.id_viz)
+    let data = {
+      _rol: VDB.session.credentials._rol,
+      _workpoint: VDB.session.store.id_viz
+    }
+    console.log(data);
+    const resp = await locationsApi.index(data)
     if (resp.fail) {
       console.log(resp);
     } else {
@@ -471,7 +476,7 @@ const obtLocations = async () => {
 }
 
 const obtenerProductsSection = async (nivel) => {
-  $q.loading.show({message:'Obteniendo Productos'})
+  $q.loading.show({ message: 'Obteniendo Productos' })
   let data = {
     section: nivel.selected,
     workpoint: VDB.session.store.id_viz,

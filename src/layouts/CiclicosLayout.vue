@@ -1,29 +1,33 @@
 <template>
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
-
-    <!-- (Optional) The Header -->
     <q-header class="bg-grey-3 text-dark" bordered>
       <UserToolbar />
       <q-separator />
-
     </q-header>
-
     <q-page-container>
       <q-toolbar class="justify-between">
         <div><span class="text-grey">Helpers</span> <q-icon name="navigate_next" color="primary" /> <span
-            class="text-h6">Ciclicos</span></div>
-
-        <div class="row items-center">
-          <q-select v-model="viewdate" :options="optranges" label="Vista" autofocus @update:model-value="reloadView"
-            borderless>
-            <template v-slot:prepend>
-              <q-btn dense flat color="primary" icon="autorenew" @click.stop="init" />
-            </template>
-          </q-select>
-          <!-- <q-btn color="primary" /> -->
+            class="text-h6">{{ cycleStore.title }}</span></div>
+        <div class="row items-center" v-if="cycleStore.showBtns">
+          <q-btn color="primary" icon="event" flat>
+            <q-menu>
+              <q-card class="my-card">
+                <q-card-section>
+                  <div>
+                    <div class="q-pb-sm text-center">
+                    </div>
+                    <q-date v-model="obtranges" range minimal />
+                  </div>
+                </q-card-section>
+                <q-card-actions vertical align="center">
+                  <q-btn flat label="Obtener" color="positive" @click="buscas" />
+                </q-card-actions>
+              </q-card>
+            </q-menu>
+          </q-btn>
           <q-btn color="primary" icon="search" dense flat>
             <q-menu>
-              <div class="q-pa-md bg-grey-2 text-primary">Buscar Inventario</div>
+              <div class="q-pa-md">Buscar Inventario</div>
               <q-separator />
               <q-form dense @submit="search" class="q-gutter-md q-pa-md">
                 <q-input v-model="folio" type="number" label="Folio" autofocus />
@@ -33,118 +37,226 @@
               </q-form>
             </q-menu>
           </q-btn>
+          <q-separator spaced inset vertical dark />
+          <q-btn color="primary" icon="add" outline @click="newCyclecount.state = !newCyclecount.state" />
         </div>
       </q-toolbar>
-      <q-page padding>
-        <q-card class="my-card" flat>
-          <q-table :title="`Inventarios del ${dispDateInit} al ${dispDateEnd} [ ${inventoriesdb.length} ]`"
-            :rows="inventoriesdb" :columns="invtable.cols" row-key="id" @row-click="rowclicked" />
+
+      <q-dialog v-model="newCyclecount.state" persistent :maximized="maximizedToggle" transition-show="slide-up"
+        transition-hide="slide-down">
+        <q-card>
+          <q-bar>
+            <div class="text-center text-h6">Nuevo Inventario</div>
+            <q-space />
+            <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
+              <q-tooltip v-if="maximizedToggle">Minimize</q-tooltip>
+            </q-btn>
+            <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
+              <q-tooltip v-if="!maximizedToggle">Maximize</q-tooltip>
+            </q-btn>
+            <q-btn dense flat icon="close" @click="reset">
+              <q-tooltip>Close</q-tooltip>
+            </q-btn>
+          </q-bar>
+          <InvCreate :config="newCyclecount" @create="createCyclecount" />
         </q-card>
 
-
-        <q-dialog v-model="wndViewer.state" full-width>
-          <InvViewer :folio="wndViewer.folio" :store="$user.session.store.id_viz" />
-        </q-dialog>
-      </q-page>
+      </q-dialog>
+      <router-view />
     </q-page-container>
 
   </q-layout>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import dayjs from 'dayjs';
 import UserToolbar from 'src/components/UserToolbar.vue';
 import CDB from 'src/API/cicsdb';
 import { useVDBStore } from 'src/stores/VDB';
-import InvViewer from 'src/components/Inventory/Viewer.vue'
-
+import InvCreate from 'src/components/Inventory/Create.vue'
+import { cyclecountStore } from 'stores/cyclecountStore';
+import { $sktCounters } from 'boot/socket';
 const folio = ref("");
 const $q = useQuasar();
 const $route = useRoute();
 const $router = useRouter();
-const $user = useVDBStore();
-
+const VDB = useVDBStore();
+const cycleStore = cyclecountStore()
 const wndViewer = ref({ state: false, data: null });
 const viewdate = ref(null);
+
 const inventoriesdb = ref([]);
-const invtable = ref({
-  cols: [
-    { name: "id", field: "id", label: "Folio" },
-    { name: "started", field: row => dayjs(row.created_at).format("YYYY/MM/DD HH:mm:ss"), label: "Creacion", align: "center" },
-    { name: "status", field: row => row.status.name, label: "Estado", align: "center" },
-    {
-      name: "ended",
-      field: row => {
-        let logend = row.log.find(l => l.id == 3)
-        return logend ? dayjs(logend.pivot.created_at).format("YYYY/MM/DD HH:mm:ss") : "--"
-      },
-      align: "center",
-      label: "Termino"
-    },
-    { name: "models", field: "products_count", label: "Modelos" },
-    { name: "type", field: row => row.type.name, label: "Tipo" },
-    { name: "warehouse", field: row => row.settings ? JSON.parse(row.settings).warehouse.name : '---', label: "Almacen" },
-  ]
-});
+const newCyclecount = ref({
+  state: false,
+  type: {
+    val: { id: 2, label: 'Ciego' },
+    opts: [
+      { id: 1, label: 'Normal' },
+      { id: 2, label: 'Ciego' },
+    ]
+  },
+  option: {
+    val: null,
+    opts: [
+      { id: 1, label: 'Ubicacion' },
+      { id: 2, label: 'Sin Ubicacion' },
+      { id: 3, label: 'Producto' },
+    ]
+  },
+  notes: null,
+  resexh: [],
+  resgen: [],
+  section: null,
+  products: []
+})
+const maximizedToggle = ref(true);
 
-const optranges = ref([
-  { id: "day", label: "Hoy" },
-  { id: "week", label: "Semana" },
-  { id: "month", label: "Mes" },
-  { id: 'c', label: 'otra ...', disable: true },
-]);
+const dateranges = ref({ from: null, to: null });
 
-const dateranges = ref({
-  from: dayjs(Date.now()).startOf('day'), // seteamos la fecha de nicio, por default al inicio del dia actual
-  to: dayjs(Date.now()).endOf('day')// seteamos la fecha final, por default al inicio del dia actual
-});
-
-// const inventories = computed(() => inventoriesdb.value.map(i => {; return i; }));
 
 const cansearch = computed(() => (folio.value && folio.value.length));
-const dispDateInit = computed(() => dateranges.value.from.format("YYYY/MM/DD")); // despliega la fecha de inicio
-const dispDateEnd = computed(() => dateranges.value.to.format("YYYY/MM/DD")); // despliega la fecha de fin
-
 const search = () => {
   console.log("searching folio");
   wndViewer.value.folio = folio.value;
   wndViewer.value.state = true;
 }
 
-const rowclicked = async (evt, row, idx) => {
-  wndViewer.value.folio = row.id;
-  wndViewer.value.state = true;
-}
-
 const init = async () => {
-  console.log($user.session);
+  // console.log($user.session);
   $q.loading.show({ message: "Cargado vista..." });
+  let fecha = dayjs(new Date()).format("YYYY/MM/DD")
+  dateranges.value = { from: fecha, to: fecha }
+  let data = {
+    store: VDB.session.store.id_viz,
+    suc: VDB.session.store.id,
+    date: dateranges.value
+  }
+  const resp = await CDB.index(data);
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    cycleStore.setCyclecount(resp.inventories)
+    cycleStore.setUsers(resp.colab)
+    cycleStore.setSections(resp.secciones)
+    cycleStore.setLocations(resp.locations)
+    $q.loading.hide();
+  }
 
-  let v = $route.query.v ?? "day"; // define el valor de la vista
-  let r = optranges.value.findIndex(o => o.id == v); // busca que sea un valor valido (day||week||month)
-  let idx = (r >= 0) ? r : 0; // obtiene el indice correspondiente al valor hayado, de lo contrario devuelve 0 (day)
-
-  console.log(idx);
-
-  viewdate.value = optranges.value[idx]; // setea el valor del select de la vista
-  dateranges.value.from = dayjs(Date.now()).startOf(viewdate.value.id); // setea el valor de inicio de la vista
-
-  const response = await CDB.index({ dateranges, view: viewdate.value, store: $user.session.store.id_viz });
-  console.log(response);
-  inventoriesdb.value = response.inventories;
-
-  $q.loading.hide();
 }
 
-const reloadView = () => {
-  $router.push(`/ciclicos?v=${viewdate.value.id}`)
-};
+const reset = () => {
+  newCyclecount.value = {
+    state: false,
+    type: {
+      val: { id: 2, label: 'Ciego' },
+      opts: [
+        { id: 1, label: 'Normal' },
+        { id: 2, label: 'Ciego' },
+      ]
+    },
+    option: {
+      val: null,
+      opts: [
+        { id: 1, label: 'Ubicacion' },
+        { id: 2, label: 'Sin Ubicacion' },
+        { id: 3, label: 'Producto' },
+      ]
+    },
+    notes: null,
+    resexh: [],
+    resgen: [],
+    section: null,
+    products: []
+  }
+}
+
+const createCyclecount = async () => {
+  console.log(newCyclecount.value)
+  $q.loading.show({ message: 'Creando Ciclicos' })
+  newCyclecount.value._account = VDB.session.credentials.staff.id_va
+  newCyclecount.value._workpoint = VDB.session.store.id_viz
+  const resp = await CDB.addCyclecount(newCyclecount.value)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    if (resp.success) {
+      resp.data.forEach(e => cycleStore.addCyclecount(e.counter));
+      $q.loading.hide()
+      reset()
+    }
+  }
+}
+
+const buscas = () => {
+
+}
+
+
+const joined = socket => {
+  console.log(socket)
+  $q.notify({ message: `El usuario ${socket.me.names} Se Unio :)`, type: 'positive', position: 'top' })
+}
+const counting = data => {
+  console.log(data)
+  cycleStore.lock(data.product.id, data)
+}
+
+const cancelcounting = data => {
+  console.log(data)
+  cycleStore.unlock(data.product.id)
+}
+
+const countingconfirmed = data => {
+  console.log(data)
+  cycleStore.updateLockedProduct(data.product)
+}
+const endingCounting = data => {
+  cycleStore.updateCyclecounts(data.counter)
+  $q.notify({message:`Termino el conteo ${data.user.me.names}`})
+  $router.push('/ciclicos/counted');
+}
+
+onMounted(() => {
+  init()
+
+  $sktCounters.on("connect", () => {
+    if (cycleStore.socket_user) {
+      $sktCounters.emit("index", cycleStore.socket_user.profile)
+    }
+  })
+  $sktCounters.connect()
+
+  watch(
+    () => cycleStore.socket_user.profile,
+    val => {
+      if (val && $sktCounters.connected) {
+        $sktCounters.emit("index", val)
+      }
+    },
+    { immediate: true }
+  )
+
+  $sktCounters.on('joined', joined)
+  $sktCounters.on('counting', counting)
+  $sktCounters.on('cancelcounting', cancelcounting)
+  $sktCounters.on('countingconfirmed', countingconfirmed)
+  $sktCounters.on('endingCounting', endingCounting)
+
+})
+
+onBeforeUnmount(() => {
+  $sktCounters.off('joined', joined)
+  $sktCounters.off('counting', counting)
+  $sktCounters.off('cancelcounting', cancelcounting)
+  $sktCounters.off('countingconfirmed', countingconfirmed)
+  $sktCounters.off('endingCounting', endingCounting)
+
+})
 
 init();
-
-watch(() => $route.query, () => { init(); }); // vigila cambios de la ruta
-
 </script>

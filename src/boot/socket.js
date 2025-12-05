@@ -10,6 +10,8 @@ const URLSocket = 'http://192.168.10.189:4444';
 
 const $sktRestock = io(`${URLSocket}/resurtidos`,{autoConnect:false});
 const $sktOrders = io(`${URLSocket}/preventa`,{autoConnect:false});
+const $sktCounters = io(`${URLSocket}/counters`,{autoConnect:false});
 
 
-export { $sktRestock, $sktOrders }
+
+export { $sktRestock, $sktOrders, $sktCounters }

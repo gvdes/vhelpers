@@ -14,11 +14,7 @@ const routes = [
     component: () => import('layouts/IvaLayout.vue'),
     meta: { moduleId: 1 }
   },
-  {
-    path: '/ciclicos',
-    component: () => import('layouts/CiclicosLayout.vue'),
-    meta: { moduleId: 2 }
-  },
+
   {
     path: '/modificaciones',
     component: () => import('layouts/ModifyLayout.vue'),
@@ -64,6 +60,18 @@ const routes = [
       { path: 'year', name: 'ryr', component: () => import('pages/Report/Sales/year.vue'), meta: { moduleId: 29 } },
     ],
   },
+  {
+    path: '/ciclicos',
+    component: () => import('layouts/CiclicosLayout.vue'),
+    meta: { moduleId: 2 },
+    children: [
+      { path: 'report', name: 'crpt', component: () => import('pages/Ciclicos/reports.vue'), meta: { moduleId: 2 } },
+      { path: 'counted', name: 'cntd', component: () => import('pages/Ciclicos/counted.vue'), meta: { moduleId: 73 } },
+      { path: 'counted/:cid', name: 'crte', component: () => import('pages/Ciclicos/viewCounted.vue'), meta: { moduleId: 73 } },
+
+    ],
+  },
+
   {
     path: '/cardStores',
     component: () => import('layouts/cardStores.vue'),
@@ -347,9 +355,9 @@ const routes = [
       { path: 'index', name: 'inx', component: () => import('pages/Preorders/Index.vue'), meta: { moduleId: 64 } },
       { path: 'checkin', name: 'prvchk', component: () => import('pages/Preorders/Checkin.vue'), meta: { moduleId: 66 } },
       { path: 'settings', name: 'setpr', component: () => import('pages/Preorders/Config.vue'), meta: { moduleId: 70 } },
-      { path: 'pedidos', name: 'preo', component: () => import('pages/Preorders/Preorders.vue'), meta: { moduleId: 71 }},
-      { path: 'pedidos/:oid', name: 'prwid', component: () => import('pages/Preorders/Viewpreorders.vue'), meta: { moduleId: 71 }},
-      { path: 'warehouse', name: 'prwha', component: () => import('pages/Preorders/Warehouse.vue'), meta: { moduleId: 72 }},
+      { path: 'pedidos', name: 'preo', component: () => import('pages/Preorders/Preorders.vue'), meta: { moduleId: 71 } },
+      { path: 'pedidos/:oid', name: 'prwid', component: () => import('pages/Preorders/Viewpreorders.vue'), meta: { moduleId: 71 } },
+      { path: 'warehouse', name: 'prwha', component: () => import('pages/Preorders/Warehouse.vue'), meta: { moduleId: 72 } },
 
     ],
   },
