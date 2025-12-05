@@ -22,8 +22,8 @@
       <q-table :rows="cyclecount?.products || []" :columns="columns" row-key="id" dense flat bordered
         @row-click="updateTabelProduct" :pagination="pagination" />
     </q-card>
-
-    <q-footer class="row q-ml-sm q-mr-sm" :class="isBlack ? 'bg-grey-10 text-white' : 'bg-grey-4 text-dark'">
+    <q-footer v-if="cyclecount?._status == 2" class="row q-ml-sm q-mr-sm"
+      :class="isBlack ? 'bg-grey-10 text-white' : 'bg-grey-4 text-dark'">
       <q-select class="col" v-model="filter" :options="opts" filled option-label="code" use-input fill-input
         hide-selected input-debounce="0" @filter="filterFn" @input-value="setModel" dense
         @update:model-value="updateProduct">
@@ -31,6 +31,10 @@
       <q-btn v-if="validProduct?.length > 0" size="sm" icon="send" @click="confirm = !confirm" />
     </q-footer>
 
+    <q-footer v-if="cyclecount?._status > 2" class=" q-ml-sm q-mr-sm">
+      <q-btn v-if="validProduct?.length > 0" size="sm" label="Salir" @click="$router.push('/ciclicos/counted')"
+        class="full-width" />
+    </q-footer>
 
     <q-dialog v-model="countProduct.state" persistent position="bottom">
       <q-card>
@@ -224,17 +228,22 @@ const updateProduct = (a) => {
     filter.value = null;
     return
   }
-  countProduct.value.state = true;
-  countProduct.value.val = a
-  filter.value = null;
-  let socketData = {
-    by: cycleStore.socket_user.profile,
-    product: a,
-    room: `COUNTER${$route.params.cid}`
+
+  if (cyclecount.value._status == 2) {
+    countProduct.value.state = true;
+    countProduct.value.val = a
+    filter.value = null;
+    let socketData = {
+      by: cycleStore.socket_user.profile,
+      product: a,
+      room: `COUNTER${$route.params.cid}`
+    }
+    $sktCounters.emit('counting', socketData)
   }
-  $sktCounters.emit('counting', socketData)
+
 }
 const updateTabelProduct = (b, a) => {
+  //  console.log(a)
   if (cycleStore.lockedProducts[a.id]) {
     $q.notify({
       type: 'warning',
@@ -243,15 +252,19 @@ const updateTabelProduct = (b, a) => {
     filter.value = null;
     return
   }
-  countProduct.value.state = true;
-  countProduct.value.val = a
-  filter.value = null;
-  let socketData = {
-    by: cycleStore.socket_user.profile,
-    product: a,
-    room: `COUNTER${$route.params.cid}`
+
+  if (cyclecount.value._status == 2) {
+    countProduct.value.state = true;
+    countProduct.value.val = a
+    filter.value = null;
+    let socketData = {
+      by: cycleStore.socket_user.profile,
+      product: a,
+      room: `COUNTER${$route.params.cid}`
+    }
+    $sktCounters.emit('counting', socketData)
   }
-  $sktCounters.emit('counting', socketData)
+
 }
 const setModel = (val) => {
   filter.value = val
