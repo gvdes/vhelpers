@@ -76,7 +76,6 @@
       </q-table>
     </q-card-section>
   </q-card>
-
   <q-footer v-if="config.option.val">
     <q-card v-if="config.option.val.id == 3" class="row">
       <ProductAutocomplete class="col" :checkState="true" @input="add" @agregar="agregar"
@@ -95,7 +94,7 @@
         <div class="text-h6">Selecciona una Seccion</div>
       </q-card-section>
       <q-card-section class="q-pt-none">
-        <q-select v-model="config.section" :options="cycleStore.sections" label="Seccion" filled option-label="name" />
+        <q-select v-model="config.section" :options="cycleStore.sections" label="Seccion" filled option-label="name" multiple use-chips />
       </q-card-section>
       <q-card-actions align="right" class="text-primary">
         <q-btn flat @click="obtener" icon="send" v-close-popup />
@@ -199,7 +198,7 @@ const obtener = async () => {
     $q.loading.show({ message: 'Obteniendo Datos' });
     let data = {
       workpoint: VDB.session.store.id_viz,
-      seccion: props.config.section.id
+      seccion: props.config.section.map(e => e.id)
     };
     console.log(data);
     const resp = await CDB.obtProductSLocation(data)
@@ -218,7 +217,7 @@ const obtenerProductsSection = async (nivel) => {
   let data = {
     ubicacion: nivel.selected,
     workpoint: VDB.session.store.id_viz,
-    seccion: props.config.section.id
+    seccion: props.config.section.map(e => e.id)
   }
   console.log(data);
   const resp = await CDB.obtProductSections(data)

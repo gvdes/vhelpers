@@ -54,11 +54,16 @@
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar icon="receipt_long" color="primary" text-color="white" />
-          <span class="q-ml-sm">{{ viewOrder.val.id }}</span>
+          <span class="q-ml-sm text-h4">{{ viewOrder.val.id }}</span>
         </q-card-section>
-        <q-card-section class="text-h6">
+        <q-card-section class="text-h5">
           Notas :
           <span class="text-bold">{{ viewOrder.val.notes }}</span>
+        </q-card-section>
+        <q-card-section class="text-h5">
+          Creado Por :
+          <span>{{ `${viewOrder.val.created_by.names} ${viewOrder.val.created_by.surname_pat}
+            ${viewOrder.val.created_by.surname_mat}` }}</span>
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat icon="close" color="negative" v-close-popup />
@@ -133,11 +138,7 @@ const ordersdb = computed(() => $restockStore.ordersok.filter(o => o._workpoint_
 const prints = computed(() => $restockStore.printers.find(e => e.id == VDB.session.store.id_viz).printers)
 
 const continuePedido = () => {
-  // if (b._status == 1) {
   $router.push(`/distribute/dashboardStore/${viewOrder.value.val.id}`)
-  // }else{
-
-  // }
 }
 
 

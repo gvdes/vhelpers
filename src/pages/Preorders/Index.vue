@@ -3,8 +3,12 @@
     <div :class="!ismobile ? 'row' : ''">
       <q-table :class="!ismobile ? 'col' : ''" :rows="filteredOrders" :columns="table.columns" :filter="table.filter"
         :pagination="pagination" row-key="id" :row-class="row => selectedOrder?.id === row.id ? 'bg-blue-1' : ''"
-        @row-click="onOrderClick" @row-dblclick="routPush"  >
+        @row-click="onOrderClick" @row-dblclick="routPush" @touchstart="onTouchStart"
+        @contextmenu.prevent="onRightClick" @touchend="onTouchEnd" :selection="actionMode ? 'multiple' : 'none'"
+        :selected="selected" @update:selected="val => selected = val">
         <template v-slot:top-right>
+          <q-btn v-if="actionMode" icon="download" color="primary" flat @click="downloadSelected" />
+          <q-btn v-if="actionMode" flat dense icon="close" class="q-ml-sm" @click="clearActionMode" />
           <q-select v-model="status" :options="$orderStore.process" label="Estado" filled style="width: 130px;" dense
             option-label="name">
             <template v-if="status" v-slot:append>
@@ -29,14 +33,6 @@
       <q-table :class="!ismobile ? 'col' : ''" :rows="filteredUsers" :columns="tableUsers.columns"
         :filter="tableUsers.filter" :pagination="pagination" row-key="id"
         :row-class="row => selectedUser?.id === row.id ? 'bg-blue-1' : ''" @row-click="onUserClick">
-        <!-- <template v-slot:body="props" >
-
-          <q-tr :props="props" :class="props.row.id === selectedUser?.id ? 'selected-user' : ''">
-            <q-td v-for="col in props.cols" :key="col.name" :props="props">
-              {{ col.value }}
-            </q-td>
-          </q-tr>
-        </template> -->
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="tableUsers.filter" placeholder="Buscar">
             <template v-slot:append>
@@ -45,13 +41,7 @@
           </q-input>
         </template>
       </q-table>
-
-
     </div>
-
-
-
-
   </q-page>
 </template>
 
@@ -65,6 +55,7 @@ import { vizmedia } from "boot/axios"
 import { useVDBStore } from 'stores/VDB';
 import { useOrderStore } from 'stores/OrderStore';
 import { colors, useQuasar } from 'quasar';
+import reportExc from "src/Excel/reports.js";
 import UserToolbar from "src/components/UserToolbar.vue";
 import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
 import { $sktOrders } from 'boot/socket';
@@ -81,9 +72,12 @@ const $q = useQuasar();
 const VDB = useVDBStore()
 const selectedUser = ref(null);   // usuario filtrado
 const selectedOrder = ref(null);  // orden filtrada
-
+const actionMode = ref(false)
+const selectedActionRow = ref(null)
+let touchTimeout = null
 
 const pagination = ref({ rowsPerPage: 10 })
+const selected = ref([]);
 
 const status = ref(null);
 const table = ref({
@@ -123,21 +117,31 @@ const ismobile = computed(() => $q.platform.is.mobile)
 
 const filteredOrders = computed(() => {
   let data = $orderStore.orders;
-
   if (selectedUser.value) {
     data = data.filter(o => o._created_by === selectedUser.value.id);
   }
-
   if (status.value) {
     data = data.filter(o => o._status === status.value.id);
   }
-
   if (selectedOrder.value) {
     data = data.filter(o => o.id === selectedOrder.value.id);
   }
-
   return data;
 });
+
+const onRightClick = () => {
+  actionMode.value = true
+}
+
+const onTouchStart = () => {
+  touchTimeout = setTimeout(() => {
+    actionMode.value = true
+  }, 600)
+}
+
+const onTouchEnd = () => {
+  clearTimeout(touchTimeout)
+}
 
 const filteredUsers = computed(() => {
   return $orderStore.users
@@ -176,8 +180,33 @@ const clearFilters = () => {
   status.value = null;
 }
 
-const routPush = (a,b) => {
-   $router.push(`/preorders/pedidos/${b.id}`);
+const routPush = (a, b) => {
+  $router.push(`/preorders/pedidos/${b.id}`);
+}
+const clearActionMode = () => {
+  actionMode.value = false
+  selected.value = []
+}
+const downloadSelected = async () => {
+  console.log("Descargar:", selected.value)
+  $q.loading.show({ message: 'Descargando Datos' })
+  let prvs = selected.value.map(e => e.id);
+  console.log(prvs)
+  const resp = await orderApi.getOrdersDownload({ prvs, store: VDB.session.store.id_va });
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp);
+    let impor = {
+      key: 'Preventas',
+      value: resp
+    }
+    await reportExc.preorders(impor)
+    actionMode.value = false
+    selected.value = []
+    $q.loading.hide()
+  }
+
 }
 
 watch(status, () => {

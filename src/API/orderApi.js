@@ -73,4 +73,7 @@ export default {
   reimpresion(data) {
     return assist.post(`/preorders/reimpresion`, data).then(done => done.data).catch(fail => { return { fail } });
   },
+  getOrdersDownload(data) {
+    return assist.post(`/preorders/getOrdersDownload`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }

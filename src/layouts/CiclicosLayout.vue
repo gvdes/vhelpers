@@ -25,18 +25,25 @@
               </q-card>
             </q-menu>
           </q-btn>
-          <!-- <q-btn color="primary" icon="search" dense flat>
+          <q-btn color="primary" icon="add_shopping_cart" dense flat>
             <q-menu>
-              <div class="q-pa-md">Buscar Inventario</div>
+              <div class="q-pa-md">Productos Sin Conteo</div>
               <q-separator />
-              <q-form dense @submit="search" class="q-gutter-md q-pa-md">
-                <q-input v-model="folio" type="number" label="Folio" autofocus />
-                <div class="text-right" v-if="cansearch">
-                  <q-btn type="submit" color="primary" icon="search" />
+              <q-card-section>
+                <q-select v-model="dateProducts.sections" :options="cycleStore.sections" label="Seccion" filled
+                  option-label="name" multiple use-chips dense />
+                <div>
+                  <div class="q-pb-sm text-center">
+                  </div>
+                  <q-date v-model="dateProducts.date" range minimal />
                 </div>
-              </q-form>
+              </q-card-section>
+              <q-card-actions vertical align="center">
+                <q-btn flat label="Obtener" color="positive" @click="productCyclecount"
+                  :disable="!dateProducts.sections.length || !hasDate" />
+              </q-card-actions>
             </q-menu>
-          </q-btn> -->
+          </q-btn>
           <q-separator spaced inset vertical dark />
           <q-btn color="primary" icon="add" outline @click="newCyclecount.state = !newCyclecount.state" />
         </div>
@@ -79,16 +86,14 @@ import { useVDBStore } from 'src/stores/VDB';
 import InvCreate from 'src/components/Inventory/Create.vue'
 import { cyclecountStore } from 'stores/cyclecountStore';
 import { $sktCounters } from 'boot/socket';
+import reportExc from "src/Excel/reports.js";
 const folio = ref("");
 const $q = useQuasar();
 const $route = useRoute();
 const $router = useRouter();
 const VDB = useVDBStore();
 const cycleStore = cyclecountStore()
-const wndViewer = ref({ state: false, data: null });
-const viewdate = ref(null);
 
-const inventoriesdb = ref([]);
 const newCyclecount = ref({
   state: false,
   type: {
@@ -115,14 +120,10 @@ const newCyclecount = ref({
 const maximizedToggle = ref(true);
 
 const dateranges = ref({ from: null, to: null });
-
-
-const cansearch = computed(() => (folio.value && folio.value.length));
-// const search = () => {
-//   console.log("searching folio");
-//   wndViewer.value.folio = folio.value;
-//   wndViewer.value.state = true;
-// }
+const dateProducts = ref({
+  sections: [],
+  date: { from: null, to: null }
+});
 
 const init = async () => {
   // console.log($user.session);
@@ -147,7 +148,14 @@ const init = async () => {
   }
 
 }
+const hasDate = computed(() => {
+  const d = dateProducts.value.date
+  if (!d) return false
 
+  if (typeof d === 'string') return d.length > 0
+
+  return d.from && d.to
+})
 const reset = () => {
   newCyclecount.value = {
     state: false,
@@ -192,7 +200,7 @@ const createCyclecount = async () => {
   }
 }
 
-const buscas = async() => {
+const buscas = async () => {
   // console.log($user.session);
   $q.loading.show({ message: "Obteniendo Datos..." });
   let data = {
@@ -212,6 +220,35 @@ const buscas = async() => {
     $q.loading.hide();
   }
 
+}
+
+const productCyclecount = async () => {
+  $q.loading.show({ message: "Obteniendo Datos..." });
+  let data = {
+    store: VDB.session.store.id_viz,
+    params: dateProducts.value
+  }
+  console.log(data);
+  const resp = await CDB.productCyclecount(data);
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    let key ='';
+    const f = dateProducts.value.date
+
+    if (typeof f === 'string') {
+      key = `PSC_${f.replaceAll('/', '_')}`
+    } else {
+      key = `PSC_${f.from.replaceAll('/', '_')}_a_${f.to.replaceAll('/', '-')}`
+    }
+    let impor = {
+      key: key,
+      value: resp
+    }
+    reportExc.conStockSinContar(impor)
+    $q.loading.hide();
+  }
 }
 
 

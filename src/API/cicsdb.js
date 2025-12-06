@@ -25,4 +25,7 @@ export default{
   nextStep(data){
     return assist.post(`/ciclicos/nextStep`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  productCyclecount(data){
+    return assist.post(`/ciclicos/productCyclecount`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 }

@@ -49,6 +49,7 @@ const invtable = ref({
     },
     { name: "models", field: "products_count", label: "Modelos" },
     { name: "type", field: row => row.type.name, label: "Tipo" },
+    { name: "pressition", field: row => `${row.precision}%`, label: "Precision",},
     { name: "warehouse", field: row => row.settings ? JSON.parse(row.settings).warehouse.name : '---', label: "Almacen" },
   ]
 });

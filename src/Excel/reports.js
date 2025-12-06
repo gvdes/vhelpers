@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs';
 import dayjs from 'dayjs';
-
+import { useVDBStore } from 'stores/VDB';
+const VDB = useVDBStore()
 
 const catalogo = async (data) => {
   console.log(data)
@@ -9,20 +10,20 @@ const catalogo = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "Stock":e.stocks[0].pivot.stock,
-      "General":e.stocks[0].pivot.gen,
-      "Exhibición":e.stocks[0].pivot.exh,
-      "locations":e.locations.map(e => e.path).join('/')
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "locations": e.locations.map(e => e.path).join('/')
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -37,7 +38,7 @@ const catalogo = async (data) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -50,7 +51,7 @@ const catalogo = async (data) => {
     });
     column.width = maxLength < 10 ? 10 : maxLength;
   });
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 };
 
 const conStock = async (data) => {
@@ -60,22 +61,22 @@ const conStock = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "Stock":e.stocks[0].pivot.stock,
-      "General":e.stocks[0].pivot.gen,
-      "Exhibición":e.stocks[0].pivot.exh,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
+      "locations": e.locations.map(e => e.path).join('/')
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -90,7 +91,7 @@ const conStock = async (data) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -104,7 +105,7 @@ const conStock = async (data) => {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 
 
 }
@@ -115,24 +116,24 @@ const conStockUbicados = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "Stock":e.stocks[0].pivot.stock,
-      "General":e.stocks[0].pivot.gen,
-      "Exhibición":e.stocks[0].pivot.exh,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
       // "locations":e.locations.map(e => e.path).join('/'),
-      "UGeneral":e.bodega?.map(e => e.path).join('/'),
-      "UExhibicion":e.ventas?.map(e => e.path).join('/'),
+      "UGeneral": e.bodega?.map(e => e.path).join('/'),
+      "UExhibicion": e.ventas?.map(e => e.path).join('/'),
 
     }
   })
@@ -148,7 +149,7 @@ const conStockUbicados = async (data) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -162,7 +163,7 @@ const conStockUbicados = async (data) => {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 }
 const conStockSinUbicar = async (data) => {
   console.log(data)
@@ -171,24 +172,24 @@ const conStockSinUbicar = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "Stock":e.stocks[0].pivot.stock,
-      "General":e.stocks[0].pivot.gen,
-      "Exhibición":e.stocks[0].pivot.exh,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
       // "locations":e.locations.map(e => e.path).join('/'),
-      "UGeneral":e.bodega?.map(e => e.path).join('/'),
-      "UExhibicion":e.ventas?.map(e => e.path).join('/'),
+      "UGeneral": e.bodega?.map(e => e.path).join('/'),
+      "UExhibicion": e.ventas?.map(e => e.path).join('/'),
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -203,7 +204,7 @@ const conStockSinUbicar = async (data) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -217,31 +218,31 @@ const conStockSinUbicar = async (data) => {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 }
-const sinStock = async (data) =>  {
+const sinStock = async (data) => {
   console.log(data)
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet(data.key);
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "Stock":e.stocks[0].pivot.stock,
-      "General":e.stocks[0].pivot.gen,
-      "Exhibición":e.stocks[0].pivot.exh,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
+      "locations": e.locations.map(e => e.path).join('/')
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -256,7 +257,7 @@ const sinStock = async (data) =>  {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -270,7 +271,7 @@ const sinStock = async (data) =>  {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 }
 const sinStockUbicados = async (data) => {
   console.log(data)
@@ -279,24 +280,24 @@ const sinStockUbicados = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "Stock":e.stocks[0].pivot.stock,
-      "General":e.stocks[0].pivot.gen,
-      "Exhibición":e.stocks[0].pivot.exh,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
       // "locations":e.locations.map(e => e.path).join('/'),
-      "UGeneral":e.bodega?.map(e => e.path).join('/'),
-      "UExhibicion":e.ventas?.map(e => e.path).join('/'),
+      "UGeneral": e.bodega?.map(e => e.path).join('/'),
+      "UExhibicion": e.ventas?.map(e => e.path).join('/'),
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -311,7 +312,7 @@ const sinStockUbicados = async (data) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -325,7 +326,7 @@ const sinStockUbicados = async (data) => {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 }
 const sinMaximos = async (data) => {
   console.log(data)
@@ -334,22 +335,22 @@ const sinMaximos = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "Stock":e.stocks[0].pivot.stock,
-      "General":e.stocks[0].pivot.gen,
-      "Exhibición":e.stocks[0].pivot.exh,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
+      "locations": e.locations.map(e => e.path).join('/')
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -364,7 +365,7 @@ const sinMaximos = async (data) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -378,7 +379,7 @@ const sinMaximos = async (data) => {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 }
 const generalVsExhibicion = async (data) => {
   console.log(data)
@@ -387,22 +388,22 @@ const generalVsExhibicion = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "Stock":e.stocks[0].pivot.stock,
-      "General":e.stocks[0].pivot.gen,
-      "Exhibición":e.stocks[0].pivot.exh,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
+      "locations": e.locations.map(e => e.path).join('/')
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -417,7 +418,7 @@ const generalVsExhibicion = async (data) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -431,31 +432,31 @@ const generalVsExhibicion = async (data) => {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 }
-const generalVsCedis = async (data,sid) => {
+const generalVsCedis = async (data, sid) => {
   console.log(data)
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet(data.key);
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "SOTANO":e.stocks.find(e => e.id == sid).pivot.stock,
-      "CEDIS":e.stocks.find(e => e.id == 1).pivot.stock,
-      "TEXCOCO":e.stocks.find(e => e.id == 2).pivot.stock,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "StockSucursal": e.stocks.find(e => e.id == sid).pivot.stock,
+      "CEDIS": e.stocks.find(e => e.id == 1).pivot.stock,
+      "TEXCOCO": e.stocks.find(e => e.id == 2).pivot.stock,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
+      "locations": e.locations.map(e => e.path).join('/')
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -470,7 +471,7 @@ const generalVsCedis = async (data,sid) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -484,7 +485,7 @@ const generalVsCedis = async (data,sid) => {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 }
 const conMaximos = async (data) => {
   console.log(data)
@@ -493,22 +494,22 @@ const conMaximos = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "Stock":e.stocks[0].pivot.stock,
-      "General":e.stocks[0].pivot.gen,
-      "Exhibición":e.stocks[0].pivot.exh,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
+      "locations": e.locations.map(e => e.path).join('/')
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -523,7 +524,7 @@ const conMaximos = async (data) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -537,7 +538,7 @@ const conMaximos = async (data) => {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 }
 const negativos = async (data) => {
   console.log(data)
@@ -546,22 +547,22 @@ const negativos = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "Stock":e.stocks[0].pivot.stock,
-      "General":e.stocks[0].pivot.gen,
-      "Exhibición":e.stocks[0].pivot.exh,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
+      "locations": e.locations.map(e => e.path).join('/')
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -576,7 +577,7 @@ const negativos = async (data) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -590,7 +591,7 @@ const negativos = async (data) => {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
 }
 const cedisStock = async (data) => {
   console.log(data)
@@ -599,21 +600,21 @@ const cedisStock = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código":e.id,
-      "Modelo":e.code,
-      "Descripción":e.description,
-      "Proveedor":e.providers.name,
-      "Fabricante":e.makers ? e.makers.name : '',
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
       "Status": e.status.name,
-      "Sección":e.category.familia.seccion.name,
-      "Familia":e.category.familia.name,
-      "Categoría":e.category.name,
-      "Piezas x caja":e.pieces,
-      "CEDIS":e.stocks.find(e => e.id == 1).pivot.stock,
-      "TEXCOCO":e.stocks.find(e => e.id == 2).pivot.stock,
-      "Maximo":e.stocks[0].pivot.max,
-      "Minimo":e.stocks[0].pivot.min,
-      "locations":e.locations.map(e => e.path).join('/')
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "CEDIS": e.stocks.find(e => e.id == 1).pivot.stock,
+      "TEXCOCO": e.stocks.find(e => e.id == 2).pivot.stock,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
+      "locations": e.locations.map(e => e.path).join('/')
     }
   })
   const columns = Object.keys(datExport[0]).map(key => ({
@@ -628,7 +629,7 @@ const cedisStock = async (data) => {
     // totalsRow: true,
     style: { showRowStripes: true },
     columns: columns,
-    rows:rows
+    rows: rows
   });
 
   worksheet.columns.forEach(column => {
@@ -642,7 +643,122 @@ const cedisStock = async (data) => {
     column.width = maxLength < 10 ? 10 : maxLength;
   });
 
-  await downloadExcel(workbook,data.key);
+  await downloadExcel(workbook, data.key);
+}
+const conStockSinContar = async (data) => {
+  console.log(data)
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet(data.key);
+
+  let datExport = data.value.map(e => {
+    return {
+      "Código": e.id,
+      "Modelo": e.code,
+      "Descripción": e.description,
+      "Proveedor": e.providers.name,
+      "Fabricante": e.makers ? e.makers.name : '',
+      "Status": e.status.name,
+      "Sección": e.category.familia.seccion.name,
+      "Familia": e.category.familia.name,
+      "Categoría": e.category.name,
+      "Piezas x caja": e.pieces,
+      "Stock": e.stocks[0].pivot.stock,
+      "General": e.stocks[0].pivot.gen,
+      "Exhibición": e.stocks[0].pivot.exh,
+      "Maximo": e.stocks[0].pivot.max,
+      "Minimo": e.stocks[0].pivot.min,
+      // "locations":e.locations.map(e => e.path).join('/'),
+      "UGeneral": e.bodega?.map(e => e.path).join('/'),
+      "UExhibicion": e.ventas?.map(e => e.path).join('/'),
+    }
+  })
+  const columns = Object.keys(datExport[0]).map(key => ({
+    name: key,
+    filterButton: true
+  }));
+  const rows = datExport.map(obj => Object.values(obj));
+  worksheet.addTable({
+    name: `${data.key}`,
+    ref: 'A1',
+    headerRow: true,
+    // totalsRow: true,
+    style: { showRowStripes: true },
+    columns: columns,
+    rows: rows
+  });
+
+  worksheet.columns.forEach(column => {
+    let maxLength = 0;
+    column.eachCell({ includeEmpty: true }, (cell) => {
+      const columnLength = cell.value ? cell.value.toString().length : 10;
+      if (columnLength > maxLength) {
+        maxLength = columnLength;
+      }
+    });
+    column.width = maxLength < 10 ? 10 : maxLength;
+  });
+
+  await downloadExcel(workbook, data.key);
+}
+
+const preorders = async (data) => {
+  console.log(data)
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet(data.key);
+  let datExport = [];
+
+  data.value.forEach(order => {
+    order.products.forEach(p => {
+      datExport.push({
+        "Creado por": order.created_by.names,
+        "Fecha": dayjs(order.created_at).format('YYYY-MM-DD H:mm:ss'),
+        "Preventa": order.id,
+        "Nombre": order.name,
+        "Modelo": p.code,
+        "Descripción": p.description,
+        "Sección": p.category?.familia?.seccion?.name ?? "",
+        "Familia": p.category?.familia?.name ?? "",
+        "Categoría": p.category?.name ?? "",
+        "Piezas x caja": p.pieces,
+        "Surtido": p.pivot?.supply_by?.name ?? "",
+        "Unidades": p.pivot?.amount ?? "",
+        "Cantidad": p.pivot?.units ?? "",
+        "Precio": p.pivot?.price ?? "",
+        "Total": p.pivot?.total ?? "",
+        "stockSuc": p.stocks?.find(e => e.id == VDB.session.store.id_va)?.pivot.stock ?? 0,
+        "stockCed": p.stocks?.find(e => e.id == 1)?.pivot.stock ?? 0,
+        "stockTex": p.stocks?.find(e => e.id == 2)?.pivot.stock ?? 0,
+      })
+    });
+  });
+
+  const columns = Object.keys(datExport[0]).map(key => ({
+    name: key,
+    filterButton: true
+  }));
+  const rows = datExport.map(obj => Object.values(obj));
+  worksheet.addTable({
+    name: `${data.key}`,
+    ref: 'A1',
+    headerRow: true,
+    // totalsRow: true,
+    style: { showRowStripes: true },
+    columns: columns,
+    rows: rows
+  });
+
+  worksheet.columns.forEach(column => {
+    let maxLength = 0;
+    column.eachCell({ includeEmpty: true }, (cell) => {
+      const columnLength = cell.value ? cell.value.toString().length : 10;
+      if (columnLength > maxLength) {
+        maxLength = columnLength;
+      }
+    });
+    column.width = maxLength < 10 ? 10 : maxLength;
+  });
+
+  await downloadExcel(workbook, data.key);
 }
 
 const downloadExcel = async (workbook, name) => {
@@ -661,4 +777,4 @@ const downloadExcel = async (workbook, name) => {
   }
 };
 
-export default { catalogo, conStock, conStockUbicados, conStockSinUbicar, sinStock, sinStockUbicados, sinMaximos, generalVsExhibicion, generalVsCedis , conMaximos , negativos, cedisStock };
+export default { catalogo, conStock, conStockUbicados, conStockSinUbicar, sinStock, sinStockUbicados, sinMaximos, generalVsExhibicion, generalVsCedis, conMaximos, negativos, cedisStock, conStockSinContar, preorders };
