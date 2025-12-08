@@ -28,7 +28,7 @@
             @update:modelValue="obtLocations" hide-dropdown-icon />
           <q-separator spaced inset vertical dark />
           <div v-if="typeBus.val.id == 1" class="col">
-            <ProductAutocomplete @input="add" @agregar="agregar" with_prices />
+            <ProductAutocomplete @input="add" @agregar="agregar" with_prices withHistoric />
           </div>
           <div v-if="typeBus.val.id == 2" class="col">
             <div class="row" v-if="sections.length > 0">
