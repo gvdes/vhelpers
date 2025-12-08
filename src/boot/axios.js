@@ -6,12 +6,12 @@ import { LocalStorage } from 'quasar'
 
 // const ipAssist = 'http://192.168.10.238:2902'ESTEYANO
 
-const ipAssist = 'http://192.168.10.189:1920'
+// const ipAssist = 'http://192.168.10.189:1920'
 
-// const ipAssist = 'https://vhelpers.grupovizcarra.mx/assist'
+const ipAssist = 'https://vhelpers.grupovizcarra.mx/assist'
 
-const assist = axios.create({ baseURL: `${ipAssist}/assist/public/api` });
-// const assist = axios.create({ baseURL: `${ipAssist}` });
+// const assist = axios.create({ baseURL: `${ipAssist}/assist/public/api` });
+const assist = axios.create({ baseURL: `${ipAssist}` });
 // const assist = axios.create({ baseURL: `${ipAssist}/Assist/public/api` });
 // const assist = axios.create({ baseURL: `${ipAssist}/api/api/` });
 
@@ -33,6 +33,10 @@ export default boot(({ router }) => {
           LocalStorage.clear('auth')
           alert('Tu sesión expiró, favor de ingresar de nuevo')
           router.push('/auth')
+        } else if (error.response.data.error === "Acceso denegado") {
+          LocalStorage.clear('auth')
+          alert('Ya no puedes ingresar a la aplicacion');
+          router.push('/auth')
         }
       } else if (error.response && error.response.status === 403) {
         if (error.response.data.error === "Acceso denegado: IP no permitida") {
@@ -46,4 +50,4 @@ export default boot(({ router }) => {
   )
 })
 
-export {  assist, vizmedia }
+export { assist, vizmedia }
