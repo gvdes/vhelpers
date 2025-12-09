@@ -383,6 +383,14 @@ const routes = [
 
     ],
   },
+  {
+    path: '/billing',
+    component: () => import('layouts/LYTBilling.vue'),
+    children: [
+      { path: 'form/:sid', name: 'bifomx', component: () => import('pages/Billing/Index.vue') },
+      { path: 'billers', name: 'clrc', component: () => import('pages/Billing/Billers.vue'), meta: { moduleId: 58 } },
+    ],
+  },
   // {
   //   path: '/deposits',
   //   component: () => import('layouts/Deposits.vue'),
