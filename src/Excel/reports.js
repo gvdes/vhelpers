@@ -761,6 +761,76 @@ const preorders = async (data) => {
   await downloadExcel(workbook, data.key);
 }
 
+const importAspel = async (data) => {
+  console.log(data)
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet(data.key);
+  let datExport = [];
+  data.ticketSuc.products.forEach(p => {
+    datExport.push({
+      "Clave": data.claveDoc,
+      "Cliente": data.nclient,
+      "Fecha de elaboración":dayjs().format('DD/MM/YYYY') ,
+      "Su pedido": '',
+      "Clave del artículo": p.ARTLFA,
+      "Cantidad": p.CANLFA ,
+      "Precio": Number(Number(p.PRELFA) / 1.16).toFixed(6) ,
+      "Desc. 1": '',
+      "Desc. 2": '',
+      "Desc. 3": '',
+      "Clave de vendedor": '',
+      "Comisión": '',
+      "Clave de esquema de impuestos": '',
+      "Impuesto 1": '',
+      "Impuesto 2": '',
+      "Impuesto 3": '',
+      "Impuesto 4": '',
+      "Impuesto 5": '',
+      "Impuesto 6": '',
+      "Impuesto 7": '',
+      "Impuesto 8": '',
+      "Método de pago": data.mtdpag,
+      "Forma de Pago SAT": data.payments[0].sat ,
+      "Uso CFDI": data.cfdi.alias ,
+      "Clave SAT": p.sat.clave ,
+      "Unidad SAT": p.sat.unidad ,
+      "Observaciones":'' ,
+      "Observaciones de partida": '',
+      "Fecha de entrega": '' ,
+      "Fecha de vencimiento": '',
+    })
+  });
+
+  const columns = Object.keys(datExport[0]).map(key => ({
+    name: key,
+    filterButton: true
+  }));
+  const rows = datExport.map(obj => Object.values(obj));
+  worksheet.addTable({
+    name: `ImportAspel`,
+    ref: 'A1',
+    headerRow: true,
+    // totalsRow: true,
+    style: { showRowStripes: true },
+    columns: columns,
+    rows: rows
+  });
+
+  worksheet.columns.forEach(column => {
+    let maxLength = 0;
+    column.eachCell({ includeEmpty: true }, (cell) => {
+      const columnLength = cell.value ? cell.value.toString().length : 10;
+      if (columnLength > maxLength) {
+        maxLength = columnLength;
+      }
+    });
+    column.width = maxLength < 10 ? 10 : maxLength;
+  });
+
+  await downloadExcel(workbook, data.claveDoc);
+}
+
+
 const downloadExcel = async (workbook, name) => {
   try {
     const buffer = await workbook.xlsx.writeBuffer();
@@ -777,4 +847,4 @@ const downloadExcel = async (workbook, name) => {
   }
 };
 
-export default { catalogo, conStock, conStockUbicados, conStockSinUbicar, sinStock, sinStockUbicados, sinMaximos, generalVsExhibicion, generalVsCedis, conMaximos, negativos, cedisStock, conStockSinContar, preorders };
+export default { catalogo, conStock, conStockUbicados, conStockSinUbicar, sinStock, sinStockUbicados, sinMaximos, generalVsExhibicion, generalVsCedis, conMaximos, negativos, cedisStock, conStockSinContar, preorders, importAspel };

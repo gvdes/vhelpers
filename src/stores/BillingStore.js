@@ -2,7 +2,10 @@ import { defineStore } from 'pinia'
 
 export const useBillingStore = defineStore('layout', {
   state: () => ({
-    showToolbar:false
+    showToolbar:false,
+    stores:[],
+    billing:[],
+    cfdi:[]
   }),
 
   // getters: {
@@ -14,6 +17,12 @@ export const useBillingStore = defineStore('layout', {
   actions: {
     setShowToolbar(data){
       this.showToolbar = data
+    },
+    setStores(data){
+      this.stores = data
+    },
+    setcfdi(data){
+      this.cfdi = data
     }
   }
 })
