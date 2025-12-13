@@ -109,6 +109,7 @@ const newCyclecount = ref({
       { id: 1, label: 'Ubicacion' },
       { id: 2, label: 'Sin Ubicacion' },
       { id: 3, label: 'Producto' },
+      { id: 4, label: 'Importacion' },
     ]
   },
   notes: null,
@@ -172,6 +173,7 @@ const reset = () => {
         { id: 1, label: 'Ubicacion' },
         { id: 2, label: 'Sin Ubicacion' },
         { id: 3, label: 'Producto' },
+        { id: 4, label: 'Importacion' },
       ]
     },
     notes: null,

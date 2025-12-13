@@ -28,4 +28,7 @@ export default{
   productCyclecount(data){
     return assist.post(`/ciclicos/productCyclecount`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  addMassiveProductCyclecount(data){
+    return assist.post(`/ciclicos/addMassiveProductCyclecount`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 }

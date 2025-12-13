@@ -94,13 +94,15 @@
         <div class="text-h6">Selecciona una Seccion</div>
       </q-card-section>
       <q-card-section class="q-pt-none">
-        <q-select v-model="config.section" :options="cycleStore.sections" label="Seccion" filled option-label="name" multiple use-chips />
+        <q-select v-model="config.section" :options="cycleStore.sections" label="Seccion" filled option-label="name"
+          multiple use-chips />
       </q-card-section>
       <q-card-actions align="right" class="text-primary">
         <q-btn flat @click="obtener" icon="send" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
+  <input type="file" ref="refCreate" id="refCreate" @input="readFileCreate" hidden accept=".xlsx,.xls" />
 </template>
 
 <script setup>
@@ -113,6 +115,7 @@ import dayjs from 'dayjs';
 import { useVDBStore } from 'src/stores/VDB';
 import { cyclecountStore } from 'stores/cyclecountStore';
 import locationsApi from 'src/API/locationsApi';
+import ExcelJS from 'exceljs';
 import CDB from 'src/API/cicsdb';
 import Config from 'src/pages/Preorders/Config.vue';
 const $q = useQuasar();
@@ -121,6 +124,7 @@ const $router = useRouter();
 const VDB = useVDBStore();
 const cycleStore = cyclecountStore()
 const selectedUbicacion = ref(null)
+const refCreate = ref(null);
 const emit = defineEmits(['create'])
 const props = defineProps({
   "config": { default: {}, type: Object },
@@ -170,6 +174,9 @@ const selectedOption = (selected) => {
     expands.value.selectSection = true
   } else if (selected.id == 2) {
     expands.value.selectSection = true
+  } else if (selected.id == 4) {
+    console.log('abrir el de la exportacion')
+    refCreate.value.click()
   }
 }
 
@@ -262,6 +269,43 @@ const createCyclico = () => {
     }
   }
 
+}
+
+const readFileCreate = () => {
+  let inputFile = document.getElementById("refCreate")?.files[0];
+  let workbook = new ExcelJS.Workbook();
+  let datos = {};
+  $q.loading.show({ message: 'Importando Datos' })
+  workbook.xlsx.load(inputFile).then(async (data) => {
+    let worksheet = workbook.worksheets[0];
+    let codigos = worksheet.getColumn("A");//modelos
+    codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
+      if (rowNumber === 1) return;
+      let codigo = cell.value;
+
+      if (!codigo) return;
+      if (!datos[codigo]) {
+        datos[codigo] = [];
+      }
+      if (!datos[codigo].includes(location)) {
+        datos[codigo].push(location || cantidad);
+      }
+    })
+    let sendData = Object.keys(datos).map(codigo => ({
+      _product: codigo,
+      _workpoint: VDB.session.store.id_viz
+    }))
+    console.log(sendData)
+
+    const resp = await CDB.addMassiveProductCyclecount(sendData)
+    if (resp.fail) {
+      console.log(resp);
+    } else {
+      console.log(resp);
+      props.config.products = resp
+      $q.loading.hide()
+    }
+  })
 }
 
 

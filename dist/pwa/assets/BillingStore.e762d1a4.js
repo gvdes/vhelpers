@@ -1,1 +1,0 @@
-import{bt as s}from"./index.02e98f23.js";const e=s("layout",{state:()=>({showToolbar:!1,stores:[],billing:[],cfdi:[]}),actions:{setShowToolbar(o){this.showToolbar=o},setStores(o){this.stores=o},setcfdi(o){this.cfdi=o}}});export{e as u};
