@@ -1,1 +1,0 @@
-import{bt as o}from"./index.dd686a55.js";const e=o("layout",{state:()=>({title:null,showReportLocations:!1,showReportMinMax:!1}),getters:{},actions:{setTitle(t){this.title=t},setshowReportMinMax(t){this.showReportMinMax=t},setshowReportLocations(t){this.showReportLocations=t}}});export{e as u};

@@ -1,0 +1,1 @@
+import{l as t,c as a,s as l,t as r}from"./index.52a3c292.js";var n=t({name:"QToolbarTitle",props:{shrink:Boolean},setup(s,{slots:o}){const e=a(()=>"q-toolbar__title ellipsis"+(s.shrink===!0?" col-shrink":""));return()=>l("div",{class:e.value},r(o.default))}});export{n as Q};

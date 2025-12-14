@@ -61,8 +61,8 @@
 
 
 
-              <div class="col-6 flex flex-center bg-grey-2" v-if="props.row.imgcover"
-                @click="mosImage(`${vizmedia}/Products/${props.row.id}/${props.row.imgcover}`)" style="height: 100%;">
+              <div class="col-6 flex flex-center bg-grey-2" v-if="props.row.imgcover" @click="openMedia(props.row)"
+                style="height: 100%;">
                 <q-img :src="`${vizmedia}/Products/${props.row.id}/${props.row.imgcover}`" spinner-color="primary"
                   style="width: 100%; height: 100%; max-height: 250px; object-fit: contain;" />
               </div>
@@ -144,10 +144,31 @@
         </q-page-sticky>
       </template>
     </q-table>
-    <q-dialog v-model="image.state">
-      <q-card flat class="bg-transparent" style="width: 700px; max-width: 80vw;">
-        <q-card-section class="flex flex-center">
-          <q-img :src="image.val" spinner-color="primary" style="width: 100%; height: 100%; object-fit: contain;" />
+
+
+    <q-dialog v-model="mediaDialog" persistent>
+      <q-card class="media-card">
+        <q-bar>
+          <div class="text-bold ellipsis">
+            {{ currentProduct?.code }} — {{ currentProduct?.description }}
+          </div>
+          <q-space />
+          <q-btn dense flat icon="close" v-close-popup />
+        </q-bar>
+        <q-card-section class="q-pa-none media-content">
+          <q-spinner v-if="mediaLoading" size="50px" color="primary" class="absolute-center" />
+          <q-carousel v-else-if="mediaItems.length" v-model="mediaSlide" animated arrows navigation infinite  swipeable
+            class="media-carousel">
+            <q-carousel-slide v-for="(item, i) in mediaItems" :key="i" :name="i" class="flex flex-center">
+              <q-img v-if="item.type === 'image'" :src="item.url" spinner-color="primary" class="media-img" />
+              <video v-else autoplay loop muted playsinline autobuffer class="media-video">
+                <source :src="item.url" type="video/mp4" />
+              </video>
+            </q-carousel-slide>
+          </q-carousel>
+          <div v-else class="text-grey absolute-center">
+            Sin archivos disponibles
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -172,6 +193,11 @@ const $router = useRouter();
 const $catalogStore = catalogStore();
 const $q = useQuasar();
 const VDB = useVDBStore()
+const mediaDialog = ref(false)
+const mediaLoading = ref(false)
+const mediaItems = ref([])
+const mediaSlide = ref(0)
+const currentProduct = ref(null)
 
 
 const image = ref({
@@ -233,6 +259,7 @@ const init = async () => {
   if (resp.fail) {
     console.log(resp);
   } else {
+    console.log(resp)
     $catalogStore.setTitle(`Catálogo ${resp.family.name}`)
     categories.value.opts = resp.categories;
     const baseProducts = resp.family.products.map(p => ({ ...p, order: 0 }))
@@ -260,9 +287,25 @@ const init = async () => {
 
 
 
-const mosImage = (url) => {
-  image.value.state = true,
-    image.value.val = url
+// const mosImage = (url) => {
+//   image.value.state = true,
+//     image.value.val = url
+// }
+
+const openMedia = async (product) => {
+  mediaDialog.value = true
+  mediaLoading.value = true
+  mediaItems.value = []
+  mediaSlide.value = 0
+  currentProduct.value = product
+  const resp = await catalogApi.getProductMedia({ id: product.id })
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    mediaItems.value = resp
+    mediaLoading.value = false
+  }
 }
 
 const addProduct = (row) => {
@@ -356,3 +399,34 @@ onMounted(() => {
 })
 
 </script>
+<style>
+.media-card {
+  width: 90vw;
+  max-width: 900px;
+  height: 85vh;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.media-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.media-carousel {
+  height: 100%;
+}
+
+.media-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.media-video {
+  max-width: 100%;
+  max-height: 100%;
+}
+</style>

@@ -13,4 +13,8 @@ export default{
   getFamilysProducts(data){
     return assist.post(`/catalog/family-products`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  getProductMedia(data){
+    return assist.post(`/catalog/getProductMedia`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+
 }
