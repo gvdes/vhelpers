@@ -9,19 +9,40 @@ import { useVDBStore } from 'stores/VDB'
 export default boot(async ({ router }) => {
   const VDB = useVDBStore();
 
+  // router.beforeEach((to, from, next) => {
+  //   // console.log("Validando autenticacion...");4
+  //   let auth = LocalStorage.getItem("auth");
+  //   if (auth) {
+  //     // console.log("ya hay autenticacion");
+  //     let token = LocalStorage.getItem("auth").token
+  //     assist.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+  //     VDB.setSession(auth);
+  //     // console.log(to.path);
+  //     if (to.path != '/auth') { next(); } else { next('/launcher'); }
+  //   } else {
+  //     // console.log("Porfavor inicie sesion");
+  //     to.path == "/auth" ? next() : next('/auth');
+  //   }
+  // })
+
   router.beforeEach((to, from, next) => {
-    // console.log("Validando autenticacion...");4
     let auth = LocalStorage.getItem("auth");
+    if (to.meta.requiresAuth === false) {
+      return next();
+    }
     if (auth) {
-      // console.log("ya hay autenticacion");
-      let token = LocalStorage.getItem("auth").token
+      let token = auth.token;
       assist.defaults.headers.common['Authorization'] = 'Bearer ' + token;
       VDB.setSession(auth);
-      // console.log(to.path);
-      if (to.path != '/auth') { next(); } else { next('/launcher'); }
+
+      if (to.path !== '/auth') {
+        next();
+      } else {
+        next('/launcher');
+      }
     } else {
-      // console.log("Porfavor inicie sesion");
-      to.path == "/auth" ? next() : next('/auth');
+      to.path === '/auth' ? next() : next('/auth');
     }
-  })
+  });
+
 })

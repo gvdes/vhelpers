@@ -23,6 +23,7 @@ const catalogo = async (data) => {
       "Stock": e.stocks[0].pivot.stock,
       "General": e.stocks[0].pivot.gen,
       "Exhibición": e.stocks[0].pivot.exh,
+      "Fin de Temporada": e.stocks[0].pivot.fdt,
       "locations": e.locations.map(e => e.path).join('/')
     }
   })
@@ -74,6 +75,7 @@ const conStock = async (data) => {
       "Stock": e.stocks[0].pivot.stock,
       "General": e.stocks[0].pivot.gen,
       "Exhibición": e.stocks[0].pivot.exh,
+      "Fin de Temporada": e.stocks[0].pivot.fdt,
       "Maximo": e.stocks[0].pivot.max,
       "Minimo": e.stocks[0].pivot.min,
       "locations": e.locations.map(e => e.path).join('/')
@@ -129,6 +131,7 @@ const conStockUbicados = async (data) => {
       "Stock": e.stocks[0].pivot.stock,
       "General": e.stocks[0].pivot.gen,
       "Exhibición": e.stocks[0].pivot.exh,
+      "Fin de Temporada": e.stocks[0].pivot.fdt,
       "Maximo": e.stocks[0].pivot.max,
       "Minimo": e.stocks[0].pivot.min,
       // "locations":e.locations.map(e => e.path).join('/'),
@@ -185,6 +188,7 @@ const conStockSinUbicar = async (data) => {
       "Stock": e.stocks[0].pivot.stock,
       "General": e.stocks[0].pivot.gen,
       "Exhibición": e.stocks[0].pivot.exh,
+      "Fin de Temporada": e.stocks[0].pivot.fdt,
       "Maximo": e.stocks[0].pivot.max,
       "Minimo": e.stocks[0].pivot.min,
       // "locations":e.locations.map(e => e.path).join('/'),
@@ -240,6 +244,7 @@ const sinStock = async (data) => {
       "Stock": e.stocks[0].pivot.stock,
       "General": e.stocks[0].pivot.gen,
       "Exhibición": e.stocks[0].pivot.exh,
+      "Fin de Temporada": e.stocks[0].pivot.fdt,
       "Maximo": e.stocks[0].pivot.max,
       "Minimo": e.stocks[0].pivot.min,
       "locations": e.locations.map(e => e.path).join('/')
@@ -293,6 +298,7 @@ const sinStockUbicados = async (data) => {
       "Stock": e.stocks[0].pivot.stock,
       "General": e.stocks[0].pivot.gen,
       "Exhibición": e.stocks[0].pivot.exh,
+      "Fin de Temporada": e.stocks[0].pivot.fdt,
       "Maximo": e.stocks[0].pivot.max,
       "Minimo": e.stocks[0].pivot.min,
       // "locations":e.locations.map(e => e.path).join('/'),
@@ -348,6 +354,7 @@ const sinMaximos = async (data) => {
       "Stock": e.stocks[0].pivot.stock,
       "General": e.stocks[0].pivot.gen,
       "Exhibición": e.stocks[0].pivot.exh,
+      "Fin de Temporada": e.stocks[0].pivot.fdt,
       "Maximo": e.stocks[0].pivot.max,
       "Minimo": e.stocks[0].pivot.min,
       "locations": e.locations.map(e => e.path).join('/')
@@ -401,6 +408,7 @@ const generalVsExhibicion = async (data) => {
       "Stock": e.stocks[0].pivot.stock,
       "General": e.stocks[0].pivot.gen,
       "Exhibición": e.stocks[0].pivot.exh,
+      "Fin de Temporada": e.stocks[0].pivot.fdt,
       "Maximo": e.stocks[0].pivot.max,
       "Minimo": e.stocks[0].pivot.min,
       "locations": e.locations.map(e => e.path).join('/')
@@ -507,6 +515,7 @@ const conMaximos = async (data) => {
       "Stock": e.stocks[0].pivot.stock,
       "General": e.stocks[0].pivot.gen,
       "Exhibición": e.stocks[0].pivot.exh,
+      "Fin de Temporada": e.stocks[0].pivot.fdt,
       "Maximo": e.stocks[0].pivot.max,
       "Minimo": e.stocks[0].pivot.min,
       "locations": e.locations.map(e => e.path).join('/')
@@ -560,6 +569,7 @@ const negativos = async (data) => {
       "Stock": e.stocks[0].pivot.stock,
       "General": e.stocks[0].pivot.gen,
       "Exhibición": e.stocks[0].pivot.exh,
+      "Fin de Temporada": e.stocks[0].pivot.fdt,
       "Maximo": e.stocks[0].pivot.max,
       "Minimo": e.stocks[0].pivot.min,
       "locations": e.locations.map(e => e.path).join('/')

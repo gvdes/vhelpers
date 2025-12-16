@@ -1334,21 +1334,14 @@ const HorizontalLabelwarehouse = (data, nick, name) => {
           doc.addPage(); // Agrega una nueva página cuando el índice es un múltiplo de totalLabelsPerPage
         }
         doc.rect(x, y, labelWidth, labelHeight)//agrega rectangulo buey
-        // doc.addImage(image, type, x, y, labelWidth, labelHeight); // Agrega la imagen
-        // // doc.addImage(barcode(product.name), type, x + 75, y + 8, 15, 15); // Agrega el código de barras
-        doc.setFontSize(22);
+        doc.setFontSize(40);
         doc.setFont('helvetica', 'bold');
-        // doc.text(product.name, x + 10, y + 22); // se agrega codigo corto
-        doc.text(product.code, x + 1, y + 7, { align: 'left' }); // se agrega codigo corto
-
+        doc.text(product.code, x + 1, y + 12, { align: 'left' }); // se agrega codigo corto
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-
-        // Dividir el texto de la descripción para ajustarlo dentro de la etiqueta
         const maxLineWidth = labelWidth - 40; // Ancho máximo para el texto
         const textLines = doc.splitTextToSize(product.label, maxLineWidth); // Divide el texto en líneas
-        doc.text(textLines, x + 1, y + 15, { align: 'left' }); // Dibuja el texto dividido en la etiqueta
-        // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
+        doc.text(textLines, x + 1, y + 20, { align: 'left' }); // Dibuja el texto dividido en la etiqueta
         doc.setFontSize(12);
         const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
         QRCode.toDataURL(qrText, {
@@ -1358,16 +1351,10 @@ const HorizontalLabelwarehouse = (data, nick, name) => {
           }
         }, (err, url) => {
           if (err) throw err
-
           doc.addImage(url, 'PNG', x + 75, y + 3, 25, 25) // ajusta la posición y tamaño
         })
         doc.setFontSize(12);
-        // doc.setFont('helvetica', 'bold');
-        // doc.text(`${product.code}`, x + 1, y + 11, { align: 'left' }); // codigo de el producto
         doc.setFontSize(20);
-        // doc.text(product.large, x + 1, y + 30); // largo de el producto
-        doc.text(`${product.name}`, x + 1, y + 25);
-
         doc.setFontSize(8);
         doc.setFont('helvetica', 'bold');
         doc.text(`${product.variants?.map(e => `(${e.barcode})`).join('')}`, x + 1, y + 30);
