@@ -132,47 +132,26 @@ const rowclicked = async (evt, row, idx) => {
 }
 const nextState = async (billing) => {
   console.log(billing)
-
   if (billing._state == 1) {
-    $q.loading.show({ message: 'Cambiando Status' });
-    const resp = await billingApi.getFolio(billing);
+    $q.loading.show({ message: 'Creando Factura' });
+    let data = {
+      billing:billing,
+      user:VDB.session.credentials.id
+    }
+    const resp = await billingApi.crearFacturaInterna(data);
     if (resp.fail) {
       console.log(resp)
     } else {
-      billing.claveDoc = resp
-      billing.mtdpag = 'PUE'
-      console.log(billing)
-      await reportExc.importAspel(billing)
-      let data = {
-        billing: billing,
-        user: VDB.session.credentials.id
-      }
-      const nextState = await billingApi.nextState(data)
-      if (nextState.fail) {
-        console.log(nextState)
-      } else {
         $q.loading.hide();
-        console.log(nextState)
-        let inx = billings.value.findIndex(e => e.id == nextState.id)
+        console.log(resp)
+        let inx = billings.value.findIndex(e => e.id == resp.id)
         if (inx >= 0) {
-          billings.value.splice(inx, 1, nextState);
+          billings.value.splice(inx, 1, resp);
           wndViewer.value = { state: false, data: null }
-        }
       }
     }
   } else if (billing._state == 2) {
-    $q.dialog({
-      title: 'Folio de factura',
-      message: 'Proporciona el numero de folio',
-      prompt: {
-        model: '',
-        type: 'text'
-      },
-      cancel: true,
-      persistent: true
-    }).onOk(async data => {
       $q.loading.show({ message: 'Cambiando Status' });
-      billing.invoice = data
       let datasend = {
         billing: billing,
         user: VDB.session.credentials.id
@@ -189,13 +168,6 @@ const nextState = async (billing) => {
           wndViewer.value = { state: false, data: null }
         }
       }
-
-    }).onCancel(() => {
-      wndViewer.value = { state: false, data: null }
-      $q.notify({ message: 'Se tiene que poner el numero de factura', type: 'negative', position: 'center' })
-    }).onDismiss(() => {
-
-    })
   }
 }
 

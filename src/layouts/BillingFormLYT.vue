@@ -80,10 +80,10 @@
             header-class="text-h6 text-primary text-weight-bold" label="Datos del Cliente" icon="person"
             expand-separator>
 
-            <div class="q-gutter-md q-mt-md">
+            <div class="">
 
-              <q-uploader label="Subir Constancia Fiscal (PDF)" accept=".pdf" @added="leerConstancia" class="full-width"
-                dense hide-upload-btn />
+              <q-input filled dense label="RFC" v-model="form.rfc" :rules="[validRFC]" ref="inputrfc" @blur="readRfc" />
+
 
               <q-input filled dense label="Nombre de Contacto" v-model="form.nombre"
                 :rules="[v => !!v || 'Obligatorio']" />
@@ -91,27 +91,32 @@
                 type="email" />
               <q-input filled dense label="Teléfono" v-model="form.telefono" mask="##########" />
 
-              <q-input filled dense label="RFC" v-model="form.rfc" :rules="[validRFC]" />
-              <q-input filled dense label="Razón Social" v-model="form.razonSocial"
-                :rules="[v => !!v || 'Obligatorio']" />
-
-              <q-input filled dense label="Calle" v-model="form.address.calle" />
-              <q-input filled dense label="Colonia" v-model="form.address.colonia" />
-
-              <div class="row ">
-                <div class="col "><q-input filled dense label="Num Ext" v-model="form.address.numExt" /></div>
-                <q-separator spaced inset vertical dark />
-                <div class="col "><q-input filled dense label="Num Int" v-model="form.address.numInt" /></div>
-                <q-separator spaced inset vertical dark />
-                <div class="col "><q-input filled dense label="Municipio" v-model="form.address.municipio" /></div>
+              <div v-if="registerClient.register" class="q-gutter-md q-mt-md">
+                <q-uploader label="Subir Constancia Fiscal (PDF)" accept=".pdf" @added="leerConstancia"
+                  class="full-width" dense hide-upload-btn />
               </div>
 
-              <div class="row ">
-                <div class="col "><q-input filled dense label="Ciudad" v-model="form.address.ciudad" /></div>
-                <q-separator spaced inset vertical dark />
-                <div class="col "><q-input filled dense label="C.P." v-model="form.address.cp" mask="#####" /></div>
-              </div>
+              <div v-if="registerClient.get" class="q-gutter-md q-mt-md">
+                <q-input filled dense label="Razón Social" v-model="form.razonSocial"
+                  :rules="[v => !!v || 'Obligatorio']" />
 
+                <q-input filled dense label="Calle" v-model="form.address.calle" />
+                <q-input filled dense label="Colonia" v-model="form.address.colonia" />
+
+                <div class="row ">
+                  <div class="col "><q-input filled dense label="Num Ext" v-model="form.address.numExt" /></div>
+                  <q-separator spaced inset vertical dark />
+                  <div class="col "><q-input filled dense label="Num Int" v-model="form.address.numInt" /></div>
+                  <q-separator spaced inset vertical dark />
+                  <div class="col "><q-input filled dense label="Municipio" v-model="form.address.municipio" /></div>
+                </div>
+
+                <div class="row ">
+                  <div class="col "><q-input filled dense label="Ciudad" v-model="form.address.ciudad" /></div>
+                  <q-separator spaced inset vertical dark />
+                  <div class="col "><q-input filled dense label="C.P." v-model="form.address.cp" mask="#####" /></div>
+                </div>
+              </div>
             </div>
 
           </q-expansion-item>
@@ -202,6 +207,11 @@ const $route = useRoute();
 const $router = useRouter();
 const disableWatch = ref(false)
 const formTicket = ref(null)
+const inputrfc = ref(null)
+const registerClient = ref({
+  get: false,
+  register: false
+});
 const opts_card = ref([
   { id: 1, label: 'Credito', value: 'CRE' },
   { id: 2, label: 'Debito', value: 'DBT' },
@@ -380,13 +390,21 @@ const onReset = () => {
 
   if (formTicket.value) formTicket.value.resetValidation()
 
+  inputrfc.value = null
+  registerClient.value = {
+    get: false,
+    register: false
+  };
+
+
+
   setTimeout(() => {
     disableWatch.value = false   // ⬅ Volvemos a activar el watcher
   }, 300)
 
   $q.notify({
     type: 'info',
-    message: 'Formulario limpiado'
+    message: 'Formulario Vacio'
   })
 }
 
@@ -506,6 +524,42 @@ const init = async () => {
     form.value.cfdi = cfdiOptions.value.find(e => e.id == 2)
   }
 }
+
+const readRfc = async () => {
+  if (validRFC(form.value.rfc) == 'RFC inválido') {
+    $q.notify({ message: 'El RFC no tiene el formato correcto', type: 'negative', position: 'top' })
+    inputrfc.value.focus();
+  } else {
+    $q.loading.show({ message: 'Revisando Registros' })
+    let data = {
+      store: form.value.store.id,
+      rfc: form.value.rfc
+    }
+    const resp = await billingApi.readRFC(data)
+    if (resp.fail) {
+      console.log(resp);
+    } else {
+      $q.loading.hide()
+      if (resp.success) {
+        registerClient.value.get = true
+        $q.notify({ message: resp.message, type: 'positive', position: 'top' })
+        form.value.razonSocial = resp.client.NOMBRE
+        form.value.address.cp = resp.client.CODIGO
+        form.value.address.calle = resp.client.CALLE
+        form.value.address.colonia = resp.client.COLONIA
+        form.value.address.numInt = resp.client.NUMINT
+        form.value.address.numExt = resp.client.NUMEXT
+        form.value.address.municipio = resp.client.MUNICIPIO
+        form.value.address.ciudad = resp.client.ESTADO
+      } else {
+        registerClient.value.register = true
+        registerClient.value.get = true
+        $q.notify({ message: resp.message, type: 'negative', position: 'top' })
+      }
+    }
+  }
+}
+
 init()
 
 watch(

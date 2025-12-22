@@ -87,7 +87,7 @@
         class="q-mb-xl" />
     </q-card-section>
     <q-card-actions align="right">
-      <q-btn color="primary" label="Continuar" @click="nextStatus" v-if="billing._state != 4" />
+      <q-btn color="primary" :label="billing._state == 1 ?  'Continuar' : 'Terminar'" @click="nextStatus" v-if="billing._state != 4" />
       <q-btn color="negative" flat label="Cancelar" v-close-popup />
     </q-card-actions>
   </q-card>
@@ -157,22 +157,22 @@ const clavePayment = (payment) => {
   let clave = null;
   switch (payment) {
     case 'EFE':
-      clave = 1
+      clave = '01'
       break;
     case 'TDD':
-      clave = 28
+      clave = '28'
       break;
     case 'TDC':
-      clave = 4
+      clave = '04'
       break;
     case 'TRA':
-      clave = 3
+      clave = '03'
       break;
     case 'CHE':
-      clave = 11
+      clave = '11'
       break;
     default:
-      clave = 1
+      clave = '01'
       break;
   }
   return clave
@@ -180,6 +180,7 @@ const clavePayment = (payment) => {
 
 
 const nextStatus = () => {
+  // console.log(billing.value)
   if (billing.value._state == 1) {// este es para que cambie de status a proceso, y para que descargue el layout en excel
     if (!billing.value.nclient) {
       return $q.notify({
