@@ -81,10 +81,7 @@
             expand-separator>
 
             <div class="">
-
               <q-input filled dense label="RFC" v-model="form.rfc" :rules="[validRFC]" ref="inputrfc" @blur="readRfc" />
-
-
               <q-input filled dense label="Nombre de Contacto" v-model="form.nombre"
                 :rules="[v => !!v || 'Obligatorio']" />
               <q-input filled dense label="Correo Electrónico" v-model="form.email" :rules="[validEmail]"
@@ -99,10 +96,8 @@
               <div v-if="registerClient.get" class="q-gutter-md q-mt-md">
                 <q-input filled dense label="Razón Social" v-model="form.razonSocial"
                   :rules="[v => !!v || 'Obligatorio']" />
-
                 <q-input filled dense label="Calle" v-model="form.address.calle" />
                 <q-input filled dense label="Colonia" v-model="form.address.colonia" />
-
                 <div class="row ">
                   <div class="col "><q-input filled dense label="Num Ext" v-model="form.address.numExt" /></div>
                   <q-separator spaced inset vertical dark />
@@ -110,15 +105,14 @@
                   <q-separator spaced inset vertical dark />
                   <div class="col "><q-input filled dense label="Municipio" v-model="form.address.municipio" /></div>
                 </div>
-
                 <div class="row ">
                   <div class="col "><q-input filled dense label="Ciudad" v-model="form.address.ciudad" /></div>
                   <q-separator spaced inset vertical dark />
                   <div class="col "><q-input filled dense label="C.P." v-model="form.address.cp" mask="#####" /></div>
                 </div>
+                <q-select v-model="form.regimen" :options="regimenes" label="Regimen" filled option-label="descripcion" dense />
               </div>
             </div>
-
           </q-expansion-item>
         </q-card-section>
 
@@ -240,6 +234,34 @@ const showExist = ref({
 
 const stores = ref([]);
 const cfdiOptions = ref([])
+const regimenes = ref([
+          {clave:601, descripcion: 'REGIMEN GENERAL DE LEY PERSONAS MORALES'},
+          {clave:602, descripcion: 'RÉGIMEN SIMPLIFICADO DE LEY PERSONAS MORALES'},
+          {clave:603, descripcion: 'PERSONAS MORALES CON FINES NO LUCRATIVOS'},
+          {clave:604, descripcion: 'RÉGIMEN DE PEQUEÑOS CONTRIBUYENTES'},
+          {clave:605, descripcion: 'RÉGIMEN DE SUELDOS Y SALARIOS E INGRESOS ASIMILADOS A SALARIOS'},
+          {clave:606, descripcion: 'RÉGIMEN DE ARRENDAMIENTO'},
+          {clave:607, descripcion: 'RÉGIMEN DE ENAJENACIÓN O ADQUISICIÓN DE BIENES'},
+          {clave:608, descripcion: 'RÉGIMEN DE LOS DEMÁS INGRESOS'},
+          {clave:609, descripcion: 'RÉGIMEN DE CONSOLIDACIÓN'},
+          {clave:610, descripcion: 'RÉGIMEN RESIDENTES EN EL EXTRANJERO SIN ESTABLECIMIENTO PERMANENTE EN MÉXICO'},
+          {clave:611, descripcion: 'RÉGIMEN DE INGRESOS POR DIVIDENDOS (SOCIOS Y ACCIONISTAS)'},
+          {clave:612, descripcion: 'RÉGIMEN DE LAS PERSONAS FÍSICAS CON ACTIVIDADES EMPRESARIALES Y PROFESIONALES'},
+          {clave:613, descripcion: 'RÉGIMEN INTERMEDIO DE LAS PERSONAS FÍSICAS CON ACTIVIDADES EMPRESARIALES'},
+          {clave:614, descripcion: 'RÉGIMEN DE LOS INGRESOS POR INTERESES'},
+          {clave:615, descripcion: 'RÉGIMEN DE LOS INGRESOS POR OBTENCIÓN DE PREMIOS'},
+          {clave:616, descripcion: 'SIN OBLIGACIONES FISCALES'},
+          {clave:617, descripcion: 'PEMEX'},
+          {clave:618, descripcion: 'RÉGIMEN SIMPLIFICADO DE LEY PERSONAS FÍSICAS'},
+          {clave:619, descripcion: 'INGRESOS POR LA OBTENCIÓN DE PRÉSTAMOS'},
+          {clave:620, descripcion: 'SOCIEDADES COOPERATIVAS DE PRODUCCIÓN QUE OPTAN POR DIFERIR SUS INGRESOS.'},
+          {clave:621, descripcion: 'RÉGIMEN DE INCORPORACIÓN FISCAL'},
+          {clave:622, descripcion: 'RÉGIMEN DE ACTIVIDADES AGRÍCOLAS, GANADERAS, SILVÍCOLAS Y PESQUERAS PM'},
+          {clave:623, descripcion: 'RÉGIMEN DE OPCIONAL PARA GRUPOS DE SOCIEDADES'},
+          {clave:624, descripcion: 'RÉGIMEN DE LOS COORDINADOS'},
+          {clave:625, descripcion: 'RÉGIMEN DE LAS ACTIVIDADES EMPRESARIALES CON INGRESOS A TRAVÉS DE PLATAFORMAS TECNOLÓGICAS.'},
+          {clave:626, descripcion: 'RÉGIMEN SIMPLIFICADO DE CONFIANZA'},
+])
 
 const form = ref({
   store: null,
@@ -262,10 +284,16 @@ const form = ref({
     numInt: '',
     numExt: '',
   },
+  regimen: {
+    clave: null,
+    descripcion: null,
+  },
+  constance: []
 })
 
 const leerConstancia = async (files) => {
   $q.loading.show(({ message: 'Obteniendo Datos' }))
+  form.value.constance = files;
   const file = files[0]
   const formData = new FormData()
   formData.append('file', file)
@@ -286,6 +314,8 @@ const leerConstancia = async (files) => {
     form.value.address.numExt = resp.numExt
     form.value.address.municipio = resp.municipio
     form.value.address.ciudad = resp.entFederativa
+    form.value.regimen.clave = resp.regimen.clave,
+      form.value.regimen.descripcion = resp.regimen.descripcion
     $q.loading.hide()
     $q.notify({
       type: 'positive',
@@ -370,6 +400,11 @@ const onReset = () => {
       numInt: '',
       numExt: '',
     },
+    regimen: {
+      clave: null,
+      descripcion: null,
+    },
+    constance: []
   }
 
   expands.value = {
@@ -449,14 +484,33 @@ const sendBilling = async (dataform) => {
       type_card: typeCard
     };
   });
-  const payload = {
-    ...dataform,
-    payments: paymentsToSend
-  };
-  console.log(payload)
-  const resp = await billingApi.sendBilling(payload)
+  // const payload = {
+  //   ...dataform,
+  //   payments: paymentsToSend
+  // };
+  const formData = new FormData()
+  formData.append('store', dataform.store.id)
+  formData.append('folio', dataform.folio)
+  formData.append('fecha', dataform.fecha)
+  formData.append('total', dataform.total)
+  formData.append('cfdi', dataform.cfdi.id)
+  formData.append('notes', dataform.notes)
+  formData.append('nombre', dataform.nombre)
+  formData.append('rfc', dataform.rfc)
+  formData.append('razonSocial', dataform.razonSocial)
+  formData.append('email', dataform.email)
+  formData.append('telefono', dataform.telefono)
+  formData.append('payments', JSON.stringify(paymentsToSend))
+  formData.append('address', JSON.stringify(dataform.address))
+  formData.append('regimen', JSON.stringify(dataform.regimen))
+  if (dataform.constance?.length) {
+    formData.append('constancia', dataform.constance[0])
+  }
+
+  console.log(formData)
+  const resp = await billingApi.sendBilling(formData)
   if (resp.fail) {
-    console.log(fail)
+    console.log(resp.fail)
   } else {
     console.log(resp)
     showFinally.value.state = true
@@ -541,6 +595,7 @@ const readRfc = async () => {
     } else {
       $q.loading.hide()
       if (resp.success) {
+        console.log(resp)
         registerClient.value.get = true
         $q.notify({ message: resp.message, type: 'positive', position: 'top' })
         form.value.razonSocial = resp.client.NOMBRE
@@ -550,7 +605,9 @@ const readRfc = async () => {
         form.value.address.numInt = resp.client.NUMINT
         form.value.address.numExt = resp.client.NUMEXT
         form.value.address.municipio = resp.client.MUNICIPIO
-        form.value.address.ciudad = resp.client.ESTADO
+        form.value.address.ciudad = resp.client.ESTADO,
+          form.value.regimen.clave = resp.client.regimen.clave,
+          form.value.regimen.descripcion = resp.client.regimen.descripcion
       } else {
         registerClient.value.register = true
         registerClient.value.get = true

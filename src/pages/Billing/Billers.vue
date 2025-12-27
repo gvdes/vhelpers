@@ -133,7 +133,7 @@ const rowclicked = async (evt, row, idx) => {
 const nextState = async (billing) => {
   console.log(billing)
   if (billing._state == 1) {
-    $q.loading.show({ message: 'Creando Factura' });
+    // $q.loading.show({ message: 'Creando Factura' });
     let data = {
       billing:billing,
       user:VDB.session.credentials.id

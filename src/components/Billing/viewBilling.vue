@@ -7,6 +7,9 @@
           Creado el: {{ dayjs(billing.created_at).format("DD MMM YYYY - HH:mm") }}
         </div>
       </div>
+      <div v-if="billing.constancia">
+        <q-btn color="primary" icon="download" label="Descargar Constancia" @click="downloadPDF" />
+      </div>
       <q-chip size="md" color="primary" text-color="white">
         {{ billing.status.name }}
       </q-chip>
@@ -79,6 +82,12 @@
             {{ fullAddress }}
           </div>
         </div>
+        <div class="col-12">
+          <div class="text-caption text-grey-7">Regimen</div>
+          <div class="text-body1">
+            {{ `${JSON.parse(billing.regimen).clave}` }} - {{ `${JSON.parse(billing.regimen).descripcion}` }}
+          </div>
+        </div>
       </div>
     </q-card-section>
     <q-card-section>
@@ -87,7 +96,8 @@
         class="q-mb-xl" />
     </q-card-section>
     <q-card-actions align="right">
-      <q-btn color="primary" :label="billing._state == 1 ?  'Continuar' : 'Terminar'" @click="nextStatus" v-if="billing._state != 4" />
+      <q-btn color="primary" :label="billing._state == 1 ? 'Continuar' : 'Terminar'" @click="nextStatus"
+        v-if="billing._state != 4" />
       <q-btn color="negative" flat label="Cancelar" v-close-popup />
     </q-card-actions>
   </q-card>
@@ -100,6 +110,7 @@ import { useVDBStore } from 'stores/VDB';
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import billingApi from 'src/API/billingApi.js';//para dirigirme bro
 import { useBillingStore } from 'stores/BillingStore';
+import axios from 'axios'
 import { exportFile, useQuasar } from 'quasar';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
@@ -108,7 +119,8 @@ import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
 import dayjs from 'dayjs';
-
+import Billers from 'src/pages/Billing/Billers.vue';
+import { vizmedia } from "boot/axios"
 const VDB = useVDBStore();
 const $billing = useBillingStore();
 const $q = useQuasar();
@@ -206,20 +218,26 @@ const nextStatus = () => {
     billing.value.payments.forEach(e => {
       e.sat = clavePayment(e.payment)
     });
-    emit('nextState',billing.value);
+    emit('nextState', billing.value);
   } else if (billing.value._state == 2) {//este es para pasarlo a pausa en caso de algun problema o anotacion
-    emit('nextState',billing.value);
+    emit('nextState', billing.value);
   } else if (billing.value._state == 3) {// este es para quitarlo de pausa a creado o de nuevo a en proceso
     //algun momento se pausara
-  }else if (billing.value._state == 4) {// aqui pues solo se deshabilita el boton
+  } else if (billing.value._state == 4) {// aqui pues solo se deshabilita el boton
     console.log('este ya se acabo')
-  }else if (billing.value._state == 5) {// solo en caso de que alguno este eliminado
+  } else if (billing.value._state == 5) {// solo en caso de que alguno este eliminado
     emit('nextState');
   }
 
 
 }
 
+const downloadPDF = async () => {
+  window.open(
+    `${vizmedia}/Constances/${billing.value.id}/${billing.value.constancia}`,
+    '_blank'
+  )
+}
 
 init()
 
