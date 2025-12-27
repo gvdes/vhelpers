@@ -95,6 +95,8 @@ const table = ref({
     { name: 'razonSocial', label: 'Razon Social', field: r => r.razon_social, align: 'left' },
     { name: 'Status', label: 'Estado', field: r => r.status.name, align: 'left' },
     { name: 'Usuario', label: 'Usuario', field: r => r.logs.find(e => e._state == r._state).user.nick, align: 'left' },
+    { name: 'factura', label: 'Factura', field: r => r.invoice, align: 'left' },
+
 
   ],
   filter: null,
@@ -133,7 +135,7 @@ const rowclicked = async (evt, row, idx) => {
 const nextState = async (billing) => {
   console.log(billing)
   if (billing._state == 1) {
-    // $q.loading.show({ message: 'Creando Factura' });
+    $q.loading.show({ message: 'Creando Factura' });
     let data = {
       billing:billing,
       user:VDB.session.credentials.id

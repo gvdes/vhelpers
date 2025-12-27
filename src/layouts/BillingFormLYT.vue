@@ -350,6 +350,7 @@ const onSubmit = async () => {
   }
   if (!form.value.nombre ||
     !form.value.email ||
+    !form.value.telefono ||
     !form.value.rfc ||
     !form.value.razonSocial ||
     !form.value.address.cp ||
@@ -494,7 +495,7 @@ const sendBilling = async (dataform) => {
   formData.append('fecha', dataform.fecha)
   formData.append('total', dataform.total)
   formData.append('cfdi', dataform.cfdi.id)
-  formData.append('notes', dataform.notes)
+  formData.append('notes', dataform.notes ?? null)
   formData.append('nombre', dataform.nombre)
   formData.append('rfc', dataform.rfc)
   formData.append('razonSocial', dataform.razonSocial)

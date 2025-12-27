@@ -36,7 +36,7 @@
     </div>
 
     <q-card-section>
-      <div class="text-subtitle1 text-weight-bold q-mb-sm">Datos del Cliente</div>
+      <div class="text-subtitle1 text-weight-bold q-mb-sm">Datos de Contacto</div>
       <div class="row q-col-gutter-md">
         <div class="col-12 col-sm-6">
           <div class="text-caption text-grey-7">Nombre</div>
@@ -53,12 +53,14 @@
           <div class="text-body1">{{ billing.celphone }}</div>
         </div>
         <div class="col-12 col-sm-6">
-          <div class="text-caption text-grey-7">Numero Registro</div>
-          <div class="text-body1 " :class="billing.nclient ? '' : 'text-red'">{{ billing.nclient ? billing.nclient :
-            "Sin Registro" }}</div>
+          <div class="text-caption text-grey-7">Notas</div>
+          <div class="text-body1">{{ billing.notes }}</div>
         </div>
+
       </div>
+      <q-separator spaced inset vertical dark />
       <q-separator />
+      <q-separator spaced inset vertical dark />
       <div class="text-subtitle1 text-weight-bold q-mb-sm">Datos Fiscales</div>
       <div class="row q-col-gutter-md">
         <div class="col">
@@ -75,6 +77,11 @@
           <div class="text-body1">$ {{ p.import }}</div>
           <div class="text-caption"> {{ clavePayment(p.payment) }} </div>
 
+        </div>
+        <div class="col">
+          <div class="text-caption text-grey-7">Numero Registro</div>
+          <div class="text-body1 " :class="billing.nclient ? '' : 'text-red'">{{ billing.nclient ? billing.nclient :
+            "Sin Registro" }}</div>
         </div>
         <div class="col-12">
           <div class="text-caption text-grey-7">Dirección</div>
@@ -134,7 +141,6 @@ const cols = [
   { name: 'TOTLFA', label: 'Total', field: 'TOTLFA', align: 'right' },
   { name: 'UNIDAD', label: 'UNIDAD', field: r => r.sat.unidad, align: 'right' },
   { name: 'CLAVE', label: 'CLAVE', field: r => r.sat.clave, align: 'right' },
-
 ]
 
 const fullAddress = computed(() => {
