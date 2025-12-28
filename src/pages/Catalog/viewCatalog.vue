@@ -29,7 +29,7 @@ const table = ref({
     { name: 'alias', label: 'ALIAS', field: r => r.alias, align: 'center' },
 
   ],
-  pagination: { rowsPerPage: 10 }
+  pagination: { rowsPerPage: 0 }
 })
 
 const init = async () => {
