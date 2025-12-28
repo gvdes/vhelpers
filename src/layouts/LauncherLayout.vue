@@ -9,6 +9,7 @@
     <q-page-container>
       <!-- This is where pages get injected -->
       <q-page class="flex flex-center" padding>
+        <canvas ref="canvas" class="overlay"></canvas>
         <div class="row q-pa-md q-gutter-md">
           <div class="col">
             <div class="text-h4 text-grey-8 text-center">
@@ -55,7 +56,7 @@
 
 <script setup>
 import { useVDBStore } from 'src/stores/VDB'
-import { computed, ref ,onMounted} from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 import UserToolbar from 'src/components/UserToolbar.vue';
 import authsApi from "src/API/auth.js";
@@ -66,6 +67,8 @@ const VDB = useVDBStore();
 const $router = useRouter();
 const user = VDB.session;
 const $q = useQuasar();
+const canvas = ref(null)
+const icons = ['❄️']
 const mosAvatar = ref({
   val: null,
   state: false,
@@ -124,7 +127,7 @@ const selectAvatar = (avatar) => {
 
 
 const changeAvatar = async () => {
-  $q.loading.show({message:'Cambiando Avatar :)'})
+  $q.loading.show({ message: 'Cambiando Avatar :)' })
   let data = {
     id: VDB.session.credentials.id,
     avatar: mosAvatar.value.val
@@ -143,15 +146,57 @@ const changeAvatar = async () => {
     })
     mosAvatar.value.val = null
     mosAvatar.value.state = false
-    $q.notify({type:'positive',icon:'check'})
+    $q.notify({ type: 'positive', icon: 'check' })
     $q.loading.hide()
   }
 }
 
+onMounted(() => {
+  const c = canvas.value
+  const ctx = c.getContext('2d')
 
+  c.width = window.innerWidth
+  c.height = window.innerHeight
 
+  let items = Array.from({ length: 30 }, () => ({
+    x: Math.random() * c.width,
+    y: Math.random() * c.height,
+    s: Math.random() * 24 + 18,
+    d: Math.random() * 1.5 + 0.5,
+    icon: icons[Math.floor(Math.random() * icons.length)]
+  }))
+
+  function draw() {
+    ctx.clearRect(0, 0, c.width, c.height)
+    items.forEach(i => {
+      ctx.font = `${i.s}px serif`
+      ctx.fillText(i.icon, i.x, i.y)
+      i.y += i.d
+      if (i.y > c.height) {
+        i.y = -20
+        i.x = Math.random() * c.width
+      }
+    })
+    requestAnimationFrame(draw)
+  }
+
+  draw()
+})
 // onMounted(async () => {
 //   await requestPermission()
 // })
 
 </script>
+<style>
+.overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.content {
+  position: relative;
+  z-index: 20;
+}
+</style>
