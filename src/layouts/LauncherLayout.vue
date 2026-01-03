@@ -68,7 +68,7 @@ const $router = useRouter();
 const user = VDB.session;
 const $q = useQuasar();
 const canvas = ref(null)
-const icons = ['❄️']
+const icons = ['✈️','🚗','💫','⭐','🎈','🎎','🎁']
 const mosAvatar = ref({
   val: null,
   state: false,

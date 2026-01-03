@@ -78,9 +78,10 @@
         <q-dialog v-model="newNotes.state" persistent>
           <q-card style="min-width: 350px">
             <q-card-section>
+              <q-radio left-label v-model="pedidos.statue" val="todos" label="Todas" />
               <q-radio left-label v-model="pedidos.statue" val="cedis" label="Cedis" />
               <q-radio left-label v-model="pedidos.statue" val="texcoco" label="Texcoco" />
-              <q-radio left-label v-model="pedidos.statue" val="brasil" label="Brasil" />
+              <q-radio left-label v-model="pedidos.statue" val="bolivia" label="Bolivia" />
             </q-card-section>
             <q-card-section>
               <div class="text-h6">Agrega una nota</div>
@@ -180,7 +181,7 @@ const suggested = computed(() => {
   return products.value.map((product) => {
     let CajasCedis = Math.round(Number(product.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) / Number(product.pieces));
     let CajasTexcoco = Math.round(Number(product.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) / Number(product.pieces));
-    let CajasBrasil = Math.round(Number(product.stocks.filter(e => e.id == 16).map(e => e.pivot.stock)) / Number(product.pieces));
+    let CajasBolivia = Math.round(Number(product.stocks.filter(e => e.id == 24).map(e => e.pivot.stock)) / Number(product.pieces));
     let Sucursal = Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit));
     let SucCaj = Math.round(Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit)) / Number(product.pieces));
     let Porcentaje = Math.round(Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock)) * 100 / Number(product.pieces))
@@ -197,7 +198,7 @@ const suggested = computed(() => {
       stocks: product.stocks,
       cedis: CajasCedis,
       texcoco: CajasTexcoco,
-      brasil: CajasBrasil,
+      bolivia: CajasBolivia,
       sucursal: Sucursal,
       sucCaj: SucCaj,
       percentage: Porcentaje,
@@ -264,9 +265,9 @@ const surtirEn = (product) => {
   const piezas = Number(product.pieces) || 1
   const stock1 = product.stocks.filter(s => s.id === 1).reduce((sum, s) => sum + s.pivot.stock, 0)
   const stock2 = product.stocks.filter(s => s.id === 2).reduce((sum, s) => sum + s.pivot.stock, 0)
-  const stock3 = product.stocks.filter(s => s.id === 16).reduce((sum, s) => sum + s.pivot.stock, 0)
+  const stock3 = product.stocks.filter(s => s.id === 24).reduce((sum, s) => sum + s.pivot.stock, 0)
   if (stock1 >= 0 && stock2 === 0 && stock3 === 0) return 'Cedis'
-  if (stock1 >= 0 && stock2 === 0 && stock3 >= 1) return 'Brasil'
+  if (stock1 >= 0 && stock2 >= 0 && stock3 >= 1) return 'Bolivia'
   if ((stock1 / piezas) < 1 && (stock2 / piezas) >= 1) return 'Texcoco'
   return 'Cedis'
 }
@@ -280,35 +281,35 @@ const bascketTex = computed(() => {
   if (!bascket.value) return []
   return bascket.value.filter(product => surtirEn(product) === 'Texcoco')
 })
-const bascketBra = computed(() => {
+const bascketBol = computed(() => {
   if (!bascket.value) return []
-  return bascket.value.filter(product => surtirEn(product) === 'Brasil')
+  return bascket.value.filter(product => surtirEn(product) === 'Bolivia')
 })
 
 
 const table = ref({
   columns: [
-    { name: 'code', label: 'Codigo', align: 'left', field: row => row.code },
-    { name: 'description', label: 'Descripcion', align: 'left', field: row => row.description },
-    { name: 'pxc', label: 'PXC', align: 'center', field: row => row.pieces },
-    { name: 'section', label: 'Seccion', align: 'left', field: row => row.category.familia.seccion.name },
-    { name: 'family', label: 'Familia', align: 'left', field: row => row.category.familia.name },
-    { name: 'category', label: 'Categoria', align: 'left', field: row => row.category.name },
-    { name: 'cedis', label: 'Cedis', align: 'center', field: row => row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock) },
-    { name: 'brasil', label: 'Brasil', align: 'center', field: row => row.stocks.filter(e => e.id == 16).map(e => e.pivot.stock) },
-    { name: 'texcoco', label: 'Texcoco', align: 'center', field: row => row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock) },
-    { name: 'total', label: 'Total', align: 'center', field: row => Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)) },
-    { name: 'totalcj', label: 'Total Cajas', align: 'center', sortable: true, field: row => Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)) },
-    { name: 'Sucursal', label: `${VDB.session.store.name}`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock) },
-    { name: 'min', label: `Minimo`, align: 'center', sortable: true, field: row => row.min },
-    { name: 'max', label: `Maximo`, align: 'center', sortable: true, field: row => row.max },
-    { name: 'SucursalINTRANSIT', label: `${VDB.session.store.alias} en TRA`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit) },
-    { name: 'Percentge', label: `${VDB.session.store.name} % `, align: 'center', sortable: true, field: row => row.percentage },
-    { name: 'required', label: 'Solicitado CJ', align: 'center', sortable: true, field: row => row.required },
+    { name: 'code', label: 'Codigo', align: 'left', field: row => row.code,sortable:true },
+    { name: 'description', label: 'Descripcion', align: 'left', field: row => row.description,sortable:true },
+    { name: 'pxc', label: 'PXC', align: 'center', field: row => row.pieces,sortable:true },
+    { name: 'section', label: 'Seccion', align: 'left', field: row => row.category.familia.seccion.name,sortable:true },
+    { name: 'family', label: 'Familia', align: 'left', field: row => row.category.familia.name,sortable:true },
+    { name: 'category', label: 'Categoria', align: 'left', field: row => row.category.name,sortable:true },
+    { name: 'cedis', label: 'Cedis', align: 'center', field: row => row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock),sortable:true },
+    { name: 'bolivia', label: 'Bolivia', align: 'center', field: row => row.stocks.filter(e => e.id == 24).map(e => e.pivot.stock),sortable:true },
+    { name: 'texcoco', label: 'Texcoco', align: 'center', field: row => row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock),sortable:true },
+    { name: 'total', label: 'Total', align: 'center', field: row => Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)),sortable:true },
+    { name: 'totalcj', label: 'Total Cajas', align: 'center', sortable: true, field: row => Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)),sortable:true },
+    { name: 'Sucursal', label: `${VDB.session.store.name}`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock),sortable:true },
+    { name: 'min', label: `Minimo`, align: 'center', sortable: true, field: row => row.min,sortable:true },
+    { name: 'max', label: `Maximo`, align: 'center', sortable: true, field: row => row.max,sortable:true },
+    { name: 'SucursalINTRANSIT', label: `${VDB.session.store.alias} en TRA`, align: 'center', field: row => row.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit),sortable:true },
+    { name: 'Percentge', label: `${VDB.session.store.name} % `, align: 'center', sortable: true, field: row => row.percentage,sortable:true },
+    { name: 'required', label: 'Solicitado CJ', align: 'center', sortable: true, field: row => row.required,sortable:true },
     {
-      name: 'cediss', label: `Surtir En`, align: 'center', field: row => surtirEn(row)
+      name: 'cediss', label: `Surtir En`, align: 'center', field: row => surtirEn(row),sortable:true
     },
-    { name: 'action', label: 'Accion', align: 'center' },
+    { name: 'action', label: 'Accion', align: 'center',sortable:true },
   ],
   pagination: {
     rowsPerPage: 5
@@ -392,8 +393,8 @@ const exportTable = async () => {
       .filter(s => s.id === 2)
       .reduce((sum, s) => sum + s.pivot.stock, 0)
     const stock3 = row.stocks
-      .filter(s => s.id === 16)
-      .reduce((sum, s) => sum + s.pivot.stock, 0)
+      .filter(s => s.id === 24)
+      .reduce((sum, s) => sum + s.pivot.stdsock, 0)
 
     if (stock1 === 0 && stock2 === 0) {
       surtirEn = 'Cedis'
@@ -401,7 +402,7 @@ const exportTable = async () => {
     if ((stock1 / piezas) < 1 && (stock2 / piezas) >= 1) {
       surtirEn = 'Texcoco'
     }
-    if (stock1 >= 0 && stock2 === 0 && stock3 >= 1) surtirEn = 'Brasil'
+    if (stock1 >= 0 && stock2 === 0 && stock3 >= 1) surtirEn = 'Bolivia'
     worksheet.addRow([
       row.code,
       row.description,
@@ -410,7 +411,7 @@ const exportTable = async () => {
       row.category.familia.name,
       row.category.name,
       row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)[0],
-      row.stocks.filter(e => e.id == 16).map(e => e.pivot.stock)[0],
+      row.stocks.filter(e => e.id == 24).map(e => e.pivot.stock)[0],
       row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)[0],
       Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock)),
       Math.round((Number(row.stocks.filter(e => e.id == 1).map(e => e.pivot.stock)) + Number(row.stocks.filter(e => e.id == 2).map(e => e.pivot.stock))) / Number(row.pieces)),
@@ -475,12 +476,21 @@ const processProduct = async () => {
 const newRequi = () => {
   console.log('holi')
   if (pedidos.value.statue == 'cedis') {
-    newRequsition(1, bascket.value)
+    // newRequsition(1, bascket.value)
+    newRequsition(1, bascketCed.value)
+
   } else if (pedidos.value.statue == 'texcoco') {
-    newRequsition(2, bascket.value)
-  } else if (pedidos.value.statue == 'brasil') {
-    newRequsition(16, bascket.value)
+    // newRequsition(2, bascket.value)
+    newRequsition(2, bascketTex.value)
+
+  } else if (pedidos.value.statue == 'bolivia') {
+    // newRequsition(24, bascket.value)
+    newRequsition(24, bascketBol.value)
     // newRequsition(2, bascketTex.value)
+  } else if (pedidos.value.statue == 'todos'){
+    newRequsition(1, bascketCed.value)
+    newRequsition(2, bascketTex.value)
+    newRequsition(24, bascketBol.value)
   }
 }
 
