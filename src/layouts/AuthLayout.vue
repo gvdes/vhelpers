@@ -61,10 +61,12 @@ const canSignin = computed(() => (auths.value.nick && auths.value.pass));
 
 const trySignin = async () => {
   console.log("Iniciando sesion ...", auths.value);
+  robot.value.setLoading()
   const user = await authsApi.trySignin(auths.value);
   // console.log(user)
   if (user.fail) {
     if (user.fail.status == 404) {
+      robot.value.setError()
       $q.notify({ message: "Credenciales erroneas", color: "negative", icon: "fas fa-bugs" });
     }
     console.log(user);
@@ -72,7 +74,7 @@ const trySignin = async () => {
     let u = JSON.parse(JSON.stringify(user));
     console.log(u)
     // delete u.credentials.pass;
-
+    robot.value.setSuccess()
     LocalStorage.set("auth", u);
     VDB.setSession(u);
     $router.replace('/');
