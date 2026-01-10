@@ -20,7 +20,6 @@ let headDown = 0
 let targetHeadDown = 0
 let bounce = 0
 let bounceVelocity = 0
-
 onMounted(() => {
   ctx = canvas.value.getContext('2d')
   requestAnimationFrame(loop)
@@ -235,7 +234,7 @@ defineExpose({
   setLoading,
   setError,
   setSuccess,
-  typing
+  typing,
 })
 </script>
 

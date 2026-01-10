@@ -27,7 +27,8 @@ module.exports = configure(function (/* ctx */) {
       'socket',
       // 'firebase',
       'axios',
-      // 'AccessDB'
+      // 'AccessDB',
+      'robotLoading'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

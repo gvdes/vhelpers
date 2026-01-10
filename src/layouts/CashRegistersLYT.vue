@@ -2,7 +2,7 @@
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
 
     <template v-if="!cashLYT.showtoolbar">
-      <q-header class="bg-grey-3 text-dark" bordered>
+      <q-header class="bg-transparent" bordered>
         <UserToolbar />
         <q-separator />
       </q-header>
@@ -18,19 +18,19 @@
       </q-page-container>
     </template>
     <template v-else>
-      <q-header class="transparent text-dark" reveal elevated bordered v-if="cashLYT.showtoolbar">
+      <q-header class="bg-transparent" reveal  bordered v-if="cashLYT.showtoolbar">
         <q-toolbar class="text-primary">
           <q-btn flat round dense @click="leftDrawerOpen = !leftDrawerOpen">
             <q-icon name="menu" />
           </q-btn>
-          <q-toolbar-title class="text-black text-bold">
+          <q-toolbar-title class="text-bold">
             {{ cashLYT.title }}
           </q-toolbar-title>
-          <span class="text-black text-bold q-px-md">{{ cashLYT.date }}</span>
+          <span class="text-bold q-px-md">{{ cashLYT.date }}</span>
         </q-toolbar>
       </q-header>
 
-      <q-drawer v-model="leftDrawerOpen" side="left" elevated bordered reveal class="bg-grey-2">
+      <q-drawer v-model="leftDrawerOpen" side="left"  bordered reveal class="bg-transparent">
         <q-separator spaced inset vertical dark />
         <div class="flex justify-start"><q-btn color="primary" icon="arrow_back" flat @click="exitLayout" /></div>
         <q-separator spaced inset vertical dark />

@@ -1148,7 +1148,7 @@ const xlargeExhnina = (data, nick, name, prices) => {
         doc.setFontSize(50);
         doc.setFont('helvetica', 'bold');
         // doc.text(product.name, x + 10, y + 22); // se agrega codigo corto
-        doc.text(product.code, x + 100, y + 27, { align: 'center' }); // se agrega codigo corto
+        doc.text(product.name, x + 100, y + 27, { align: 'center' }); // se agrega codigo corto
 
         doc.setFontSize(20);
         doc.setFont('helvetica', 'normal');
