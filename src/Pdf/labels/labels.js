@@ -1811,6 +1811,7 @@ const VerticalLabelLap = (data, nick, name, prices) => {
 
         // Dividir el texto de la descripción para ajustarlo dentro de la etiqueta
         const maxLineWidth = labelWidth - 10; // Ancho máximo para el texto
+        const textLines = doc.splitTextToSize(product.label, maxLineWidth); // Divide el texto en líneas
         doc.text(textLines, x + 2, y + 15 * SCALE); // Dibuja el texto dividido en la etiqueta
         // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
         // doc.setFontSize(12);
