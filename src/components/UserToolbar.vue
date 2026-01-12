@@ -1,26 +1,29 @@
 <template>
   <div class="q-pa-sm  row items-center" :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'">
-    <!-- <q-btn color="primary" icon="home" flat dense class="q-mr-sm" @click="$router.push('/')" /> -->
     <q-btn color="primary" icon="list" flat dense class="q-mr-sm" @click="drawerPr = !drawerPr" />
-    <!-- <div class="col"  @click="$router.push('/')" ><span class="text-h6 text-pink">{{ user.credentials.nick }}</span></div> -->
     <div class="col">
       <q-btn class=" text-pink " flat :label="user.credentials.nick" @click="$router.push('/')" />
     </div>
-
-    <div v-if="VDB.stores.length == 0" class="col text-center fs-inc1 text-primary fw-sbold">{{ user.store.name }}</div>
+    <div v-if="VDB.stores.length == 0" class="col text-center fs-inc1 text-primary fw-sbold">{{ !ismobile ?
+      user.store.name : user.store.alias }}</div>
     <q-select v-model="stores.val" :options="VDB.stores" :option-label="opt => opt.store.name" borderless
       color="primary" @update:model-value="changeStore" v-if="VDB.stores.length > 1" dense class="text-center"
       options-selected-class="text-primary text-bold">
       <template v-slot:selected>
         <div class="text-center fs-inc1 text-primary fw-sbold">
-          {{ stores.val.store.name }}
+          {{ !ismobile ? stores.val.store.name : stores.val.store.alias }}
         </div>
       </template></q-select>
-
     <div class="col text-right">
-
+      <!-- <q-btn dense round flat icon="notifications" color="primary">
+        <q-badge color="red" floating transparent>
+          9+
+        </q-badge>
+      </q-btn> -->
     </div>
   </div>
+
+
   <q-drawer v-model="drawerPr" :width="300" :breakpoint="500" bordered
     :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
     <q-scroll-area class="fit text-bold text-dark">
@@ -66,27 +69,27 @@
             :header-class="$q.dark.isActive ? 'text-white' : 'text-dark'">
             <div v-for="(modul, inx) in menuItem.modules" :key="inx">
               <q-item clickable v-ripple :to="`/${modul.path}`" :dark="$q.dark.isActive">
+                <q-item-section side>
+                  <q-btn flat round dense icon="star" :color="favorites.isFavorite(modul.path) ? 'yellow-8' : 'grey'"
+                    @click.stop.prevent="favorites.toggle(modul)" />
+                </q-item-section>
                 <q-item-section>
                   <q-item-label :class="$q.dark.isActive ? 'text-white' : 'text-dark'">
                     {{ modul.name }}
                   </q-item-label>
-
                   <q-item-label caption :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'">
                     {{ modul.desc }}
                   </q-item-label>
                 </q-item-section>
-
                 <q-item-section avatar>
                   <q-avatar flat color="transparent" :text-color="$q.dark.isActive ? 'primary' : 'primary'"
                     icon="arrow_forward" />
                 </q-item-section>
               </q-item>
-
               <q-separator :dark="$q.dark.isActive" />
             </div>
           </q-expansion-item>
         </template>
-
       </q-list>
     </q-scroll-area>
   </q-drawer>
@@ -132,6 +135,8 @@ import { computed, ref } from 'vue';
 import authsApi from "src/API/auth.js";
 import { exportFile, useQuasar } from 'quasar';
 import { CandyBus } from 'src/services/CandyBus'
+import { useFavoritesStore } from 'src/stores/favorites'
+const favorites = useFavoritesStore()
 
 const VDB = useVDBStore();
 const user = VDB.session;
@@ -140,7 +145,6 @@ const WSD = ref({ state: false });
 
 const sessionDestroy = () => {
   VDB.sessionDestroy();
-
   $router.replace('/auth');
 }
 
@@ -153,6 +157,8 @@ const stores = ref({
   val: VDB.session,
   opts: []
 })
+
+const ismobile = computed(() => $q.platform.is.mobile);
 const mosAvatar = ref({
   val: null,
   state: false,
@@ -242,7 +248,7 @@ const changeAvatar = async () => {
   const resp = await authsApi.changeAvatar(data);
   if (resp.fail) {
     console.log(resp)
-    CandyBus.emit('error','algo salio mal')
+    CandyBus.emit('error', 'algo salio mal')
   } else {
     console.log(resp);
     VDB.setSession({
@@ -252,7 +258,7 @@ const changeAvatar = async () => {
         avatar: mosAvatar.value.val
       }
     })
-    CandyBus.emit('error','algo salio bien')
+    CandyBus.emit('error', 'algo salio bien')
     mosAvatar.value.val = null
     mosAvatar.value.state = false
     $q.notify({ type: 'positive', icon: 'check' })

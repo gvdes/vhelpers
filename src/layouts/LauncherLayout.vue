@@ -1,7 +1,5 @@
 <template>
-  <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
-    <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
-
+  <q-layout view="hHh Lpr fFf">
     <q-header bordered class="bg-grey-3 ">
       <UserToolbar />
     </q-header>
@@ -9,9 +7,12 @@
     <q-page-container>
       <q-page class="flex flex-center" padding>
         <animateStudio ref="robot" />
+        <q-table v-if="favorites.items.length" @row-click="(a, b) => $router.push(`/${b.path}`)" :rows="favorites.items"
+          grid flat bordered :columns="[
+            { name: 'name', label: '', field: r => r.name, align: 'left' }
+          ]" dense hide-bottom />
       </q-page>
     </q-page-container>
-
   </q-layout>
 </template>
 
@@ -24,15 +25,14 @@ import authsApi from "src/API/auth.js";
 // import { requestPermission } from 'boot/firebase'
 import { exportFile, useQuasar } from 'quasar';
 import animateStudio from 'src/components/animateStudio.vue';
+import { useFavoritesStore } from 'src/stores/favorites'
+const favorites = useFavoritesStore()
 
 const VDB = useVDBStore();
 const $router = useRouter();
 const user = VDB.session;
 const $q = useQuasar();
-// const canvas = ref(null)
 const robot = ref(null)
-const isDesktop = !('ontouchstart' in window)
-// const icons = ['✈️', '🚗', '💫', '⭐', '🎈', '🎎', '🎁']
 const greetings = ref([
   "Que gusto verte!",
   "Excelente dia!",
@@ -46,12 +46,9 @@ const greetings = ref([
   "Si buscas resultados distintos, no hagas siempre lo mismo.",
   "Quien tiene claro un porque? Puede superar casi cualquier cómo"
 ]);
-
-
 const greeting = computed(() => greetings.value[Math.floor(Math.random() * greetings.value.length)]);
 
 onMounted(() => {
-
   robot.value.setIdle()
 })
 </script>

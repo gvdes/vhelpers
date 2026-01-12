@@ -1744,6 +1744,113 @@ const VerticalLabelCalc = (data, nick, name, prices) => {
     }
   });
 }
+const VerticalLabelLap = (data, nick, name, prices) => {
+  console.log(prices)
+  return new Promise((resolve, reject) => {
+    try {
+      const products = data
+      const expandedProducts = [];
+      products.forEach(product => {
+        for (let i = 0; i < product._copies; i++) {
+          expandedProducts.push(product);
+        }
+      });
+      console.log(data)
+      const SCALE = 0.70;
+
+      const doc = new jsPDF({ format: 'letter' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      // const marginX = 5; // Margen izquierdo
+      // const marginY = 10; // Margen superior
+      // const labelWidth = 100; // Ancho de cada etiqueta
+      // const labelHeight = 60; // Alto de cada etiqueta
+      const marginX = 5 * SCALE;
+      const marginY = 10 * SCALE;
+
+      const labelWidth = 97 * SCALE;
+      const labelHeight = 70 * SCALE;
+      // const spacingX = 5; // Espaciado horizontal entre etiquetas
+      // const spacingY = 5; // Espaciado vertical entre etiquetas
+      const spacingX = 5 * SCALE;
+      const spacingY = 5 * SCALE;
+      const labelsPerRow = 3; // Número de etiquetas por fila
+      const labelsPerColumn = 5; // Número de etiquetas por columna
+      const totalLabelsPerPage = labelsPerRow * labelsPerColumn;
+      expandedProducts.forEach((product, index) => {
+        const currentPageIndex = Math.floor(index / totalLabelsPerPage); // Página actual
+        const indexInPage = index % totalLabelsPerPage; // Índice dentro de la página
+        const row = Math.floor(indexInPage / labelsPerRow); // Calcula la fila
+        const col = indexInPage % labelsPerRow; // Calcula la columna
+        const x = marginX + col * (labelWidth + spacingX); // Calcula la posición X
+        const y = marginY + row * (labelHeight + spacingY); // Calcula la posición Y
+        // Si el índice es un múltiplo del totalLabelsPerPage, agrega una nueva página
+        if (index > 0 && indexInPage === 0) {
+          doc.addPage(); // Agrega una nueva página cuando el índice es un múltiplo de totalLabelsPerPage
+        }
+        // doc.addImage(image, type, x, y, labelWidth, labelHeight); // Agrega la imagen
+
+        //se va a agregar tambien el qr brou
+        const qrText = JSON.stringify(product.historic_prices?.length == 1 ? { modelo: product.id, idChange: product.historic_prices[0].id } : { modelo: product.id, idChange: null }) // o JSON.stringify({modelo: product.code, version: 'v1'})
+        QRCode.toDataURL(qrText, { errorCorrectionLevel: 'H' }, (err, url) => {
+          if (err) throw err
+          // doc.addImage(url, 'PNG', x + 75, y + 20, 25, 25) // ajusta la posición y tamaño
+          doc.addImage(url, 'PNG', x + 70 * SCALE, y + 20 * SCALE, 25 * SCALE, 25 * SCALE);
+        })
+        doc.rect(x, y, labelWidth, labelHeight)//agrega rectangulo buey
+
+        // // doc.addImage(barcode(product.name), type, x + 75, y + 8, 15, 15); // Agrega el código de barras
+        // doc.setFontSize(30);
+        doc.setFontSize(30 * SCALE);
+        doc.setFont('helvetica', 'bold');
+        // doc.text(product.name, x + 10, y + 22); // se agrega codigo corto
+        doc.text(product.name, x + 2, y + 10 * SCALE); // se agrega codigo corto
+        // doc.setFontSize(12);
+        doc.setFontSize(12 * SCALE);
+        doc.setFont('helvetica', 'normal');
+
+        // Dividir el texto de la descripción para ajustarlo dentro de la etiqueta
+        const maxLineWidth = labelWidth - 10; // Ancho máximo para el texto
+        doc.text(textLines, x + 2, y + 15 * SCALE); // Dibuja el texto dividido en la etiqueta
+        // doc.text(product.label.substring(0, 34), x + 6, y + 25); // descripcion de el producto
+        // doc.setFontSize(12);
+        doc.setFontSize(12 * SCALE);
+        let ypri = y + 30 * SCALE
+        let yprincrement = 9 * SCALE
+        product.usedPrices.filter(item => prices.val.includes(item.id)).forEach((e, i) => {
+          if (e.alias == "OFERTA") {
+            // doc.setFontSize(12);
+            doc.setFontSize(12 * SCALE);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Unico Precio', x + 25 * SCALE, ypri + i * yprincrement);// alias de el precio
+            doc.setFontSize(20);
+            doc.text(`$ ${Number(e.pivot.price).toFixed(2)}`, x + 25 * SCALE, ypri + i * yprincrement + 15);// valor de el precio
+          } else {
+            // doc.setFontSize(18);
+            doc.setFontSize(28 * SCALE);
+            doc.setFont('helvetica', 'bold')
+            doc.text(e.alias, x + 12 * SCALE, ypri + i * yprincrement);// alias de el preci
+            doc.text(`$${Number(e.pivot.price).toFixed(0)}`, x + 37 * SCALE, ypri + i * yprincrement);// valor de el precio
+          }
+        })
+        // //CONTINUA CODIGO
+        // doc.setFontSize(16);
+        doc.setFontSize(16 * SCALE);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${product.code}`, x + 55 * SCALE, y + 67 * SCALE, { align: 'left' }); // codigo de el producto
+        doc.text(product.large, x, y + 67 * SCALE); // largo de el producto
+        doc.text(`${product.pieces} PZS`, x + 1, y + 61 * SCALE); // piezas por caja
+        doc.setFontSize(4)
+        doc.setFont('helvetica', 'normal');
+        doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 18, y + 84 * SCALE); //ubicacion de exhibicion de el producto
+      });
+      doc.save(`${nick} etiquetas ${name}`);
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
 
 const barcode = (text) => {
   const qrData = text;
@@ -1757,4 +1864,4 @@ const barcode = (text) => {
   return canvas.toDataURL("image/png");
 }
 
-export default { largeLabel, xtralargeLabel, mediumLabel, smallLabel, verticalLabelNavidad, toyBoys, toyGirls, xlargenina, xlargenino, Hlargenino, Hlargenina, xlargeExhnino, xlargeExhnina, HorizontalLabel, VerticalLabel, Paquetes, HorizontalLabelwarehouse, locationsWarehouse, VerticalLabelCalc };
+export default { largeLabel, xtralargeLabel, mediumLabel, smallLabel, verticalLabelNavidad, toyBoys, toyGirls, xlargenina, xlargenino, Hlargenino, Hlargenina, xlargeExhnino, xlargeExhnina, HorizontalLabel, VerticalLabel, Paquetes, HorizontalLabelwarehouse, locationsWarehouse, VerticalLabelCalc, VerticalLabelLap };

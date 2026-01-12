@@ -205,8 +205,6 @@ const drawErrorEyes = (x, y) => {
 
   ctx.stroke()
 }
-
-
 const setUser = () => state.value = 'user'
 const setPassword = () => state.value = 'password'
 const setIdle = () => state.value = 'idle'
