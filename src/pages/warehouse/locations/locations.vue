@@ -305,10 +305,13 @@ const deleteLocations = async () => {
 
 const downloadProducts = async () => {
   $q.loading.show({ message: 'Obeniendo Productos' })
+  console.log(lvellast.value)
   let data = {
     workpoint: VDB.session.store.id_viz,
-    section: lvellast.value.selected
+    section: lvellast.value ? lvellast.value.selected :  null,
+    celler: lvellast.value ? null :  selectedUbicacion.value.sections.map(e => e.id),
   }
+  console.log(data);
   const resp = await locationsApi.obtProduct(data)
   if (resp.fail) {
     console.log(resp)

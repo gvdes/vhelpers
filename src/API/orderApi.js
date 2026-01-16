@@ -76,4 +76,7 @@ export default {
   getOrdersDownload(data) {
     return assist.post(`/preorders/getOrdersDownload`, data).then(done => done.data).catch(fail => { return { fail } });
   },
+  addMassiveProducts(data) {
+    return assist.post(`/preorders/addMassiveProducts`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }

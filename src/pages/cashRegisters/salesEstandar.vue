@@ -38,7 +38,7 @@
         </q-menu>
       </q-btn>
       <q-btn icon="delete_sweep" @click="sumPrices" flat round dense title="Eliminar Productos" />
-      <q-btn icon="notes" flat round dense title="Agregar Notas" >
+      <q-btn icon="notes" flat round dense title="Agregar Notas">
         <q-menu>
           <q-list style="min-width: 100px">
             <q-item>
@@ -54,7 +54,8 @@
 
 
     </q-toolbar>
-    <q-card class="my-card ">
+
+    <q-card class="my-card q-ml-sm q-mr-sm ">
       <q-card-section class="row">
         <div class="col">
           <div class="text-caption text-center">Dependiente</div>
@@ -69,7 +70,7 @@
       </q-card-section>
     </q-card>
     <q-separator spaced inset vertical dark />
-    <q-card class="my-card">
+    <q-card class="my-card q-ml-sm q-mr-sm">
       <q-card-section class="row">
         <div class="col ">
           <div class="text-caption text-center">{{ config.option ? 'SUBTOTAL' : 'TOTAL' }}</div>
@@ -91,7 +92,7 @@
       </q-card-section>
     </q-card>
     <q-separator spaced inset vertical dark />
-    <q-input class="q-ml-md q-mr-md" v-model="table.filter" type="text" label="Buscar" filled dense/>
+    <q-input class="q-ml-md q-mr-md" v-model="table.filter" type="text" label="Buscar" filled dense />
     <q-separator spaced inset vertical dark />
 
     <div class="row q-ml-sm q-mr-sm">
@@ -99,9 +100,9 @@
         <q-table :rows="bascketProductInVerified" :columns="columns" hide-bottom :pagination="table.pagination"
           @row-click="getProduct" :filter="table.filter" />
       </div>
-      <q-separator spaced inset vertical dark  v-if="bascketProductInVerified.length > 0" />
-      <div class="col" >
-        <q-table  :rows="bascketProductVerified" :columns="columns" hide-bottom :pagination="table.pagination"
+      <q-separator spaced inset vertical dark v-if="bascketProductInVerified.length > 0" />
+      <div class="col">
+        <q-table :rows="bascketProductVerified" :columns="columns" hide-bottom :pagination="table.pagination"
           @row-click="getProduct" :filter="table.filter" />
 
       </div>
@@ -259,7 +260,7 @@ const sale = ref({
   },
   dependiente: VDB.session.credentials.staff,
   products: [],
-  observation:null,
+  observation: null,
 })
 
 const bascketProductVerified = computed(() => {
@@ -286,7 +287,7 @@ const table = ref({
 
   ],
   pagination: { rowsPerPage: 0 },
-  filter:null
+  filter: null
 })
 const tableClients = ref({
   columns: [
@@ -562,25 +563,6 @@ const finallytck = async (pagos) => {
       observation: null
     }
     sale.value = current_sale;
-    // sale.value.client = {
-    //   // client: {
-    //     "id": 0,
-    //     "name": "PUBLICO EN GENERAL",
-    //     "phone": "",
-    //     "email": "",
-    //     "rfc": "",
-    //     "address": "{\"cp\": 6300, \"calle\": \"PLAZA DE LOS ANGELEES 5\", \"colonia\": \"Guerrero\", \"municipio\": \"Deleg. Cuauhtemoc CDMX\"}",
-    //     "created_at": "2020-12-28T07:00:00.000000Z",
-    //     "updated_at": null,
-    //     "_price_list": 1,
-    //     "store_name": null
-    //   // },
-    //   // dependiente: null,
-    //   // products: []
-    // }
-    // sale.value.products = [];
-
-
     config.value.value = 0
     config.value.option = false
     // localStorage.removeItem('current_sale')

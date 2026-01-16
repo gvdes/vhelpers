@@ -9,8 +9,8 @@
         <div class="col">Destino : {{ invoice.from.name }}</div>
         <div class="col text-right">{{ invoice.created_by.nick }}</div>
       </q-toolbar-title>
-      <q-btn flat round dense icon="download" class="q-mr-xs" />
-      <q-btn flat round dense icon="upload" />
+      <!-- <q-btn flat round dense icon="download" class="q-mr-xs" title="Descargar Excel" /> -->
+      <!-- <q-btn flat round dense icon="upload" title="Importar Excel" @click="clickFile" /> -->
     </q-toolbar>
     <q-separator spaced inset vertical dark />
 
@@ -20,6 +20,10 @@
     <q-footer reveal elevated bordered>
       <q-separator spaced inset vertical dark />
       <div class="row q-ml-sm">
+        <div>
+          <q-btn icon="upload" flat @click="clickFile" />
+        </div>
+        <q-separator spaced inset vertical dark />
         <q-card class="col">
           <ProductAutocomplete :checkState="false" @input="add" with_prices_Invoice with_stock @agregar="agregar"
             with_locations />
@@ -32,6 +36,7 @@
       <q-separator spaced inset vertical dark />
     </q-footer>
   </q-page>
+
 
   <q-dialog v-model="product.state" position="bottom">
     <q-card v-if="product.val">
@@ -90,32 +95,50 @@
     </q-card>
   </q-dialog>
 
+  <q-dialog v-model="dataResponse.state" persistent>
+    <q-card>
+      <q-card-section class="text-center text-h5 text-bold">
+        Resultados de Importacion
+      </q-card-section>
+      <q-card-section class="text-centet text-h6 text-bold">
+        Correctos: {{ dataResponse.added.length }}
+      </q-card-section>
+      <q-card-section>
+        Modelos sin Coincidencia: <span class="text-bold text-red">{{ dataResponse.notfound }}</span>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn flat label="OK" color="primary" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <input type="file" ref="inputFile" id="inputFile" @input="readFile" hidden accept=".xlsx,.xls" />
+
 </template>
 
 <script setup>
 import { useVDBStore } from 'stores/VDB';
-import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
-import axios from 'axios';//para dirigirme bro
 import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";
 import InvoicePdf from 'src/Pdf/Invoices/invoices.js';
-import CashApi from "src/API/cashApi";
 import { exportFile, useQuasar, date } from 'quasar';
-import dayjs from 'dayjs';
-import { jsPDF } from "jspdf";
-import autoTable from 'jspdf-autotable'
+import ExcelJS from 'exceljs';
 import { $sktRestock } from 'boot/socket';
 import { computed, ref } from 'vue';
 import invApi from 'src/API/invoicesApi.js';
-import Checkout from './checkout.vue';
-import Invoice from './invoice.vue';
+import RestockApi from 'src/API/RestockApi';
 const VDB = useVDBStore();
 const $q = useQuasar();
 const $router = useRouter();
 const $route = useRoute();
-
+const inputFile = ref(null)
 const invoice = ref(null);
 const products = ref([]);
+const dataResponse = ref({
+  state: false,
+  notfound: [],
+  added: []
+})
 const unitMeasure = ref({
   val: { id: 1, label: 'Pieza' },
   opts: [
@@ -225,8 +248,8 @@ const sendInvoice = async () => {
     console.log(resp)
   } else {
     console.log(resp)
-    $sktRestock.emit('order_refresh',  {order: resp.requisitiion} )
-    $sktRestock.emit('orderpartition_refresh',  {order:resp.partition} )
+    $sktRestock.emit('order_refresh', { order: resp.requisitiion })
+    $sktRestock.emit('orderpartition_refresh', { order: resp.partition })
     InvoicePdf.invoiceFormat(resp.partition)
     createFS(resp.partition)
   }
@@ -311,17 +334,17 @@ const editProduct = async () => {
   $q.loading.show({ message: 'Editando Producto' })
   console.log(product.value)
   let data = {
-    _requisition: $route.params.inv,
-    _product: product.value.val.id,
-    units: units.value,
-    comments: '',
-    stock: product.value.val.stocks.find(e => e.id == 1).pivot.gen,
-    amount: 0,
-    cost: product.value.val.cost,
-    total: product.value.val.cost * units.value,
-    _supply_by: unitMeasure.value.val.id,
-    toDelivered: product.value.val.pivot.toDelivered,
-    checkout: 1,
+    _requisition: $route.params.inv,//ok
+    _product: product.value.val.id,//ok
+    units: units.value,//ok
+    comments: '',//ok
+    stock: product.value.val.stocks.find(e => e.id == 1).pivot.gen,//ok
+    amount: 0,//ok
+    cost: product.value.val.cost,//ok
+    total: product.value.val.cost * units.value,//ok
+    _supply_by: unitMeasure.value.val.id,//ok
+    toDelivered: product.value.val.pivot.toDelivered,//ok
+    checkout: 1,//ok
     ipack: product.value.val.pivot.ipack,
     _suplier: invoice.value.partition[0]._suplier,
     _suplier_id: invoice.value.partition[0]._suplier_id,
@@ -349,6 +372,65 @@ const mosEditProduct = (a, b) => {
   product.value.edit = true
 }
 
+const clickFile = () => {
+  inputFile.value.click()
+}
+
+const readFile = async () => {
+  let inputFile = document.getElementById("inputFile").files[0];
+  let workbook = new ExcelJS.Workbook();
+  let datos = {};
+  workbook.xlsx.load(inputFile).then(async (data) => {
+    let worksheet = workbook.worksheets[0];
+    let codigos = worksheet.getColumn("A");
+    let cantidades = worksheet.getColumn("B");
+    codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
+      if (rowNumber === 1) return;
+      let codigo = cell.value;
+      let cantidadCell = worksheet.getCell(`B${rowNumber}`);
+      let cantidad = parseFloat(cantidadCell.value);
+      if (codigo) {
+        if (datos[codigo]) {
+          datos[codigo] += cantidad;
+        } else {
+          datos[codigo] = cantidad;
+        }
+      }
+    });
+
+    let Diferencia = Object.keys(datos).map(codigo => ({
+      codigo: codigo,
+      cantidad: datos[codigo]
+    }));
+    if (Diferencia.length) {
+      let data = {
+        codes: Diferencia,
+        _requisition: invoice.value
+      };
+      $q.loading.show({ message: "Procesando archivo, espera.." });
+      console.log(data)
+      const resp = await RestockApi.addMassiveProductsInvoice(data)
+      if (resp.fail) {
+        console.log(resp)
+      } else {
+        console.log(resp)
+        invoice.value.products = resp.products
+        products.value = resp.products
+        dataResponse.value.state = true
+        dataResponse.value.added = resp.products
+        dataResponse.value.notfound = resp.notFound
+        $q.loading.hide()
+      }
+    } else {
+      $q.notify({
+        message: "Vaya!! Al parecer este archivo esta vacio.",
+        icon: "fas fa-grin-beam-sweat",
+        color: "negative",
+      });
+    }
+
+  });
+}
 
 init()
 </script>

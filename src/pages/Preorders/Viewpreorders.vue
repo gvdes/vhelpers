@@ -22,9 +22,9 @@
               <q-select v-model="$orderStore.units.val" :options="$orderStore.units.opts" label="Pedir Por" filled
                 option-label="name" dense :disable="order._status != 1" />
             </q-card-section>
-            <!-- <q-card-actions align="center" class="q-pa-none">
+            <q-card-actions align="center" class="q-pa-none">
               <q-btn dense flat icon="upload" color="primary" @click="clickFile" />
-            </q-card-actions> -->
+            </q-card-actions>
             <q-card-section>
               <div class="row items-center justify-between q-mt-xs">
                 <div class="row text-center">
@@ -176,6 +176,8 @@ import { useVDBStore } from 'stores/VDB';
 import { useOrderStore } from 'stores/OrderStore';
 import { colors, useQuasar } from 'quasar';
 import { $sktOrders } from 'src/boot/socket';
+import Resourse from 'src/API/resoursesOrder';
+import ExcelJS from 'exceljs';
 const $route = useRoute();
 const $router = useRouter();
 const $orderStore = useOrderStore();
@@ -350,16 +352,17 @@ const readFile = async () => {
     if (Diferencia.length) {
       let data = {
         codes: Diferencia,
-        _requisition: order.value.id
+        order: order.value.id
       };
       $q.loading.show({ message: "Procesando archivo, espera.." });
       console.log(data)
-      const resp = await RestockApi.addMassiveProducts(data)
+      const resp = await orderApi.addMassiveProducts(data)
       if (resp.fail) {
         console.log(resp)
       } else {
         console.log(resp)
         order.value.products = resp.products
+        Resourse.actualizarPreciosProductos(order.value.products, resp.order, $orderStore.rules)
         dataResponse.value.state = true
         dataResponse.value.added = resp.products
         dataResponse.value.notfound = resp.notFound

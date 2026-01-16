@@ -165,6 +165,10 @@ export default {
     let burl = `invoices/addMassiveProducts`;
     return assist.post(burl, data).then(done => done.data).catch(fail => fail);
   },
+  addMassiveProductsInvoice(data) {
+    let burl = `invoices/addMassiveProductsInvoice`;
+    return assist.post(burl, data).then(done => done.data).catch(fail => fail);
+  },
   lockPartition(rid) {
     let burl = `restock/partitions/${rid}/lock`;
     return assist.post(burl).then(done => done.data).catch(fail => fail);

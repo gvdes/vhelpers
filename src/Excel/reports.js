@@ -10,7 +10,7 @@ const catalogo = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -62,7 +62,7 @@ const conStock = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -118,7 +118,7 @@ const conStockUbicados = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -175,7 +175,7 @@ const conStockSinUbicar = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -231,7 +231,7 @@ const sinStock = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -285,7 +285,7 @@ const sinStockUbicados = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -341,7 +341,7 @@ const sinMaximos = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -395,7 +395,7 @@ const generalVsExhibicion = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -449,7 +449,7 @@ const generalVsCedis = async (data, sid) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -502,7 +502,7 @@ const conMaximos = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -556,7 +556,7 @@ const negativos = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -610,7 +610,7 @@ const cedisStock = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,
@@ -662,7 +662,7 @@ const conStockSinContar = async (data) => {
 
   let datExport = data.value.map(e => {
     return {
-      "Código": e.id,
+      "CoCorto": e.name,
       "Modelo": e.code,
       "Descripción": e.description,
       "Proveedor": e.providers.name,

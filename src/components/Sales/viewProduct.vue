@@ -45,20 +45,20 @@
 
           <div class="row items-center justify-center q-gutter-md">
             <q-btn flat color="negative" icon="remove" class="text-h5"
-              @click="product.pivot.amountDelivered > 1 ? product.pivot.amountDelivered-- : ''" />
+              @click="product.pivot.units > 1 ? product.pivot.units-- : ''" />
 
-            <q-input v-model.number="product.pivot.amountDelivered" type="number" outlined min="1" step="1"
+            <q-input v-model.number="product.pivot.units" type="number" outlined min="1" step="1"
               input-class="text-center text-h3" style="width: 100px" autofocus
               @keydown.enter="edit ? editProduct() : addProduct()"
               @keypress="($event.key === '.' || $event.key === '-') && $event.preventDefault()" @update:model-value="val => {
                 if (!val) {
-                  product.pivot.amountDelivered = 1
+                  product.pivot.units = 1
                 }
                 else if (val < 1) {
-                  product.pivot.amountDelivered = 1
+                  product.pivot.units = 1
                 }
                 else if (!Number.isInteger(val)) {
-                  product.pivot.amountDelivered = Math.floor(val)
+                  product.pivot.units = Math.floor(val)
                 }
               }" />
 
@@ -67,7 +67,7 @@
 
             <!-- <input /> -->
 
-            <q-btn flat color="positive" icon="add" class="text-h5" @click="product.pivot.amountDelivered++" />
+            <q-btn flat color="positive" icon="add" class="text-h5" @click="product.pivot.units++" />
           </div>
         </div>
       </div>
@@ -108,8 +108,8 @@ const props = defineProps({
 
 const emit = defineEmits(['reset', 'addProduct', 'deleteProduct', 'editProduct'])
 
-const validDelivered = computed(() => !props.product.pivot.amountDelivered || props.product.pivot.amountDelivered <= 0)
-const totalPzs = computed(() => props.product.pivot.amountDelivered)
+const validDelivered = computed(() => !props.product.pivot.units || props.product.pivot.units <= 0)
+const totalPzs = computed(() => props.product.pivot.units)
 
 
 const mostPrice = computed(() => {
@@ -159,8 +159,8 @@ const editProduct = async () => {
 }
 
 const addProduct = async () => {
-  if (!props.product.pivot.amountDelivered || props.product.pivot.amountDelivered < 1) {
-    props.product.pivot.amountDelivered = 1
+  if (!props.product.pivot.units || props.product.pivot.units < 1) {
+    props.product.pivot.units = 1
   }
   $q.loading.show({ message: 'Agregando producto' })
   let price = props.product.prices.find(e => e.id == selectPrice.value).pivot.price
