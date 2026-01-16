@@ -2,17 +2,17 @@ import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 import { LocalStorage } from 'quasar'
 
-// const ipAssist = 'http://192.168.10.160:1920'
+const ipAssist = 'http://192.168.10.160:1920'
 
 // const ipAssist = 'http://192.168.10.238:2902'ESTEYANO
 
 // const ipAssist = 'http://192.168.10.189:1920'
 
-const ipAssist = 'https://vhelpers.grupovizcarra.mx/assist'
+// const ipAssist = 'https://vhelpers.grupovizcarra.mx/assist'
 
 // const assist = axios.create({ baseURL: `${ipAssist}/assist/public/api` });
-const assist = axios.create({ baseURL: `${ipAssist}` });
-// const assist = axios.create({ baseURL: `${ipAssist}/Assist/public/api` });
+// const assist = axios.create({ baseURL: `${ipAssist}` });
+const assist = axios.create({ baseURL: `${ipAssist}/Assist/public/api` });
 // const assist = axios.create({ baseURL: `${ipAssist}/api/api/` });
 
 
