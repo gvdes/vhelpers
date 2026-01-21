@@ -18,42 +18,56 @@ const routes = [
     component: () => import('layouts/LauncherLayout.vue'),
     meta: { requiresAuth: true }
   },
-  {
-    path: '/iva',
-    component: () => import('layouts/IvaLayout.vue'),
-    meta: { moduleId: 1, requiresAuth: true }
-  },
 
   {
-    path: '/modificaciones',
-    component: () => import('layouts/ModifyLayout.vue'),
-    meta: { moduleId: 7, requiresAuth: true }
+    path: '/cash',
+    component: () => import('layouts/CashRegistersLYT.vue'),
+    meta: { moduleId: 1, requiresAuth: true },
+    children:[
+      {path:'iva', component: () => import('layouts/IvaLayout.vue'), meta:{moduleId:2, requiresAuth:true }}
+    ]
   },
-  {
-    path: '/pagos',
-    component: () => import('layouts/TarjetaLayout.vue'),
-    meta: { moduleId: 8, requiresAuth: true }
-  },
-  {
-    path: '/tarjetas',
-    component: () => import('layouts/PagosTarjetas.vue'),
-    meta: { moduleId: 3, requiresAuth: true }
-  },
+
+
+
+
+
+  // {
+  //   path: '/iva',
+  //   component: () => import('layouts/IvaLayout.vue'),
+  //   meta: { moduleId: 1, requiresAuth: true }
+  // },
+
+  // {
+  //   path: '/modificaciones',
+  //   component: () => import('layouts/ModifyLayout.vue'),
+  //   meta: { moduleId: 7, requiresAuth: true }
+  // },
+  // {
+  //   path: '/pagos',
+  //   component: () => import('layouts/TarjetaLayout.vue'),
+  //   meta: { moduleId: 8, requiresAuth: true }
+  // },
+  // {
+  //   path: '/tarjetas',
+  //   component: () => import('layouts/PagosTarjetas.vue'),
+  //   meta: { moduleId: 3, requiresAuth: true }
+  // },
   {
     path: '/sales',
     component: () => import('layouts/SaleLayout.vue'),
     meta: { moduleId: 17, requiresAuth: true }
   },
-  {
-    path: '/apertura',
-    component: () => import('layouts/OpenLayout.vue'),
-    meta: { moduleId: 9, requiresAuth: true },
-  },
-  {
-    path: '/vale',
-    component: () => import('layouts/ValeLYT.vue'),
-    meta: { moduleId: 10, requiresAuth: true }
-  },
+  // {
+  //   path: '/apertura',
+  //   component: () => import('layouts/OpenLayout.vue'),
+  //   meta: { moduleId: 9, requiresAuth: true },
+  // },
+  // {
+  //   path: '/vale',
+  //   component: () => import('layouts/ValeLYT.vue'),
+  //   meta: { moduleId: 10, requiresAuth: true }
+  // },
   // {
   //   path: '/stores',
   //   component: () => import('layouts/SaleStore.vue'),
@@ -95,26 +109,26 @@ const routes = [
       { path: 'locations', name: 'llct', component: () => import('pages/Labels/locations.vue'), meta: { moduleId: 4, requiresAuth: true } },
     ],
   },
-  {
-    path: '/checkLabels',
-    component: () => import('layouts/checkLavelsLYT.vue'),
-    meta: { moduleId: 54, requiresAuth: true }
-  },
-  {
-    path: '/compare',
-    component: () => import('layouts/CompareLayout.vue'),
-    meta: { moduleId: 13, requiresAuth: true }
-  },
-  {
-    path: '/openbox',
-    component: () => import('layouts/OpneBoxesLYT.vue'),
-    meta: { moduleId: 22, requiresAuth: true }
-  },
-  {
-    path: '/requisition',
-    component: () => import('layouts/RequisitionLYT.vue'),
-    meta: { moduleId: 5, requiresAuth: true }
-  },
+  // {
+  //   path: '/checkLabels',
+  //   component: () => import('layouts/checkLavelsLYT.vue'),
+  //   meta: { moduleId: 54, requiresAuth: true }
+  // },
+  // {
+  //   path: '/compare',
+  //   component: () => import('layouts/CompareLayout.vue'),
+  //   meta: { moduleId: 13, requiresAuth: true }
+  // },
+  // {
+  //   path: '/openbox',
+  //   component: () => import('layouts/OpneBoxesLYT.vue'),
+  //   meta: { moduleId: 22, requiresAuth: true }
+  // },
+  // {
+  //   path: '/requisition',
+  //   component: () => import('layouts/RequisitionLYT.vue'),
+  //   meta: { moduleId: 5, requiresAuth: true }
+  // },
   // {
   //   path: '/assist',
   //   component: () => import('layouts/AsssitLYT.vue'),
@@ -373,21 +387,20 @@ const routes = [
   {
     path: '/warehouse',
     component: () => import('layouts/WarehouseLYT.vue'),
-    meta: { moduleId: 61, requiresAuth: true },
+    meta: { moduleId: 3, requiresAuth: true },
     children: [
       {
         path: 'locations',
         name: 'wub',
         component: () => import('pages/warehouse/locations.vue'),
         children: [
-          { path: 'sections', name: 'wsct', component: () => import('pages/warehouse/locations/locations.vue'), meta: { moduleId: 62, requiresAuth: true } },
-          { path: 'products', name: 'wpt', component: () => import('pages/warehouse/locations/products.vue'), meta: { moduleId: 62, requiresAuth: true } },
-          { path: 'massive', name: 'wmss', component: () => import('pages/warehouse/locations/massive.vue'), meta: { moduleId: 62, requiresAuth: true } },
-
+          { path: 'sections', name: 'wsct', component: () => import('pages/warehouse/locations/locations.vue'), meta: { moduleId: 27, requiresAuth: true } },
+          { path: 'products', name: 'wpt', component: () => import('pages/warehouse/locations/products.vue'), meta: { moduleId: 27, requiresAuth: true } },
+          { path: 'massive', name: 'wmss', component: () => import('pages/warehouse/locations/massive.vue'), meta: { moduleId: 27, requiresAuth: true } },
         ],
-        meta: { moduleId: 62 }
+        meta: { moduleId: 27 }
       },
-      { path: 'minmax', name: 'wmm', component: () => import('pages/warehouse/minmax.vue'), meta: { moduleId: 61, requiresAuth: true } },
+      { path: 'minmax', name: 'wmm', component: () => import('pages/warehouse/minmax.vue'), meta: { moduleId: 26, requiresAuth: true } },
       // { path: 'labels', name: 'wet', component: () => import('pages/warehouse/labels.vue'), meta: { moduleId: 63 } },
 
     ],
@@ -398,6 +411,15 @@ const routes = [
     children: [
       // { path: 'form/:sid', name: 'bifomx', component: () => import('pages/Billing/Index.vue'), meta: { requiresAuth: false } },
       { path: 'billers', name: 'bil', component: () => import('pages/Billing/Billers.vue'), meta: { moduleId: 75, requiresAuth: true } }
+    ],
+  },
+    {
+    path: '/users',
+    component: () => import('layouts/UsersLYT.vue'),
+    children: [
+      { path: 'index', name: 'uinx', component: () => import('pages/Users/Index.vue'), meta: { moduleId: 89, requiresAuth: true } },
+      { path: 'areas', name: 'uar', component: () => import('pages/Users/Areas.vue'), meta: { moduleId: 92, requiresAuth: true } }
+
     ],
   },
   // {

@@ -4,10 +4,10 @@
     <div class="col">
       <q-btn class=" text-pink " flat :label="user.credentials.nick" @click="$router.push('/')" />
     </div>
-    <div v-if="VDB.stores.length == 0" class="col text-center fs-inc1 text-primary fw-sbold">{{ !ismobile ?
+    <div v-if="user.stores.length == 0" class="col text-center fs-inc1 text-primary fw-sbold">{{ !ismobile ?
       user.store.name : user.store.alias }}</div>
-    <q-select v-model="stores.val" :options="VDB.stores" :option-label="opt => opt.store.name" borderless
-      color="primary" @update:model-value="changeStore" v-if="VDB.stores.length > 1" dense class="text-center"
+    <q-select v-model="stores.val" :options="user.stores" :option-label="opt => opt.store.name" borderless
+      color="primary" @update:model-value="changeStore" v-if="user.stores.length >= 1" dense class="text-center"
       options-selected-class="text-primary text-bold">
       <template v-slot:selected>
         <div class="text-center fs-inc1 text-primary fw-sbold">
@@ -15,11 +15,11 @@
         </div>
       </template></q-select>
     <div class="col text-right">
-      <!-- <q-btn dense round flat icon="notifications" color="primary">
+      <q-btn dense round flat icon="notifications" color="primary">
         <q-badge color="red" floating transparent>
           9+
         </q-badge>
-      </q-btn> -->
+      </q-btn>
     </div>
   </div>
 
@@ -31,7 +31,7 @@
         <q-item>
           <q-btn round flat class="q-mr-md">
             <q-avatar size="40px">
-              <q-img :src="`/avatares/${VDB.session.credentials.avatar}`" />
+              <q-img :src="`/avatares/${user.credentials.avatar}`" />
             </q-avatar>
             <q-menu anchor="bottom right" self="top right">
               <q-list style="min-width: 180px">
@@ -42,14 +42,15 @@
                   <q-item-section>Red Social</q-item-section>
                 </q-item> -->
                 <q-item clickable
-                  @click="() => { mosAvatar.state = !mosAvatar.state; mosAvatar.val = VDB.session.credentials.avatar }">
+                  @click="() => { mosAvatar.state = !mosAvatar.state; mosAvatar.val = user.credentials.avatar }">
                   <q-item-section>Cambiar Avatar</q-item-section>
                 </q-item>
               </q-list>
             </q-menu>
           </q-btn>
           <q-item-section>
-            <q-item-label>{{ user.credentials.staff.complete_name }}</q-item-label>
+            <q-item-label>{{ user.credentials.name }}</q-item-label>
+            <q-item-label>{{ user.credentials.surnames }}</q-item-label>
             <q-item-label caption>{{ user.store.alias }} <q-space /> ({{ user.credentials.nick }})</q-item-label>
           </q-item-section>
         </q-item>
@@ -64,11 +65,12 @@
         </div>
         <q-separator />
         <q-separator spaced inset vertical dark />
-        <template v-for="(menuItem, index) in VDB.modules" :key="index">
+        <template v-for="(menuItem, index) in menuModules" :key="menuItem.id">
           <q-expansion-item expand-separator :label="menuItem.name" :dark="$q.dark.isActive"
             :header-class="$q.dark.isActive ? 'text-white' : 'text-dark'">
-            <div v-for="(modul, inx) in menuItem.modules" :key="inx">
-              <q-item clickable v-ripple :to="`/${modul.path}`" :dark="$q.dark.isActive">
+            <div v-for="(modul, inx) in menuItem.modules" :key="modul.id">
+              {{ `${menuItem.path}/${modul.path}` }}
+              <q-item clickable v-ripple :to="`${menuItem.path}/${modul.path}`" :dark="$q.dark.isActive">
                 <q-item-section side>
                   <q-btn flat round dense icon="star" :color="favorites.isFavorite(modul.path) ? 'yellow-8' : 'grey'"
                     @click.stop.prevent="favorites.toggle(modul)" />
@@ -126,6 +128,7 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+
 </template>
 
 <script setup>
@@ -156,6 +159,25 @@ const drawerPr = ref(false)
 const stores = ref({
   val: VDB.session,
   opts: []
+})
+const menuModules = computed(() => {
+  const map = {}
+  const tree = []
+  VDB.modules.forEach(item => {
+    const mod = {
+      ...item,
+      modules: []
+    }
+    map[mod.id] = mod
+  })
+  Object.values(map).forEach(mod => {
+    if (mod.root === null) {
+      tree.push(mod)
+    } else if (map[mod.root]) {
+      map[mod.root].modules.push(mod)
+    }
+  })
+  return tree
 })
 
 const ismobile = computed(() => $q.platform.is.mobile);
@@ -193,33 +215,54 @@ const mosAvatar = ref({
     'avatar27.png',
   ]
 })
-const init = async () => {
-  // $q.loading.show({ message: 'Obteniendo Informacion' })
-  const resp = await authsApi.getResources(user.credentials.id)
-  if (resp.fail) {
-    console.log(resp)
-  } else {
-    console.log(resp)
-    VDB.setModules(resp.grouped_modules)
-    VDB.setStores(resp.stores)
-    VDB.modulesLoaded = true;
-    // stores.value.opts = resp.stores
-    // modules.value = resp.rol.modules
-    // $q.loading.hide()
-  }
-}
+// const init = async () => {
+//   // $q.loading.show({ message: 'Obteniendo Informacion' })
+//   const resp = await authsApi.getResources(user.credentials.id)
+//   if (resp.fail) {
+//     console.log(resp)
+//   } else {
+//     console.log(resp)
+//     VDB.setModules(resp.grouped_modules)
+//     VDB.setStores(resp.stores)
+//     VDB.modulesLoaded = true;
+//     // stores.value.opts = resp.stores
+//     // modules.value = resp.rol.modules
+//     // $q.loading.hide()
+//   }
+// }
 
-const changeStore = () => {
+// const changeStore = () => {
+//   $q.loading.show({ message: 'Cambiando sucursal' })
+//   VDB.session.store = stores.value.val.store
+//   VDB.setSession({
+//     ...VDB.session,
+//     store: stores.value.val.store
+//   })
+//   console.log(VDB.session)
+//   window.location.reload()
+
+//   $q.loading.hide()
+// }
+
+const changeStore = async () => {
   $q.loading.show({ message: 'Cambiando sucursal' })
-  VDB.session.store = stores.value.val.store
-  VDB.setSession({
-    ...VDB.session,
-    store: stores.value.val.store
-  })
-  console.log(VDB.session)
-  window.location.reload()
-
-  $q.loading.hide()
+  const resp = await authsApi.changeStore({ store: stores.value.val.store.id })
+  if (resp.fail) {
+    console.error(e)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al cambiar sucursal'
+    })
+  } else {
+    // VDB.setToken(resp.token)
+    VDB.setSession({
+      ...VDB.session,
+      store: stores.value.val.store,
+      token: resp.token
+    })
+    window.location.reload()
+    $q.loading.hide()
+  }
 }
 
 // Restaurar modo guardado
@@ -268,6 +311,6 @@ const changeAvatar = async () => {
 
 
 
-init();
+// init();
 
 </script>

@@ -60,7 +60,7 @@ const auths = ref({
 const canSignin = computed(() => (auths.value.nick && auths.value.pass));
 
 const trySignin = async () => {
-  console.log("Iniciando sesion ...", auths.value);
+  // console.log("Iniciando sesion ...", auths.value);
   robot.value.setLoading()
   const user = await authsApi.trySignin(auths.value);
   // console.log(user)
@@ -77,6 +77,8 @@ const trySignin = async () => {
     robot.value.setSuccess()
     LocalStorage.set("auth", u);
     VDB.setSession(u);
+    VDB.setModules(user.rol.modules)
+    VDB.setStores(user.stores)
     $router.replace('/');
   }
 }
