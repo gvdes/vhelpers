@@ -1,7 +1,10 @@
 
 const routes = [
   { path: '/', redirect: '/launcher', meta: { requiresAuth: true } },
-
+  {
+    path: '/changePassword',
+    component: () => import('layouts/changePasswordLYT.vue'),
+  },
   {
     path: '/auth',
     component: () => import('layouts/AuthLayout.vue'),
@@ -23,8 +26,8 @@ const routes = [
     path: '/cash',
     component: () => import('layouts/CashRegistersLYT.vue'),
     meta: { moduleId: 1, requiresAuth: true },
-    children:[
-      {path:'iva', component: () => import('layouts/IvaLayout.vue'), meta:{moduleId:2, requiresAuth:true }}
+    children: [
+      { path: 'iva', component: () => import('layouts/IvaLayout.vue'), meta: { moduleId: 2, requiresAuth: true } }
     ]
   },
 
@@ -413,7 +416,7 @@ const routes = [
       { path: 'billers', name: 'bil', component: () => import('pages/Billing/Billers.vue'), meta: { moduleId: 75, requiresAuth: true } }
     ],
   },
-    {
+  {
     path: '/users',
     component: () => import('layouts/UsersLYT.vue'),
     children: [

@@ -65,12 +65,12 @@
         </div>
         <q-separator />
         <q-separator spaced inset vertical dark />
-        <template v-for="(menuItem, index) in menuModules" :key="menuItem.id">
+        <template v-for="(menuItem) in menuModules" :key="menuItem.id">
           <q-expansion-item expand-separator :label="menuItem.name" :dark="$q.dark.isActive"
             :header-class="$q.dark.isActive ? 'text-white' : 'text-dark'">
-            <div v-for="(modul, inx) in menuItem.modules" :key="modul.id">
-              {{ `${menuItem.path}/${modul.path}` }}
-              <q-item clickable v-ripple :to="`${menuItem.path}/${modul.path}`" :dark="$q.dark.isActive">
+            <div v-for="(modul) in menuItem.modules" :key="modul.id">
+              <!-- {{ `${menuItem.path}/${modul.path}` }} -->
+              <q-item clickable v-ripple :to="`/${menuItem.path}/${modul.path}`" :dark="$q.dark.isActive">
                 <q-item-section side>
                   <q-btn flat round dense icon="star" :color="favorites.isFavorite(modul.path) ? 'yellow-8' : 'grey'"
                     @click.stop.prevent="favorites.toggle(modul)" />

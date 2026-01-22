@@ -79,7 +79,19 @@ const trySignin = async () => {
     VDB.setSession(u);
     VDB.setModules(user.rol.modules)
     VDB.setStores(user.stores)
-    $router.replace('/');
+
+    if(user.credentials._state==1 || user.credentials.change_password == 1){// si la cuenta es nueva, obliga al cambio de contraseña
+      console.log(`%c¡¡ Cuenta nueva !!`,"color: #00d8d6; font-size:.9em; padding:5px 10px; border:1px solid #00d8d6; margin:5px 0; font-weight:bold; background: #1e272e;");
+      $router.replace('/changePassword');
+    }else {
+      console.log(`%cNueva sesion iniciada`,"color: #706fd3; font-size:.9em; padding:5px 10px; border:1px solid #706fd3; margin:5px 0; font-weight:bold; background: #1e272e;");
+      $router.replace(`/`);
+    }
+
+
+
+
+    // $router.replace('/');
   }
 }
 
