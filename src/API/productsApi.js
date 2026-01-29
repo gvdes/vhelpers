@@ -66,5 +66,8 @@ export default{
   },
   updateStatusProduct(data){
     return assist.post(`/Products/updateStatusProduct`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  addCategory(data){
+    return assist.post(`/Products/addCategory`, data).then(done => done.data).catch(fail => { return { fail } });
   }
 }

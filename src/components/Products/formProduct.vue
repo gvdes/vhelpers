@@ -34,20 +34,18 @@
           option-label="name" dense :disable="!addProduct.val.familia" />
       </div>
       <q-separator spaced inset vertical dark />
-      <q-select v-model="addProduct.val.provider" :options="providers"  hide-selected label="PROVEEDOR" filled option-label="name"
-        dense use-input fill-input @filter="filterProviders" />
+      <q-select v-model="addProduct.val.provider" :options="providers" hide-selected label="PROVEEDOR" filled
+        option-label="name" dense use-input fill-input @filter="filterProviders" />
       <q-separator spaced inset vertical dark />
       <q-select v-model="addProduct.val.reference" :options="layoutProduct.reference" label="REFERENCIA" filled
         option-label="name" dense />
       <q-separator spaced inset vertical dark />
-      <q-select v-model="addProduct.val.makers"  hide-selected :options="makers" label="FABRICANTE" filled option-label="name" dense
-        use-input fill-input @filter="filterMakers" />
+      <q-select v-model="addProduct.val.makers" hide-selected :options="makers" label="FABRICANTE" filled
+        option-label="name" dense use-input fill-input @filter="filterMakers" />
       <q-separator spaced inset vertical dark />
       <q-input v-model="addProduct.val.cost" type="number" label="COSTO" filled dense />
       <q-separator spaced inset vertical dark />
       <q-input v-model="addProduct.val.pxc" type="text" label="PXC" filled dense />
-      <q-separator spaced inset vertical dark />
-      <q-input v-model="addProduct.val.nluces" type="text" label="NUMERO LUCES" filled dense />
       <q-separator spaced inset vertical dark />
       <q-select v-model="addProduct.val.umc" :options="layoutProduct.unitsMeasure" label="U MEDIDA COMPRA" filled
         option-label="name" dense />
@@ -55,8 +53,25 @@
       <q-select v-model="addProduct.val.pr" :options="layoutProduct.productRe" label="PRODUCTO RESURTIBLE" filled
         option-label="name" dense />
       <q-separator spaced inset vertical dark />
-      <q-select v-model="addProduct.val.mnp" :options="person" label="MEDIDA / PERSONAJE" filled option-label="large"
-        dense use-input fill-input @filter="filterPerson" @new-value="createPerson" hide-selected />
+      <div class="text-center text-h6">
+        Atributos <span class="q-ml-md"><q-btn outline color="primary" dense icon="add" @click="addAtribute"
+            :disable="addProduct.val.attributes.length == layoutProduct.attributes.length" /></span>
+      </div>
+      <q-separator spaced inset vertical dark />
+      <div v-for="(val, index) in addProduct.val.attributes" v-if="addProduct.val.attributes.length > 0">
+        <div class="row">
+          <q-select class="col" v-model="val._attribute" :options="layoutProduct.attributes" label="Atributo" filled
+            dense option-label="name" :option-disable="optionDisable" />
+          <q-separator spaced inset vertical dark />
+          <q-select class="col" v-model="val.value" :options="val.catalog" label="Valor" option-label="option" filled
+            dense use-input @filter="(input, update, abort) => filterAttribute(input, update, abort, val)"
+            :new-value-mode="(input, done) => createAttribute(input, done, val)" />
+          <q-separator spaced inset vertical dark />
+          <q-btn color="negative" flat icon="delete" dense @click="deleteAtribute(index)" />
+        </div>
+        <q-separator spaced inset vertical dark />
+      </div>
+
     </q-card-section>
     <q-card-actions align="center">
       <q-btn flat label="CANCELAR" @click="cancelAdd" />
@@ -109,10 +124,9 @@ const addProduct = ref({
     makers: null,
     cost: 0,
     pxc: null,
-    nluces: null,
     umc: null,
     pr: null,
-    mnp: null
+    attributes: []
   }
 })
 
@@ -120,7 +134,7 @@ const sections = computed(() => layoutProduct.categories.filter(e => e.deep == 0
 const familias = computed(() => {
   let families = layoutProduct.categories.filter(e => e.deep == 1)
   if (addProduct.value.val.section) {
-    return families.filter(e => e.root == addProduct.value.val.section.id)
+    return families.filter(e => e._root == addProduct.value.val.section.id)
   } else {
     return families
   }
@@ -128,11 +142,29 @@ const familias = computed(() => {
 const categories = computed(() => {
   let category = layoutProduct.categories.filter(e => e.deep == 2)
   if (addProduct.value.val.familia) {
-    return category.filter(e => e.root == addProduct.value.val.familia.id)
+    return category.filter(e => e._root == addProduct.value.val.familia.id)
   } else {
     return category
   }
 })
+
+const addAtribute = () => {
+  addProduct.value.val.attributes.push({
+    _attribute: null,
+    value: null,
+    catalog: []
+  })
+}
+
+const deleteAtribute = (index) => {
+  addProduct.value.val.attributes.splice(index, 1)
+}
+const optionDisable = (item) => {
+  return addProduct.value.val.attributes.some(
+    e => e._attribute && e._attribute.id === item.id
+  )
+}
+
 
 const blurBarcode = async () => {
   if (addProduct.value.val.cb) {
@@ -176,6 +208,7 @@ const blurCode = async () => {
   }
 }
 
+
 const genBarcode = async () => {
   $q.loading.show({ message: 'Generando CB' });
   if (addProduct.value.val.section && addProduct.value.val.familia && addProduct.value.val.categoria) {
@@ -207,42 +240,45 @@ const filterMakers = (val, update, abort) => {
     makers.value = layoutProduct.makers.filter(v => v.name.toLowerCase().indexOf(needle) > -1)
   })
 }
-const filterPerson = (val, update, abort) => {
-  if (val === '') {
-    update(() => {
-      person.value = layoutProduct.MedidasPers
-    })
-    return
-  }
-
-  if (val.length < 1) {
-    abort()
-    return
-  }
+const filterAttribute = (val, update, abort, attr) => {
+  if (!attr.catalog) return abort()
 
   update(() => {
     const needle = val.toLowerCase()
-    person.value = layoutProduct.MedidasPers.filter(
-      v => v.large.toLowerCase().includes(needle)
+    attr.catalog = attr.catalog.filter(v =>
+      v.option.toLowerCase().includes(needle)
     )
   })
 }
 
-const createPerson = (val, done) => {
+const createAttribute = (val, done, attr) => {
   val = val?.trim()
-  if (val.length > 0) {
-    const exists = layoutProduct.MedidasPers.some(item => item.large?.toLowerCase() === val.toLowerCase())
-    if (!exists) {
-      layoutProduct.MedidasPers.push({ large: val })
-    }
-    done({ large: val }, 'toggle')
+  if (!val) return
+
+  const exists = attr.catalog.some(
+    item => item.option.toLowerCase() === val.toLowerCase()
+  )
+
+  if (!exists) {
+    attr.catalog.push({ option: val, is_custom: true })
   }
+
+  done({ option: val }, 'toggle')
 }
 
 const insertProduct = () => {
-  console.log(addProduct.value);
-  emits('addingProduct', { ...addProduct.value.val });
-  resetForm()
+
+  const payload = {
+    ...addProduct.value.val,
+    attributes: addProduct.value.val.attributes.map(a => ({
+      attribute_id: a._attribute.id,
+      value: a.value.option,
+      is_custom: a.value.is_custom || false
+    }))
+  }
+  console.log(payload);
+  // emits('addingProduct', { ...addProduct.value.val });
+  // resetForm()
 }
 
 const cancelAdd = () => {
@@ -251,7 +287,7 @@ const cancelAdd = () => {
 }
 
 const resetForm = () => {
-  addProduct.value.val= {
+  addProduct.value.val = {
     code: null,
     cb: null,
     short_code: null,
@@ -264,12 +300,28 @@ const resetForm = () => {
     makers: null,
     cost: 0,
     pxc: null,
-    nluces: null,
     umc: null,
     pr: null,
-    mnp: null
+    attributes: []
   }
 }
+
+
+watch(
+  () => addProduct.value.val.attributes,
+  (attrs) => {
+    attrs.forEach(attr => {
+      if (attr._attribute && !attr.catalog.length) {
+        attr.catalog = attr._attribute.catalog
+          ? JSON.parse(JSON.stringify(attr._attribute.catalog))
+          : []
+      }
+    })
+  },
+  { deep: true }
+)
+
+
 
 
 </script>

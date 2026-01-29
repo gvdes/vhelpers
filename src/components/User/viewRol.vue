@@ -2,90 +2,112 @@
   <q-card class="my-card" style="width: 520px; max-width: 80vw;">
     <q-card-section>
       <div class="text-center text-h5">{{ area.name }}</div>
-      <div class="text-center text-h6">{{ edit ? 'Actualizar Puesto' : 'Agregar Puesto ' }}</div>
+      <div class="text-center text-h6">
+        {{ edit ? 'Actualizar Puesto' : 'Agregar Puesto' }}
+      </div>
     </q-card-section>
+
     <q-tabs v-model="tab" class="text-teal">
-      <q-tab name="info" icon="info" label="Informacion" />
+      <q-tab name="info" icon="info" label="Información" />
       <q-tab name="permissions" icon="settings" label="Permisos" />
     </q-tabs>
+
     <q-tab-panels v-model="tab" animated>
+
       <q-tab-panel name="info">
-        <q-card-section>
-          <q-input v-model="rol.name" type="text" label="Nombre" filled />
+        <q-input v-model="rol.name" label="Nombre" filled />
+        <q-input v-model="rol.alias" label="Alias" filled class="q-mt-sm" />
+        <q-select v-model="rol.type" :options="typeRol" option-label="name" label="Tipo de puesto" filled
+          class="q-mt-sm" />
+        <q-separator spaced inset vertical dark />
+        <div class="row" v-if="area.roles.length > 0 && !edit">
+          <q-select v-model="rol.deepP" :options="area?.roles" label="Puesto" filled class="col" option-label="name">
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section>
+                  <q-item-label>{{ scope.opt.name }}</q-item-label>
+                  <q-item-label caption class="text-overline">Jerarquia {{ scope.opt.deep }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
           <q-separator spaced inset vertical dark />
-          <q-input v-model="rol.alias" type="text" label="Alias" filled />
-          <q-separator spaced inset vertical dark />
-          <q-select v-model="rol.type" :options="typeRol" label="Tipo de puesto" filled option-label="name" />
-          <q-separator spaced inset vertical dark />
-          <div class="row" v-if="area.roles.length > 0 && !edit">
-            <q-select v-model="rol.deepP" :options="area?.roles" label="Puesto" filled class="col" option-label="name">
-              <template v-slot:option="scope">
-                <q-item v-bind="scope.itemProps">
-                  <q-item-section>
-                    <q-item-label>{{ scope.opt.name }}</q-item-label>
-                    <q-item-label caption class="text-overline">Jerarquia {{ scope.opt.deep }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-            <q-separator spaced inset vertical dark />
-            <q-select v-model="rol.deepR" :options="optionHierarchy" label="Rango" filled class="col"
-              :disable="rol.deepP ? false : true" />
-          </div>
-        </q-card-section>
+          <q-select v-model="rol.deepR" :options="optionHierarchy" label="Rango" filled class="col"
+            :disable="rol.deepP ? false : true" />
+        </div>
+
       </q-tab-panel>
+
       <q-tab-panel name="permissions">
-        <!-- <q-input dense v-model="search" type="text" label="Buscar" /> -->
-        <q-list bordered>
+        <q-list bordered separator>
           <q-expansion-item v-for="parent in treePermissions" :key="parent.id" expand-separator>
             <template #header>
-              <q-toggle v-model="parent.allowed" :label="parent.name" @update:model-value="toggleParent(parent)" />
+              <div class="column full-width">
+                <div class="text-weight-medium">{{ parent.name }}</div>
+                <div class="row q-gutter-sm q-mt-xs">
+                  <q-radio v-model="parent.permission" :val="1" label="CT" dense
+                    @update:model-value="onParentChange(parent)" />
+                  <q-radio v-model="parent.permission" :val="2" label="V" dense
+                    @update:model-value="onParentChange(parent)" />
+                  <q-radio v-model="parent.permission" :val="null" label="S/A" dense
+                    @update:model-value="onParentChange(parent)" />
+                </div>
+              </div>
             </template>
+            <q-separator />
             <q-item v-for="child in parent.children" :key="child.id" class="q-ml-lg">
-              <q-item-section>
-                <q-toggle v-model="child.allowed" :label="child.name"
-                  @update:model-value="toggleChild(parent, child)" />
-              </q-item-section>
+              <div class="column full-width">
+                <div class="text-wieght-medium">{{ (child.name).toUpperCase() }}</div>
+                <div class="row q-gutter-sm q-mt-xs">
+                  <q-radio v-model="child.permission" :val="1" label="CT" dense
+                    @update:model-value="onChildChange(parent, child)" />
+                  <q-radio v-model="child.permission" :val="2" label="V" dense
+                    @update:model-value="onChildChange(parent, child)" />
+                  <q-radio v-model="child.permission" :val="null" label="S/A" dense
+                    @update:model-value="onChildChange(parent, child)" />
+                </div>
+                <q-separator />
+              </div>
             </q-item>
+
           </q-expansion-item>
         </q-list>
       </q-tab-panel>
+
+
     </q-tab-panels>
 
-    <q-card-actions v-if="edit" align="center">
+    <q-card-actions align="center">
       <q-btn flat icon="close" color="negative" @click="emit('reset')" />
-      <q-btn flat icon="edit" color="warning" @click="modify" />
-    </q-card-actions>
-    <q-card-actions v-else align="center">
-      <q-btn flat icon="close" color="negative" @click="emit('reset')" />
-      <q-btn flat icon="check" color="positive" @click="adding" />
+      <q-btn flat :icon="edit ? 'edit' : 'check'" :color="edit ? 'warning' : 'positive'"
+        @click="edit ? modify() : adding()" />
     </q-card-actions>
   </q-card>
 </template>
 
 <script setup>
-import UserApi from 'src/API/UserApi';
-import { computed, ref, onMounted, watch, onBeforeUnmount } from 'vue';
-import { exportFile, useQuasar, date } from 'quasar';
-const $q = useQuasar();
+import { ref, onMounted, computed } from 'vue'
+import { useQuasar } from 'quasar'
+import UserApi from 'src/API/UserApi'
+
+const $q = useQuasar()
 const tab = ref('info')
-const rolePermissions = ref([])
 
 const props = defineProps({
-  edit: { type: Boolean, default: false },
-  area: { type: Object, default: {} },
-  rol: { type: Object, defaul: {} },
-  typeRol: { type: Array, defaul: [] },
-  roles: { type: Array, default: [] },
-  permissions: { type: Array, default: [] }
+  edit: Boolean,
+  area: Object,
+  rol: Object,
+  typeRol: Array,
+  permissions: Array,
 })
+
 const emit = defineEmits(['termino', 'reset'])
-const search = ref(null)
 const treePermissions = ref([])
 
 
 
 
+const mobil = computed(() => $q.platform.is.mobile)
 const optionHierarchy = computed(() => {
   if (props.rol.deepP) {
     return props.rol.deepP.deep < 1 ? ['Igual', 'Menor'] : ['Menor', 'Igual', 'Mayor']
@@ -94,37 +116,35 @@ const optionHierarchy = computed(() => {
 })
 
 
-const toggleParent = (parent) => {
-  if (!parent.allowed) {
-    parent.children.forEach(c => c.allowed = false)
+const onParentChange = (parent) => {
+  if (parent.permission === null) {
+    parent.children.forEach(c => c.permission = null)
   }
 }
 
-const toggleChild = (parent, child) => {
-  if (child.allowed) {
-    parent.allowed = true
+const onChildChange = (parent, child) => {
+  if (child.permission !== null && parent.permission === null) {
+    parent.permission = child.permission
   }
 }
 
 const collectPermissions = () => {
-  const permissions = []
+  const out = {}
 
-  treePermissions.value.forEach(parent => {
-    if (parent.allowed === true) {
-      permissions.push(parent.id)
+  treePermissions.value.forEach(p => {
+    if (p.permission !== null) {
+       out[p.id] = { _permission: p.permission }
     }
-
-    if (Array.isArray(parent.children)) {
-      parent.children.forEach(child => {
-        if (child.allowed === true) {
-          permissions.push(child.id)
-        }
-      })
-    }
+    p.children.forEach(c => {
+      if (c.permission !== null) {
+         out[c.id] = { _permission: c.permission }
+      }
+    })
   })
 
-  return permissions
+  return out
 }
+
 
 const adding = async () => {
 
@@ -183,6 +203,7 @@ const modify = async () => {
       id: props.rol.id,
       name: props.rol.name,
       alias: props.rol.alias ? props.rol.alias : '',
+      _type: props.rol.type.id,
     },
     permissions
   }
@@ -204,16 +225,16 @@ const modify = async () => {
 }
 
 onMounted(() => {
-  const assigned = new Set(
-    props.rol?.modules?.map(m => m.pivot?._module) ?? []
+  const assigned = new Map(
+    props.rol?.modules?.map(m => [m.id, m.pivot?._permission]) ?? []
   )
 
-  treePermissions.value = props.permissions.map(parent => ({
-    ...parent,
-    allowed: assigned.has(parent.id),
-    children: parent.children.map(child => ({
-      ...child,
-      allowed: assigned.has(child.id)
+  treePermissions.value = props.permissions.map(p => ({
+    ...p,
+    permission: assigned.get(p.id) ?? null,
+    children: p.children.map(c => ({
+      ...c,
+      permission: assigned.get(c.id) ?? null
     }))
   }))
 })

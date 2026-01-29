@@ -13,7 +13,7 @@
         option-label="name" :disable="true" outlined />
       <q-separator spaced inset vertical dark />
       <q-select dense v-model="workpoints.val" :options="workpoints.workpoints" label="Sucursal" class="col"
-        option-label="name" outlined :option-disable="(i) => i.id == 1" @update:model-value="getData" />
+        option-label="name" outlined :="(i) => i.id == 1" @update:model-value="getData" />
     </div>
     <q-separator spaced inset vertical dark />
 

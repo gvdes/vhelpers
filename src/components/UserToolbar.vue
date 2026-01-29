@@ -6,12 +6,12 @@
     </div>
     <div v-if="user.stores.length == 0" class="col text-center fs-inc1 text-primary fw-sbold">{{ !ismobile ?
       user.store.name : user.store.alias }}</div>
-    <q-select v-model="stores.val" :options="user.stores" :option-label="opt => opt.store.name" borderless
+    <q-select v-model="stores.val" :options="user.stores" :option-label="opt => opt.name" borderless
       color="primary" @update:model-value="changeStore" v-if="user.stores.length >= 1" dense class="text-center"
       options-selected-class="text-primary text-bold">
       <template v-slot:selected>
         <div class="text-center fs-inc1 text-primary fw-sbold">
-          {{ !ismobile ? stores.val.store.name : stores.val.store.alias }}
+          {{ !ismobile ? stores.val.name : stores.val.alias }}
         </div>
       </template></q-select>
     <div class="col text-right">
@@ -157,7 +157,7 @@ const $q = useQuasar();
 const modules = ref([]);
 const drawerPr = ref(false)
 const stores = ref({
-  val: VDB.session,
+  val: VDB.session.store,
   opts: []
 })
 const menuModules = computed(() => {
@@ -215,38 +215,9 @@ const mosAvatar = ref({
     'avatar27.png',
   ]
 })
-// const init = async () => {
-//   // $q.loading.show({ message: 'Obteniendo Informacion' })
-//   const resp = await authsApi.getResources(user.credentials.id)
-//   if (resp.fail) {
-//     console.log(resp)
-//   } else {
-//     console.log(resp)
-//     VDB.setModules(resp.grouped_modules)
-//     VDB.setStores(resp.stores)
-//     VDB.modulesLoaded = true;
-//     // stores.value.opts = resp.stores
-//     // modules.value = resp.rol.modules
-//     // $q.loading.hide()
-//   }
-// }
-
-// const changeStore = () => {
-//   $q.loading.show({ message: 'Cambiando sucursal' })
-//   VDB.session.store = stores.value.val.store
-//   VDB.setSession({
-//     ...VDB.session,
-//     store: stores.value.val.store
-//   })
-//   console.log(VDB.session)
-//   window.location.reload()
-
-//   $q.loading.hide()
-// }
-
 const changeStore = async () => {
   $q.loading.show({ message: 'Cambiando sucursal' })
-  const resp = await authsApi.changeStore({ store: stores.value.val.store.id })
+  const resp = await authsApi.changeStore({ store: stores.value.val.id })
   if (resp.fail) {
     console.error(e)
     $q.notify({
@@ -257,7 +228,7 @@ const changeStore = async () => {
     // VDB.setToken(resp.token)
     VDB.setSession({
       ...VDB.session,
-      store: stores.value.val.store,
+      store: stores.value.val,
       token: resp.token
     })
     window.location.reload()

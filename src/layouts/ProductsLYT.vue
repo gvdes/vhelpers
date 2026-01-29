@@ -1,12 +1,12 @@
 <template>
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
-    <q-header class="transparent " bordered>
+
       <UserToolbar />
       <q-separator/>
       <q-toolbar class="justify-between">
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">{{ layoutProduct.title }}</span></div>
       </q-toolbar>
-    </q-header>
+
 
     <q-page-container>
       <router-view />
@@ -39,7 +39,9 @@ const init = async () => {
     layoutProduct.setMakers(resp.makers);
     layoutProduct.setProviders(resp.providers);
     layoutProduct.setUnits(resp.units);
-    layoutProduct.setPersons(resp.medPerson);
+    layoutProduct.setAttributes(resp.attributes);
+    layoutProduct.setStates(resp.states);
+
     $q.loading.hide()
   }
 }

@@ -2,8 +2,8 @@ import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 import { LocalStorage } from 'quasar'
 
-// const ipAssist = 'http://192.168.10.160:1920'
-const ipAssist = 'http://192.168.1.86:1920'
+const ipAssist = 'http://192.168.10.160:1920'
+// const ipAssist = 'http://192.168.1.86:1920'
 
 
 // const ipAssist = 'http://192.168.10.238:2902'ESTEYANO
@@ -37,7 +37,6 @@ export default boot(({ router }) => {
           localStorage.clear()
           let msg = data.error
           alert(msg)
-
           router.replace('/auth').finally(() => {
             redirecting = false
           })

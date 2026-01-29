@@ -76,16 +76,16 @@ const routes = [
   //   component: () => import('layouts/SaleStore.vue'),
   //   meta: { moduleId: 29 }
   // },
-  {
-    path: '/stores',
-    meta: { moduleId: 29, requiresAuth: true },
-    component: () => import('layouts/SaleStore.vue'),
-    children: [
-      { path: 'daily', name: 'rdy', component: () => import('pages/Report/Sales/daily.vue'), meta: { moduleId: 29, requiresAuth: true } },
-      { path: 'month', name: 'rmn', component: () => import('pages/Report/Sales/month.vue'), meta: { moduleId: 29, requiresAuth: true } },
-      { path: 'year', name: 'ryr', component: () => import('pages/Report/Sales/year.vue'), meta: { moduleId: 29, requiresAuth: true } },
-    ],
-  },
+  // {
+  //   path: '/stores',
+  //   meta: { moduleId: 29, requiresAuth: true },
+  //   component: () => import('layouts/SaleStore.vue'),
+  //   children: [
+  //     { path: 'daily', name: 'rdy', component: () => import('pages/Report/Sales/daily.vue'), meta: { moduleId: 29, requiresAuth: true } },
+  //     { path: 'month', name: 'rmn', component: () => import('pages/Report/Sales/month.vue'), meta: { moduleId: 29, requiresAuth: true } },
+  //     { path: 'year', name: 'ryr', component: () => import('pages/Report/Sales/year.vue'), meta: { moduleId: 29, requiresAuth: true } },
+  //   ],
+  // },
   {
     path: '/ciclicos',
     component: () => import('layouts/CiclicosLayout.vue'),
@@ -354,8 +354,8 @@ const routes = [
     component: () => import('layouts/ProductsLYT.vue'),
     meta: { moduleId: 49, requiresAuth: true },
     children: [
-      { path: 'create', name: 'mngpr', component: () => import('pages/Products/higthProducts.vue'), meta: { moduleId: 49, requiresAuth: true } },
-      { path: 'prices', name: 'pricespr', component: () => import('pages/Products/pricesProducts.vue'), meta: { moduleId: 50, requiresAuth: true } },
+      { path: 'index', name: 'pinx', component: () => import('pages/Products/Index.vue'), meta: { moduleId: 49, requiresAuth: true } },
+      { path: 'category', name: 'pcat', component: () => import('pages/Products/Categories.vue'), meta: { moduleId: 50, requiresAuth: true } },
       { path: 'modify', name: 'modipr', component: () => import('pages/Products/ModifyProducts.vue'), meta: { moduleId: 51, requiresAuth: true } },
       { path: 'requisition', name: 'rmopr', component: () => import('pages/Products/RequisitionProducts.vue'), meta: { moduleId: 65, requiresAuth: true } },
       { path: 'picture', name: 'propic', component: () => import('pages/Products/PictureProducts.vue'), meta: { moduleId: 69, requiresAuth: true } },
@@ -421,8 +421,15 @@ const routes = [
     component: () => import('layouts/UsersLYT.vue'),
     children: [
       { path: 'index', name: 'uinx', component: () => import('pages/Users/Index.vue'), meta: { moduleId: 89, requiresAuth: true } },
-      { path: 'areas', name: 'uar', component: () => import('pages/Users/Areas.vue'), meta: { moduleId: 92, requiresAuth: true } }
-
+      { path: 'areas', name: 'uar', component: () => import('pages/Users/Areas.vue'), meta: { moduleId: 92, requiresAuth: true } },
+      { path: 'branches', name: 'ubr', component: () => import('pages/Users/Branches.vue'), meta: { moduleId: 91, requiresAuth: true } },
+    ],
+  },
+  {
+    path: '/stores',
+    component: () => import('layouts/StoreLYT.vue'),
+    children: [
+      { path: 'index', name: 'sinx', component: () => import('pages/Stores/Index.vue'), meta: { moduleId: 89, requiresAuth: true } },
     ],
   },
   // {

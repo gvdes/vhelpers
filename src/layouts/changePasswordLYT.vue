@@ -148,6 +148,7 @@ const toggleInputs = () => {
 
 const setFirstLogin = async () => {
   console.log("Guardando cambios...");
+  $q.loading.show({message:'Actualizando Contrasena'})
   btnNext.value.l = true;
   btnNext.value.d = true;
   const resp = await authsApi.chagePassword({ newpass: passconfirm.value });
@@ -157,6 +158,7 @@ const setFirstLogin = async () => {
     console.log(resp.fail);
     console.log(resp.fail.response.data);
   } else {
+    $q.loading.hide()
     $q.notify({
       message: "Contraseña modificada",
       color: "positive",

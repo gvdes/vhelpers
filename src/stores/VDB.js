@@ -13,11 +13,23 @@ export const useVDBStore = defineStore('vdb', {
   }),
 
   getters: {
-    findByNick(state) { // se usa para el inicio de sesion
+    findByNick(state) {
       return (nick) => state.users.find(u => u.credentials.nick == nick);
     },
-  },
+    permission: (state) => {
+      return (moduleId) => {
+        const mod = state.modules.find(m => m.id === moduleId)
+        return mod?.pivot._permission == 2 ? true : false
+      }
+    },
 
+    // canEdit: (state) => {
+    //   return (moduleId) => {
+    //     const mod = state.modules.find(m => m.id === moduleId)
+    //     return mod?.permission === 1
+    //   }
+    // },
+  },
   actions: {
     setSession(data) {
       this.session = data;
