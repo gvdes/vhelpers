@@ -11,6 +11,7 @@ export const useLayoutCash = defineStore('layout', {
     methods:[],
     providers:[],
     clients:[],
+    promotion:[],
     init:false,
     modules: [
       { id: 1, name: 'Retiradas de Efectivo', description: 'Realiza Retiradas', icon: "payments" },
@@ -66,6 +67,9 @@ export const useLayoutCash = defineStore('layout', {
     },
     setClients(client){
       this.clients = client;
+    },
+    setPromotion(promotion){
+      this.promotion = promotion;
     }
   }
 })

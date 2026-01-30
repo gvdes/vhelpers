@@ -163,6 +163,11 @@ const routes = [
     component: () => import('layouts/salesOffers.vue'),
     meta: { moduleId: 18, requiresAuth: true }
   },
+  //   {
+  //   path: '/ofertas',
+  //   component: () => import('layouts/Offers.vue'),
+  //   meta: { moduleId: 76, requiresAuth: true }
+  // },
   {
     path: '/cortBoxes',
     component: () => import('layouts/cortBoxes.vue'),

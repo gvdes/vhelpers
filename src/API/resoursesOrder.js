@@ -86,15 +86,15 @@ const verificarPrecioCaja = (prdts, product) => {
   let model = 0;
   let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
   model = sameModel + Number(product.pivot.units)
-  console.log(model)
-  if(model >= product.pieces){ return true}
+  // console.log(model)
+  if (model >= product.pieces) { return true }
   return false
 }
 
 
 const actualizarPreciosProductos = async (products, order, rules) => {
   const productosCambiados = [];
-  console.log(order)
+  // console.log(order)
   for (const p of products) {
     // console.log(p)
     const totalPzsTemp = p.pivot._supply_by == 3
@@ -142,28 +142,24 @@ const actualizarPreciosProductos = async (products, order, rules) => {
     }
   }
 
-  if (productosCambiados.length > 0) {
-    const resp = await orderApi.updateProductPrices(productosCambiados);
-    console.log(resp)
-    if (resp.fail) {
-      console.error('Error al actualizar precios:', resp);
-    } else {
-      console.log('Precios actualizados correctamente');
-    }
-  }
+  // if (productosCambiados.length > 0) {
+  //   const resp = await orderApi.updateProductPrices(productosCambiados);
+  //   console.log(resp)
+  //   if (resp.fail) {
+  //     console.error('Error al actualizar precios:', resp);
+  //   } else {
+  //     console.log('Precios actualizados correctamente');
+  //   }
+  // }
 };
 
 
-const actualizarPreciosProductosSales = async (products,_price_list, rules,) => {
+const actualizarPreciosProductosSales = async (products, _price_list, rules,) => {
   const productosCambiados = [];
 
   for (const p of products) {
     // console.log(p)
-    const totalPzsTemp = p.pivot._supply_by == 3
-      ? (p.pivot.amount * p.pieces)
-      : p.pivot._supply_by == 2
-        ? (p.pivot.amount * 12)
-        : p.pivot.amount;
+    const totalPzsTemp = p.pivot.units
 
     let newPriceList = 0;
 
@@ -180,9 +176,9 @@ const actualizarPreciosProductosSales = async (products,_price_list, rules,) => 
     } else {
       newPriceList = _price_list;
     }
-
+    // console.log(newPriceList)
     const priceData = p.prices.find(e => e.id == newPriceList);
-
+    // console.log(priceData)
     if (priceData) {
       const precioViejo = p.pivot.price;
       const listaVieja = p.pivot._price_list;
@@ -206,9 +202,232 @@ const actualizarPreciosProductosSales = async (products,_price_list, rules,) => 
 
 
 const totalPiezas = (pivot, pieces) => {
-  return  pivot.units
+  return pivot.units
+}
+
+const aplicarPromociones = (products, promotions) => {
+  // console.log(promotions)
+  // products.forEach(p => {
+  //   p.pivot.promo_units = 0
+  // })
+  promotions.forEach(promo => {
+    if (promo.type === 'NXM') {
+      aplicar2x1(products, promo)
+    }
+  })
+}
+// const aplicar2x1 = (products, promo) => {
+//   const promoProductIds = promo.products.map(e => e._product)
+//   const items = products.filter(p =>
+//     promoProductIds.includes(p.id)
+//   )
+//   items.forEach(p => {
+//     const units = Number(p.pivot.units)
+//     const free = Math.floor(units / 2)
+//     if (free <= 0) return
+//     const discount = free * p.pivot.price
+//     p.pivot.promo_units = free
+//     p.pivot.promo_discount = discount
+//     p.pivot.total = Math.max(0, p.pivot.total - discount)
+//   })
+// }
+
+// const aplicar2x1 = (products, promo) => {
+//   const promoIds = promo.products.map(e => e._product)
+//   const items = products
+//     .filter(p => promoIds.includes(p.id))
+//     .map(p => ({
+//       product: p,
+//       price: Number(p.pivot.price),
+//       units: Number(p.pivot.units),
+//       pivot: p.pivot
+//     }))
+//   const totalUnits = items.reduce((sum, i) => sum + i.units, 0)
+//   const freeUnits = Math.floor(totalUnits / 2)
+
+//   if (freeUnits <= 0) return
+//   items.sort((a, b) => a.price - b.price)
+//   let remainingFree = freeUnits
+//   for (const item of items) {
+//     if (remainingFree <= 0) break
+//     const freeForItem = Math.min(item.units, remainingFree)
+//     const discount = freeForItem * item.price
+//     item.pivot.promo_units = (item.pivot.promo_units || 0) + freeForItem
+//     item.pivot.promo_discount = (item.pivot.promo_discount || 0) + discount
+//     item.pivot.total = Math.max(0, item.pivot.total - discount)
+//     remainingFree -= freeForItem
+//   }
+// }
+
+// const aplicar2x1 = (products, promo) => {
+
+//   const promoIds = promo.products.map(p => p._product)
+
+//   const promoItems = products.filter(p =>
+//     promoIds.includes(p.id)
+//   )
+//   console.log(promoItems)
+//   promoItems.forEach(p => {
+//     p.pivot.promo_units = 0
+//     // p.pivot.promo_discount = 0
+//   })
+
+//   const totalUnits = promoItems.reduce(
+//     (sum, p) => sum + Number(p.pivot.units),
+//     0
+//   )
+
+//   const freeUnits =
+//     Math.floor(totalUnits / promo.buy) * (promo.buy - promo.pay)
+
+//   if (freeUnits <= 0) return
+
+//   const sorted = promoItems
+//     .filter(p => p.pivot.units > 0)
+//     .sort((a, b) => a.pivot.price - b.pivot.price)
+
+//   let remaining = freeUnits
+
+//   for (const p of sorted) {
+//     if (remaining <= 0) break
+
+//     const freeForProduct = Math.min(
+//       p.pivot.units,
+//       remaining
+//     )
+//     p.pivot.promo_units = freeForProduct
+//     p.pivot.total = freeForProduct * p.pivot.price
+
+//     remaining -= freeForProduct
+//   }
+// }
+
+
+// const aplicar2x1 = (products, promo) => {
+//   const promoIds = promo.products.map(p => p._product)
+
+//   const items = products
+//     .filter(p => promoIds.includes(p.id))
+//     .map(p => ({
+//       product: p,
+//       units: Number(p.pivot.units),
+//       price: Number(p.pivot.price),
+//       pivot: p.pivot
+//     }))
+
+//   if (!items.length) return
+
+//   // 🔹 reset solo productos de la promo
+//   items.forEach(i => {
+//     i.pivot.promo_units = 0
+//     // i.pivot.promo_discount = 0
+//   })
+
+//   const totalUnits = items.reduce((s, i) => s + i.units, 0)
+//   console.log(totalUnits)
+//   const blocks = Math.floor(totalUnits / promo.buy)
+//   const freeUnits = blocks * (promo.buy - promo.pay)
+
+//   if (freeUnits <= 0) return
+
+//   items.sort((a, b) => a.price - b.price)
+
+//   let remaining = freeUnits
+
+//   for (const item of items) {
+//     if (remaining <= 0) break
+
+//     const freeForItem = Math.min(item.units, remaining)
+//     console.log(freeForItem)
+//     item.pivot.promo_units += freeForItem
+//     item.pivot.promo_discount += freeForItem * item.price
+//     item.pivot.total -= freeForItem * item.price
+
+//     remaining -= freeForItem
+//   }
+// }
+
+// const aplicar2x1 = (products, promo) => {
+//   const promoIds = promo.products.map(p => p._product)
+
+//   // 🔹 Solo productos que participan en la promo
+//   const items = products.filter(p => promoIds.includes(p.id))
+
+//   if (!items.length) return
+
+//   // 🔹 Reset SOLO productos de la promo
+//   items.forEach(p => {
+//     p.pivot.promo_units = 0
+//     p.pivot.promo_discount = 0
+//   })
+
+//   // 🔹 Total de unidades combinadas
+//   const totalUnits = items.reduce(
+//     (sum, p) => sum + Number(p.pivot.units),
+//     0
+//   )
+
+//   // 🔹 2x1 → cada 2 unidades = 1 gratis
+//   const freeUnits = Math.floor(totalUnits / 2)
+//   if (freeUnits <= 0) return
+//   let remaining = freeUnits
+//   for (const p of items) {
+//     console.log(remaining)
+//     if (remaining <= 0) break
+
+//     const units = Number(p.pivot.units)
+//     const freeForProduct = Math.min(units, remaining)
+//     console.log(freeForProduct)
+
+//     p.pivot.promo_units += freeForProduct
+//     p.pivot.promo_discount += freeForProduct * p.pivot.price
+//     p.pivot.total -= freeForProduct * p.pivot.price
+
+//     remaining -= freeForProduct
+//   }
+// }
+
+const aplicar2x1 = (products, promo) => {
+  const promoIds = promo.products.map(p => p._product)
+
+  const items = products.filter(p => promoIds.includes(p.id))
+  if (!items.length) return
+
+  items.forEach(p => {
+    const units = Number(p.pivot.units)
+    const price = Number(p.pivot.price)
+    p.pivot.subtotal = units * price
+    p.pivot.promo_units = 0
+    p.pivot.promo_discount = 0
+    p.pivot.total = p.pivot.subtotal
+  })
+  const totalUnits = items.reduce(
+    (sum, p) => sum + Number(p.pivot.units),
+    0
+  )
+  const freeUnits = Math.floor(totalUnits / 2)
+  if (freeUnits <= 0) return
+
+  let remaining = freeUnits
+  for (const p of items) {
+    if (remaining <= 0) break
+
+    const units = Number(p.pivot.units)
+    const price = Number(p.pivot.price)
+
+    const freeForProduct = Math.min(units, remaining)
+
+    if (freeForProduct <= 0) continue
+
+    p.pivot.promo_units += freeForProduct
+    p.pivot.promo_discount += freeForProduct * price
+    p.pivot.total -= freeForProduct * price
+
+    remaining -= freeForProduct
+  }
 }
 
 
 
-export default { verificarPrecioMayoreo, verificarPrecioDocena, actualizarPreciosProductos, actualizarPreciosProductosSales,verificarPrecioCaja }
+
+export default { verificarPrecioMayoreo, verificarPrecioDocena, actualizarPreciosProductos, actualizarPreciosProductosSales, verificarPrecioCaja, aplicarPromociones }

@@ -175,6 +175,7 @@ const init = async () => {
     cashLYT.setProviders(resp.providers);
     cashLYT.setClients(resp.clientIngress);
     cashLYT.setRules(resp.rules);
+    cashLYT.setPromotion(resp.promotions);
     $q.loading.hide()
   }
 }
