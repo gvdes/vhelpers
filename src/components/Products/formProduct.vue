@@ -65,7 +65,7 @@
           <q-separator spaced inset vertical dark />
           <q-select class="col" v-model="val.value" :options="val.catalog" label="Valor" option-label="option" filled
             dense use-input @filter="(input, update, abort) => filterAttribute(input, update, abort, val)"
-            :new-value-mode="(input, done) => createAttribute(input, done, val)" />
+            @new-value="(input, done) => createAttribute(input, done, val)" />
           <q-separator spaced inset vertical dark />
           <q-btn color="negative" flat icon="delete" dense @click="deleteAtribute(index)" />
         </div>
@@ -254,31 +254,45 @@ const filterAttribute = (val, update, abort, attr) => {
 const createAttribute = (val, done, attr) => {
   val = val?.trim()
   if (!val) return
-
-  const exists = attr.catalog.some(
-    item => item.option.toLowerCase() === val.toLowerCase()
-  )
-
-  if (!exists) {
-    attr.catalog.push({ option: val, is_custom: true })
+  const newOption = {
+    option: val,
+    is_custom: true
   }
+  const globalAttr = layoutProduct.attributes.find(
+    a => a.id === attr._attribute.id
+  )
+  if (globalAttr) {
+    const existsGlobal = globalAttr.catalog?.some(
+      o => o.option.toLowerCase() === val.toLowerCase()
+    )
 
-  done({ option: val }, 'toggle')
+    if (!existsGlobal) {
+      globalAttr.catalog.push(newOption)
+    }
+  }
+  const existsLocal = attr.catalog.some(
+    o => o.option.toLowerCase() === val.toLowerCase()
+  )
+  if (!existsLocal) {
+    attr.catalog.push(newOption)
+  }
+  done(newOption, 'toggle')
 }
+
 
 const insertProduct = () => {
 
   const payload = {
     ...addProduct.value.val,
     attributes: addProduct.value.val.attributes.map(a => ({
-      attribute_id: a._attribute.id,
-      value: a.value.option,
-      is_custom: a.value.is_custom || false
+      name:a._attribute.name,
+      id: a._attribute.id,
+      value: a.value.option
     }))
   }
   console.log(payload);
-  // emits('addingProduct', { ...addProduct.value.val });
-  // resetForm()
+  emits('addingProduct', { ...payload});
+  resetForm()
 }
 
 const cancelAdd = () => {

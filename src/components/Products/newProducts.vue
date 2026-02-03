@@ -8,10 +8,11 @@
         :disable="documentHigh.state" />
     </q-toolbar>
     <q-separator spaced inset vertical dark />
-    <q-table :rows="data" :columns="table.columns">
+    <q-table :rows="data" :columns="columns">
       <template v-slot:top v-if="documentHigh.state">
         <div>
-          <div class="text-caption"> {{ `${documentHigh.autor.name} ${documentHigh.autor.surnames}` }} <q-separator /> {{ documentHigh.date}}
+          <div class="text-caption"> {{ `${documentHigh.autor.name} ${documentHigh.autor.surnames}` }} <q-separator />
+            {{ documentHigh.date }}
           </div>
           <div class="text-bold"> {{ documentHigh.nameDoc }} </div>
         </div>
@@ -150,27 +151,50 @@ const addDoc = ref({
   state: false,
   val: null
 })
+const attributeColumns = computed(() => {
+  const map = new Map()
 
-const table = ref({
-  columns: [
-    { name: 'code', label: 'Codigo', field: r => r.code, align: 'left' },
-    { name: 'cb', label: 'CB', field: r => r.cb, align: 'left' },
-    { name: 'short_code', label: 'CCO', field: r => r.short_code, align: 'left' },
-    { name: 'description', label: 'Descripcion', field: r => r.description, align: 'left' },
-    { name: 'section', label: 'Seccion', field: r => r.section.alias, align: 'left' },
-    { name: 'family', label: 'Familia', field: r => r.familia.alias, align: 'left' },
-    { name: 'category', label: 'Categoria', field: r => r.categoria.alias, align: 'left' },
-    { name: 'provider', label: 'Proveedor', field: r => r.provider.name, align: 'left' },
-    { name: 'reference', label: 'Referencia', field: r => r.reference, align: 'left' },
-    { name: 'makers', label: 'Fabricante', field: r => r.makers.name, align: 'left' },
-    { name: 'cost', label: 'Costo', field: r => r.cost, align: 'left' },
-    { name: 'pxc', label: 'PXC', field: r => r.pxc, align: 'left' },
-    { name: 'nluz', label: 'NLUZ', field: r => r.nluces, align: 'left' },
-    { name: 'unit_measures', label: 'UMC', field: r => r.umc.name, align: 'left' },
-    { name: 'resurtible', label: 'P.Resurtible', field: r => r.pr, align: 'left' },
-    { name: 'person', label: 'MN / P', field: r => r.mnp?.large, align: 'left' },
-  ]
+  data.value.forEach(p => {
+    p.attributes?.forEach(a => {
+      console.log(a)
+      if (!map.has(a.id)) {
+        map.set(a.id, {
+          name: `attr_${a.id}`,
+          label: `${a.name.toUpperCase()}`, // luego puedes poner nombre real
+          align: 'left',
+          field: row => {
+            const found = row.attributes?.find(x => x.id === a.id)
+            return found ? found.value : ''
+          }
+        })
+      }
+    })
+  })
+
+  return Array.from(map.values())
 })
+
+
+const columns = computed(() => [
+  { name: 'code', label: 'Codigo', field: r => r.code, align: 'left' },
+  { name: 'cb', label: 'CB', field: r => r.cb, align: 'left' },
+  { name: 'short_code', label: 'CCO', field: r => r.short_code, align: 'left' },
+  { name: 'description', label: 'Descripcion', field: r => r.description, align: 'left' },
+  { name: 'section', label: 'Seccion', field: r => r.section.alias, align: 'left' },
+  { name: 'family', label: 'Familia', field: r => r.familia.alias, align: 'left' },
+  { name: 'category', label: 'Categoria', field: r => r.categoria.alias, align: 'left' },
+  { name: 'provider', label: 'Proveedor', field: r => r.provider.name, align: 'left' },
+  { name: 'reference', label: 'Referencia', field: r => r.reference, align: 'left' },
+  { name: 'makers', label: 'Fabricante', field: r => r.makers.name, align: 'left' },
+  { name: 'cost', label: 'Costo', field: r => r.cost, align: 'left' },
+  { name: 'pxc', label: 'PXC', field: r => r.pxc, align: 'left' },
+  // { name: 'nluz', label: 'NLUZ', field: r => r.nluces, align: 'left' },
+  { name: 'unit_measures', label: 'UMC', field: r => r.umc.name, align: 'left' },
+  { name: 'resurtible', label: 'P.Resurtible', field: r => r.pr, align: 'left' },
+  // { name: 'person', label: 'MN / P', field: r => r.mnp?.large, align: 'left' },
+  ...attributeColumns.value
+])
+
 
 const documentHigh = ref({
   state: false,
@@ -406,6 +430,7 @@ const addProduct = (value) => {
   if (inx >= 0) {
     $q.notify({ message: 'El Producto ya esta en la lista', type: 'negative', position: 'center' });
   } else {
+    console.log(data.value)
     data.value.push(value);
   }
 }
@@ -416,15 +441,17 @@ const sendProducts = async () => {
     head: documentHigh.value,
     data: data.value
   }
+  // console.log(sendData);
   const resp = await productApi.highProducts(sendData);
+  console.log(resp);
   if (resp.fail) {
     console.log(resp);
   } else {
     console.log(resp);
-    dataResponse.value.state = true
-    dataResponse.value.data = resp
+    // dataResponse.value.state = true
+    // dataResponse.value.data = resp
+    reload()
     $q.loading.hide();
-
   }
 }
 
