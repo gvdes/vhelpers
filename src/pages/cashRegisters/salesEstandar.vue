@@ -115,7 +115,7 @@
 
     <q-dialog v-model="product.state" persistent position="bottom">
       <viewProduct :product="product.val" :_price_list="clients.val ? clients.val._price_list : 1" :edit="product.edit"
-        @reset="reset" :products="sale.products" :rules="cashLYT.rules" @addProduct="addProdcut"
+        @reset="reset" :products="sale.products" :rules="cashLYT.rules" @addProduct="addProdcut" :promotion="cashLYT.promotion"
         @deleteProduct="deleteProduct" @editProduct="editProduct" />
     </q-dialog>
 
@@ -465,7 +465,7 @@ const changeNewClient = async (a, b) => {
   sale.value.client = b
   Resourse.aplicarPromociones(
     sale.value.products,
-    cashLYT.promotion // (ya la tienes en el store)
+    cashLYT.promotion
   )
   Resourse.actualizarPreciosProductosSales(sale.value.products, b._price_list, cashLYT.rules)
   clients.value = {

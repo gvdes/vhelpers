@@ -101,7 +101,8 @@ const props = defineProps({
   _price_list: { type: Number, default: 1 },
   edit: { type: Boolean, default: false },
   products: { type: Array, default: [] },
-  rules: { type: Array, default: [] }
+  rules: { type: Array, default: [] },
+  promotion: { type: Array, default: [] },
 })
 
 
@@ -127,7 +128,7 @@ const selectPrice = computed(() => {
     // }
     if (Resourse.verificarPrecioCaja(props.products, props.product, props.rules)) {
       return 4;
-    }  else if (Resourse.verificarPrecioDocena(props.products, props.product, props.rules)) {
+    } else if (Resourse.verificarPrecioDocena(props.products, props.product, props.rules)) {
       return 3;
     } else if (Resourse.verificarPrecioMayoreo(props.products, props.product, props.rules)) {
       return 2;
@@ -153,6 +154,7 @@ const editProduct = async () => {
   props.product.pivot.total = total
   $q.loading.hide();
   reset()
+  Resourse.aplicarPromociones(props.products, props.promotion)
   Resourse.actualizarPreciosProductosSales(props.products, props._price_list, props.rules)
   emit('editProduct')
 
@@ -173,6 +175,7 @@ const addProduct = async () => {
   console.log(props.product)
   emit('addProduct', props.product);
   $q.loading.hide()
+  Resourse.aplicarPromociones(props.products, props.promotion)
   Resourse.actualizarPreciosProductosSales(props.products, props._price_list, props.rules)
   // }
 }
@@ -182,6 +185,7 @@ const deleteProduct = async () => {
 
   emit('deleteProduct', props.product);
   $q.loading.hide()
+  Resourse.aplicarPromociones(props.products, props.promotion)
   Resourse.actualizarPreciosProductosSales(props.products, props._price_list, props.rules)
   // }
 }
