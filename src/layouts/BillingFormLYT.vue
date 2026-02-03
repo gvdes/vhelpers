@@ -2,17 +2,13 @@
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
     <q-page-container>
       <q-card class="q-pa-xl q-mx-auto shadow-4" style="max-width: 700px; border-radius: 22px">
-
         <q-card-section class="text-h5 text-primary text-weight-bold text-center q-mb-md">
           Solicitud de Factura · Grupo Vizcarra
         </q-card-section>
-
         <q-card-section>
           <q-expansion-item v-model="expands.data" label="Datos de la Compra" icon="shopping_cart"
             header-class="text-h6 text-primary text-weight-bold" expand-separator>
-
             <div class="q-gutter-md q-mt-sm">
-
               <q-select v-model="form.store" :options="stores" label="Sucursal" filled dense option-label="name"
                 disable />
               <q-input v-model="form.folio" type="text" label="Folio del Ticket" filled dense mask="#-######"
@@ -22,7 +18,6 @@
                     :disable="!form.folio || !form.store || form.folio.length < 8" />
                 </template>
               </q-input>
-
             </div>
             <q-expansion-item v-if="showExpands.ticket" v-model="expands.ticket" icon="receipt_long"
               label="Detalle del Ticket" header-class="text-h6 text-primary text-weight-bold" class="q-mt-md">
@@ -57,22 +52,14 @@
                       <q-select v-model="payment.type_card" :options="opts_card" filled dense label="Selecciona..."
                         class="q-mt-xs" :rules="[val => !!val || 'Selecciona un tipo']" />
                     </q-item-section>
-
                   </q-item>
-
                 </q-list>
-
-
                 <q-select filled dense class="q-mt-md" label="Uso de CFDI" v-model="form.cfdi" :options="cfdiOptions"
                   option-label="name" emit-value map-options :rules="[val => !!val || 'Obligatorio']" />
-
                 <q-input v-model="form.notes" type="textarea" autogrow filled dense label="Comentarios opcionales"
                   class="q-mt-md" />
-
               </q-form>
-
             </q-expansion-item>
-
           </q-expansion-item>
         </q-card-section>
         <q-card-section>
@@ -133,7 +120,7 @@
           </q-card-section>
           <q-card-section class="text-center">
             <a class="text-positive"
-              :href="`https://wa.me/5573461022?text=Cual%20es%20el%20estado%20de%20mi%20solicitud?%20Folio:%20${showFinally.val.id}`">
+              :href="`https://wa.me/5539345822?text=Cual%20es%20el%20estado%20de%20mi%20solicitud?%20Folio:%20${showFinally.val.id}`">
               Consultar por WhatsApp
             </a>
           </q-card-section>
@@ -172,7 +159,7 @@
           <q-card-section class="text-center">
             <div class="text-h6 text-primary q-mb-sm">¿Dudas o seguimiento?</div>
             <a class="text-positive"
-              :href="`https://wa.me/5573461022?text=Cual%20es%20el%20estado%20de%20mi%20solicitud?%20Folio:%20${showExist.val.id}`"
+              :href="`https://wa.me/5539345822?text=Cual%20es%20el%20estado%20de%20mi%20solicitud?%20Folio:%20${showExist.val.id}`"
               target="_blank" rel="noopener">
               Enviar Whatsapp al soporte
             </a>
