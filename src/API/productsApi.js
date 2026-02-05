@@ -69,5 +69,8 @@ export default{
   },
   addCategory(data){
     return assist.post(`/Products/addCategory`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  searchProd(data){
+    return assist.post(`/Products/searchProd`, data).then(done => done.data).catch(fail => { return { fail } });
   }
 }

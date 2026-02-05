@@ -59,51 +59,18 @@
 
   <q-dialog v-model="dataResponse.state" persistent>
     <q-card style="width: 500px; max-width: 80vw;">
-      <q-card-section class="text-center text-bold text-h6">
-        Insertados Base {{ dataResponse.data.mysql.insert.goal.length }}
+      <q-card-section class="text-center text-bold text-h4">
+        {{ dataResponse.data.message.toUpperCase() }}
       </q-card-section>
-      <q-card-section>
-        <div class="row">
-          <div class="col">
-            <span class="text-center text-bold">Correcto</span>
-            <q-separator spaced inset vertical dark />
-            <q-list bordered>
-              <q-item v-for="(sucg, index) in dataResponse.data.sucursales.insert.goal" :key="index">
-                <q-item-section>
-                  <q-item-label caption>Sucursal</q-item-label>
-                  <q-item-label>{{ Object.keys(sucg)[0] }}</q-item-label>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label caption>Bien</q-item-label>
-                  <q-item-label :title="`${sucg[Object.keys(sucg)[0]].insertados.goals?.join('/')}`">{{
-                    sucg[Object.keys(sucg)].insertados.goals.length }}</q-item-label>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label caption>Error</q-item-label>
-                  <q-item-label :title="`${sucg[Object.keys(sucg)[0]].insertados.fails?.join('/')}`">{{
-                    sucg[Object.keys(sucg)].insertados.fails.length }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </div>
-          <q-separator spaced inset vertical dark />
-          <div class="col">
-            <span class="text-center text-bold">Errores</span>
-            <q-separator spaced inset vertical dark />
-            <q-list bordered>
-              <q-item v-for="(sucf, index) in dataResponse.data.sucursales.insert.fails" :key="index">
-                <q-item-section>
-                  <q-item-label caption>Sucursal</q-item-label>
-                  <q-item-label>{{ Object.keys(sucf)[0] }}</q-item-label>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label caption>Sucursal</q-item-label>
-                  <q-item-label>{{ Object.values(sucf)[0] }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </div>
-
+      <q-card-section class=" text-h6">
+        <div>
+          INSERTADOS: <span class="text-bold">{{ dataResponse.data.summary.created }}</span>
+        </div>
+        <div>
+          ACTUALIZADOS: <span>{{ dataResponse.data.summary.updated }}</span>
+        </div>
+        <div>
+          ERRORES: <span>{{ dataResponse.data.summary.errors }}</span>
         </div>
       </q-card-section>
       <q-card-actions align="right">
@@ -137,6 +104,7 @@ const dataResponse = ref({
   state: false,
   data: null,
 });
+const errors = ref([])
 const errores = ref({
   data: [],
   state: false,
@@ -145,6 +113,7 @@ const errores = ref({
     { name: 'code', label: 'Codigo', field: r => r.code, align: 'left' },
     { name: 'field', label: 'Campo', field: r => r.field, align: 'left' },
     { name: 'value', label: 'Valor', field: r => r.value, align: 'left' },
+    { name: 'message', label: 'Error', field: r => r.message, align: 'left' }
   ]
 })
 const addDoc = ref({
@@ -153,14 +122,12 @@ const addDoc = ref({
 })
 const attributeColumns = computed(() => {
   const map = new Map()
-
   data.value.forEach(p => {
     p.attributes?.forEach(a => {
-      console.log(a)
       if (!map.has(a.id)) {
         map.set(a.id, {
           name: `attr_${a.id}`,
-          label: `${a.name.toUpperCase()}`, // luego puedes poner nombre real
+          label: `${a.name.toUpperCase()}`,
           align: 'left',
           field: row => {
             const found = row.attributes?.find(x => x.id === a.id)
@@ -170,7 +137,6 @@ const attributeColumns = computed(() => {
       }
     })
   })
-
   return Array.from(map.values())
 })
 
@@ -188,10 +154,8 @@ const columns = computed(() => [
   { name: 'makers', label: 'Fabricante', field: r => r.makers.name, align: 'left' },
   { name: 'cost', label: 'Costo', field: r => r.cost, align: 'left' },
   { name: 'pxc', label: 'PXC', field: r => r.pxc, align: 'left' },
-  // { name: 'nluz', label: 'NLUZ', field: r => r.nluces, align: 'left' },
   { name: 'unit_measures', label: 'UMC', field: r => r.umc.name, align: 'left' },
   { name: 'resurtible', label: 'P.Resurtible', field: r => r.pr, align: 'left' },
-  // { name: 'person', label: 'MN / P', field: r => r.mnp?.large, align: 'left' },
   ...attributeColumns.value
 ])
 
@@ -211,208 +175,134 @@ const readFile = async () => {
   $q.loading.show({ message: 'Revisando Archivo' })
   const inputFile = document.getElementById("inputFile").files[0];
   const workbook = new ExcelJS.Workbook();
-  const headerMap = {
-    'CODIGO': 'code',
-    'CB': 'cb',
-    'FAMILIA': 'familia',
-    'DESCRIPCION': 'description',
-    'CODIGO CORTO': 'short_code',
-    'PROVEEDOR': 'provider',
-    'REFERENCIA': 'reference',
-    'FABRICANTE': 'makers',
-    'COSTO': 'cost',
-    'PXC': 'pxc',
-    'CATEGORIA': 'categoria',
-    '#LUCES': 'nluces',
-    'UNIDA MED COMPRA': 'umc',
-    'PRO RES': 'pr',
-    'MEDIDAS NAV': 'mnp'
-  };
-
   await workbook.xlsx.load(inputFile);
   documentHigh.value.state = true;
   documentHigh.value.nameDoc = inputFile.name;
   documentHigh.value.date = dayjs().format('YYYY-MM-DD HH:mm:ss');
-
   const worksheet = workbook.worksheets[0];
-  const rows = worksheet.getRows(1, worksheet.rowCount);
-  if (!rows) return;
-  let headers = [];
-  const allCodes = [];
-  const allBarcodes = [];
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
-    const rowValues = row.values.slice(1);
-    const isEmptyRow = rowValues.every(cell => cell == null || cell.toString().trim() === '');
-    if (isEmptyRow) continue;
-    if (i === 0) {
-      headers = rowValues.map(h => h?.toString().trim());
-      continue;
-    }
-    const codeIndex = headers.findIndex(h => headerMap[h] === 'code');
-    const cbIndex = headers.findIndex(h => headerMap[h] === 'cb');
-    if (rowValues[codeIndex]) allCodes.push(rowValues[codeIndex]);
-    if (rowValues[cbIndex]) allBarcodes.push(rowValues[cbIndex]);
-  }
-  const validationResults = await productApi.checkCodesBatch({
-    codes: allCodes,
-    barcodes: allBarcodes
-  });
-
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
-    const rowValues = row.values.slice(1);
-    const dataline = i;
-    const isEmptyRow = rowValues.every(cell => cell == null || cell.toString().trim() === '');
-    if (isEmptyRow) continue;
-    const rowObj = {
-      code: null,
-      cb: null,
-      short_code: null,
-      description: null,
-      categoria: null,
-      familia: null,
-      section: null,
-      provider: null,
-      reference: null,
-      makers: null,
-      cost: 0,
-      pxc: null,
-      nluces: null,
-      umc: null,
-      pr: null,
-      mnp: null
-    };
-
-    let hasError = false;
-    let familiaObj = null;
-    let categoriaObj = null;
-    let currentCode = null;
-    let shortCode = null;
-
-    for (let index = 0; index < rowValues.length; index++) {
-      const cell = rowValues[index];
-      const headerName = headers[index];
-      const mappedKey = headerMap[headerName];
-      if (!mappedKey) continue;
-
-      let value = cell;
-
-      if (mappedKey === 'code') {
-        currentCode = cell;
-        if (cell.length > 13) {
-          errores.value.data.push({ row: dataline, field: 'Mayor a 13 dígitos', value: cell, code: currentCode });
-          hasError = true;
-          break;
-        }
-
-        const existcode = validationResults.codes[cell];
-        if (!existcode) continue;
-        if (existcode.exist) {
-          errores.value.data.push({ row: dataline, field: 'Código ya existe', value: cell, code: currentCode });
-          hasError = true;
-          break;
-        }
-        shortCode = validationResults.codes[cell].cco
-      }
-
-      if (mappedKey === 'cb') {
-        if (cell?.length > 13) {
-          errores.value.data.push({ row: dataline, field: 'Mayor a 13 dígitos', value: cell, code: currentCode });
-          hasError = true;
-          break;
-        }
-
-        const exist = validationResults.barcodes[cell];
-        if (exist) {
-          errores.value.data.push({ row: dataline, field: 'Código de barras ya existe', value: cell, code: currentCode });
-          hasError = true;
-          break;
-        }
-      }
-
-      if (mappedKey === 'familia') {
-        familiaObj = layoutProduct.categories.find(p => p.alias.toUpperCase() === cell.toUpperCase() && p.root !== null);
-        if (!familiaObj) {
-          errores.value.data.push({ row: dataline, field: 'familia', value: cell, code: currentCode });
-          hasError = true;
-          break;
-        }
-        value = familiaObj;
-        const seccionObj = layoutProduct.categories.find(p => p.id === familiaObj.root);
-        rowObj.section = seccionObj || null;
-      }
-
-      if (mappedKey === 'categoria') {
-        categoriaObj = layoutProduct.categories.find(p =>
-          p.alias.toUpperCase() === cell.toUpperCase() && familiaObj && p.root === familiaObj.id
-        );
-        if (!categoriaObj) {
-          errores.value.data.push({ row: dataline, field: 'categoria', value: cell, code: currentCode });
-          hasError = true;
-          break;
-        }
-        value = categoriaObj;
-      }
-
-      if (mappedKey === 'provider') {
-        value = layoutProduct.providers.find(p => p.id == cell);
-        if (!value) {
-          errores.value.data.push({ row: dataline, field: 'provider', value: cell, code: currentCode });
-          hasError = true;
-          break;
-        }
-      }
-
-      if (mappedKey === 'makers') {
-        value = layoutProduct.makers.find(f => f.id == cell);
-        if (!value) {
-          errores.value.data.push({ row: dataline, field: 'makers', value: cell, code: currentCode });
-          hasError = true;
-          break;
-        }
-      }
-
-      if (mappedKey === 'pr') {
-        value = layoutProduct.productRe.find(p => p == cell);
-        if (!value) {
-          errores.value.data.push({ row: dataline, field: 'pr', value: cell, code: currentCode });
-          hasError = true;
-          break;
-        }
-      }
-
-      if (mappedKey === 'cost') {
-        value = parseFloat(cell) || 0;
-      }
-
-      if (mappedKey === 'mnp') {
-        value = { large: cell };
-      }
-
-      if (mappedKey === 'umc') {
-        value = layoutProduct.unitsMeasure.find(e => e.name.toUpperCase() === cell.toUpperCase());
-        if (!value) {
-          errores.value.data.push({ row: dataline, field: 'umc', value: cell, code: currentCode });
-          hasError = true;
-          break;
-        }
-      }
-      rowObj[mappedKey] = value;
-      rowObj.short_code = shortCode
-    }
-    if (!hasError) {
-      data.value.push(rowObj);
-    }
-  }
-
-  console.log("✅ Válidos:", data.value);
-  console.warn("❌ Errores:", errores.value.data);
+  const headers = worksheet.getRow(1).values
+  const rows = []
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return
+    const rwd = {}
+    row.eachCell((cell, col) => {
+      rwd[headers[col]] = cell.value
+    })
+    rows.push(rwd)
+  })
+  await validateBatch(rows)
   $q.loading.hide();
-  if (errores.value.data.length > 0) {
-    errores.value.state = true;
-  }
 };
+
+// const validateBatch = async (rows) => {
+//   const codes = rows.map(r => r.Codigo).filter(Boolean)
+//   const barcodes = rows.map(r => r.CB).filter(Boolean)
+//   const resp = await productApi.checkCodesBatch({
+//     codes,
+//     barcodes
+//   })
+//   const validProducts = []
+//   const invalidProducts = []
+//   rows.forEach(row => {
+//     const codeInfo = resp.codes[row.Codigo]
+//     const barcodeExists = resp.barcodes[row.CB]
+//     if (codeInfo?.exist || barcodeExists) {
+//       invalidProducts.push({
+//         row,
+//         reason: {
+//           codeExist: codeInfo?.exist,
+//           barcodeExist: barcodeExists
+//         }
+//       })
+//     } else {
+//       row.short_code = resp.codes[row.Codigo].short_code
+//       validProducts.push(mapProduct(row))
+//     }
+//   })
+//   data.value = validProducts
+//   errors.value = invalidProducts
+// }
+const validateBatch = async (rows) => {
+  const codes = rows.map(r => r.Codigo).filter(Boolean)
+  const barcodes = rows.map(r => r.CB).filter(Boolean)
+
+  const resp = await productApi.checkCodesBatch({ codes, barcodes })
+
+  const validProducts = []
+  const errorRows = []
+
+  rows.forEach((row, index) => {
+    const codeInfo = resp.codes[row.Codigo]
+    const barcodeExists = resp.barcodes[row.CB]
+    if (codeInfo?.exist) {
+      errorRows.push({
+        row: index + 2,
+        code: row.Codigo,
+        field: 'Codigo',
+        value: row.Codigo,
+        message: 'El código ya existe'
+      })
+    }
+
+    if (barcodeExists) {
+      errorRows.push({
+        row: index + 2,
+        code: row.Codigo,
+        field: 'CB',
+        value: row.CB,
+        message: 'El código de barras ya existe'
+      })
+    }
+    if (codeInfo?.exist || barcodeExists) return
+    row.short_code = codeInfo.short_code
+    validProducts.push(mapProduct(row))
+  })
+  data.value = validProducts
+  errores.value.data = errorRows
+  errores.value.state = errorRows.length > 0
+}
+
+
+
+const mapProduct = (row) => {
+  return {
+    code: row.Codigo,
+    cb: row.CB,
+    short_code: row.short_code,
+    description: row.Descripcion,
+    cost: row.Costo,
+    pxc: row.PxC,
+    pr: row.Resurtible,
+    section: findCategory(layoutProduct.categories, row.Seccion),
+    familia: findCategory(layoutProduct.categories, row.Familia),
+    categoria: findCategory(layoutProduct.categories, row.Categoria),
+    provider: findProvider(layoutProduct.providers, row.Proveedor),
+    makers: findProvider(layoutProduct.makers, row.Fabricante),
+    umc: findProvider(layoutProduct.unitsMeasure, row.UnidadMedida),
+    reference: row.Referencia,
+    attributes: mapAttributes(row)
+  }
+}
+const findCategory = (list, value) => {
+  return list.find(e =>
+    e.alias?.toLowerCase() === String(value).toLowerCase()
+  ) || null
+}
+const findProvider = (list, value) => {
+  return list.find(e =>
+    e.id === value
+  ) || null
+}
+
+const mapAttributes = (row) => {
+  return layoutProduct.attributes
+    .filter(attr => row[attr.name])
+    .map(attr => ({
+      id: attr.id,
+      name: attr.name,
+      value: row[attr.name]
+    }))
+}
 
 const addDocument = () => {
   addDoc.value.state = false
@@ -448,9 +338,9 @@ const sendProducts = async () => {
     console.log(resp);
   } else {
     console.log(resp);
-    // dataResponse.value.state = true
-    // dataResponse.value.data = resp
-    reload()
+    dataResponse.value.state = true
+    dataResponse.value.data = resp
+    // reload()
     $q.loading.hide();
   }
 }

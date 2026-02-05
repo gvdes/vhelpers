@@ -1,12 +1,11 @@
 <template>
   <q-page padding>
-    <q-table :rows="products" :columns="table.columns">
+    <q-table :rows="products" :columns="table.columns" @row-click="viewProduct">
       <template v-slot:top>
         <div class="row  q-col-gutter-sm full-width">
           <div class="col-auto">
             <q-btn color="primary" icon="download" flat round @click="download" title="Descargar Productos Mostrados" />
           </div>
-
           <div class="col">
             <q-input v-model="table.filter" dense debounce="300" placeholder="Buscar" filled>
               <template v-slot:append>
@@ -45,10 +44,6 @@
                 label="Estado" option-label="name" dense filled />
               <q-select class="col" v-else-if="query.Campo.id === 6" v-model="filters.secciones" :options="secciones"
                 label="Sección" option-label="name" dense filled />
-              <q-select class="col" v-else-if="query.Campo.id === 7" v-model="filters.familias" :options="familias"
-                label="Familia" option-label="name" dense filled />
-              <q-select class="col" v-else-if="query.Campo.id === 8" v-model="filters.categorias" :options="categorias"
-                label="Categoría" option-label="name" dense filled />
             </div>
           </q-card-section>
           <q-card-actions align="right">
@@ -66,18 +61,37 @@
           Articulos
           <q-space />
           <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
-            <q-tooltip v-if="maximizedToggle" class="bg-white text-primary">Minimize</q-tooltip>
+            <q-tooltip v-if="maximizedToggle" class="bg-white text-primary">Minimizar</q-tooltip>
           </q-btn>
           <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
-            <q-tooltip v-if="!maximizedToggle" class="bg-white text-primary">Maximize</q-tooltip>
+            <q-tooltip v-if="!maximizedToggle" class="bg-white text-primary">Maximizar</q-tooltip>
           </q-btn>
           <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+            <q-tooltip class="bg-white text-primary">Cerrar</q-tooltip>
           </q-btn>
         </q-bar>
         <newProducts />
       </q-card>
+    </q-dialog>
 
+    <q-dialog v-model="mosProduct.state" persistent backdrop-filter="blur(4px) saturate(150%)"
+      :maximized="maximizedToggleProduct" transition-show="slide-up" transition-hide="slide-down">
+      <q-card>
+        <q-bar>
+          <span class="text-bold q-ml-md"> {{ mosProduct.val.code }} </span>
+          <q-space />
+          <q-btn dense flat icon="minimize" @click="maximizedToggleProduct = false" :disable="!maximizedToggleProduct">
+            <q-tooltip v-if="maximizedToggleProduct" class="bg-white text-primary">Minimizar</q-tooltip>
+          </q-btn>
+          <q-btn dense flat icon="crop_square" @click="maximizedToggleProduct = true" :disable="maximizedToggleProduct">
+            <q-tooltip v-if="!maximizedToggleProduct" class="bg-white text-primary">Maximizar</q-tooltip>
+          </q-btn>
+          <q-btn dense flat icon="close" v-close-popup>
+            <q-tooltip class="bg-white text-primary">Cerrar</q-tooltip>
+          </q-btn>
+        </q-bar>
+        <viewPrd :product="mosProduct.val" :status="layoutProduct.states" :providers="layoutProduct.providers" :makers="layoutProduct.makers" :attributes="layoutProduct.attributes" :categories="layoutProduct.categories" />
+      </q-card>
     </q-dialog>
 
   </q-page>
@@ -89,6 +103,8 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useVDBStore } from 'stores/VDB';
 import { useRoute, useRouter } from 'vue-router';
 import newProducts from 'components/Products/newProducts.vue'
+import viewPrd from 'components/Products/viewProduct.vue'
+
 
 import dayjs from 'dayjs';
 import ExcelJS from 'exceljs';
@@ -100,18 +116,16 @@ const $q = useQuasar();
 const layoutProduct = useProductStore();
 layoutProduct.setTitle('Articulos')
 const maximizedToggle = ref(true)
-
-const readProducts = ref(null)
+const maximizedToggleProduct = ref(true)
+const mosProduct = ref({
+  state: false,
+  val: null
+})
 const readPrices = ref(null)
-const inputProduct = ref(null)
 const inputPrices = ref(null)
 const searhProduct = ref(true)
 const mosformProduct = ref(false)
 const products = ref([]);
-const addDoc = ref({
-  state: false,
-  val: null
-})
 
 const query = ref({
   Campo: {
@@ -121,12 +135,7 @@ const query = ref({
   },
   val: ''
 })
-const documentHigh = ref({
-  state: false,
-  autor: VDB.session.credentials,
-  nameDoc: null,
-  date: null,
-})
+
 
 const table = ref({
   columns: [
@@ -136,43 +145,18 @@ const table = ref({
     { id: 4, name: 'description', label: 'DESCRIPCION', field: r => r.description, align: 'center' },
     { id: 5, name: '_state', label: 'ESTADO', field: r => r.state.name, align: 'center' },
     { id: 6, name: 'section', label: 'SECCION', field: r => r.category.familia.seccion.name, align: 'center' },
-    { id: 7, name: 'family', label: 'FAMILIA', field: r => r.category.familia.name, align: 'center' },
-    { id: 8, name: 'category', label: 'CATEGORIA', field: r => r.category.name, align: 'center' }
   ]
 })
 
 const filters = ref({
   secciones: null,
-  familias: null,
-  categorias: null
 })
-
 const isTextField = computed(() =>
   [1, 2, 3, 4].includes(query.value.Campo.id)
 )
-
 const secciones = computed(() =>
   layoutProduct.categories.filter(c => c.deep === 0)
 )
-
-const familias = computed(() => {
-  if (!filters.value.secciones) return []
-  return layoutProduct.categories.filter(
-    c => c.root === filters.value.secciones.id
-  )
-})
-
-const categorias = computed(() => {
-  if (!filters.value.familias) return []
-  return layoutProduct.categories.filter(
-    c => c.root === filters.value.familias.id
-  )
-})
-
-const cancel = () => {
-  mosformProduct.value = false;
-}
-
 
 const resetSearch = () => {
   query.value.val = ''
@@ -181,7 +165,8 @@ const resetSearch = () => {
   filters.value.categorias = null
 }
 
-const searching = () => {
+const searching = async () => {
+  $q.loading.show({ message: 'Buscando' })
   let value = query.value.val
   if (filters.value.categorias) value = filters.value.categorias.id
   else if (filters.value.familias) value = filters.value.familias.id
@@ -193,6 +178,16 @@ const searching = () => {
     value
   }
   console.log(payload)
+  const resp = await productApi.searchProd(payload);
+  if (resp.fail) {
+    console.log(resp.fail)
+  } else {
+    console.log(resp)
+    $q.loading.hide();
+    searhProduct.value = false
+    products.value = resp
+  }
+
 }
 
 const handleKeyDown = (e) => {
@@ -203,35 +198,17 @@ const handleKeyDown = (e) => {
     }
   }
 }
-
-
-const clickProducts = () => {
-  inputProduct.value.click();
+const viewProduct = (a, b) => {
+  mosProduct.value.state = true
+  mosProduct.value.val = b
 }
+
+
 const clickPrices = () => {
   inputPrices.value.click();
 }
-const addProduct = (value) => {
-  let inx = data.value.findIndex(e => e.code == value.code);
-  if (inx >= 0) {
-    $q.notify({ message: 'El Producto ya esta en la lista', type: 'negative', position: 'center' });
-  } else {
-    data.value.push(value);
-  }
-}
-
-const addDocument = () => {
-  addDoc.value.state = false
-  documentHigh.value.state = true,
-    documentHigh.value.nameDoc = addDoc.value.val
-  documentHigh.value.date = dayjs().format('YYYY-MM-DD HH:mm:ss')
-  mosformProduct.value = true
-}
 
 const download = () => {
-
-}
-const adding = () => {
 
 }
 
