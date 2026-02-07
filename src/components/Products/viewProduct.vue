@@ -13,7 +13,7 @@
             :disable="product.barcode.length > 0" />
         </template>
         <template v-slot:after>
-          <q-btn color="primary" icon="add" @click="barcodeAdd.state = !barcodeAdd.state" dense outline="" />
+          <q-btn color="primary" icon="add" @click="barcodeAdd.state = !barcodeAdd.state" dense outline />
         </template>
       </q-input>
     </div>
@@ -155,6 +155,10 @@
       </q-card-section>
     </q-tab-panel>
   </q-tab-panels>
+  <q-card-actions align="center">
+    <q-btn flat label="Cancelar" v-close-popup />
+    <q-btn flat label="Enviar" @click="saveProduct" />
+  </q-card-actions>
 
   <q-dialog v-model="barcodeAdd.state" persistent>
     <q-card style="width: 800px; max-width: 80vw;">
@@ -210,6 +214,7 @@
           <q-btn flat label="OK" color="primary" v-close-popup />
         </div>
       </q-card-section>
+
     </q-card>
   </q-dialog>
 </template>
@@ -275,13 +280,12 @@ const categories = computed(() => {
 
 
 const filterAttribute = (val, update, abort, attr) => {
-  if (!attr.catalogOriginal) {
-    attr.catalogOriginal = [...attr.catalog]
-  }
+
+  if (!attr.catalog) return abort()
 
   update(() => {
     const needle = val.toLowerCase()
-    attr.catalog = attr.catalogOriginal.filter(v =>
+    attr.catalog = attr.catalog.filter(v =>
       v.option.toLowerCase().includes(needle)
     )
   })
@@ -383,14 +387,13 @@ const addRelatedCode = async () => {
           _product: props.product.id,
           code: relatedAdd.value.val.code
         }
-        props.product.barcodes.push(data)
+        props.product.variants.push(data)
         relatedAdd.value.val = null
         $q.loading.hide();
       }
     }
   }
 }
-
 const getChanges = () => {
   const changes = {}
 
@@ -398,7 +401,6 @@ const getChanges = () => {
     Object.keys(newObj).forEach(key => {
       const newVal = newObj[key]
       const oldVal = oldObj?.[key]
-
       const currentPath = path ? `${path}.${key}` : key
       if (Array.isArray(newVal)) {
         if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
@@ -407,7 +409,9 @@ const getChanges = () => {
         return
       }
       if (typeof newVal === 'object' && newVal !== null) {
-        compare(newVal, oldVal, currentPath)
+        if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+          changes[currentPath] = newVal
+        }
         return
       }
       if (newVal !== oldVal) {
@@ -420,26 +424,19 @@ const getChanges = () => {
   return changes
 }
 
+
 const saveProduct = async () => {
   const changes = getChanges()
   if (changes.attributes) {
-    changes.attributes = props.product.attributes.map(a => ({
-      id: a._attribute.id,
-      value: a.pivot.value
+    console.log(changes.attributes)
+    changes.attributes = props.product.attributes.map(a =>
+    ({
+      id: a.pivot.value._attribute,
+      value: a.pivot.value.option
     }))
   }
   console.log(changes)
 
-  // if (Object.keys(changes).length === 0) {
-  //   $q.notify({ message: 'Sin cambios', type: 'warning' })
-  //   return
-  // }
-
-  // await productApi.update(product.id, changes)
-
-  // $q.notify({ message: 'Guardado', type: 'positive' })
-
-  // productOriginal.value = cloneDeep(props.product)
 }
 
 
