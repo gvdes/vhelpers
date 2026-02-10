@@ -205,7 +205,7 @@ const table = ref({
 })
 
 const cuts = ref([]);
-const medis = ref(`http://192.168.10.238:2902/Assist/public/storage/uploads/cuts/${VDB.session.store.id}/`)
+const medis = ref(`https://mersbock.s3.us-east-2.amazonaws.com/public/uploads/cuts/${VDB.session.store.id}`)
 
 
 const descuadre = computed(() => cuts.value.filter(e => e._type == 1));

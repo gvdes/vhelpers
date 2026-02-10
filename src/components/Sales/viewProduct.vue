@@ -122,6 +122,7 @@ const mostPrice = computed(() => {
 });
 
 const selectPrice = computed(() => {
+  console.log(props._price_list)
   if (props._price_list <= 3) {
     // if ((totalPzs.value >= props.product.pieces && (props.product.pivot._supply_by == 1 || props.product.pivot._supply_by == 2)) || props.product.pivot._supply_by == 3) {
     //   return 4;

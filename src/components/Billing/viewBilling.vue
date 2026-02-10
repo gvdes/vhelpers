@@ -84,6 +84,12 @@
             "Sin Registro" }}</div>
         </div>
         <div class="col-12">
+          <div class="text-caption text-grey-7">Uso de CFDI</div>
+          <div class="text-body1">
+            {{ billing.cfdi.name }}
+          </div>
+        </div>
+        <div class="col-12">
           <div class="text-caption text-grey-7">Dirección</div>
           <div class="text-body1">
             {{ fullAddress }}

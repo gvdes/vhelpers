@@ -114,12 +114,10 @@
 
 
     <q-dialog v-model="product.state" persistent position="bottom">
-      <viewProduct :product="product.val" :_price_list="clients.val ? clients.val._price_list : 1" :edit="product.edit"
-        @reset="reset" :products="sale.products" :rules="cashLYT.rules" @addProduct="addProdcut" :promotion="cashLYT.promotion"
-        @deleteProduct="deleteProduct" @editProduct="editProduct" />
+      <viewProduct :product="product.val" :_price_list="sale.client ? sale.client._price_list : 1" :edit="product.edit"
+        @reset="reset" :products="sale.products" :rules="cashLYT.rules" @addProduct="addProdcut"
+        :promotion="cashLYT.promotion" @deleteProduct="deleteProduct" @editProduct="editProduct" />
     </q-dialog>
-
-
     <q-dialog v-model="clients.state">
       <q-card style="width: 700px;">
         <q-form @submit="searchClient">
@@ -283,7 +281,7 @@ const table = ref({
     { name: 'code', label: 'Codigo', field: r => r.code, align: 'left' },
     { name: 'description', label: 'Descripcion', field: r => r.description, align: 'left' },
     // { name: 'amount', label: 'Pedido', field: r => r.pivot.units, align: 'center' },
-    { name: 'verify', label: 'Cantidad', field: r => r.pivot.toDelivered, align: 'center' },
+    { name: 'verify', label: 'Cantidad', field: r => r.pivot.units, align: 'center' },
     { name: 'price', label: 'Precio', field: r => r.pivot.price, align: 'center' },
     { name: 'bruto', label: config.option ? 'Bruto' : 'Total', field: r => r.pivot.total, align: 'center' },
     { name: 'iva', label: 'Total', field: r => r.pivot.total, align: 'center' },
@@ -310,7 +308,7 @@ const tableDep = ref({
 
 const total = computed(() => Number(sale.value.products.reduce((a, e) => a + e.pivot.total, 0)).toFixed(2));
 
-const cantidad = computed(() => sale.value.products.reduce((a, e) => a + Number(e.pivot.toDelivered), 0))
+const cantidad = computed(() => sale.value.products.reduce((a, e) => a + Number(e.pivot.units), 0))
 
 const validForm = computed(() => sale.value.products.length > 0 && sale.value.dependiente && sale.value.client)
 const columns = computed(() => {
@@ -331,7 +329,7 @@ const columns = computed(() => {
     {
       name: 'verify',
       label: 'Verificado',
-      field: row => row.pivot.toDelivered,
+      field: row => row.pivot.units,
       align: 'center'
     },
     {
@@ -463,11 +461,11 @@ const searchClient = async () => {
 const changeNewClient = async (a, b) => {
   $q.loading.show({ message: 'Recalculando Ticket' })
   sale.value.client = b
+  Resourse.actualizarPreciosProductosSales(sale.value.products, b._price_list, cashLYT.rules)
   Resourse.aplicarPromociones(
     sale.value.products,
     cashLYT.promotion
   )
-  Resourse.actualizarPreciosProductosSales(sale.value.products, b._price_list, cashLYT.rules)
   clients.value = {
     state: false,
     val: null,
