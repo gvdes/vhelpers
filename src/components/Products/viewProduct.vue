@@ -20,7 +20,8 @@
     <q-separator spaced inset vertical dark />
     <div class="col">
       <div class="row">
-        <div class="col"><q-input v-model="product.reference" type="text" filled label="Referencia" dense />
+        <div class="col"> <q-select v-model="product.reference" :options="layoutProduct.reference" label="REFERENCIA"
+            filled option-label="name" dense />
         </div>
         <q-separator spaced inset vertical dark />
         <div class="col"><q-select v-model="product.state" :options="status" label="Estado" filled option-label="name"
@@ -101,10 +102,16 @@
         <div v-for="(val, index) in product.attributes" v-if="product.attributes.length > 0">
           <div class="row">
             <q-select class="col" v-model="val.name" :options="attributes" label="Atributo" option-label="name" filled
-              dense />
+              :option-disable="optionDisable" dense @update:model-value="(v) => {
+                if (!v) return
+                val.pivot._attribute = v.id
+                val.catalog = JSON.parse(JSON.stringify(v.catalog || []))
+                val.pivot.value = null
+              }" />
             <q-separator spaced inset vertical dark />
-            <q-select class="col" v-model="val.pivot.value" :options="val.catalog" label="Valor" option-label="option"
-              filled dense use-input @filter="(input, update, abort) => filterAttribute(input, update, abort, val)"
+            <q-select class="col" v-model="val.pivot.value" :options="val.catalog" option-label="option"
+              option-value="option" emit-value map-options label="Valor" filled dense use-input
+              @filter="(input, update, abort) => filterAttribute(input, update, abort, val)"
               @new-value="(input, done) => createAttribute(input, done, val)" />
             <q-separator spaced inset vertical dark />
             <q-btn color="negative" flat icon="delete" dense @click="deleteAtribute(index)" />
@@ -186,25 +193,37 @@
   <q-dialog v-model="relatedAdd.state" persistent>
     <q-card>
       <q-card-section class=" items-center">
-        <q-form @submit="addRelatedCode" class="q-gutter-md ">
+        <q-form @submit.prevent="addRelatedCode" class="q-gutter-md ">
           <div class="row">
             <q-input class="col" v-model="relatedAdd.val.code" type="text" filled label="Codigo" dense />
             <q-separator spaced inset vertical dark />
             <q-input class="col" v-model="relatedAdd.val.barcode" type="text" filled label="Codigo Barras" dense />
             <q-separator spaced inset vertical dark />
-            <q-select class="col" v-model="relatedAdd.val.provider" :options="providers" label="Proveedor" filled
-              option-label="name" dense />
+            <q-select class="col" v-model="relatedAdd.val._provider" :options="providers" label="Proveedor" filled
+              option-label="name" dense option-value="id" emit-value/>
             <q-separator spaced inset vertical dark />
             <q-input v-model="relatedAdd.val.cost" type="text" label="Costo" class="col" dense />
             <q-separator spaced inset vertical dark />
             <q-input v-model="relatedAdd.val.pieces" type="number" label="PxC" class="col" dense />
           </div>
+          <q-btn type="submit" style="display:none" />
         </q-form>
       </q-card-section>
       <q-card-section>
         <q-list bordered v-for="(related, index) in product.variants" :key="index">
           <q-item>
-            <q-item-section>{{ related }}</q-item-section>
+            <q-item-section>{{ related.code }}</q-item-section>
+            <q-item-section>{{ related.barcode }}</q-item-section>
+            <q-item-section class="text-center">${{ related.cost }}
+              <q-popup-edit v-model="related.cost" auto-save v-slot="scope">
+                <q-input v-model="related.cost" dense autofocus counter @keyup.enter="scope.set" />
+              </q-popup-edit>
+            </q-item-section>
+            <q-item-section class="text-center">{{ related.pieces }} PZS
+              <q-popup-edit v-model="related.pieces" auto-save v-slot="scope">
+                <q-input v-model="related.pieces" dense autofocus counter @keyup.enter="scope.set" />
+              </q-popup-edit>
+            </q-item-section>
             <q-item-section avatar>
               <q-btn color="negative" icon="close" flat @click="product.variants.splice(index, 1)" />
             </q-item-section>
@@ -253,7 +272,7 @@ const relatedAdd = ref({
   state: false,
   val: {
     code: null,
-    provider: null,
+    _provider: null,
     barcode: null,
     cost: 0,
     pieces: null
@@ -307,46 +326,60 @@ const genBarcode = async () => {
 }
 
 const deleteAtribute = (index) => {
-  product.attributes.splice(index, 1)
+  props.product.attributes.splice(index, 1)
 }
+
+
+const optionDisable = (item) => {
+  // console.log(item)
+  return props.product.attributes.some(
+    e => e.id === item.id
+  )
+}
+
 
 const createAttribute = (val, done, attr) => {
   val = val?.trim()
-  if (!val) return
+  if (!val || !attr.name) return
+
   const newOption = {
     option: val,
     is_custom: true
   }
+
   const globalAttr = props.attributes.find(
-    a => a.id === attr._attribute.id
+    a => a.id === attr.name.id
   )
+
   if (globalAttr) {
     const existsGlobal = globalAttr.catalog?.some(
       o => o.option.toLowerCase() === val.toLowerCase()
     )
-
-    if (!existsGlobal) {
-      globalAttr.catalog.push(newOption)
-    }
+    if (!existsGlobal) globalAttr.catalog.push(newOption)
   }
+
   const existsLocal = attr.catalog.some(
     o => o.option.toLowerCase() === val.toLowerCase()
   )
-  if (!existsLocal) {
-    attr.catalog.push(newOption)
-  }
-  done(newOption, 'toggle')
-  attr.pivot.value = newOption.option
+  if (!existsLocal) attr.catalog.push(newOption)
+
+  done(val, 'toggle')
+  attr.pivot.value = val
 }
 
 const addAtribute = () => {
   props.product.attributes.push({
-    _attribute: null,
-    value: null,
+    id: null,
+    name: null,
+    pivot: {
+      _attribute: null,
+      value: null
+    },
     catalog: []
   })
 }
 const changedFields = computed(() => getChanges())
+
 const addBarcode = async () => {
   if (barcodeAdd.value.val) {
     $q.loading.show({ message: 'Revisando Dato' })
@@ -373,22 +406,35 @@ const addBarcode = async () => {
 
 const addRelatedCode = async () => {
   if (relatedAdd.value.val) {
-    $q.loading.show({ message: 'Revisando Dato' })
+    // $q.loading.show({ message: 'Revisando Dato' })
+    console.log(relatedAdd.value.val)
     const resp = await productApi.searchCode(relatedAdd.value.val.code)
     if (resp.error) {
       console.log(resp)
     } else {
       console.log(resp);
-      if (resp.length > 0) {
-        $q.notify({ message: 'El codigo de barras esta duplicado', type: 'negative', position: 'bottom' })
-        relatedAdd.value.val = null
+      if (resp.exist) {
+        $q.notify({ message: 'El codigo de ya existe esta', type: 'negative', position: 'bottom' })
+        relatedAdd.value.val = {
+          code: null,
+          provider: null,
+          barcode: null,
+          cost: 0,
+          pieces: null
+        }
       } else {
         let data = {
           _product: props.product.id,
-          code: relatedAdd.value.val.code
+          ...relatedAdd.value.val,
         }
         props.product.variants.push(data)
-        relatedAdd.value.val = null
+        relatedAdd.value.val = {
+          code: null,
+          provider: null,
+          barcode: null,
+          cost: 0,
+          pieces: null
+        }
         $q.loading.hide();
       }
     }
@@ -428,15 +474,21 @@ const getChanges = () => {
 const saveProduct = async () => {
   const changes = getChanges()
   if (changes.attributes) {
-    console.log(changes.attributes)
-    changes.attributes = props.product.attributes.map(a =>
-    ({
-      id: a.pivot.value._attribute,
-      value: a.pivot.value.option
-    }))
+    changes.attributes = props.product.attributes
+      .filter(a => a.pivot?._attribute && a.pivot?.value)
+      .map(a => ({
+        _attribute: a.pivot._attribute,
+        value: a.pivot.value
+      }))
   }
   console.log(changes)
-
+  let data = {
+    "changes": changes,
+    "product": props.product.id
+  }
+  console.log(data)
+  const resp = await productApi.update(data)
+  console.log(resp)
 }
 
 

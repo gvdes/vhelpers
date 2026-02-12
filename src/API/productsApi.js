@@ -72,5 +72,8 @@ export default{
   },
   searchProd(data){
     return assist.post(`/Products/searchProd`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  update(data){
+    return assist.post(`/Products/update`, data).then(done => done.data).catch(fail => { return { fail } });
   }
 }
