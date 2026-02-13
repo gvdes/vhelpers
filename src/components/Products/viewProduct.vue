@@ -10,7 +10,7 @@
       <q-input v-model="product.barcode" type="text" filled label="Codigo de Barras" dense>
         <template v-slot:append>
           <q-btn icon="qr_code_2" flat title="Generar codigo de barras" @click="genBarcode"
-            :disable="product.barcode.length > 0" />
+            :disable="product.barcode?.length > 0" />
         </template>
         <template v-slot:after>
           <q-btn color="primary" icon="add" @click="barcodeAdd.state = !barcodeAdd.state" dense outline />
@@ -279,22 +279,28 @@ const relatedAdd = ref({
   }
 })
 
-const sections = computed(() => props.categories.filter(e => e.deep == 0))
+const sections = computed(() =>
+  props.categories.filter(e => e.deep == 0)
+)
+
 const familias = computed(() => {
-  let families = props.categories.filter(e => e.deep == 1)
-  if (props.product.section) {
-    return families.filter(e => e._root == props.product.category.familia.seccion.id)
-  } else {
-    return families
-  }
+  const selectedSection = props.product.category?.familia?.seccion
+
+  const all = props.categories.filter(e => e.deep == 1)
+
+  if (!selectedSection) return all
+
+  return all.filter(f => f._root == selectedSection.id)
 })
+
 const categories = computed(() => {
-  let category = props.categories.filter(e => e.deep == 2)
-  if (props.product.category.familia) {
-    return category.filter(e => e._root == props.product.category.familia.id)
-  } else {
-    return category
-  }
+  const selectedFamily = props.product.category?.familia
+
+  const all = props.categories.filter(e => e.deep == 2)
+
+  if (!selectedFamily) return all
+
+  return all.filter(c => c._root == selectedFamily.id)
 })
 
 
@@ -331,7 +337,7 @@ const deleteAtribute = (index) => {
 
 
 const optionDisable = (item) => {
-  // console.log(item)
+
   return props.product.attributes.some(
     e => e.id === item.id
   )
@@ -490,8 +496,27 @@ const saveProduct = async () => {
   const resp = await productApi.update(data)
   console.log(resp)
 }
+watch(
+  () => props.product.category?.familia?.seccion,
+  (val, old) => {
+    if (!props.product.category) return
 
+    // si cambió la sección
+    if (val?.id !== old?.id) {
+      props.product.category.familia = null
+    }
+  }
+)
+watch(
+  () => props.product.category?.familia,
+  (val, old) => {
+    if (!props.product.category) return
 
+    if (val?.id !== old?.id) {
+      props.product.category = null
+    }
+  }
+)
 onMounted(() => {
   productOriginal.value = cloneDeep(props.product)
 })

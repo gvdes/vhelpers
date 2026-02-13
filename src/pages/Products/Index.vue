@@ -144,7 +144,7 @@ const table = ref({
     { id: 3, name: 'barcode', label: 'CODIGO DE BARRAS', field: r => r.barcode, align: 'center' },
     { id: 4, name: 'description', label: 'DESCRIPCION', field: r => r.description, align: 'center' },
     { id: 5, name: '_state', label: 'ESTADO', field: r => r.state.name, align: 'center' },
-    { id: 6, name: 'section', label: 'SECCION', field: r => r.category.familia.seccion.name, align: 'center' },
+    { id: 6, name: 'section', label: 'SECCION', field: r => r.category?.familia?.seccion?.name, align: 'center' },
   ]
 })
 
