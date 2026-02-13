@@ -169,12 +169,12 @@ const optionDisable = (val) => {
 
   return (
     val.id === nwTransfer.value._origin.id ||
-    ((VDB.session.rol !== 'aud'  && VDB.session.rol !== 'audc') && val.id === 4)
+    ((VDB.session.rol !== 'gro'  && VDB.session.rol !== 'jfz' &&  VDB.session.rol !== 'axo') && val.id === 4)
   );
 }
 
 const optionDisAud = (val) => {
-  if (val.id == 4 && (VDB.session.rol != 'aud' && VDB.session.rol  != 'audc' )  ) {
+  if (val.id == 4 && (VDB.session.rol != 'gro' && VDB.session.rol  != 'jfz' && VDB.session.rol != 'axo')  ) {
     return true
   } else {
     return false
@@ -210,7 +210,7 @@ const direct = (transfer) => {
   let oid = transfer.id
   console.log((transfer.origin.id !== 4 && transfer.destiny.id !== 4))
   if (
-    VDB.session.rol == 'aud' ||  VDB.session.rol == 'root' || VDB.session.rol == 'audc'
+    VDB.session.rol == 'axo' ||  VDB.session.rol == 'root' || VDB.session.rol == 'jfz' || VDB.session.rol == 'gro' || VDB.session.rol == 'des'
   ) {
     $router.push(`transfers/${oid}`);
   } else if (
