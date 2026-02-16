@@ -76,13 +76,13 @@
         <q-input v-model="product.description" type="text" filled label="Descripcion" dense class="col" />
         <q-separator spaced inset vertical dark />
         <div class="row">
-          <q-select class="col" v-model="product.category.familia.seccion" :options="sections" label="SECCION" filled
+          <q-select class="col" v-model="filters.section" :options="sections" label="SECCION" filled
             option-label="name" dense />
           <q-separator spaced inset vertical dark />
-          <q-select class="col" v-model="product.category.familia" :options="familias" label="FAMILIA" filled
+          <q-select class="col" v-model="filters.family" :options="familias" label="FAMILIA" filled
             option-label="name" dense />
           <q-separator spaced inset vertical dark />
-          <q-select class="col" v-model="product.category" :options="categories" label="CATEGORIA" filled
+          <q-select class="col" v-model="filters.category" :options="categories" label="CATEGORIA" filled
             option-label="name" dense />
         </div>
         <q-separator spaced inset vertical dark />
@@ -250,6 +250,7 @@ import { useQuasar, date } from 'quasar';
 import { $sktRestock } from 'boot/socket';
 import productApi from 'src/API/productsApi.js';
 import cloneDeep from 'lodash/cloneDeep'
+import { filter } from 'lodash-es';
 const VDB = useVDBStore();
 const $q = useQuasar();
 const layoutProduct = useProductStore();
@@ -279,12 +280,18 @@ const relatedAdd = ref({
   }
 })
 
+const filters = ref({
+  section:props.product.category.familia.seccion,
+  family:props.product.category.familia,
+  category:props.product.category,
+})
+
 const sections = computed(() =>
   props.categories.filter(e => e.deep == 0)
 )
 
 const familias = computed(() => {
-  const selectedSection = props.product.category?.familia?.seccion
+  const selectedSection = filters.value.section
 
   const all = props.categories.filter(e => e.deep == 1)
 
@@ -294,7 +301,7 @@ const familias = computed(() => {
 })
 
 const categories = computed(() => {
-  const selectedFamily = props.product.category?.familia
+  const selectedFamily = filters.value.family
 
   const all = props.categories.filter(e => e.deep == 2)
 
@@ -337,7 +344,6 @@ const deleteAtribute = (index) => {
 
 
 const optionDisable = (item) => {
-
   return props.product.attributes.some(
     e => e.id === item.id
   )
@@ -347,28 +353,23 @@ const optionDisable = (item) => {
 const createAttribute = (val, done, attr) => {
   val = val?.trim()
   if (!val || !attr.name) return
-
   const newOption = {
     option: val,
     is_custom: true
   }
-
   const globalAttr = props.attributes.find(
     a => a.id === attr.name.id
   )
-
   if (globalAttr) {
     const existsGlobal = globalAttr.catalog?.some(
       o => o.option.toLowerCase() === val.toLowerCase()
     )
     if (!existsGlobal) globalAttr.catalog.push(newOption)
   }
-
   const existsLocal = attr.catalog.some(
     o => o.option.toLowerCase() === val.toLowerCase()
   )
   if (!existsLocal) attr.catalog.push(newOption)
-
   done(val, 'toggle')
   attr.pivot.value = val
 }
@@ -446,6 +447,11 @@ const addRelatedCode = async () => {
     }
   }
 }
+const applyCategoryChanges = () => {
+  if (filters.value.category) {
+    props.product._category = filters.value.category?.id
+  }
+}
 const getChanges = () => {
   const changes = {}
 
@@ -478,6 +484,7 @@ const getChanges = () => {
 
 
 const saveProduct = async () => {
+    applyCategoryChanges()
   const changes = getChanges()
   if (changes.attributes) {
     changes.attributes = props.product.attributes
@@ -493,30 +500,25 @@ const saveProduct = async () => {
     "product": props.product.id
   }
   console.log(data)
+  $q.loading.show({message:"Enviando Datos"})
   const resp = await productApi.update(data)
-  console.log(resp)
+  if(resp.fail){
+    console.log(resp)
+  }else{
+    $q.loading.hide()
+    console.log(resp)
+    productOriginal.value = props.product
+    $q.notify({message:'Producto Actualizado', type:'positive'})
+  }
 }
-watch(
-  () => props.product.category?.familia?.seccion,
-  (val, old) => {
-    if (!props.product.category) return
+watch(() => filters.value.section, () => {
+  filters.value.family = null
+  filters.value.category = null
+})
 
-    // si cambió la sección
-    if (val?.id !== old?.id) {
-      props.product.category.familia = null
-    }
-  }
-)
-watch(
-  () => props.product.category?.familia,
-  (val, old) => {
-    if (!props.product.category) return
-
-    if (val?.id !== old?.id) {
-      props.product.category = null
-    }
-  }
-)
+watch(() => filters.value.family, () => {
+  filters.value.category = null
+})
 onMounted(() => {
   productOriginal.value = cloneDeep(props.product)
 })

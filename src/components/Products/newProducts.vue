@@ -193,35 +193,6 @@ const readFile = async () => {
   await validateBatch(rows)
   $q.loading.hide();
 };
-
-// const validateBatch = async (rows) => {
-//   const codes = rows.map(r => r.Codigo).filter(Boolean)
-//   const barcodes = rows.map(r => r.CB).filter(Boolean)
-//   const resp = await productApi.checkCodesBatch({
-//     codes,
-//     barcodes
-//   })
-//   const validProducts = []
-//   const invalidProducts = []
-//   rows.forEach(row => {
-//     const codeInfo = resp.codes[row.Codigo]
-//     const barcodeExists = resp.barcodes[row.CB]
-//     if (codeInfo?.exist || barcodeExists) {
-//       invalidProducts.push({
-//         row,
-//         reason: {
-//           codeExist: codeInfo?.exist,
-//           barcodeExist: barcodeExists
-//         }
-//       })
-//     } else {
-//       row.short_code = resp.codes[row.Codigo].short_code
-//       validProducts.push(mapProduct(row))
-//     }
-//   })
-//   data.value = validProducts
-//   errors.value = invalidProducts
-// }
 const validateBatch = async (rows) => {
   const codes = rows.map(r => r.Codigo).filter(Boolean)
   const barcodes = rows.map(r => r.CB).filter(Boolean)
