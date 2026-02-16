@@ -1,4 +1,4 @@
-import { assist } from "src/boot/axios";
+import { assist, assistOrd } from "src/boot/axios";
 
 export default{
   index(data){
@@ -53,6 +53,6 @@ export default{
     return assist.post(`/cashs/getSales`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
   getOrderCash(data) {
-    return assist.post(`/cashs/getOrderCash`, data).then(done => done.data).catch(fail => { return { fail } });
+    return assistOrd.post(`/cashs/getOrderCash`, data).then(done => done.data).catch(fail => { return { fail } });
   }
 }

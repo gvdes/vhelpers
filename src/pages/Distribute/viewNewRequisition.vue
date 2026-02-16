@@ -159,8 +159,8 @@
               <q-separator spaced inset vertical dark />
               <q-list>
                 <q-item class="">
-                  <q-item-section class="text-left text-caption text-bold">STOCK {{product.val.stocks.find(e => e.id ==
-                    order.to.id).alias}}</q-item-section>
+                  <!-- <q-item-section class="text-left text-caption text-bold">STOCK {{product.val.stocks.find(e => e.id == -->
+                    <!-- order.to.id).alias}}</q-item-section> -->
                   <q-item-section class="text-bold text-center">{{ totalStock }} {{ product.val.units.id == 3 ? 'Cjs' :
                     product.val.units.id == 2 ? 'Dcns' : 'Pzs' }}</q-item-section>
                 </q-item>
@@ -329,7 +329,7 @@ const add = (opt) => {
     pivot.value._product = ops.id
     pivot.value._supply_by = ops._unit
     pivot.value.ipack = ops.pieces
-    pivot.value.cost = ops.prices.find(e => e.id == 7).pivot.price
+    pivot.value.cost = ops.prices.find(e => e.id == 6).pivot.price
     pivot.value.stock = ops.stocks.find(e => e.id == order.value.to.id).pivot.stock
     product.value.val.pivot = pivot.value;
     // product.value.val.pivot.ipack = opt.pieces
@@ -354,7 +354,7 @@ const agregar = (ops) => {
     pivot.value._product = ops.id
     pivot.value._supply_by = ops._unit
     pivot.value.ipack = ops.pieces
-    pivot.value.cost = ops.prices.find(e => e.id == 7).pivot.price
+    pivot.value.cost = ops.prices.find(e => e.id == 6).pivot.price
     pivot.value.stock = ops.stocks.find(e => e.id == order.value.to.id).pivot.stock
     product.value.val.pivot = pivot.value;
     product.value.edit = false

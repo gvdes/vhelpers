@@ -1,6 +1,6 @@
 import { boot } from 'quasar/wrappers'
 import { LocalStorage } from 'quasar';
-import { assist } from "src/boot/axios";
+import { assist, assistOrd } from "src/boot/axios";
 import { useVDBStore } from 'stores/VDB'
 
 
@@ -33,6 +33,8 @@ export default boot(async ({ router }) => {
     if (auth) {
       let token = auth.token;
       assist.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+      assistOrd.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+
       VDB.setSession(auth);
 
       if (to.path !== '/auth') {

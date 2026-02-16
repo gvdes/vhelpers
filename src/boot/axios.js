@@ -2,7 +2,8 @@ import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 import { LocalStorage } from 'quasar'
 
-// const ipAssist = 'http://192.168.10.160:1920'
+// const ipAssist = 'http://192.168.10.160:1920'// este debe de ser si o si para toda la app
+const ipPueb = 'http://192.168.10.238:1920'// este solo para etiquetas, y preventa
 
 // const ipAssist = 'http://192.168.10.238:2902'ESTEYANO
 
@@ -13,6 +14,8 @@ const ipAssist = 'https://vhelpers.grupovizcarra.mx/assist'
 // const assist = axios.create({ baseURL: `${ipAssist}/assist/public/api` });
 const assist = axios.create({ baseURL: `${ipAssist}` });
 // const assist = axios.create({ baseURL: `${ipAssist}/Assist/public/api` });
+const assistOrd = axios.create({ baseURL: `${ipPueb}/api` });
+
 // const assist = axios.create({ baseURL: `${ipAssist}/api/api/` });
 
 
@@ -50,4 +53,4 @@ export default boot(({ router }) => {
   )
 })
 
-export { assist, vizmedia }
+export { assist, vizmedia, assistOrd }
