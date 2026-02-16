@@ -1455,7 +1455,7 @@ const HorizontalLabelwarehouse = (data, nick, name) => {
           doc.addPage(); // Agrega una nueva página cuando el índice es un múltiplo de totalLabelsPerPage
         }
         doc.rect(x, y, labelWidth, labelHeight)//agrega rectangulo buey
-        doc.setFontSize(40);
+        doc.setFontSize(35);
         doc.setFont('helvetica', 'bold');
         doc.text(product.code, x + 1, y + 12, { align: 'left' }); // se agrega codigo corto
         doc.setFontSize(10);
@@ -1472,7 +1472,7 @@ const HorizontalLabelwarehouse = (data, nick, name) => {
           }
         }, (err, url) => {
           if (err) throw err
-          doc.addImage(url, 'PNG', x + 75, y + 3, 25, 25) // ajusta la posición y tamaño
+          doc.addImage(url, 'PNG', x + 75, y + 15, 17, 17) // ajusta la posición y tamaño
         })
         doc.setFontSize(12);
         doc.setFontSize(20);
