@@ -36,14 +36,13 @@
           <span class=" text-bold">{{order.products.reduce((a, v) => a + Number(Number(v.pivot.units) /
             Number(v.pieces)), 0)}}</span>
         </div>
-
       </div>
-              <q-separator spaced inset vertical dark />
-        <q-input dense debounce="300" v-model="table.filter" placeholder="Buscar" class="col-auto" outlined>
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
+      <q-separator spaced inset vertical dark />
+      <q-input dense debounce="300" v-model="table.filter" placeholder="Buscar" class="col-auto" outlined>
+        <template v-slot:append>
+          <q-icon name="search" />
+        </template>
+      </q-input>
     </div>
     <q-separator spaced inset vertical dark />
 
@@ -139,15 +138,17 @@
             <div class="text-center">
               <div class="col q-pa-xs">
                 <div class="text-bold text-h6">Cantidad:</div>
-                <q-btn flat color="positive" icon="add" class="text-h5" @click="product.val.pivot.amount++" v-if="order.status.id == 1"/>
+                <q-btn flat color="positive" icon="add" class="text-h5" @click="product.val.pivot.amount++"
+                  v-if="order.status.id == 1" />
                 <q-separator spaced inset vertical dark />
                 <div class="col column q-py-md">
                   <input type="number" min="1" v-model="product.val.pivot.amount" class="text-center exo clean-input"
-                    style=" width: 100px; font-size: 3em; margin: auto auto; border: none;" :disabled="order.status.id != 1" />
+                    style=" width: 100px; font-size: 3em; margin: auto auto; border: none;"
+                    :disabled="order.status.id != 1" />
                 </div>
                 <q-separator spaced inset vertical dark />
                 <q-btn flat color="negative" icon="remove" class="text-h5"
-                  @click="product.val.pivot.amount > 1 ? product.val.pivot.amount-- : ''" v-if="order.status.id == 1"/>
+                  @click="product.val.pivot.amount > 1 ? product.val.pivot.amount-- : ''" v-if="order.status.id == 1" />
               </div>
             </div>
             <q-separator spaced inset vertical dark />

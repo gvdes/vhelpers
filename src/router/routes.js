@@ -340,15 +340,15 @@ const routes = [
       { path: ':oid', name: 'reqoid', component: () => import('pages/Requisition/viewRequisition.vue'), meta: { moduleId: 12, requiresAuth: true } },
     ],
   },
-  {
-    path: '/transfers',
-    component: () => import('layouts/Transfers.vue'),
-    meta: { moduleId: 11, requiresAuth: true },
-    children: [
-      { path: '', name: 'trns', component: () => import('pages/Tranfers/Index.vue'), meta: { moduleId: 11, requiresAuth: true } },
-      { path: ':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue'), meta: { moduleId: 11, requiresAuth: true } },
-    ],
-  },
+  // {
+  //   path: '/transfers',
+  //   component: () => import('layouts/Transfers.vue'),
+  //   meta: { moduleId: 11, requiresAuth: true },
+  //   children: [
+  //     { path: '', name: 'trns', component: () => import('pages/Tranfers/Index.vue'), meta: { moduleId: 11, requiresAuth: true } },
+  //     { path: ':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue'), meta: { moduleId: 11, requiresAuth: true } },
+  //   ],
+  // },
   {
     path: '/products',
     component: () => import('layouts/ProductsLYT.vue'),
@@ -404,8 +404,15 @@ const routes = [
         meta: { moduleId: 27 }
       },
       { path: 'minmax', name: 'wmm', component: () => import('pages/warehouse/minmax.vue'), meta: { moduleId: 26, requiresAuth: true } },
-      // { path: 'labels', name: 'wet', component: () => import('pages/warehouse/labels.vue'), meta: { moduleId: 63 } },
-
+      { path: 'index', name: 'win', component: () => import('pages/warehouse/Index.vue'), meta: { moduleId: 95 } },
+      {
+        path: 'transfers',
+        meta: { moduleId: 3, requiresAuth: true },
+        children: [
+          { path: '', name: 'trns', component: () => import('pages/Tranfers/Index.vue'), meta: { moduleId: 3, requiresAuth: true } },
+          { path: ':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue'), meta: { moduleId: 3, requiresAuth: true } },
+        ],
+      },
     ],
   },
   {

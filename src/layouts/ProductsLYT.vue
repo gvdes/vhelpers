@@ -41,7 +41,7 @@ const init = async () => {
     layoutProduct.setUnits(resp.units);
     layoutProduct.setAttributes(resp.attributes);
     layoutProduct.setStates(resp.states);
-
+    layoutProduct.setStores(resp.stores);
     $q.loading.hide()
   }
 }

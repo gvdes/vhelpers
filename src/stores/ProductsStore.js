@@ -12,6 +12,7 @@ export const useProductStore = defineStore('layout', {
     productRe: ['SI', 'NO'],
     attributes: [],
     states: [],
+    stores:[],
 
   }),
 
@@ -30,7 +31,7 @@ export const useProductStore = defineStore('layout', {
     setUnits(data) { this.unitsMeasure = data },
     setAttributes(data) { this.attributes = data },
     setStates(data) { this.states = data },
-
+    setStores(data) { this.stores = data},
     createOrUpdateCategory(payload) {
       let inx = this.categories.findIndex(e => e.id == payload.id)
       if (inx >= 0) {

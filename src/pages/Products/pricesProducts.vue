@@ -324,6 +324,7 @@ const sendProducts = async () => {
     console.log(resp);
     dataResponse.value.state = true
     dataResponse.value.data = resp
+    $q.notify({message:'Productos Actualizados',type:'positive',position:'bottom'})
     $q.loading.hide();
   }
 

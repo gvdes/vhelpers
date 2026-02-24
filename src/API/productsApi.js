@@ -75,5 +75,9 @@ export default{
   },
   update(data){
     return assist.post(`/Products/update`, data).then(done => done.data).catch(fail => { return { fail } });
-  }
+  },
+  syncStores(data){
+    return assist.post(`/Products/syncStores`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+
 }

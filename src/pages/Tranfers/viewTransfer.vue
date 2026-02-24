@@ -2,25 +2,24 @@
   <q-page padding v-if="traspaso">
     <q-header reveal bordered :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'">
       <q-toolbar class="justify-between">
-        <q-btn color="primary" icon="arrow_back" flat @click="$router.push('/transfers')" round />
-        <div>{{ traspaso.store.name }} </div>
+        <q-btn color="primary" icon="arrow_back" flat @click="$router.push('/warehouse/transfers')" round />
         <div class="row items-center">
           <div class="col"> {{ traspaso.origin.name }}</div> <q-icon name="arrow_forward" class="col" />
           <div class="col"> {{ traspaso.destiny.name }}</div>
         </div>
-        <div>{{ traspaso.created_by }} </div>
-        <div>Traspaso <q-icon name="navigate_next" color="primary" /> <span class="text-h6">{{ traspaso.code_fs
-        }}</span>
-        </div>
+        <div>{{ traspaso.created_by.nick.toUpperCase() }} </div>
       </q-toolbar>
       <q-separator />
       <div class="text-center text-bold">{{ traspaso.notes }}
       </div>
       <q-separator />
       <div class="text-center text-bold row ">
-        <div class="col"><q-btn color="primary" icon="publish" label="Importar Excel" flat @click="clickFile" /></div>
-        <div class="col"><q-btn color="primary" icon="apps" label="Preventas" flat @click="clickFilePreventa" /></div>
-        <div class="col"><q-btn color="primary" icon="picture_as_pdf" label="PDF" flat @click="pdfTransfer" /></div>
+        <div class="col"><q-btn color="primary" icon="publish" label="Importar Excel" flat @click="clickFile"
+            :disable="traspaso._state != 1" /></div>
+        <div class="col"><q-btn color="primary" icon="apps" label="Preventas" flat @click="clickFilePreventa"
+            :disable="traspaso._state != 1" /></div>
+        <div class="col"><q-btn color="primary" icon="picture_as_pdf" label="PDF" flat @click="pdfTransfer"
+            v-if="traspaso._state == 2" /></div>
 
         <input type="file" ref="inputFile" id="inputFile" @input="readFile" hidden accept=".xlsx,.xls" />
         <input type="file" ref="inputFilePreventa" id="inputFilePreventa" @input="readFilePreventa" hidden
@@ -42,17 +41,17 @@
     <q-list bordered v-for="(product, index) in products" :key="index">
 
       <q-item clickable v-ripple @click="viewProduct(product)">
-        <q-item-section>{{ product.product }}</q-item-section>
+        <q-item-section>{{ product.code }}</q-item-section>
         <q-item-section>{{ product.description }}</q-item-section>
-        <q-item-section class="text-center">{{ product.amount }}</q-item-section>
+        <q-item-section class="text-center">{{ product.pivot.amount }}</q-item-section>
       </q-item>
       <q-separator />
     </q-list>
 
     <q-dialog v-model="product.state" persistent :position="'bottom'">
-      <q-card style="width: 300; max-width: 40vw;">
+      <q-card>
         <q-card-section>
-          <div class="text-center text-h4">{{ product.val.product }}</div>
+          <div class="text-center text-h4">{{ product.val.code }}</div>
           <div class="text-center text-h6 text-grey-14">{{ product.val.description }}</div>
         </q-card-section>
         <q-card-section>
@@ -61,12 +60,12 @@
               <div class="text-bold text-h6">Cantidad:</div>
               <div class="row">
                 <q-btn flat color="negative" icon="remove" class="text-h5 col"
-                  @click="product.val.amount > 1 ? product.val.amount-- : ''" />
-                <div class=" col column q-py-md">
-                  <input type="number" min="1" v-model="product.val.amount" class="text-center exo"
-                    style=" width: 100px; font-size: 3em; margin: auto auto; border: none;" />
+                  @click="product.val.pivot.amount > 1 ? product.val.pivot.amount-- : ''" />
+                <div class="col column q-py-md bg-section" style="border-radius: 8px;">
+                  <input type="number" min="1" v-model="product.val.pivot.amount" class="text-center exo clean-input"
+                    style="width: 100px; font-size: 3em; margin:auto;" />
                 </div>
-                <q-btn flat color="positive" icon="add" class="text-h5 col" @click="product.val.amount++" />
+                <q-btn flat color="positive" icon="add" class="text-h5 col" @click="product.val.pivot.amount++" />
               </div>
             </div>
           </div>
@@ -127,14 +126,16 @@
       </q-card>
     </q-dialog>
 
-    <q-footer reveal elevated bordered class="bg-white">
+    <q-footer reveal elevated bordered class="bg-white" v-if="traspaso._state == 1 || traspaso._state == 4">
       <q-card class="q-mb-md" flat bordered dense>
         <q-card-section class="row">
-          <ProductAutocomplete class="col" :checkState="false" @input="add" @agregar="agregar" />
+          <ProductAutocomplete class="col" :checkState="true" @input="agregar" @agregar="agregar"
+            :wkpToVal="traspaso?.origin?.id" />
           <q-btn v-if="products.length > 0" color="primary" flat icon="east" @click="endTransfer" round />
         </q-card-section>
       </q-card>
     </q-footer>
+    <q-footer reveal elevated bordered v-else>...</q-footer>
   </q-page>
 </template>
 
@@ -146,16 +147,25 @@ import dayjs from 'dayjs';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
 import { computed, ref } from 'vue';
-import tranApi from "src/API/transferApi";
 import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
 import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
+import { useWarehouse } from 'src/stores/warehousStore';
+import  PDF from 'src/Pdf/transfers/transfers.js';
+
 import dbproduct from 'src/API/Product'
 import { useRoute, useRouter } from "vue-router";
+import warehouseApi from 'src/API/warehouseApi';
+import transferApi from 'src/API/transferApi';
+
+const warehousStore = useWarehouse()
 const $router = useRouter();
 const $route = useRoute();
-
+warehousStore.setTitle(`Traspaso - ${$route.params.oid} `)
+warehousStore.setshowReportLocations(false);
+warehousStore.setshowReportMinMax(false);
+warehousStore.setshowOptions(false);
 
 const VDB = useVDBStore();
 const $q = useQuasar();
@@ -191,65 +201,59 @@ const inputFilePreventa = ref(null)
 
 
 
-const existProduct = computed(() => products.value?.filter(e => e.product == product.value.val?.product).length > 0)
+const existProduct = computed(() => products.value?.filter(e => e.id == product.value.val?.id).length > 0)
 
 const init = async () => {
+  $q.loading.show({ message: 'Obteniendo Traspaso' })
   const transfer = $route.params.oid;
-  const resp = await tranApi.getTransfer(transfer)
+  const resp = await transferApi.getTransfer(transfer)
   if (resp.fail) {
     console.log(resp)
   } else {
     console.log(resp)
-    if (VDB.session.rol == 'aud' || VDB.session.rol == 'root' || VDB.session.rol == 'audc') {
+    if (VDB.session.credentials.rol._type == 1) {
+      // console.log('administrativo');
       traspaso.value = resp
       products.value = resp.bodie
-      console.log(traspaso.value)
-    } else if ((VDB.session.rol == 'aux' || VDB.session.rol == 'gen') && (resp.origin.id !== 4 && resp.destiny.id !== 4)) {
+    } else if (VDB.session.credentials.id == resp.created_by.id) {
       traspaso.value = resp
       products.value = resp.bodie
-      console.log(traspaso.value)
-    } else if (VDB.session.rol == 'alm' || VDB.session.rol == 'vld' || VDB.session.rol == 'gce' && ([5, 6].includes(resp.destiny.id) || [5, 6].includes(resp.origin.id))) {
-      traspaso.value = resp
-      products.value = resp.bodie
-      console.log(traspaso.value)
+      // console.log('otro vato');
     } else {
-      $router.push(`/transfers`);
-      $q.notify({
-        message: 'No tienes acceso a este traspaso',
-        type: 'negative',
-        position: 'center'
-      });
+      $q.notify({ message: 'No puedes ingresar al traspaso', position: 'center', type: 'negative' })
+      console.log(resp)
+      $router.push('/warehouse/transfers')
     }
+    $q.loading.hide();
 
   }
 }
 
-const add = (opt) => {
-  console.log(opt)
-}
-
 const agregar = (ops) => {
-  let inx = products.value.findIndex(e => e.product == ops.code)
+  console.log(ops)
+  let inx = products.value.findIndex(e => e.id == ops.id)
   console.log(inx);
   if (inx >= 0) {
     $q.notify({ message: 'El Producto ya esta agregado', type: 'negative', position: 'center' })
   } else {
-    product.value.val = {
-      "product": ops.code,
-      "description": ops.description,
-      "amount": 1
-    };
+    product.value.val = ops
+    product.value.val.pivot = { amount: 1 }
     product.value.state = true
     console.log(ops);
-
   }
 }
 
 const addProduct = async () => {
   $q.loading.show({ message: 'Insertando Producto' })
   console.log(product.value.val)
-  product.value.val._transfer = $route.params.oid
-  const resp = await tranApi.addProduct(product.value.val)
+  // product.value.val._transfer = $route.params.oid
+  let data = {
+    _transfer: $route.params.oid,
+    _product: product.value.val.id,
+    amount: product.value.val.pivot.amount
+  }
+
+  const resp = await transferApi.addProduct(data)
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -266,13 +270,17 @@ const addProduct = async () => {
 const editProduct = async () => {
   $q.loading.show({ message: 'Editando Producto' })
   console.log(product.value.val)
-  product.value.val._transfer = $route.params.oid
-  const resp = await tranApi.editProduct(product.value.val)
+  let data = {
+    _transfer: $route.params.oid,
+    _product: product.value.val.id,
+    amount: product.value.val.pivot.amount
+  }
+  const resp = await transferApi.editProduct(data)
   if (resp.fail) {
     console.log(resp)
   } else {
     console.log(resp);
-    let inx = products.value.findIndex(e => e.product == product.value.val.product)
+    let inx = products.value.findIndex(e => e.id == product.value.val.id)
     if (inx >= 0) {
       products.value[inx].amount = product.value.val.amount
       $q.notify({ type: 'positive', position: 'center' })
@@ -288,13 +296,16 @@ const editProduct = async () => {
 const deleteProduct = async () => {
   $q.loading.show({ message: 'Eliminando Producto' })
   console.log(product.value.val)
-  product.value.val._transfer = $route.params.oid
-  const resp = await tranApi.removeProduct(product.value.val)
+  let data = {
+    _transfer: $route.params.oid,
+    _product: product.value.val.id,
+  }
+  const resp = await transferApi.removeProduct(data)
   if (resp.fail) {
     console.log(resp)
   } else {
     console.log(resp);
-    let inx = products.value.findIndex(e => e.product == product.value.val.product)
+    let inx = products.value.findIndex(e => e.id == product.value.val.id)
     if (inx >= 0) {
       products.value.splice(inx, 1)
       $q.notify({ type: 'positive', position: 'center' })
@@ -309,8 +320,13 @@ const deleteProduct = async () => {
 }
 
 const viewProduct = (val) => {
-  product.value.state = true
-  product.value.val = val
+  if (traspaso.value._state == 1 || traspaso.value._state == 4) {
+    product.value.state = true
+    product.value.val = val
+  } else {
+    $q.notify({ message: 'Traspaso Terminado no se puede modificar', type: 'negative', position: 'center' })
+  }
+
 }
 
 const reset = () => {
@@ -322,21 +338,15 @@ const reset = () => {
 
 const endTransfer = async () => {
   $q.loading.show({ message: 'Terminando Traspaso' })
-  let data = {
-    user: VDB.session.name,
-    traspaso: traspaso.value,
-    products: products.value
-  }
-  const resp = await tranApi.endTransfer(data)
+  console.log(traspaso.value);
+  const resp = await transferApi.endTransfer(traspaso.value)
   if (resp.fail) {
     console.log(resp)
   } else {
     $q.notify({ message: resp, position: 'center', type: 'positive' })
     console.log(resp)
     $q.loading.hide();
-
-    $router.push('/transfers')
-
+    $router.push('/warehouse/transfers')
   }
 }
 
@@ -496,122 +506,7 @@ const addingMasive = async (prd) => {
 }
 
 const pdfTransfer = async () => {
-  // console.log(data.folio);
-  const transfer = $route.params.oid;
-  const resp = await tranApi.getTransfer(transfer);
-  console.log(resp);
-  if (!resp.error) {
-    const doc = new jsPDF({format:'letter'});
-    let chunks = [];
-    const arreglo = resp.bodie.map(producto => Object.values([producto.product,producto.description,producto.amount]));
-    console.log(typeof resp.code_fs);
-    const paginas = Math.ceil(arreglo.length / 20);
-    for (var i = 0; i < arreglo.length; i += 20) {
-
-      // console.log(arreglo[i])
-
-      chunks.push(arreglo.slice(i, i + 20));
-    }
-    console.log(chunks);
-    for (let i = 0; i < 2; i++) {
-      let copias = 'ORIGINAL'
-      if (i > 0) {
-        copias = 'COPIA'
-        doc.addPage();
-      }
-      chunks.forEach(function (chunk, index) {
-        if (index > 0) {
-          doc.addPage();
-        }
-
-        let sumaBullfa = 0;
-        let totcan = 0;
-        for (let i = 0; i < chunk.length; i++) {
-          chunk[i][0] = chunk[i][0];
-          chunk[i][1] = chunk[i][1];
-          chunk[i][2] = parseFloat(chunk[i][2]);
-          // chunk[i][4] = chunk[i][4].replace(/\n/g, " ");
-          // sumaBullfa += parseFloat(chunk[i][1]); // Sumar al total la propiedad 'BULLFA' convertida a número
-          totcan += parseFloat(chunk[i][2]);
-        }
-
-
-        for (let i = 0; i < chunk.length; i++) {
-          // Sumar al total la propiedad 'BULLFA' convertida a número
-        }
-
-        doc.setFontSize(25)
-        doc.setFont('helvetica', 'bold')
-        doc.text('GRUPO VIZCARRA', 105, 10, "center");
-        doc.setFontSize(8)
-        // doc.text('NUMERO PEDIDO:', 10, 10, 'left')
-        // console.log(pedido);
-        // doc.text(`P-${pedido.toString()}`, 10, 15, 'left');
-        doc.setFontSize(12)
-        doc.text(copias, 185, 10, 'left');
-        // doc.text(dat.data.heades.DENEMP, 10, 25, 'left')
-        doc.text('LLUVIA LIGTH SA DE CV', 10, 25, 'left')
-        doc.setFontSize(8)
-        doc.text(resp.created_by, 10, 30, 'left')
-        doc.text(resp.notes, 10, 35, 'left')
-        doc.text('DELEG, CUAUHTEMOC CDMX', 10, 40, 'left')
-        doc.text('DOCUMENTO', 10, 55, 'left')
-        doc.text('TRASPASO', 10, 60, 'left')
-        doc.text('NUMERO', 32, 55, 'left')
-        doc.text(String(resp.code_fs), 32, 60, 'left')
-        doc.text('PAGINA', 54, 55, 'left')
-        doc.text(`${index + 1} de ${paginas}`, 54, 60, 'left')
-        doc.text('FECHA', 76, 55, 'left')
-        const fecha = dayjs(resp.created_at).format("YYYY-MM-DD")
-        doc.text(fecha, 76, 60, 'left')
-        autoTable(doc, {
-          startX: 10,
-          startY: 65,
-          theme: 'plain',
-          styles: { cellPadding: 1, fontSize: 12, halign: 'center' },
-          head: [['Almacen de Origen', 'Almacen de Destino']],
-          body: [
-            [ `(${resp.origin.alias}) ${resp.origin.name}`, `(${resp.destiny.alias}) ${resp.destiny.name}`],
-          ],
-        })
-
-        autoTable(doc, {
-          startX: 10,
-          startY: 80,
-          theme: 'striped',
-          styles: { cellPadding: .6, fontSize: 8, halign: 'center' },
-          head: [['ARTICULO', 'DESCRIPCION', 'CANTIDAD']],
-          body: chunk,
-          columnStyles: {
-            0: { fontStyle: 'bold', halign: 'left' },
-            1: { fontStyle: 'bold', halign: 'left' },
-            4: { halign: 'center' },
-          },
-
-        })
-
-        doc.setFontSize(11)
-        // doc.text('TOTAL CAJAS:', 100, 200, 'left')
-        // doc.text(sumaBullfa.toString(), 130, 200, 'left')
-        doc.text('TOTAL UNIDDADES:', 150, 200, 'left')
-        doc.text(totcan.toString(), 190, 200, 'left')
-        doc.text('Firma Almacen Origen',12, 224)
-        doc.text('Firma Almacen Destino',82, 224)
-        doc.text('Firma Chofer',152, 224)
-
-
-        doc.rect(10, 220, 60, 40);
-        doc.rect(80, 220, 60, 40);
-        doc.rect(150, 220, 60, 40);
-        // doc.addImage(imgData, 'PNG', 95, 25, 20, 20);
-      })
-    }
-    doc.save(`Traspaso${resp.code_fs}`)
-
-  } else {
-    console.error('No se logro imprimir la factura');
-  }
-
+  await PDF.tranfer_warehouse(traspaso.value)
 }
 
 
