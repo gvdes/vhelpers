@@ -199,6 +199,10 @@ const aplicarPromociones = (products, promotions) => {
   promotions.forEach(promo => {
     if (promo.type === 'NXM') {
       aplicar2x1(products, promo)
+    }else if(promo.type === 'COM') {
+      aplicarComboExacto(products, promo)
+    }else if(promo.type === 'BLOCK') {
+      aplicarPrecioPorBloque(products, promo)
     }
   })
 }
@@ -220,28 +224,128 @@ const aplicar2x1 = (products, promo) => {
     (sum, p) => sum + Number(p.pivot.units),
     0
   )
-  const freeUnits = Math.floor(totalUnits / 2)
+  const blocks = Math.floor(totalUnits / promo.buy)
+  const freeUnits = blocks * (promo.buy - promo.pay)
   if (freeUnits <= 0) return
-
   let remaining = freeUnits
   for (const p of items) {
     if (remaining <= 0) break
-
     const units = Number(p.pivot.units)
     const price = Number(p.pivot.price)
-
     const freeForProduct = Math.min(units, remaining)
-
     if (freeForProduct <= 0) continue
-
     p.pivot.promo_units += freeForProduct
     p.pivot.promo_discount += freeForProduct * price
     p.pivot.total -= freeForProduct * price
-
     remaining -= freeForProduct
   }
 }
 
+const aplicarComboExacto = (products, promo) => {
+  const promoIds = promo.products.map(p => p._product)
+  const items = products.filter(p => promoIds.includes(p.id))
+  if (items.length !== promoIds.length) return // faltan productos
+  items.forEach(p => {
+    const units = Number(p.pivot.units)
+    const price = Number(p.pivot.price)
+    p.pivot.subtotal = units * price
+    p.pivot.promo_units = 0
+    p.pivot.promo_discount = 0
+    p.pivot.total = p.pivot.subtotal
+  })
+
+  const blocks = Math.min(
+    ...items.map(p => Number(p.pivot.units))
+  )
+  if (blocks <= 0) return
+  const freePerBlock = promo.buy - promo.pay // 1
+  let remainingFree = blocks * freePerBlock
+  const productToDiscount = items.reduce((max, current) =>
+    current.id > max.id ? current : max
+  )
+  const price = Number(productToDiscount.pivot.price)
+  productToDiscount.pivot.promo_units = remainingFree
+  productToDiscount.pivot.promo_discount = remainingFree * price
+  productToDiscount.pivot.total -= remainingFree * price
+}
+
+// const aplicarPrecioPorBloque = (products, promo) => {
+//   const promoIds = promo.products.map(p => p._product)
+//   const items = products.filter(p => promoIds.includes(p.id))
+//   if (!items.length) return
+//   items.forEach(p => {
+//     const units = Number(p.pivot.units)
+//     const price = Number(p.pivot.price)
+//     p.pivot.subtotal = units * price
+//     p.pivot.promo_units = 0
+//     p.pivot.promo_discount = 0
+//     p.pivot.total = p.pivot.subtotal
+//     if (units < promo.buy) return
+//     const blocks = Math.floor(units / promo.buy)
+//     const normalPriceOfBlocks = blocks * promo.buy * price
+//     const promoPriceOfBlocks = blocks * promo.block_price
+//     const discount = normalPriceOfBlocks - promoPriceOfBlocks
+//     p.pivot.promo_units = blocks * promo.buy
+//     p.pivot.promo_discount = discount
+//     p.pivot.total -= discount
+//   })
+// }
+
+const aplicarPrecioPorBloque = (products, promo) => {
+  const promoIds = promo.products.map(p => p._product)
+
+  const items = products.filter(p => promoIds.includes(p.id))
+  if (!items.length) return
+
+  // 🔹 Reset base
+  items.forEach(p => {
+    const units = Number(p.pivot.units)
+    const price = Number(p.pivot.price)
+
+    p.pivot.subtotal = units * price
+    p.pivot.promo_units = 0
+    p.pivot.promo_discount = 0
+    p.pivot.total = p.pivot.subtotal
+  })
+
+  // 🔥 Total combinado
+  const totalUnits = items.reduce(
+    (sum, p) => sum + Number(p.pivot.units),
+    0
+  )
+
+  if (totalUnits < promo.buy) return
+
+  const blocks = Math.floor(totalUnits / promo.buy)
+
+  const normalBlockPrice = promo.buy * Number(items[0].pivot.price)
+  const discountPerBlock = normalBlockPrice - promo.block_price
+
+  const totalDiscount = blocks * discountPerBlock
+
+  // 🔥 Ahora repartimos el descuento en orden
+  let remainingUnitsToDiscount = blocks * promo.buy
+  let remainingDiscount = totalDiscount
+
+  for (const p of items) {
+    if (remainingUnitsToDiscount <= 0) break
+
+    const units = Number(p.pivot.units)
+    const price = Number(p.pivot.price)
+
+    const unitsForBlock = Math.min(units, remainingUnitsToDiscount)
+
+    const proportion = unitsForBlock / (blocks * promo.buy)
+    const discountShare = totalDiscount * proportion
+
+    p.pivot.promo_units += unitsForBlock
+    p.pivot.promo_discount += discountShare
+    p.pivot.total -= discountShare
+
+    remainingUnitsToDiscount -= unitsForBlock
+    remainingDiscount -= discountShare
+  }
+}
 
 
 

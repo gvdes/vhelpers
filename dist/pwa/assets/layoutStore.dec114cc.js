@@ -1,1 +1,0 @@
-import{b3 as e}from"./index.1921fa04.js";const o=e("layout",{state:()=>({title:"Pedidos Insumos",showCreateButton:!0,showOrders:!0}),actions:{setTitle(t){this.title=t},setShowCreateButton(t){this.showCreateButton=t},setShowOrders(t){this.showOrders=t}}});export{o as u};
