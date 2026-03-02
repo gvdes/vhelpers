@@ -37,15 +37,6 @@ export default{
   checkLabel(data) {
     return assist.post(`/Products/checkLabels`,data).then(done => done.data).catch(fail => { return { fail } });
   },
-  setMin(data) {
-    return assist.post(`/Products/setMin`,data).then(done => done.data).catch(fail => { return { fail } });
-  },
-  setMax(data) {
-    return assist.post(`/Products/setMax`,data).then(done => done.data).catch(fail => { return { fail } });
-  },
-  setMassisveMinMax(data) {
-    return assist.post(`/Products/setMassisveMinMax`,data).then(done => done.data).catch(fail => { return { fail } });
-  },
   autoCompleteProduct(data) {
     return assist.post(`/Products/autoCompleteProduct`, data).then(done => done.data).catch(fail => { return { fail } });
   },
@@ -63,9 +54,6 @@ export default{
   },
   massiveUpdateImg(data) {
     return assist.post(`/Products/massiveUpdateImg`, data).then(done => done.data).catch(fail => { return { fail } });
-  },
-  updateStatusProduct(data){
-    return assist.post(`/Products/updateStatusProduct`, data).then(done => done.data).catch(fail => { return { fail } });
   },
   addCategory(data){
     return assist.post(`/Products/addCategory`, data).then(done => done.data).catch(fail => { return { fail } });

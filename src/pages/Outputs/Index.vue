@@ -1,97 +1,48 @@
 <template>
   <q-page padding>
-    <q-header class="transparent " bordered>
-      <UserToolbar />
-      <q-separator />
-      <div class=" row justify-between">
-        <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">Salidas Internas</span>
-        </div>
-        <div>
-          <q-btn color="primary" icon="add" flat @click="addOuts = !addOuts" round />
-          <q-btn color="primary" icon="event" flat round>
-            <q-menu>
-
-              <div class="q-pa-md">
-                <div class="q-pb-sm">
-                  <!-- Desde: {{ fechas.from }} : Hasta {{ fechas.to }} -->
+    <q-table :rows="filteredRefunds" :columns="table.columns" @row-click="redirect">
+      <template v-slot:top>
+        <q-space />
+        <q-select v-model="table.status" :options="states" label="Estado" filled clearable style="width: 20%;" dense option-label="name"  />
+        <q-separator spaced inset vertical dark />
+        <q-input v-model="table.filter" type="text" label="Buscar" dense outlined />
+        <q-separator spaced inset vertical dark />
+        <q-btn color="primary" icon="event" outline>
+          <q-menu>
+            <div class="q-pa-md">
+              <q-date v-model="table.fechas" range minimal />
+            </div>
+          </q-menu>
+        </q-btn>
+        <q-separator spaced inset vertical dark />
+        <q-btn color="primary" icon="all_out" outline title="salida Interna"
+          v-if="VDB.session.credentials.rol._type == 1" :option-disable="(val) => optionDisableMov(val)">
+          <q-menu>
+            <q-card style="width: 300px;">
+              <q-card-section class="text-h6 text-bold text-center">
+                Salida Interna
+              </q-card-section>
+              <q-card-section class=" items-center">
+                <div class="row">
+                  <q-select v-model="newOut._warehouse" :options="warehousStore.warehouses" label="Almacen" class="col"
+                    option-label="name" emit-value option-value="id" map-options
+                    :option-disable="(val) => optionDisableMov(val)" />
                 </div>
-                <q-date v-model="fechas" range minimal />
-              </div>
-              <div class="flex justify-center"> <q-btn flat label="Obtener" color="positive" @click="buscas" /></div>
-
-            </q-menu>
-          </q-btn>
-        </div>
-      </div>
-      <q-separator />
-    </q-header>
-
-    <q-list>
-      <q-item>
-        <q-item-section class="text-center">ID</q-item-section>
-        <q-item-section class="text-center">CREADO</q-item-section>
-        <q-item-section class="text-center">CREADO POR</q-item-section>
-        <q-item-section class="text-center">NOTAS</q-item-section>
-        <q-item-section class="text-center">ALMACEN</q-item-section>
-        <!-- <q-item-section class="text-center">DESTINO</q-item-section> -->
-        <q-item-section class="text-center">FACTUSOL</q-item-section>
-        <q-item-section class="text-center">ARTICULOS</q-item-section>
-
-
-      </q-item>
-    </q-list>
-    <q-separator spaced inset vertical dark />
-    <q-list bordered v-for="(output, index) in (outputs)" :key="index">
-      <q-item clickable v-ripple @click="direct(output)">
-        <q-item-section class="text-center">{{ output.id }}</q-item-section>
-        <q-item-section class="text-center">{{ dayjs(output.created_at).format('YYYY-MM-D') }}</q-item-section>
-        <q-item-section class="text-center">{{ output.created_by }}</q-item-section>
-        <q-item-section class="text-center">{{ output.notes }}</q-item-section>
-        <q-item-section class="text-center">{{ output.warehouse.alias }}</q-item-section>
-        <!-- <q-item-section class="text-center">{{ output.destiny.alias }}</q-item-section> -->
-        <q-item-section class="text-center">{{ output.code_fs }}</q-item-section>
-        <q-item-section class="text-center">{{ output.bodie.length }}</q-item-section>
-
-
-      </q-item>
-    </q-list>
-
-
-
-
-
-
-
-
-
+                <q-input v-model="newOut.notes" type="text" label="Notas" />
+              </q-card-section>
+              <q-card-actions align="center">
+                <q-btn flat label="Contultar" color="primary" @click="mosOuts = !mosOuts" />
+                <q-btn flat label="Crear" color="positive" @click="addingOut" :disable="!validOut" />
+              </q-card-actions>
+            </q-card>
+          </q-menu></q-btn>
+      </template></q-table>
   </q-page>
 
 
 
 
-
-  <q-dialog v-model="addOuts" persistent>
-    <q-card style="width: 700px; max-width: 80vw;">
-      <q-card-section class="text-h5 text-bold text-center">
-        Nueva Salida
-      </q-card-section>
-      <q-card-section class="row items-center">
-        <q-select v-model="nwOut.warehouse" :options="userWarehouse" label="Almacen Origen" class="col"
-          option-label="name" />
-      </q-card-section>
-      <q-card-section>
-        <q-input v-model="nwOut.notes" type="text" label="Notas" />
-      </q-card-section>
-      <q-card-actions align="center">
-        <q-btn flat label="Cancelar" color="negative" @click="reset" />
-        <q-btn flat label="Crear" color="positive" @click="adding" :disable="!nwOut.warehouse || !nwOut.notes" />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
-
-
 </template>
-
 <script setup>
 import { useVDBStore } from 'stores/VDB';
 import axios from 'axios';//para dirigirme bro
@@ -106,97 +57,161 @@ import QRCode from 'qrcode';
 import { useRoute, useRouter } from "vue-router";
 import dayjs from 'dayjs';
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
+import { useWarehouse } from 'src/stores/warehousStore';
+
 const $router = useRouter();
+const warehousStore = useWarehouse()
+warehousStore.setTitle(`Salidas Internas`)
+warehousStore.setshowReportLocations(false);
+warehousStore.setshowReportMinMax(false);
+warehousStore.setshowOptions(false);
 
 const VDB = useVDBStore();
 const $q = useQuasar();
-
-
-const addOuts = ref(false);
-const fechas = ref(null);
+const states = ref([])
 const outputs = ref([])
-const warehouses = ref([])
-const nwOut = ref({
-  warehouse: null,
+const newOut = ref({
+  _warehouse: null,
   notes: null
+})
+const table = ref({
+  columns: [
+    { name: 'id', label: 'ID', field: r => r.id, align: 'center' },
+    { name: 'created', label: 'Fecha', field: r => dayjs(r.created_at).format('YYYY-MM-DD'), align: 'center' },
+    { name: 'updated', label: 'ULT Act', field: r => dayjs(r.updated_at).format('YYYY-MM-DD'), align: 'center' },
+    { name: 'createdBy', label: 'Creado', field: r => r.createdby.nick, align: 'left' },
+    { name: 'modifyBy', label: 'Actualizado', field: r => r.modifyby?.nick, align: 'left' },
+    { name: 'warehouse', label: 'Almacen', field: r => r.warehouse.alias, align: 'center' },
+    // { name: 'destiny', label: 'Destino', field: r => r.destiny.alias, align: 'center' },
+    { name: 'notes', label: 'Notas', field: r => r.notes, align: 'center', classes: 'ellipsis-cell' },
+    { name: 'articulos', label: 'Articulos', field: r => r.bodie.length, align: 'center' },
+    { name: 'state', label: 'Estado', field: r => r.state.name, align: 'center', classes: r => labelStates(r.state.id) },
+  ],
+  fechas: null,
+  filter: null,
+  status:null
+})
+const validOut = computed(() => newOut.value._warehouse && newOut.value.notes)
+
+const filteredRefunds = computed(() => {
+  if (!outputs.value) return null
+  const filterText = table.value.filter?.toLowerCase() || null
+  const statusFilter = table.value.status?.id || null
+  const dateFilter = table.value.fechas || null
+  const applyFilters = (list) => {
+    return list?.filter(item => {
+      const matchText = !filterText ||
+        item.id?.toString().includes(filterText) ||
+
+        item.notes?.toLowerCase().includes(filterText) ||
+
+        (Array.isArray(item.bodie) &&
+          item.bodie.some(b =>
+            b.code?.toLowerCase().includes(filterText)
+          ))
+      const matchStatus = !statusFilter ||
+        item._state === statusFilter
+      const matchDate = !dateFilter ||
+        dayjs(item.created_at).format('YYYY/MM/DD') === dateFilter
+      return matchText && matchStatus && matchDate
+    })
+
+  }
+  return applyFilters(outputs.value)
 })
 
 
-const userWarehouse = computed(() => VDB.session.rol !== 'alm' ? warehouses.value.filter(w => [1, 2, 3, 4].includes(w.id)) : warehouses.value.filter(w => [5, 6].includes(w.id)))
-
-
 const index = async () => {
+  if(VDB.session.credentials.rol._type == 1){
   console.log("Recibiendo Datos :)")
   $q.loading.show({ message: 'Obteniendo Datos' })
-  let sid = VDB.session.store.id;
-  const resp = await outApi.index(sid)
+  // let sid = VDB.session.store.id;
+  const resp = await outApi.index()
   if (resp.error) {
     console.log(resp)
   } else {
     console.log(resp)
-    outputs.value = resp.output
-    warehouses.value = resp.warehouses
+    outputs.value = resp.outs
+    states.value = resp.states
     $q.loading.hide()
   }
-}
+  }else{
+    $router.push(`/`);
 
-const buscas = async () => {
-  console.log(fechas.value);
-  $q.loading.show({ message: 'Obteniendo Datos' })
-  let sid = VDB.session.store.id;
-  let data = {
-    store: sid,
-    date: fechas.value
   }
 
-  console.log("Recibiendo Datos :)")
-  const resp = await outApi.getDate(data)
+}
+
+
+
+
+
+const addingOut = async () => {
+  console.log(newOut.value)
+  $q.loading.show({ message: 'Creando Salida Interna' })
+  newOut.value._state = 1;
+  const resp = await outApi.addOuts(newOut.value);
   if (resp.fail) {
     console.log(resp)
   } else {
     console.log(resp)
-    outputs.value = resp
-    $q.loading.hide();
-    fechas.value = null
+    $router.push(`/warehouse/outputs/${resp.id}`);
+    $q.loading.hide()
   }
 }
 
-const adding = async () => {
-  $q.loading.show({ message: 'Creando Traspaso' })
-  nwOut.value.created_by = VDB.session.name;
-  nwOut.value._store = VDB.session.store.id;
-  console.log(nwOut.value)
-  const resp = await outApi.addOuts(nwOut.value)
-  console.log(resp)
-  if (resp.error) {
-    console.log(resp)
-    $q.notify({ message: `No se logro crear el traspaso`, position: 'center', type: 'negative' })
-  } else {
-   $q.loading.hide();
-   $q.notify({ message: `Salida ${resp.code_fs} creada`, position: 'center', type: 'positive' })
-   $router.push(`/outputs/${resp.id}`);
+const optionDisableMov = (val) => {
+  return val._type !== 1
+}
+
+const redirect = (a,output) => {
+  console.log(output)
+  if(output._state == 1 && output._created_by == VDB.session.credentials.id){
+    $router.push(`/warehouse/outputs/${output.id}`);
+  // }else if(output._state == 2 && VDB.session.credentials.id ){
+  //       $q.dialog({
+  //         title: `Salida N.${output.id}`,
+  //         message: 'Quires Actualizar la salida ? ',
+  //         cancel: true,
+  //         persistent: false
+  //       }).onOk(async () => {
+  //         $q.loading.show({ message: 'Cambiando Estado' })
+  //         const nxtCo = await outApi.updateOutput(output)
+  //         if (nxtCo.fail) {
+  //           $q.notify({ message: 'No pudo cambiar de status', type: 'negative', position: 'top' })
+  //           $q.loading.hide();
+  //           $router.replace(`warehouse/refunds`);
+  //         } else {
+  //           console.log(nxtCo);
+  //           $q.loading.hide();
+  //           refund.value = nxtCo
+  //         }
+  //       }).onCancel(() => {
+  //         // $router.replace(`/warehouse/refunds`);
+  //       })
+  }
+  else{
+    $q.notify({message:'No puedes Ingresar A esta salida Interna',type:'negative',position:'top'})
+  }
+  // $router.push(`/outputs/${output.id}`);
+}
+
+const labelStates = (state) => {
+  switch (state) {
+    case 1:
+      return 'text-bold text-primary'
+    case 2:
+      return 'text-bold text-positive'
+    case 3:
+      return 'text-bold text-negative'
+    case 4:
+      return 'text-bold text-blue'
+    default:
+      return 'text-bold text-primary'
+
   }
 }
-
-const reset = () => {
-  addOuts.value = false
-  nwOut.value = {
-    warehouse: null,
-    notes: null
-  }
-}
-
-const direct = (output) => {
-  $router.push(`/outputs/${output.id}`);
-}
-
-
-// if(VDB.session.rol == 'root' || VDB.session.rol == 'aud' ){
-  index()
-// }else{
-//   $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
-//   $router.replace('/');
-// }
+index()
 
 
 </script>

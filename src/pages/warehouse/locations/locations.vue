@@ -13,7 +13,8 @@
             <div class="row">
               <q-select class="col" v-model="nivel.selected" :options="nivel.options" :label="`Nivel ${index + 1}`"
                 option-value="id" option-label="name" emit-value map-options
-                @update:model-value="val => onSelectChange(val, index)" dense filled :disable="index == deepMax" />
+                @update:model-value="val => onSelectChange(val, index)" dense filled
+                :disable="index == 0 ? false : index == deepMax" />
               <q-separator spaced inset vertical dark />
             </div>
           </div>
@@ -125,10 +126,14 @@ import QRCode from 'qrcode';
 import productsApi from 'src/API/productsApi';
 import locationsApi from 'src/API/locationsApi';
 import dbproduct from 'src/API/Product'
+import { useRoute, useRouter } from "vue-router";
+
 
 const VDB = useVDBStore();
 const $q = useQuasar();
 const warehousStore = useWarehouse()
+const $router = useRouter();
+const $route = useRoute();
 warehousStore.setTitle('Ubicaciones Estructura')
 const exportProducts = ref([]);
 const sections = ref([]);
@@ -164,9 +169,10 @@ const table = ref({
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Secciones' });
   let data = {
-    _rol:VDB.session.credentials._rol,
-    _workpoint:VDB.session.store.id_viz
+    _rol: VDB.session.credentials._rol,
+    _warehouse: $route.params.wid
   }
+
   const resp = await locationsApi.index(data);
   if (!resp.fail) {
     console.log(resp)
@@ -181,7 +187,7 @@ const initLevels = () => {
   deepMax.value = Math.max(...allSections.map(s => s.deep));
   niveles.value = [
     {
-      options: allSections.filter(s => s.root === 0),
+      options: allSections.filter(s => s._root === null),
       selected: null
     }
   ];
@@ -189,7 +195,7 @@ const initLevels = () => {
 };
 
 const getChildren = rootId => {
-  return selectedUbicacion.value.sections?.filter(s => s.root === rootId) || [];
+  return selectedUbicacion.value.sections?.filter(s => s._root === rootId) || [];
 };
 
 
@@ -225,16 +231,18 @@ const createSection = () => {
 
 const sendCreateSection = async () => {
   $q.loading.show({ message: 'Enviando Datos' })
+  console.log(create.value)
   create.value.defaultView.forEach(e => {
-    e.root = create.value.type ? 0 : create.value.val.id;
+    e._root = create.value.type ? null : create.value.val.id;
     e.deep = create.value.type ? 0 : Number(create.value.val.deep) + 1;
-    e._celler = create.value.type ? create.value.val.id : create.value.val._celler;
+    e._warehouse = create.value.type ? create.value.val.id : create.value.val._warehouse;
     e.details = { create: VDB.session.credentials.nick }
   })
   console.log(create.value)
   let data = {
     sections: create.value.defaultView
   }
+  console.log(data)
   const resp = await locationsApi.insertSection(data)
   if (resp.fail) {
     console.log(resp);
@@ -270,20 +278,21 @@ const buildTree = (row) => {
   }
 }
 
-
 const clickDelete = (row) => {
   let seccion = buildTree(row)
   console.log(seccion)
   deleteLc.value.state = true
   deleteLc.value.val = seccion
 }
-const deleteLocations = async () => {
+
+
+const deleteLocations = async () => {//yasta
   $q.loading.show({ message: 'eliminando Seccion' })
   console.log(deleteLc.value.val)
   console.log(selectedUbicacion.value)
   let data = {
-    id:deleteLc.value.val.id,
-    id_viz: VDB.session.credentials.staff.id_va,
+    id: deleteLc.value.val.id,
+    _warehouse: $route.params.wid,
   }
   console.log(data)
 
@@ -307,12 +316,13 @@ const downloadProducts = async () => {
   $q.loading.show({ message: 'Obeniendo Productos' })
   console.log(lvellast.value)
   let data = {
-    workpoint: VDB.session.store.id_viz,
-    section: lvellast.value ? lvellast.value.selected :  null,
-    celler: lvellast.value ? null :  selectedUbicacion.value.sections.map(e => e.id),
+    _warehouse: $route.params.wid,
+    section: lvellast.value ? lvellast.value.selected : null,
+    celler: lvellast.value ? null : selectedUbicacion.value.sections.map(e => e.id),
   }
   console.log(data);
   const resp = await locationsApi.obtProduct(data)
+  console.log(resp)
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -333,12 +343,12 @@ const exportTableProducts = async () => {
     { name: 'Ubicaciones', filterButton: true },
   ]
   const rawData = exportProducts.value.map(e => {
-      return [
+    return [
       e.code,
       e.description,
       e.locations.map(e => e.path).join('|')
-      ]
-    })
+    ]
+  })
 
 
   worksheet.addTable({
@@ -407,7 +417,7 @@ watch(
       console.log(create.value.type)
       let existingChildren = null
       if (create.value.type) {
-        existingChildren = selectedUbicacion.value.sections.filter(s => s.root == 0 && s.deep == 0) || [];
+        existingChildren = selectedUbicacion.value.sections.filter(s => s._root == null && s.deep == 0) || [];
       } else {
         existingChildren = getChildren(create.value.val?.id)
       }

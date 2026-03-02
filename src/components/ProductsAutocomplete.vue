@@ -139,6 +139,7 @@ const autocomplete = async (val, update, abort) => {//autocompletado
   console.log(attrs.value)
   if (val.trim().length > 1) {
     data.value.target = val.toUpperCase().trim();
+    console.log(attrs.value)
     const resp = await dbproduct.autocomplete(attrs.value);
     if (resp.fail) {
       console.log(resp);

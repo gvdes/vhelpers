@@ -17,7 +17,7 @@ export default {
     return assist.post(`/warehouses/transfers/addProduct`, data).then(done => done.data).catch(fail => { return { fail } });
   },
   addProductMasive(data) {
-    return assist.post(`/warehouses/transfer/addProductMasive`, data).then(done => done.data).catch(fail => { return { fail } });
+    return assist.post(`/warehouses/transfers/addProductMasive`, data).then(done => done.data).catch(fail => { return { fail } });
   },
   editProduct(data) {
     return assist.post(`/warehouses/transfers/editProduct`, data).then(done => done.data).catch(fail => { return { fail } });

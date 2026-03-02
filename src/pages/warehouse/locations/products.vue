@@ -24,7 +24,7 @@
 
       <q-card :class="!ismobile ? 'col my-card' : 'my-card'">
         <q-card-section>
-          <ProductAutocomplete @input="add" @agregar="agregar" :with_locations_loc="VDB.session.credentials._rol" />
+          <ProductAutocomplete @agregar="agregar" with_locations :with_locations_loc="+$route.params.wid" />
         </q-card-section>
         <div v-if="product">
           <q-card-section class="item-center">
@@ -54,20 +54,23 @@
               <q-list>
                 <q-item>
                   <q-item-section>
-                    <q-item-label class="text-caption text-center">GEN</q-item-label>
-                    <q-item-label class="text-center">{{ product.stocks[0].pivot.gen }}</q-item-label>
+                    <div class="row">
+                      <div v-for="(val, index) in product.stocks" :key="index" class="col">
+                        <div class="text-bold text-center">
+                          {{ val.alias }}
+                        </div>
+                        <div class="text-caption text-center ">
+                          {{ val.pivot._current }}
+                        </div>
+                      </div>
+
+                    </div>
                   </q-item-section>
-                  <q-item-section>
-                    <q-item-label class="text-caption text-center">EXH</q-item-label>
-                    <q-item-label class="text-center">{{ product.stocks[0].pivot.exh }}</q-item-label>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label class="text-caption text-center">FDT</q-item-label>
-                    <q-item-label class="text-center">{{ product.stocks[0].pivot.fdt }}</q-item-label>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label class="text-caption text-center">TRA</q-item-label>
-                    <q-item-label class="text-center">{{ product.stocks[0].pivot.in_transit }}</q-item-label>
+                  <q-item-section side>
+                    <div class="text-bold text-center">TRA</div>
+                    <div class="text-caption text-center">
+                      {{product.stocks.find(e => e.id == $route.params.wid)?.pivot.in_coming}}
+                    </div>
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -126,7 +129,10 @@ import QRCode from 'qrcode';
 import productsApi from 'src/API/productsApi';
 import locationsApi from 'src/API/locationsApi';
 import dbproduct from 'src/API/Product'
+import { useRoute, useRouter } from "vue-router";
 
+const $router = useRouter();
+const $route = useRoute();
 const VDB = useVDBStore();
 const $q = useQuasar();
 const warehousStore = useWarehouse()
@@ -158,10 +164,12 @@ const init = async () => {
   $q.loading.show({ message: 'Obteniendo Secciones' });
   let data = {
     _rol: VDB.session.credentials._rol,
-    _workpoint: VDB.session.store.id_viz
+    _warehouse: $route.params.wid
   }
+
   const resp = await locationsApi.index(data);
   if (!resp.fail) {
+    console.log(resp)
     sections.value = resp;
   } else {
     console.log(resp);
@@ -175,7 +183,7 @@ const initLevels = () => {
   deepMax.value = Math.max(...allSections.map(s => s.deep));
   niveles.value = [
     {
-      options: allSections.filter(s => s.root === 0),
+      options: allSections.filter(s => s._root === null),
       selected: null
     }
   ];
@@ -184,7 +192,7 @@ const initLevels = () => {
 };
 
 const getChildren = rootId => {
-  return selectedUbicacion.value.sections?.filter(s => s.root === rootId) || [];
+  return selectedUbicacion.value.sections?.filter(s => s._root === rootId) || [];
 };
 
 const onSelectChange = (val, index) => {
@@ -198,10 +206,6 @@ const onSelectChange = (val, index) => {
   }
 };
 
-const add = (ops) => {
-  product.value = ops
-  console.log(ops)
-}
 
 const agregar = (ops) => {
   product.value = ops
@@ -213,11 +217,12 @@ const addLocations = async () => {
   $q.loading.show({ message: 'Agregando Ubicacion' });
   console.log(lvellast.value)
   let data = {
-    id_viz: VDB.session.credentials.staff.id_va,
+    // id_viz: VDB.session.credentials.staff.id_va,
     _location: lvellast.value.selected,
     _product: product.value.id
   }
   const resp = await locationsApi.addLocations(data)
+  console.log(resp)
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -226,9 +231,6 @@ const addLocations = async () => {
     if (seleccionados.length) {
       const ultimoNivel = seleccionados[seleccionados.length - 1];
       const lastSelectedObj = ultimoNivel.options.find(opt => opt.id === lvellast.value.selected);
-      // console.log(lastSelectedObj)
-      // let ins = lastSelectedObj.pivot = data;
-      // console.log(ins)
       product.value.locations.push(lastSelectedObj)
     }
     $q.notify({ message: 'Ubicacion Agregada', type: 'positive', position: 'bottom' })
@@ -239,7 +241,6 @@ const deleteLocation = async (_location) => {
   console.log(VDB.session)
   $q.loading.show({ message: 'Eliminando Ubicacion' });
   let data = {
-    id_viz: VDB.session.credentials.staff.id_va,
     _location: _location,
     _product: product.value.id
   }

@@ -2,14 +2,13 @@
   <q-page padding v-if="salida">
     <q-header reveal bordered :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'">
       <q-toolbar class="justify-between">
-        <q-btn color="primary" icon="arrow_back" flat @click="$router.push('/outputs')" round />
-        <div>{{ salida.store.name }} </div>
+        <q-btn color="primary" icon="arrow_back" flat @click="$router.push('/warehouse/outputs')" round />
         <div class="row items-center">
-          <div class="col"> {{ salida.warehouse.name }}</div> <q-icon name="arrow_forward" class="col" />
+          <div class="col"> {{ salida.warehouse.name }}</div>
         </div>
-        <div>{{ salida.created_by }} </div>
-        <div>salida <q-icon name="navigate_next" color="primary" /> <span class="text-h6">{{ salida.code_fs
-        }}</span>
+        <div>{{ salida.createdby.name }} </div>
+        <div>salida <q-icon name="navigate_next" color="primary" /> <span class="text-h6">{{ salida.id
+            }}</span>
         </div>
       </q-toolbar>
       <q-separator />
@@ -22,14 +21,10 @@
         <input type="file" ref="inputFile" id="inputFile" @input="readFile" hidden accept=".xlsx,.xls" />
         <input type="file" ref="inputFilePreventa" id="inputFilePreventa" @input="readFilePreventa" hidden
           accept=".xlsx,.xls" />
-
-
       </div>
     </q-header>
 
     <q-separator spaced inset vertical dark />
-
-
     <q-list bordered>
       <q-item>
         <q-item-section> Producto </q-item-section>
@@ -41,17 +36,17 @@
     <q-list bordered v-for="(product, index) in products" :key="index">
 
       <q-item clickable v-ripple @click="viewProduct(product)">
-        <q-item-section>{{ product.product }}</q-item-section>
+        <q-item-section>{{ product.code }}</q-item-section>
         <q-item-section>{{ product.description }}</q-item-section>
-        <q-item-section class="text-center">{{ product.amount }}</q-item-section>
+        <q-item-section class="text-center">{{ product.pivot.amount }}</q-item-section>
       </q-item>
       <q-separator />
     </q-list>
 
     <q-dialog v-model="product.state" persistent :position="'bottom'">
-      <q-card style="width: 300; max-width: 40vw;">
+      <q-card>
         <q-card-section>
-          <div class="text-center text-h4">{{ product.val.product }}</div>
+          <div class="text-center text-h4">{{ product.val.code }}</div>
           <div class="text-center text-h6 text-grey-14">{{ product.val.description }}</div>
         </q-card-section>
         <q-card-section>
@@ -60,12 +55,12 @@
               <div class="text-bold text-h6">Cantidad:</div>
               <div class="row">
                 <q-btn flat color="negative" icon="remove" class="text-h5 col"
-                  @click=" product.val.amount--" />
-                <div class=" col column q-py-md">
-                  <input type="number" min="1" v-model="product.val.amount" class="text-center exo"
-                    style=" width: 100px; font-size: 3em; margin: auto auto; border: none;" />
+                  @click="product.val.pivot.amount > 1 ? product.val.pivot.amount-- : ''" />
+                <div class="col  q-py-md bg-section" style="border-radius: 8px;">
+                  <input type="number" min="1" v-model="product.val.pivot.amount" class="text-center exo clean-input"
+                    style="width: 100px; font-size: 3em; margin:auto;" />
                 </div>
-                <q-btn flat color="positive" icon="add" class="text-h5 col" @click="product.val.amount++" />
+                <q-btn flat color="positive" icon="add" class="text-h5 col" @click="product.val.pivot.amount++" />
               </div>
             </div>
           </div>
@@ -81,6 +76,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
 
     <q-dialog v-model="excelImport.state">
       <q-card>
@@ -129,7 +125,7 @@
     <q-footer reveal elevated bordered class="bg-white">
       <q-card class="q-mb-md" flat bordered dense>
         <q-card-section class="row">
-          <ProductAutocomplete class="col" :checkState="false" @input="add" @agregar="agregar" />
+          <ProductAutocomplete class="col" :checkState="false" @agregar="agregar" />
           <q-btn v-if="products.length > 0" color="primary" flat icon="east" @click="endTransfer" round />
         </q-card-section>
       </q-card>
@@ -148,12 +144,17 @@ import outApi from "src/API/outputsApi";
 import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
+import { useWarehouse } from 'src/stores/warehousStore';
 import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
 import dbproduct from 'src/API/Product'
 import { useRoute, useRouter } from "vue-router";
 const $router = useRouter();
 const $route = useRoute();
-
+const warehousStore = useWarehouse()
+warehousStore.setTitle(`SalidasInternas (${$route.params.oid})`)
+warehousStore.setshowReportLocations(false);
+warehousStore.setshowReportMinMax(false);
+warehousStore.setshowOptions(false);
 
 const VDB = useVDBStore();
 const $q = useQuasar();
@@ -187,10 +188,10 @@ const orderImport = ref({
 const inputFile = ref(null)
 const inputFilePreventa = ref(null)
 
-const existProduct = computed(() => products.value?.filter(e => e.product == product.value.val?.product).length > 0)
+const existProduct = computed(() => products.value?.filter(e => e.id == product.value.val?.id).length > 0)
 
 const init = async () => {
-  $q.loading.show({message:'Obteniendo datos'})
+  $q.loading.show({ message: 'Obteniendo datos' })
   const transfer = $route.params.oid;
   const resp = await outApi.getOutput(transfer)
   if (resp.fail) {
@@ -198,22 +199,22 @@ const init = async () => {
   } else {
     console.log(resp)
     $q.loading.hide();
-    if (VDB.session.rol == 'aud' || VDB.session.rol == 'audc' || VDB.session.rol == 'root' || VDB.session.rol == 'des') {
-      salida.value = resp
-      products.value = resp.bodie
-      console.log(salida.value)
-    } else if ((VDB.session.rol == 'aux' || VDB.session.rol == 'gen') && (resp.origin.id !== 4 && resp.destiny.id !== 4)) {
-      salida.value = resp
-      products.value = resp.bodie
-      console.log(salida.value)
-    } else if (VDB.session.rol == 'alm' && ([5, 6].includes(resp.destiny.id) || [5, 6].includes(resp.origin.id))) {
-      salida.value = resp
-      products.value = resp.bodie
-      console.log(salida.value)
+    if (resp._state == 1 && resp.createdby.id ==  VDB.session.credentials.id) {
+    //   salida.value = resp
+    //   products.value = resp.bodie
+    //   console.log(salida.value)
+    // } else if ((VDB.session.rol == 'aux' || VDB.session.rol == 'gen') && (resp.origin.id !== 4 && resp.destiny.id !== 4)) {
+    //   salida.value = resp
+    //   products.value = resp.bodie
+    //   console.log(salida.value)
+    // } else if (VDB.session.rol == 'alm' && ([5, 6].includes(resp.destiny.id) || [5, 6].includes(resp.origin.id))) {
+    salida.value = resp
+    products.value = resp.bodie
+    console.log(salida.value)
     } else {
-      $router.push(`/outputs`);
+      $router.push(`/warehouse/outputs`);
       $q.notify({
-        message: 'No tienes acceso a este traspaso',
+        message: 'No tienes acceso a la salida',
         type: 'negative',
         position: 'center'
       });
@@ -222,22 +223,14 @@ const init = async () => {
   }
 }
 
-
-const add = (opt) => {
-  console.log(opt)
-}
-
 const agregar = (ops) => {
   let inx = products.value.findIndex(e => e.product == ops.code)
   console.log(inx);
   if (inx >= 0) {
     $q.notify({ message: 'El Producto ya esta agregado', type: 'negative', position: 'center' })
   } else {
-    product.value.val = {
-      "product": ops.code,
-      "description": ops.description,
-      "amount": 1
-    };
+    product.value.val = ops
+    product.value.val.pivot = { amount: 1 }
     product.value.state = true
     console.log(ops);
 
@@ -246,9 +239,12 @@ const agregar = (ops) => {
 
 const addProduct = async () => {
   $q.loading.show({ message: 'Insertando Producto' })
-  console.log(product.value.val)
-  product.value.val._transfer = $route.params.oid
-  const resp = await outApi.addProduct(product.value.val)
+  let data = {
+    _transfer: $route.params.oid,
+    _product: product.value.val.id,
+    amount: product.value.val.pivot.amount
+  }
+  const resp = await outApi.addProduct(data)
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -265,8 +261,12 @@ const addProduct = async () => {
 const editProduct = async () => {
   $q.loading.show({ message: 'Editando Producto' })
   console.log(product.value.val)
-  product.value.val._transfer = $route.params.oid
-  const resp = await outApi.editProduct(product.value.val)
+  let data = {
+    _transfer: $route.params.oid,
+    _product: product.value.val.id,
+    amount: product.value.val.pivot.amount
+  }
+  const resp = await outApi.editProduct(data)
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -287,8 +287,12 @@ const editProduct = async () => {
 const deleteProduct = async () => {
   $q.loading.show({ message: 'Eliminando Producto' })
   console.log(product.value.val)
-  product.value.val._transfer = $route.params.oid
-  const resp = await outApi.removeProduct(product.value.val)
+  let data = {
+    _transfer: $route.params.oid,
+    _product: product.value.val.id,
+    amount: product.value.val.pivot.amount
+  }
+  const resp = await outApi.removeProduct(data)
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -309,20 +313,15 @@ const deleteProduct = async () => {
 
 const endTransfer = async () => {
   $q.loading.show({ message: 'Terminando Salida' })
-  let data = {
-    user: VDB.session.name,
-    output: salida.value,
-    products: products.value
-  }
-  console.log(data);
-  const resp = await outApi.endOutput(data)
+  console.log(salida.value);
+  const resp = await outApi.endOutput(salida.value)
   if (resp.fail) {
     console.log(resp)
   } else {
     $q.notify({ message: resp, position: 'center', type: 'positive' })
     console.log(resp)
     $q.loading.hide();
-    $router.push('/outputs')
+    $router.push('/warehouse/outputs')
   }
 }
 
@@ -345,86 +344,86 @@ const clickFile = () => {
 
 const readFile = async () => {
 
-let inputFile = document.getElementById("inputFile").files[0];
-// console.log(inputFile)
-let workbook = new ExcelJS.Workbook();
-let codesToSend = [];
-let diference = [];
-let convert = 0;
-let datos = {};
+  let inputFile = document.getElementById("inputFile").files[0];
+  // console.log(inputFile)
+  let workbook = new ExcelJS.Workbook();
+  let codesToSend = [];
+  let diference = [];
+  let convert = 0;
+  let datos = {};
 
 
-workbook.xlsx.load(inputFile).then((data) => {
-  let worksheet = workbook.worksheets[0];
-  // console.log(worksheet.getColumn("A"))
-  // console.log(worksheet.getColumn("B"))
-  let codigos = worksheet.getColumn("A");
-  let cantidades = worksheet.getColumn("B");
+  workbook.xlsx.load(inputFile).then((data) => {
+    let worksheet = workbook.worksheets[0];
+    // console.log(worksheet.getColumn("A"))
+    // console.log(worksheet.getColumn("B"))
+    let codigos = worksheet.getColumn("A");
+    let cantidades = worksheet.getColumn("B");
 
 
 
-  codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
-    let codigo = cell.value;
-    let cantidadCell = worksheet.getCell(`B${rowNumber}`);
-    let cantidad = parseFloat(cantidadCell.value);
-    if (datos[codigo]) {
-      datos[codigo] += cantidad;
-    } else {
-      datos[codigo] = cantidad;
-    }
-  });
-  let Diferencia = Object.keys(datos).map(codigo => ({
-    codigo: codigo,
-    cantidad: datos[codigo]
-  }));
-  Diferencia.forEach(e => codesToSend.push(e.codigo))
-  // console.log(Diferencia)
-  // console.log(codesToSend.length)
-  if (codesToSend.length) {
-    let data = { codes: codesToSend, _workpoint: VDB.session.store.id_viz };
-    // console.log(data)
-    // wndImportJSON.wndTotal  = codesToSend.length;
-    $q.loading.show({ message: "Procesando archivo, espera.." });
-
-    dbproduct.getMassive(data)
-      .then((success) => {
-
-        let resp = success.data;
-        resp.fails.notFound.map(e => excelImport.value.wndNotExist.push(e))
-        resp.fails.repeat.map(e => excelImport.value.repeat.push(e))
-        let products = success.data.products
-        excelImport.value.wndGetRows = products.length;
-        excelImport.value.state = !excelImport.value.state;
-        console.log(products)
-        let dat = products.map(product => {
-          let cantidad = Diferencia.find(item => item.codigo === product.code);
-          return {
-            product: product.code,
-            description: product.description,
-            amount: cantidad ? cantidad.cantidad : 0,
-            "_output": $route.params.oid
-          };
-        });
-        addingMasive(dat)
-        $q.loading.hide();
-      })
-      .catch((fail) => {
-        console.log(fail);
-        $q.notify({
-          message: "Hay un problema con obtener los datos :/.",
-          icon: "fas fa-grin-beam-sweat",
-          color: "negative",
-        });
-      });
-  } else {
-    $q.notify({
-      message: "Vaya!! Al parecer este archivo esta vacio.",
-      icon: "fas fa-grin-beam-sweat",
-      color: "negative",
+    codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
+      let codigo = cell.value;
+      let cantidadCell = worksheet.getCell(`B${rowNumber}`);
+      let cantidad = parseFloat(cantidadCell.value);
+      if (datos[codigo]) {
+        datos[codigo] += cantidad;
+      } else {
+        datos[codigo] = cantidad;
+      }
     });
-  }
+    let Diferencia = Object.keys(datos).map(codigo => ({
+      codigo: codigo,
+      cantidad: datos[codigo]
+    }));
+    Diferencia.forEach(e => codesToSend.push(e.codigo))
+    // console.log(Diferencia)
+    // console.log(codesToSend.length)
+    if (codesToSend.length) {
+      let data = { codes: codesToSend, _workpoint: VDB.session.store.id_viz };
+      // console.log(data)
+      // wndImportJSON.wndTotal  = codesToSend.length;
+      $q.loading.show({ message: "Procesando archivo, espera.." });
 
-});
+      dbproduct.getMassive(data)
+        .then((success) => {
+
+          let resp = success.data;
+          resp.fails.notFound.map(e => excelImport.value.wndNotExist.push(e))
+          resp.fails.repeat.map(e => excelImport.value.repeat.push(e))
+          let products = success.data.products
+          excelImport.value.wndGetRows = products.length;
+          excelImport.value.state = !excelImport.value.state;
+          console.log(products)
+          let dat = products.map(product => {
+            let cantidad = Diferencia.find(item => item.codigo === product.code);
+            return {
+              product: product.code,
+              description: product.description,
+              amount: cantidad ? cantidad.cantidad : 0,
+              "_output": $route.params.oid
+            };
+          });
+          addingMasive(dat)
+          $q.loading.hide();
+        })
+        .catch((fail) => {
+          console.log(fail);
+          $q.notify({
+            message: "Hay un problema con obtener los datos :/.",
+            icon: "fas fa-grin-beam-sweat",
+            color: "negative",
+          });
+        });
+    } else {
+      $q.notify({
+        message: "Vaya!! Al parecer este archivo esta vacio.",
+        icon: "fas fa-grin-beam-sweat",
+        color: "negative",
+      });
+    }
+
+  });
 }
 
 
@@ -435,50 +434,50 @@ const clickFilePreventa = () => {
 
 const readFilePreventa = async () => {
 
-let inputFile = document.getElementById("inputFilePreventa").files[0];
-// console.log(inputFile)
-let workbook = new ExcelJS.Workbook();
-let codesToSend = [];
+  let inputFile = document.getElementById("inputFilePreventa").files[0];
+  // console.log(inputFile)
+  let workbook = new ExcelJS.Workbook();
+  let codesToSend = [];
 
 
-workbook.xlsx.load(inputFile).then(async (data) => {
-  let worksheet = workbook.worksheets[0];
-  let codigos = worksheet.getColumn("A");
+  workbook.xlsx.load(inputFile).then(async (data) => {
+    let worksheet = workbook.worksheets[0];
+    let codigos = worksheet.getColumn("A");
 
 
-  $q.loading.show({ message: "Procesando archivo, espera.." });
-  codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
-    cell.value ? codesToSend.push(cell.value) : null
-  });
-  if (codesToSend.length) {
-    let data = { codes: codesToSend, _workpoint: VDB.session.store.id_viz };
-    console.log(data)
-    const resp = await outApi.outputPreventa(data);
-    if (resp.fail) {
-      alert(resp)
+    $q.loading.show({ message: "Procesando archivo, espera.." });
+    codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
+      cell.value ? codesToSend.push(cell.value) : null
+    });
+    if (codesToSend.length) {
+      let data = { codes: codesToSend, _workpoint: VDB.session.store.id_viz };
+      console.log(data)
+      const resp = await outApi.outputPreventa(data);
+      if (resp.fail) {
+        alert(resp)
+      } else {
+        orderImport.value.encontrados = resp.Encontrados
+        orderImport.value.faltantes = resp.Faltantes
+        orderImport.value.products = resp.products.length
+        orderImport.value.state = !orderImport.value.state
+        resp.products.forEach(e => e._output = $route.params.oid)
+        let dat = resp.products
+        console.log(dat);
+        addingMasive(dat)
+        $q.loading.hide()
+
+      }
+
+
     } else {
-      orderImport.value.encontrados = resp.Encontrados
-      orderImport.value.faltantes = resp.Faltantes
-      orderImport.value.products = resp.products.length
-      orderImport.value.state = !orderImport.value.state
-      resp.products.forEach(e => e._output = $route.params.oid)
-      let dat = resp.products
-      console.log(dat);
-      addingMasive(dat)
-      $q.loading.hide()
-
+      $q.notify({
+        message: "Vaya!! Al parecer este archivo esta vacio.",
+        icon: "fas fa-grin-beam-sweat",
+        color: "negative",
+      });
     }
 
-
-  } else {
-    $q.notify({
-      message: "Vaya!! Al parecer este archivo esta vacio.",
-      icon: "fas fa-grin-beam-sweat",
-      color: "negative",
-    });
-  }
-
-});
+  });
 }
 
 const addingMasive = async (prd) => {
@@ -493,7 +492,7 @@ const addingMasive = async (prd) => {
 }
 
 // if(VDB.session.rol == 'root' || VDB.session.rol == 'aud' ){
-  init()
+init()
 // }else{
 //   $q.notify({message:'No tienes acceso a esta pagina',type:'negative',position:'center'})
 //   $router.replace('/');

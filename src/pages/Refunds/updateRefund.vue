@@ -48,7 +48,7 @@
         <q-item-section class="text-center">{{ product.pivot.to_delivered }}</q-item-section>
         <q-item-section class="text-center">{{ product.pivot.to_received }}</q-item-section>
         <q-item-section class="text-center">{{ product.pivot.to_received - product.pivot.to_delivered
-          }}</q-item-section>
+        }}</q-item-section>
       </q-item>
       <q-separator />
     </q-list>
@@ -65,7 +65,9 @@
             <div class="text-center col text-primary">
               <div>Enviado</div>
               <div class="text-bold">
-                {{ product.val.pivot.to_delivered }}
+                <!-- {{ product.val.pivot.to_delivered }} -->
+                <q-input dense borderless v-model="product.val.pivot.to_delivered" type="number" min="0"
+                  input-class="text-h6 text-center" ref="iptcounter" />
               </div>
             </div>
 
@@ -83,7 +85,7 @@
         </q-card-section>
         <q-card-actions align="center">
           <q-btn flat icon="close" color="red-10" @click="reset" />
-          <q-btn flat label="Editar" color="blue-10" @click="editProduct" v-if="product.val.pivot.to_received > 0" />
+          <q-btn flat label="Editar" color="blue-10" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -124,6 +126,8 @@ import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
 import { computed, ref } from 'vue';
 import refundsApi from "src/API/refundsApi";
+import { useWarehouse } from 'src/stores/warehousStore';
+import cloneDeep from 'lodash/cloneDeep'
 import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
@@ -134,7 +138,8 @@ const $router = useRouter();
 const $route = useRoute();
 const VDB = useVDBStore();
 const $q = useQuasar();
-import { useWarehouse } from 'src/stores/warehousStore';
+
+const originalRefund = ref(null)
 const warehousStore = useWarehouse()
 warehousStore.setTitle(`Traspaso / Sucursal (${$route.params.rid})`)
 warehousStore.setshowReportLocations(false);
@@ -173,45 +178,16 @@ const init = async () => {
   if (resp.error) {
     console.log(resp)
   } else {
-    if (resp.destiny.store.id == VDB.session.store.id ) {
-      if (resp.status.id == 3 && resp.receiptby.id == VDB.session.credentials.id) {
-        $q.loading.hide();
-        $q.dialog({
-          title: `Traspaso N.${resp.id} de ${resp.origin.store.alias}`,
-          message: 'Comienzas a validar el Traspaso ? ',
-          cancel: true,
-          persistent: true
-        }).onOk(async () => {
-          $q.loading.show({ message: 'Cambiando Estado' })
-          const nxtCo = await refundsApi.nexStateValid(resp)
-          if (nxtCo.fail) {
-            $q.notify({ message: 'No pudo cambiar de status', type: 'negative', position: 'top' })
-            $q.loading.hide();
-            $router.replace(`warehouse/refunds`);
-          } else {
-            console.log(nxtCo);
-            $q.loading.hide();
-            refund.value = nxtCo
-          }
-        }).onCancel(() => {
-          $router.replace(`/warehouse/refunds`);
-        })
-      } else if (resp.status.id == 4 && resp.receiptby.id == VDB.session.credentials.id) {
-        console.log(resp);
-        $q.loading.hide();
-        refund.value = resp
-      } else {
-        $q.notify({ message: 'Ya no se puede modificar la recepion', type: 'negative', position: 'top' })
-        $router.replace(`warehouse/refunds`);
-      }
+    if (resp.status.id == 6) {
+      console.log(resp);
+      $q.loading.hide();
+      refund.value = resp
+      originalRefund.value = cloneDeep(resp)
     } else {
-        $q.notify({ message: 'No puedes recibir este documento', type: 'negative', position: 'top' })
-        $router.replace(`warehouse/refunds`);
+      $q.notify({ message: 'Ya no se puede modificar la recepion', type: 'negative', position: 'top' })
+      $router.replace(`/warehouse/refunds`);
     }
-
-
   }
-
 }
 
 const reset = () => {
@@ -222,10 +198,14 @@ const reset = () => {
 }
 
 const nextState = async () => {
-  $q.loading.show({ message: 'Creando Proceso' })
-
-  const resp = await refundsApi.finallyRefund(refund.value)
-  console.log(resp);
+  $q.loading.show({ message: 'Procesando cambios' })
+  const cambios = getChanges()
+  const payload = {
+    transfer: refund.value,
+    cambios
+  }
+  console.log(payload)
+  const resp = await refundsApi.finishUpdate(payload)
   if (resp.fail) {
     console.log(resp);
   } else {
@@ -234,32 +214,6 @@ const nextState = async () => {
     $router.push(`/warehouse/refunds`);
   }
   $q.loading.hide();
-}
-
-const editProduct = async () => {
-  $q.loading.show({ message: 'Editando Producto' })
-  console.log(product.value.val)
-  let data = {
-    _transfer: $route.params.rid,
-    _product: product.value.val.id,
-    to_received: product.value.val.pivot.to_received
-  };
-  const resp = await refundsApi.editProductReceipt(data)
-  if (resp.fail) {
-    console.log(resp)
-  } else {
-    console.log(resp);
-    let inx = refund.value.bodie.findIndex(e => e.id == product.value.val.id)
-    if (inx >= 0) {
-      refund.value.bodie[inx].pivot.to_received = product.value.val.pivot.to_received
-      $q.notify({ type: 'positive', position: 'center' })
-      product.value = {
-        val: null,
-        state: false
-      }
-      $q.loading.hide()
-    }
-  }
 }
 
 const viewProduct = (val) => {
@@ -279,6 +233,37 @@ const mosProduct = () => {
     busqueda.value = null
   }
 
+}
+const getChanges = () => {
+  const cambios = []
+
+  refund.value.bodie.forEach(product => {
+    const original = originalRefund.value.bodie.find(p => p.id === product.id)
+
+    const beforeDelivered = Number(original.pivot.to_delivered)
+    const nowDelivered = Number(product.pivot.to_delivered)
+
+    const beforeReceived = Number(original.pivot.to_received)
+    const nowReceived = Number(product.pivot.to_received)
+
+    if (beforeDelivered !== nowDelivered || beforeReceived !== nowReceived) {
+      cambios.push({
+        id: product.id,
+        to_delivered: {
+          antes: beforeDelivered,
+          ahora: nowDelivered,
+          diferencia: nowDelivered - beforeDelivered
+        },
+        to_received: {
+          antes: beforeReceived,
+          ahora: nowReceived,
+          diferencia:  nowReceived - beforeReceived
+        }
+      })
+    }
+  })
+
+  return cambios
 }
 init()
 </script>

@@ -20,16 +20,12 @@
             :disable="traspaso._state != 1" /></div>
         <div class="col"><q-btn color="primary" icon="picture_as_pdf" label="PDF" flat @click="pdfTransfer"
             v-if="traspaso._state == 2" /></div>
-
         <input type="file" ref="inputFile" id="inputFile" @input="readFile" hidden accept=".xlsx,.xls" />
         <input type="file" ref="inputFilePreventa" id="inputFilePreventa" @input="readFilePreventa" hidden
           accept=".xlsx,.xls" />
       </div>
     </q-header>
-
     <q-separator spaced inset vertical dark />
-
-
     <q-list bordered>
       <q-item>
         <q-item-section> Producto </q-item-section>
@@ -82,23 +78,73 @@
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="excelImport.state">
-      <q-card>
-        <q-card-section class="row text-bold text-overline text-center">
-          Resultados de la importacion :O
+    <q-dialog v-model="excelImport.state" persistent>
+      <q-card style="min-width: 500px; max-width: 700px">
+        <q-card-section class="text-h6 text-center">
+          📊 Resultado de la Importación
         </q-card-section>
+        <q-separator />
         <q-card-section>
-          <q-list bordered>
-            <q-item>
-              <q-item-section>Productos Encontrados</q-item-section>
-              <q-item-section>{{ excelImport.wndGetRows }}</q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-section>Productos Sin Datos</q-item-section>
-              <q-item-section>{{ excelImport.wndNotExist }}</q-item-section>
-            </q-item>
-          </q-list>
+          <div class="row q-col-gutter-md text-center">
+            <div class="col">
+              <q-card flat bordered class="">
+                <q-card-section>
+                  <div class="text-h6 text-green-8">
+                    {{ excelImport.wndGetRows }}
+                  </div>
+                  <div class="text-caption">Productos válidos</div>
+                </q-card-section>
+              </q-card>
+            </div>
+            <div class="col">
+              <q-card flat bordered class="">
+                <q-card-section>
+                  <div class="text-h6 text-red-8">
+                    {{ excelImport.wndNotExist.length }}
+                  </div>
+                  <div class="text-caption">No existen</div>
+                </q-card-section>
+              </q-card>
+            </div>
+            <div class="col">
+              <q-card flat bordered class="">
+                <q-card-section>
+                  <div class="text-h6 text-orange-8">
+                    {{ excelImport.excelError.length }}
+                  </div>
+                  <div class="text-caption">Errores Excel</div>
+                </q-card-section>
+              </q-card>
+            </div>
+          </div>
         </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <q-expansion-item v-if="excelImport.wndNotExist.length" icon="error" label="Productos no encontrados"
+            expand-separator>
+            <q-list dense bordered>
+              <q-item v-for="(item, index) in excelImport.wndNotExist" :key="index">
+                <q-item-section>{{ item }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-expansion-item>
+          <q-expansion-item v-if="excelImport.excelError.length" icon="warning" label="Errores detectados en Excel"
+            expand-separator>
+            <q-list dense bordered>
+              <q-item v-for="(item, index) in excelImport.excelError" :key="index">
+                <q-item-section>
+                  Fila {{ item.fila }} -
+                  {{ item.codigo || 'Sin código' }} -
+                  {{ item.error }}
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-expansion-item>
+        </q-card-section>
+        <q-separator />
+        <q-card-actions align="right">
+          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+        </q-card-actions>
       </q-card>
     </q-dialog>
 
@@ -152,8 +198,7 @@ import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
 import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
 import { useWarehouse } from 'src/stores/warehousStore';
-import  PDF from 'src/Pdf/transfers/transfers.js';
-
+import PDF from 'src/Pdf/transfers/transfers.js';
 import dbproduct from 'src/API/Product'
 import { useRoute, useRouter } from "vue-router";
 import warehouseApi from 'src/API/warehouseApi';
@@ -186,7 +231,8 @@ const excelImport = ref({
   message: "",
   messageRepeat: "",
   wndNotExist: [],
-  repeat: []
+  repeat: [],
+  excelError: [],
 })
 
 const orderImport = ref({
@@ -355,89 +401,74 @@ const clickFile = () => {
   inputFile.value.click()
 }
 
+
 const readFile = async () => {
-
-  let inputFile = document.getElementById("inputFile").files[0];
-  // console.log(inputFile)
-  let workbook = new ExcelJS.Workbook();
-  let codesToSend = [];
-  let diference = [];
-  let convert = 0;
-  let datos = {};
-
-
-  workbook.xlsx.load(inputFile).then((data) => {
-    let worksheet = workbook.worksheets[0];
-    // console.log(worksheet.getColumn("A"))
-    // console.log(worksheet.getColumn("B"))
-    let codigos = worksheet.getColumn("A");
-    let cantidades = worksheet.getColumn("B");
-
-
-
-    codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
-      let codigo = cell.value;
-      let cantidadCell = worksheet.getCell(`B${rowNumber}`);
-      let cantidad = parseFloat(cantidadCell.value);
-      if (datos[codigo]) {
-        datos[codigo] += cantidad;
-      } else {
-        datos[codigo] = cantidad;
-      }
-    });
-    let Diferencia = Object.keys(datos).map(codigo => ({
-      codigo: codigo,
-      cantidad: datos[codigo]
-    }));
-    Diferencia.forEach(e => codesToSend.push(e.codigo))
-    // console.log(Diferencia)
-    // console.log(codesToSend.length)
-    if (codesToSend.length) {
-      let data = { codes: codesToSend, _workpoint: VDB.session.store.id_viz };
-      // console.log(data)
-      // wndImportJSON.wndTotal  = codesToSend.length;
-      $q.loading.show({ message: "Procesando archivo, espera.." });
-
-      dbproduct.getMassive(data)
-        .then((success) => {
-
-          let resp = success.data;
-          resp.fails.notFound.map(e => excelImport.value.wndNotExist.push(e))
-          resp.fails.repeat.map(e => excelImport.value.repeat.push(e))
-          let products = success.data.products
-          excelImport.value.wndGetRows = products.length;
-          excelImport.value.state = !excelImport.value.state;
-          console.log(products)
-          let dat = products.map(product => {
-            let cantidad = Diferencia.find(item => item.codigo === product.code);
-            return {
-              product: product.code,
-              description: product.description,
-              amount: cantidad ? cantidad.cantidad : 0,
-              "_transfer": $route.params.oid
-            };
-          });
-          addingMasive(dat)
-          $q.loading.hide();
-        })
-        .catch((fail) => {
-          console.log(fail);
-          $q.notify({
-            message: "Hay un problema con obtener los datos :/.",
-            icon: "fas fa-grin-beam-sweat",
-            color: "negative",
-          });
-        });
-    } else {
-      $q.notify({
-        message: "Vaya!! Al parecer este archivo esta vacio.",
-        icon: "fas fa-grin-beam-sweat",
-        color: "negative",
-      });
+  const inputFile = document.getElementById("inputFile").files[0];
+  if (!inputFile) return;
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(inputFile);
+  const worksheet = workbook.worksheets[0];
+  let acumulado = {};
+  for (let i = 2; i <= worksheet.rowCount; i++) {
+    const codigoRaw = worksheet.getCell(`A${i}`).value;
+    const cantidadRaw = worksheet.getCell(`B${i}`).value;
+    const codigo = codigoRaw ? String(codigoRaw).trim() : null;
+    const cantidad = parseFloat(cantidadRaw);
+    if (!codigo) {
+      excelImport.value.excelError.push({ fila: i, error: "Código vacío" });
+      continue;
     }
-
+    if (!cantidad || cantidad <= 0) {
+      excelImport.value.excelError.push({ fila: i, codigo, error: "Cantidad inválida" });
+      continue;
+    }
+    acumulado[codigo] = (acumulado[codigo] || 0) + cantidad;
+  }
+  const codigos = Object.keys(acumulado);
+  if (!codigos.length) {
+    $q.notify({
+      message: "El archivo está vacío o solo contiene errores.",
+      color: "negative"
+    });
+    return;
+  }
+  try {
+    $q.loading.show({ message: "Validando códigos..." });
+    const resp = await dbproduct.getMassive({ codes: codigos });
+    if (resp.fail) {
+      throw new Error("Error backend");
+    }
+    excelImport.value.wndNotExist = resp.fails.notFound || [];
+    excelImport.value.repeat = resp.fails.repeat || [];
+    const dat = resp.products.map(p => ({
+      ...p,
+      pivot: {
+      _transfer: $route.params.oid,
+        _product: p.id,
+        amount: acumulado[p.code] || 0,
+    }
+    }));
+    console.log(dat);
+  // const dat = resp.products.map(product => ({
+  //   _transfer: $route.params.oid,
+  //   _product: product.id,
+  //   amount: acumulado[product.code] || 0
+  // }));
+  excelImport.value.wndGetRows = dat.length;
+  excelImport.value.state = !excelImport.value.state;
+  // console.log("Para insertar:", dat);
+  addingMasive(dat)
+  console.log("Errores Excel:", excelImport.value.excelError);
+  $q.loading.hide();
+} catch (error) {
+  $q.loading.hide();
+  $q.notify({
+    message: "Error procesando archivo.",
+    color: "negative"
   });
+  console.error(error);
 }
+};
 
 const clickFilePreventa = () => {
   inputFilePreventa.value.click()
@@ -495,7 +526,9 @@ const readFilePreventa = async () => {
 
 
 const addingMasive = async (prd) => {
-  const resp = await tranApi.addProductMasive(prd)
+  let sendData = prd.map(e => e.pivot);
+  console.log(sendData);
+  const resp = await transferApi.addProductMasive(sendData)
   if (resp.fail) {
     console.log(resp)
   } else {

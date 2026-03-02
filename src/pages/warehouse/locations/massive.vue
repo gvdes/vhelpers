@@ -140,7 +140,9 @@ import QRCode from 'qrcode';
 import productsApi from 'src/API/productsApi';
 import locationsApi from 'src/API/locationsApi';
 import dbproduct from 'src/API/Product'
-
+import { useRoute, useRouter } from "vue-router";
+const $router = useRouter();
+const $route = useRoute();
 const VDB = useVDBStore();
 const $q = useQuasar();
 const warehousStore = useWarehouse()
@@ -243,7 +245,7 @@ const caty = computed(() => {
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Secciones' });
-  const resp = await locationsApi.getInit(VDB.session.store.id_viz);
+  const resp = await locationsApi.getInit($route.params.wid);
   if (!resp.fail) {
     console.log(resp)
     sections.value = resp.celler;
@@ -260,7 +262,7 @@ const initLevels = () => {
   deepMax.value = Math.max(...allSections.map(s => s.deep));
   niveles.value = [
     {
-      options: allSections.filter(s => s.root === 0),
+      options: allSections.filter(s => s._root === null),
       selected: null
     }
   ];
@@ -269,7 +271,7 @@ const initLevels = () => {
 };
 
 const getChildren = rootId => {
-  return selectedUbicacion.value.sections?.filter(s => s.root === rootId) || [];
+  return selectedUbicacion.value.sections?.filter(s => s._root === rootId) || [];
 };
 
 const onSelectChange = (val, index) => {
@@ -286,7 +288,7 @@ const onSelectChange = (val, index) => {
 const clearSection = async () => {
   $q.loading.show({ message: 'Obeniendo Productos' })
   let data = {
-    workpoint: VDB.session.store.id_viz,
+    _warehouse: $route.params.wid,
     section: lvellast.value.selected
   }
   const resp = await locationsApi.obtProduct(data)
@@ -299,12 +301,13 @@ const clearSection = async () => {
     $q.loading.hide()
   }
 }
+
 const deleteSectionProducts = async () => {
   $q.loading.show({ message: 'Eliminando Ubicaciones' })
   let data = {
     products: productSection.value.val.map(e => e.id),
     section: lvellast.value.selected,
-    id_viz: VDB.session.credentials.staff.id_va,
+    _warehouse: $route.params.wid,
   }
   console.log(data);
   const resp = await locationsApi.deleteSectionProducts(data);
@@ -324,7 +327,7 @@ const getReport = async () => {
   $q.loading.show({ message: 'El reporte puede tardar unos minutos' })
   // loading.value = true
   let data = {
-    workpoint: VDB.session.store.id_viz,
+    _warehouse: $route.params.wid,
     sections: categories.value.seccion.val?.map(e => e.id),
     familys: categories.value.familias.val?.map(e => e.id),
     categories: categories.value.categories.val?.map(e => e.id),
@@ -351,8 +354,9 @@ const deleteCategoriesLocations = async () => {
         locations: e.locations.map(i => i.id)
       }
     }),
-    id_viz: VDB.session.credentials.staff.id_va,
+    // id_viz: VDB.session.credentials.staff.id_va,
   }
+  console.log(data);
   const resp = await locationsApi.deleteCategoriesLocations(data);
   if (resp.fail) {
     console.log(resp)
@@ -392,15 +396,9 @@ const readFileCreate = () => {
     let sendData = Object.keys(datos).map(codigo => ({
       _product: codigo,
       _location: datos[codigo],
-      _workpoint: VDB.session.store.id_viz
     }))
     console.log(sendData)
-    let sendDb = {
-      products: sendData,
-      id_viz: VDB.session.credentials.staff.id_va,
-    }
-
-    const resp = await locationsApi.addMassiveLocation(sendDb)
+    const resp = await locationsApi.addMassiveLocation(sendData)
     if (resp.fail) {
       console.log(resp);
     } else {
@@ -420,8 +418,7 @@ const readFileDelete = () => {
   workbook.xlsx.load(inputFile).then(async (data) => {
     let worksheet = workbook.worksheets[0];
     let codigos = worksheet.getColumn("A");//modelos
-    // let cantidades = worksheet.getColumn("B");//locaciones
-    // console.log(codigos);
+    console.log(codigos);
     codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
       if (rowNumber === 1) return;
       let codigo = cell.value;
@@ -430,15 +427,11 @@ const readFileDelete = () => {
     })
     let sendData = Object.keys(datos).map(codigo => ({
       _product: codigo,
-      _workpoint: VDB.session.store.id_viz
+      _warehouse: $route.params.wid
     }))
     console.log(sendData)
-    let sendDb = {
-      products: sendData,
-      id_viz: VDB.session.credentials.staff.id_va,
-    }
     if (sendData.length) {
-      const resp = await locationsApi.deleteMassiveLocation(sendDb)
+      const resp = await locationsApi.deleteMassiveLocation(sendData)
       if (resp.fail) {
         console.log(resp);
       } else {
@@ -485,7 +478,7 @@ const exportData = async () => {
 
       sheet.addRow(newRow);
 
-      const children = allSections.filter(s => s.root === node.id);
+      const children = allSections.filter(s => s._root === node.id);
       children.forEach(child => buildRows(child, newRow));
     }
 

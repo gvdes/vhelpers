@@ -1,3 +1,4 @@
+import { useWarehouse } from 'src/stores/warehousStore'
 
 const routes = [
   { path: '/', redirect: '/launcher', meta: { requiresAuth: true } },
@@ -30,10 +31,6 @@ const routes = [
       { path: 'iva', component: () => import('layouts/IvaLayout.vue'), meta: { moduleId: 2, requiresAuth: true } }
     ]
   },
-
-
-
-
 
   // {
   //   path: '/iva',
@@ -303,35 +300,17 @@ const routes = [
       { path: 'checkin/:chk', component: () => import('pages/Distribute/viewCheckin.vue'), meta: { moduleId: 40, requiresAuth: true } },
     ],
   },
-  {
-    path: '/refunds',
-    component: () => import('layouts/refundsLYT.vue'),
-    meta: { moduleId: 19, requiresAuth: true },
-    children: [
-      { path: '', name: 'dvb', component: () => import('pages/Refunds/Index.vue'), meta: { moduleId: 19, requiresAuth: true } },
-      { path: ':rid', name: 'rid', component: () => import('pages/Refunds/viewRefund.vue'), meta: { moduleId: 19, requiresAuth: true } },
-      { path: 'verified/:rid', name: 'versrid', component: () => import('pages/Refunds/veriferRefund.vue'), meta: { moduleId: 19, requiresAuth: true } },
-    ],
-  },
-  {
-    path: '/modigyRefund',
-    component: () => import('layouts/refundsLYT.vue'),
-    meta: { moduleId: 32, requiresAuth: true },
-    children: [
-      { path: '', name: 'mre', component: () => import('pages/Refunds/Modify/Index.vue'), meta: { moduleId: 32, requiresAuth: true } },
-      { path: ':rid', name: 'mrid', component: () => import('pages/Refunds/Modify/viewRefund.vue'), meta: { moduleId: 32, requiresAuth: true } },
-    ],
-  },
-  {
-    path: '/outputs',
-    component: () => import('layouts/outputsLYT.vue'),
-    meta: { moduleId: 20, requiresAuth: true },
-    children: [
-      { path: '', name: 'outs', component: () => import('pages/Outputs/Index.vue'), meta: { moduleId: 20, requiresAuth: true } },
-      { path: ':oid', name: 'otusoid', component: () => import('pages/Outputs/viewOutputs.vue'), meta: { moduleId: 20, requiresAuth: true } },
-    ],
 
-  },
+  // {
+  //   path: '/modigyRefund',
+  //   component: () => import('layouts/refundsLYT.vue'),
+  //   meta: { moduleId: 32, requiresAuth: true },
+  //   children: [
+  //     { path: '', name: 'mre', component: () => import('pages/Refunds/Modify/Index.vue'), meta: { moduleId: 32, requiresAuth: true } },
+  //     { path: ':rid', name: 'mrid', component: () => import('pages/Refunds/Modify/viewRefund.vue'), meta: { moduleId: 32, requiresAuth: true } },
+  //   ],
+  // },
+
   {
     path: '/assortment',
     component: () => import('layouts/assortmetLYT.vue'),
@@ -340,15 +319,6 @@ const routes = [
       { path: ':oid', name: 'reqoid', component: () => import('pages/Requisition/viewRequisition.vue'), meta: { moduleId: 12, requiresAuth: true } },
     ],
   },
-  // {
-  //   path: '/transfers',
-  //   component: () => import('layouts/Transfers.vue'),
-  //   meta: { moduleId: 11, requiresAuth: true },
-  //   children: [
-  //     { path: '', name: 'trns', component: () => import('pages/Tranfers/Index.vue'), meta: { moduleId: 11, requiresAuth: true } },
-  //     { path: ':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue'), meta: { moduleId: 11, requiresAuth: true } },
-  //   ],
-  // },
   {
     path: '/products',
     component: () => import('layouts/ProductsLYT.vue'),
@@ -392,25 +362,62 @@ const routes = [
     component: () => import('layouts/WarehouseLYT.vue'),
     meta: { moduleId: 3, requiresAuth: true },
     children: [
-      {
-        path: 'locations',
-        name: 'wub',
-        component: () => import('pages/warehouse/locations.vue'),
-        children: [
-          { path: 'sections', name: 'wsct', component: () => import('pages/warehouse/locations/locations.vue'), meta: { moduleId: 27, requiresAuth: true } },
-          { path: 'products', name: 'wpt', component: () => import('pages/warehouse/locations/products.vue'), meta: { moduleId: 27, requiresAuth: true } },
-          { path: 'massive', name: 'wmss', component: () => import('pages/warehouse/locations/massive.vue'), meta: { moduleId: 27, requiresAuth: true } },
-        ],
-        meta: { moduleId: 27 }
-      },
-      { path: 'minmax', name: 'wmm', component: () => import('pages/warehouse/minmax.vue'), meta: { moduleId: 26, requiresAuth: true } },
       { path: 'index', name: 'win', component: () => import('pages/warehouse/Index.vue'), meta: { moduleId: 95 } },
+      {
+        path: ':wid', name: 'wid',
+        beforeEnter: (to, from, next) => {
+          const warehousStore = useWarehouse()
+
+          const exists = warehousStore.warehouses.some(
+            w => w.id == to.params.wid
+          )
+
+          if (!exists) {
+            return next({ name: 'win' }) // warehouse/index
+          }
+
+          next()
+        },
+        children: [
+          { path: 'minmax', name: 'wmm', component: () => import('pages/warehouse/minmax.vue'), meta: { moduleId: 3, requiresAuth: true } },
+          {
+            path: 'locations',
+            name: 'wub',
+            component: () => import('pages/warehouse/locations.vue'),
+            children: [
+              { path: 'sections', name: 'wsct', component: () => import('pages/warehouse/locations/locations.vue'), meta: { moduleId: 3, requiresAuth: true } },
+              { path: 'products', name: 'wpt', component: () => import('pages/warehouse/locations/products.vue'), meta: { moduleId: 3, requiresAuth: true } },
+              { path: 'massive', name: 'wmss', component: () => import('pages/warehouse/locations/massive.vue'), meta: { moduleId: 3, requiresAuth: true } },
+            ],
+            meta: { moduleId: 3 }
+          },
+        ], meta: { moduleId: 3, requiresAuth: true }
+      },
       {
         path: 'transfers',
         meta: { moduleId: 3, requiresAuth: true },
         children: [
           { path: '', name: 'trns', component: () => import('pages/Tranfers/Index.vue'), meta: { moduleId: 3, requiresAuth: true } },
           { path: ':oid', name: 'trnsoid', component: () => import('pages/Tranfers/viewTransfer.vue'), meta: { moduleId: 3, requiresAuth: true } },
+        ],
+      },
+      {
+        path: 'refunds',
+        meta: { moduleId: 3, requiresAuth: true },
+        children: [
+          { path: '', name: 'dvb', component: () => import('pages/Refunds/Index.vue'), meta: { moduleId: 3, requiresAuth: true } },
+          { path: ':rid', name: 'rid', component: () => import('pages/Refunds/viewRefund.vue'), meta: { moduleId: 3, requiresAuth: true } },
+          { path: 'verified/:rid', name: 'versrid', component: () => import('pages/Refunds/veriferRefund.vue'), meta: { moduleId: 3, requiresAuth: true } },
+          { path: 'update/:rid', name: 'updtrid', component: () => import('pages/Refunds/updateRefund.vue'), meta: { moduleId: 3, requiresAuth: true } },
+
+        ],
+      },
+      {
+        path: 'outputs',
+        meta: { moduleId: 3, requiresAuth: true },
+        children: [
+          { path: '', name: 'outs', component: () => import('pages/Outputs/Index.vue'), meta: { moduleId: 3, requiresAuth: true } },
+          { path: ':oid', name: 'otusoid', component: () => import('pages/Outputs/viewOutputs.vue'), meta: { moduleId: 3, requiresAuth: true } },
         ],
       },
     ],

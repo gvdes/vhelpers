@@ -1,32 +1,8 @@
 <template>
 
   <q-table :rows="filtRef" grid :columns="table.columns" :filter="table.filter">
-    <template v-slot:top-left>
-      <div class="text-bold text-centerz">{{ fechas }}</div>
-    </template>
-    <template v-slot:top-right>
-      <div class="row">
-        <q-input class="col" filled dense v-model="table.filter" placeholder="Buscar">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-        <q-separator spaced inset vertical dark />
-        <q-select class="col" v-model="statusFil" :options="status" label="Estado" dense filled option-label="name">
-          <template v-if="statusFil" v-slot:append>
-            <q-icon name="cancel" @click.stop.prevent="statusFil = null" class="cursor-pointer" />
-          </template>
-        </q-select>
-        <q-separator spaced inset vertical dark />
-        <q-btn color="primary" flat icon="event">
-          <q-menu>
-            <q-date v-model="fechas" landscape minimal />
-          </q-menu>
-        </q-btn>
-      </div>
-    </template>
     <template v-slot:item="props">
-      <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4" @click="mosRow(props.row)">
+      <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
         <q-card bordered class="text-center my-card">
           <q-card-section class="row" dense>
             <div class="col">
@@ -36,7 +12,7 @@
             <q-separator vertical />
             <div class="col">
               <div class="text-caption">Referencia</div>
-              <div class="text-bold">{{ props.row.reference }}</div>
+              <div class="text-bold">{{ props.row.notes }}</div>
             </div>
             <q-separator vertical />
             <div class="col">
@@ -48,12 +24,12 @@
           <q-card-section class="row">
             <div class="col">
               <div class="text-caption">Origen</div>
-              <div class="text-bold">{{ props.row.storefrom.name }}</div>
+              <div class="text-bold">{{ props.row.origin.store.name }}</div>
             </div>
             <q-separator vertical />
             <div class="col">
               <div class="text-caption">Destino</div>
-              <div class="text-bold">{{ props.row.storeto.name }}</div>
+              <div class="text-bold">{{ props.row.destiny.store.name }}</div>
             </div>
           </q-card-section>
           <q-separator />
@@ -70,19 +46,47 @@
           </q-card-section>
           <q-separator />
           <q-card-section>
-            <div class="text-caption">Creado Por</div>
-            <div class="text-bold">{{ props.row.createdby.complete_name }}</div>
+            <div class="row">
+              <div class="col">
+                <div class="text-caption">Creado Por</div>
+                <div class="text-bold">{{ props.row.createdby.nick }}</div>
+              </div>
+              <div class="col" v-if="props.row.receiptby">
+                <div class="text-caption">Recibido Por</div>
+                <div class="text-bold">{{ props.row.receiptby.nick }}</div>
+              </div>
+            </div>
           </q-card-section>
-          <q-card-section class="row" @click="genPdf(props.row)">
-            <div class="col">
-              <div class="text-caption">Devolucion</div>
-              <div class="text-bold">{{ props.row.fs_id }}</div>
-            </div>
-            <q-separator vertical />
-            <div class="col">
-              <div class="text-caption">{{ props.row._type == 1 ? 'ABONO' : 'ENTRADA' }}</div>
-              <div class="text-bold">{{ props.row._type == 1 ? props.row.season_ticket : props.row.entry }}</div>
-            </div>
+          <q-card-section class="row">
+            <!-- Cancelar Traspaso / devolucion -->
+            <q-btn class="col" color="negative" icon="delete" outline @click="deleteRefund(props.row)"
+              v-if="props.row._state == 1 && props.row.origin.store.id == VDB.session.store.id" />
+            <q-separator spaced inset vertical dark v-if="props.row._state > 1" />
+            <!-- Imprimir -->
+            <q-btn class="col" color="pink" icon="print" outline @click="genPdf(props.row)"
+              v-if="props.row._state > 1" />
+            <q-separator spaced inset vertical dark
+              v-if="(props.row._state == 5 || props.row._state == 6) && VDB.session.credentials.rol._type == 1" />
+            <!-- Actualizar Origen solo una persona con tipo administrativo y solo si es antes de recibirlo -->
+            <q-btn class="col" color="blue" icon="update" outline @click="updateRefund(props.row)"
+              v-if="(props.row._state == 5 || props.row._state == 6) && VDB.session.credentials.rol._type == 1" />
+            <q-separator spaced inset vertical dark
+              v-if="props.row._state == 2 && props.row.destiny.store.id == VDB.session.store.id" />
+            <!-- Recepcion de Traspaso / Devolucion -->
+            <q-btn class="col" color="positive" icon="approval" outline @click="nextState(props.row)"
+              v-if="props.row._state == 2 && props.row.destiny.store.id == VDB.session.store.id" />
+            <q-separator spaced inset vertical dark
+              v-if="props.row._state == 1 && (props.row._created_by == VDB.session.credentials.id || VDB.session.credentials.rol._type == 1) && props.row.origin.store.id == VDB.session.store.id" />
+            <!-- validando Recepcion si es que se salio que continue solo la persona que lo estaba realizando -->
+            <!-- Continuar validando Ingresar solo la persona que lo estaba haciendo -->
+            <q-separator spaced inset vertical dark
+              v-if="(props.row._state == 4 || props.row._state == 3) && (props.row._receipt_by == VDB.session.credentials.id || VDB.session.credentials.rol._type == 1) && props.row.destiny.store.id == VDB.session.store.id" />
+            <q-btn class="col" color="primary" icon="send" outline
+              @click=" $router.push(`/warehouse/refunds/${props.row.id}`);"
+              v-if="props.row._state == 1 && (props.row._created_by == VDB.session.credentials.id || VDB.session.credentials.rol._type == 1) && props.row.origin.store.id == VDB.session.store.id" />
+            <q-btn class="col" color="primary" icon="send" outline
+              @click="$router.push(`/warehouse/refunds/verified/${props.row.id}`);"
+              v-if="(props.row._state == 4 || props.row._state == 3) && (props.row._receipt_by == VDB.session.credentials.id || VDB.session.credentials.rol._type == 1) && props.row.destiny.store.id == VDB.session.store.id" />
           </q-card-section>
         </q-card>
       </div>
@@ -177,28 +181,11 @@ const colorStatus = (status) => {
     case 4:
       return 'green'
       break;
-
+    case 5:
+      return 'primary'
+      break;
     default:
       break;
-  }
-}
-
-const mosRow = (b) => {
-  if (b.status.id == 1 && b.storefrom.id == VDB.session.store.id) {
-    console.log('terminar el que se esta creando')
-    $router.push(`/refunds/${b.id}`);
-  } else if (b.status.id == 1 && b.storeto.id == VDB.session.store.id) {
-    $q.notify({ message: 'No se puede abrir la devolucion', type: 'negative', position: 'center' })
-  } else if (b.status.id == 2 && b.storefrom.id == VDB.session.store.id) {
-    $q.notify({ message: 'No se puede abrir la devolucion', type: 'negative', position: 'center' })
-  } else if (b.status.id == 2 && b.storeto.id == VDB.session.store.id) {
-    console.log('se va a recibir')
-    ReceiptRefund.value.state = true
-    ReceiptRefund.value.val = b
-  } else if (b.status.id == 3 && b.storeto.id == VDB.session.store.id) {
-    $router.push(`/refunds/verified/${b.id}`);
-  } else if (b.status.id == 4) {
-    $q.notify({ message: 'No se puede abrir la devolucion', type: 'negative', position: 'center' })
   }
 }
 
@@ -206,13 +193,12 @@ const nextState = async (rows) => {
   $q.loading.show({ message: 'Cambiando Estado' })
   let data = {
     id: rows.id,
-    uid: VDB.session.id,
   }
   const resp = await refundsApi.nexState(data)
   if (resp.fail) {
     console.log(resp);
   } else {
-    $router.push(`/refunds/verified/${rows.id}`);
+    $router.push(`/warehouse/refunds/verified/${rows.id}`);
     $q.loading.hide()
   }
 }
@@ -224,6 +210,28 @@ const genPdf = (refund) => {
 }
 
 
+const deleteRefund = (refund) => {
+  console.log(refund);
+}
+
+const updateRefund = async (refund) => {
+  if (refund._state == 6) {
+    $router.push(`/warehouse/refunds/update/${refund.id}`);
+  } else {
+    $q.loading.show({ message: 'Cambiando Estado a Actualizado' })
+    let data = {
+      id: refund.id,
+    }
+    const resp = await refundsApi.nexStateUpdate(data)
+    if (resp.fail) {
+      console.log(resp);
+    } else {
+      $router.push(`/warehouse/refunds/update/${refund.id}`);
+      $q.loading.hide()
+    }
+  }
+
+}
 
 
 

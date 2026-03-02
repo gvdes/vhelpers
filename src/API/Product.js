@@ -4,5 +4,7 @@ export default{
   autocomplete(data){
     return assist.post(`/Products`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
-  getMassive(data){ return assist.post('/product/getMassive',data); },
+  getMassive(data){
+    return assist.post(`/Products/getMassiveProducts`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 }

@@ -31,38 +31,34 @@
                 <q-item-section>Estado</q-item-section>
                 <!-- {{ product.val.stateToVal.state }} -->
                 <q-item-section>
-                  <q-select v-model="product.val.stateToVal.state" option-value="id" :options="product_states.opts"
-                    filled dense @update:model-value="updateStatus" option-label="name" emit-value map-options />
+                  <q-select v-model="product.val.stateToVal" option-value="id" :options="product_states.opts" filled
+                    dense @update:model-value="updateStatus" option-label="name" emit-value map-options />
                 </q-item-section>
               </q-item>
               <q-item>
                 <q-item-section>
-                  <q-item-label caption>GEN</q-item-label>
-                  <q-item-label overline>{{product.val.stocks.find(e => e.id ==
-                    VDB.session.store.id_viz).pivot.gen}}</q-item-label>
+                  <div class="row">
+                    <div v-for="(val, index) in product.val.stocks.filter(e => e.store.id == VDB.session.store.id)"
+                      :key="index" class="col">
+                      <div class="text-bold text-center">
+                        {{ val.alias }}
+                      </div>
+                      <div class="text-caption text-center ">
+                        {{ val.pivot._current }}
+                      </div>
+                    </div>
+
+                  </div>
                 </q-item-section>
-                <q-item-section>
-                  <q-item-label caption>EXH</q-item-label>
-                  <q-item-label overline>{{product.val.stocks.find(e => e.id ==
-                    VDB.session.store.id_viz).pivot.exh}}</q-item-label>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label caption>FDT</q-item-label>
-                  <q-item-label overline>{{product.val.stocks.find(e => e.id == VDB.session.store.id_viz).pivot.fdt
-                    }}</q-item-label>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label caption>EnTransito</q-item-label>
-                  <q-item-label overline>{{product.val.stocks.find(e => e.id ==
-                    VDB.session.store.id_viz).pivot.in_transit
-                    }}</q-item-label>
+                <q-item-section side>
+                  <div class="text-bold text-center">TRA</div>
+                  <div class="text-caption text-center">
+                    {{product.val.stocks.find(e => e.id == $route.params.wid)?.pivot.in_coming}}
+                  </div>
                 </q-item-section>
               </q-item>
             </q-list>
           </q-card-section>
-          <!-- <q-card-section>
-            {{ product.val.stocks.find(e => e.id == VDB.session.store.id_viz).pivot._status }}
-          </q-card-section> -->
 
           <q-card-section class="row">
             <q-input v-model="inputs.min" type="number" label="Minimo" class="col" filled input-class="text-center"
@@ -74,31 +70,33 @@
               :error="Number(inputs.max) <= Number(inputs.min) || Number(inputs.min) >= Number(inputs.max)"
               :error-message="inputs.max <= inputs.min || inputs.min >= inputs.max ? 'El maximo es menor que el minimo' : 'El minimo es mayor que el maximo'"
               @blur="setMax" />
+
+
           </q-card-section>
 
           <q-card-section class="row">
-            <q-input disable v-model="product.val.stocks.find(e => e.id == VDB.session.store.id_viz).pivot.min"
-              type="number" label="Minimo" class="col" filled input-class="text-center" />
+            <q-input disable v-model="product.val.stocks.find(e => e.id == $route.params.wid).pivot._min" type="number"
+              label="Minimo" class="col" filled input-class="text-center" />
             <q-separator spaced inset vertical dark />
-            <q-input disable v-model="product.val.stocks.find(e => e.id == VDB.session.store.id_viz).pivot.max"
-              type="number" label="Maximo" class="col" filled input-class="text-center" />
+            <q-input disable v-model="product.val.stocks.find(e => e.id == $route.params.wid).pivot._max" type="number"
+              label="Maximo" class="col" filled input-class="text-center" />
           </q-card-section>
           <q-card-section>
             <q-list bordered>
-              <q-item v-for="(value, index) in product.val.stocks.filter(e => e._type == 1)" :key="index">
+              <q-item v-for="(value, index) in cedisWarehouses" :key="index">
                 <q-item-section class="text-bold">
                   {{ value.name }}
                 </q-item-section>
                 <q-item-section class="text-center">
-                  {{ value.pivot.stock }}
+                  {{ value.pivot._current }}
                 </q-item-section>
               </q-item>
             </q-list>
           </q-card-section>
         </q-card>
         <q-separator spaced inset vertical dark />
-        <q-table :class="!ismobile ? 'col' : ''" :rows="product.val.stocks.filter(e => e._type == 2)"
-          :columns="table.columns" :pagination="table.pagination" />
+        <q-table :class="!ismobile ? 'col' : ''" :rows="storeTypeTwoSummary" :columns="table.columns"
+          :pagination="table.pagination" />
       </div>
     </transition>
 
@@ -150,8 +148,8 @@
 
     <q-footer reveal elevated bordered>
       <q-card class="my-card">
-        <ProductAutocomplete @input="add" @agregar="agregar" :workpoint-status="'all'" :checkState="true"
-          :wkpToVal="VDB.session.store.id_viz" />
+        <ProductAutocomplete @agregar="agregar" :workpointStatus="'all'" :checkState="true"
+          :wkpToVal="+$route.params.wid" />
       </q-card>
     </q-footer>
   </q-page>
@@ -168,6 +166,8 @@ import axios from 'axios';//para dirigirme bro
 import { exportFile, useQuasar } from 'quasar';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
+import { useRoute, useRouter } from "vue-router";
+
 import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
@@ -175,13 +175,17 @@ import QRCode from 'qrcode';
 import productsApi from 'src/API/productsApi';
 import dbproduct from 'src/API/Product'
 import Product from 'src/API/Product';
+import warehouseApi from 'src/API/warehouseApi';
 
 const VDB = useVDBStore();
 const $q = useQuasar();
 const warehousStore = useWarehouse()
 warehousStore.setTitle('Minimos Y Maximos')
 warehousStore.setshowReportLocations(false);
+warehousStore.setshowOptions(false);
 warehousStore.setshowReportMinMax(true);
+const $router = useRouter();
+const $route = useRoute();
 const inputFile = ref(null)
 const tab = ref('products')
 const product = ref({
@@ -213,7 +217,6 @@ const inputs = ref({
   max: null
 })
 const originalMinMax = ref(null)
-
 const types = ref({
   val: null,
   opts: [
@@ -223,11 +226,10 @@ const types = ref({
     { id: 4, label: "Media Caja" },
   ]
 })
-
 const table = ref({
   columns: [
-    { name: 'store', label: "Sucursal", field: r => r.name, align: 'left' },
-    { name: 'Stock', label: "Stock PZ", field: r => r.pivot.stock, align: 'center' },
+    { name: 'store_name', label: 'Sucursal', field: 'store_name', align: 'left' },
+    { name: 'total', label: 'Stock PZS', field: 'total', align: 'center' }
   ],
   pagination: { rowsPerPage: 10 }
 })
@@ -235,16 +237,11 @@ const table = ref({
 
 const ismobile = computed(() => $q.platform.is.mobile);
 
-
-const add = (opt) => {
-  console.log(opt)
-}
-
 const agregar = (ops) => {
   product.value.state = true;
   product.value.val = ops;
   console.log(ops)
-  const stock = ops.stocks.find(e => e.id == VDB.session.store.id_viz);
+  const stock = ops.stocks.find(e => e.id == $route.params.wid);
   if (stock) {
     // aquí puedes dividir los valores reales para mostrar “base”
     let divisor = 1;
@@ -266,18 +263,46 @@ const agregar = (ops) => {
       min: stock.pivot.min / divisor,
       max: stock.pivot.max / divisor
     }
-    inputs.value.min = stock.pivot.min / divisor;
-    inputs.value.max = stock.pivot.max / divisor;
+    inputs.value.min = stock.pivot._min / divisor;
+    inputs.value.max = stock.pivot._max / divisor;
   }
 }
+const cedisWarehouses = computed(() => {
+  if (!product.value?.val?.stocks) return []
+  // const currentStoreId = VDB.session.store.id
+  return product.value.val.stocks.filter(wh =>
+    wh.store?._type === 1 &&
+    wh._type === 1
+  )
+})
+
+const storeTypeTwoSummary = computed(() => {
+  if (!product.value?.val?.stocks) return []
+  const grouped = {}
+  product.value.val.stocks.forEach(wh => {
+    if (wh.store.id == VDB.session.store.id) return
+    const store = wh.store
+    if (!store) return
+    if (store._type !== 2) return
+    if (![1, 2].includes(wh._type)) return
+    if (!grouped[store.id]) {
+      grouped[store.id] = {
+        store_id: store.id,
+        store_name: store.name,
+        total: 0
+      }
+    }
+    grouped[store.id].total += Number(wh.pivot._current)
+  })
+  return Object.values(grouped)
+})
+
 const calculateRealValues = () => {
   if (!product.value.val) return;
-
   const stock = product.value.val.stocks.find(
-    (e) => e.id == VDB.session.store.id_viz
+    (e) => e.id == $route.params.wid
   );
   if (!stock) return;
-
   let multiplier = 1; // default piezas
   switch (types.value.val?.id) {
     case 1:
@@ -294,24 +319,24 @@ const calculateRealValues = () => {
       break;
   }
 
-  stock.pivot.min = inputs.value.min * multiplier;
-  stock.pivot.max = inputs.value.max * multiplier;
+  stock.pivot._min = inputs.value.min * multiplier;
+  stock.pivot._max = inputs.value.max * multiplier;
 };
 
 const setMin = async () => {
   // console.log(originalMinMax.value)
   const stock = product.value.val.stocks.find(
-    (e) => e.id == VDB.session.store.id_viz
+    (e) => e.id == $route.params.wid
   );
-  if (stock.pivot.min !== originalMinMax.value.min) {
+  if (stock.pivot._min !== originalMinMax.value._min) {
     let data = {
-      product: product.value.val.id,
-      min: stock.pivot.min,
-      _workpoint: VDB.session.store.id_viz
+      _product: product.value.val.id,
+      _min: stock.pivot._min,
+      _warehouse: $route.params.wid
     }
     console.log(data)
     $q.loading.show({ message: 'Modificando' })
-    const resp = await productsApi.setMin(data)
+    const resp = await warehouseApi.setMin(data)
     if (resp.fail) {
       console.log(resp)
     } else {
@@ -325,17 +350,17 @@ const setMin = async () => {
 
 const setMax = async () => {
   const stock = product.value.val.stocks.find(
-    (e) => e.id == VDB.session.store.id_viz
+    (e) => e.id == $route.params.wid
   );
-  if (stock.pivot.max !== originalMinMax.value.max) {
+  if (stock.pivot._max !== originalMinMax.value._max) {
     let data = {
-      product: product.value.val.id,
-      max: stock.pivot.max,
-      _workpoint: VDB.session.store.id_viz
+      _product: product.value.val.id,
+      _max: stock.pivot._max,
+      _warehouse: $route.params.wid
     }
     console.log(data)
     $q.loading.show({ message: 'Modificando' })
-    const resp = await productsApi.setMax(data)
+    const resp = await warehouseApi.setMax(data)
     if (resp.fail) {
       console.log(resp)
     } else {
@@ -354,11 +379,11 @@ const readFile = () => {
   let codesToSend = [];
   let datos = {};
 
-  workbook.xlsx.load(inputFile).then(() => {
+  workbook.xlsx.load(inputFile).then( async () => {
     let worksheet = workbook.worksheets[0];
     let codigos = worksheet.getColumn("A");
-
     codigos.eachCell({ includeEmpty: true }, function (cell, rowNumber) {
+      if(rowNumber == 1) return;
       let codigo = cell.value;
       if (!codigo) return;
 
@@ -381,52 +406,50 @@ const readFile = () => {
     if (codesToSend.length) {
       let data = { codes: codesToSend, _workpoint: VDB.session.store.id_viz };
       $q.loading.show({ message: "Procesando archivo, espera.." });
-
-      dbproduct.getMassive(data)
-        .then((success) => {
-          let resp = success.data;
-          resp.fails.notFound.map(e => excelImport.value.wndNotExist.push(e));
-          resp.fails.repeat.map(e => excelImport.value.repeat.push(e));
-          let products = resp.products;
-          excelImport.value.wndGetRows = products.length;
-          excelImport.value.state = !excelImport.value.state;
-          let dat = products.map(product => {
-            let multiplier = 1; // default piezas
-            switch (types.value.val?.id) {
-              case 1:
-                multiplier = 1;
-                break;
-              case 2:
-                multiplier = 12;
-                break;
-              case 3:
-                multiplier = product.pieces || 1;
-                break;
-              case 4:
-                multiplier = (product.pieces || 1) / 2;
-                break;
-            }
-
-            let cantidad = Diferencia.find(item => item.codigo === product.code);
-            return {
-              id: product.id,
-              producto: product.code,
-              descripcion: product.description,
-              min: cantidad ? cantidad.minmax.minimo * multiplier : 0,
-              max: cantidad ? cantidad.minmax.maximo * multiplier : 0,
-            };
-          });
-          excelImport.value.wndTotal = dat;
-          $q.loading.hide();
-        })
-        .catch((fail) => {
-          console.log(fail);
-          $q.notify({
-            message: "Hay un problema con obtener los datos :/.",
-            icon: "fas fa-grin-beam-sweat",
-            color: "negative",
-          });
+      const resp = await dbproduct.getMassive(data);
+      if (resp.fail) {
+        console.log(resp.fail)
+        $q.notify({
+          message: "Hay un problema con obtener los datos :/.",
+          icon: "fas fa-grin-beam-sweat",
+          color: "negative",
         });
+      } else {
+        console.log(resp)
+        resp.fails.notFound.map(e => excelImport.value.wndNotExist.push(e));
+        resp.fails.repeat.map(e => excelImport.value.repeat.push(e));
+        let products = resp.products;
+        excelImport.value.wndGetRows = products.length;
+        excelImport.value.state = !excelImport.value.state;
+        let dat = products.map(product => {
+          let multiplier = 1; // default piezas
+          switch (types.value.val?.id) {
+            case 1:
+              multiplier = 1;
+              break;
+            case 2:
+              multiplier = 12;
+              break;
+            case 3:
+              multiplier = product.pieces || 1;
+              break;
+            case 4:
+              multiplier = (product.pieces || 1) / 2;
+              break;
+          }
+
+          let cantidad = Diferencia.find(item => item.codigo === product.code);
+          return {
+            id: product.id,
+            producto: product.code,
+            descripcion: product.description,
+            min: cantidad ? cantidad.minmax.minimo * multiplier : 0,
+            max: cantidad ? cantidad.minmax.maximo * multiplier : 0,
+          };
+        });
+        excelImport.value.wndTotal = dat;
+        $q.loading.hide();
+      }
     } else {
       $q.notify({
         message: "Vaya!! Al parecer este archivo esta vacio.",
@@ -440,11 +463,11 @@ const readFile = () => {
 const setMassiveminmax = async () => {
   $q.loading.show({ message: 'actualizando Min y Max' })
   let data = {
-    workpoint: VDB.session.store.id_viz,
+    _warehouse: $route.params.wid,
     products: excelImport.value.wndTotal
   }
   console.log(data)
-  const resp = await productsApi.setMassisveMinMax(data)
+  const resp = await warehouseApi.setMassisveMinMax(data)
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -467,14 +490,14 @@ const setMassiveminmax = async () => {
 }
 
 const updateStatus = async (a) => {
-  $q.loading.show({message:'Cambiando Estado'})
+  $q.loading.show({ message: 'Cambiando Estado' })
   let data = {
     _product: product.value.val.id,
     _status: a,
-    wid: VDB.session.store.id_viz
+    _warehouse: $route.params.wid
   }
   console.log(data)
-  const resp = await productsApi.updateStatusProduct(data)
+  const resp = await warehouseApi.updateStatusProduct(data)
   if (resp.fail) {
     console.log(resp)
   } else {

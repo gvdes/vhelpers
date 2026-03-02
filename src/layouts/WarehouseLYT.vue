@@ -75,8 +75,9 @@
               </q-card>
             </q-menu>
           </q-btn>
-          <q-separator spaced inset vertical dark />
-          <q-btn class="col" color="primary" outline icon="cached" title="traspaso entre sucursales">
+          <q-separator spaced inset vertical dark v-if="VDB.session.store._type != 1" />
+          <q-btn class="col" color="primary" outline icon="cached" title="traspaso entre sucursales"
+            v-if="VDB.session.store._type != 1">
             <q-menu>
               <q-card style="width: 350px;">
                 <q-card-section class="text-h6 text-bold text-center">
@@ -84,25 +85,36 @@
                 </q-card-section>
                 <q-card-section class=" items-center">
                   <div class="row">
-                    <q-select v-model="VDB.session.store" :options="warehousStore.stores" label="Origen"
-                      class="col" option-label="alias" emit-value option-value="id" map-options
-                      @update:model-value="nwStore._destiny = null" :option-disable="(val) => optionDisable(val)" disable />
+                    <div class="col">
+                      <q-select v-model="VDB.session.store" :options="warehousStore.stores" label="Origen"
+                        option-label="alias" :option-disable="(val) => optionDisable(val)" disable dense />
+                      <q-separator spaced inset vertical dark />
+                      <q-select v-model="nwStore._origin" :options="warehousStore.warehouses.filter(e => e._type == 1)"
+                        label="Almacen" outlined dense emit-value option-value="id" map-options option-label="alias"
+                        @update:model-value="nwStore._destiny = null" />
+                    </div>
                     <q-icon name="arrow_forward" class="col" size="md" />
-                    <q-select v-model="nwStore._destiny" :options="userStores" label="Destino"
-                      emit-value option-value="id" map-options class="col" option-label="alias"
-                      :option-disable="(val) => optionDisable(val)" />
+                    <div class="col">
+                      <q-select v-model="storeDes" :options="userStores" label="Destino" option-label="alias" dense
+                        :disable="!nwStore._origin" @update:model-value="nwStore._destiny = null" />
+                      <q-separator spaced inset vertical dark />
+                      <q-select v-if="storeDes" v-model="nwStore._destiny" :options="storeDes.warehouses"
+                        label="Alamcen" outlined dense emit-value option-value="id" map-options option-label="alias" />
+                    </div>
                   </div>
                   <q-input v-model="nwStore.notes" type="text" label="Notas" />
                 </q-card-section>
                 <q-card-actions align="center">
-                  <q-btn flat label="Contultar" color="primary" @click="mosTransfersStore = !mosTransfersStore" />
-                  <q-btn flat label="Crear" color="positive" @click="addingTransferStore" :disable="!validTransferStore" />
+                  <q-btn flat label="Contultar" color="primary" @click="$router.push(`refunds`);" />
+                  <q-btn flat label="Crear" color="positive" @click="addingTransferStore"
+                    :disable="!validTransferStore" />
                 </q-card-actions>
               </q-card>
             </q-menu>
           </q-btn>
-          <q-separator spaced inset vertical dark />
-          <q-btn color="primary" icon="trolley" outline title="devolucion" class="col">
+          <q-separator spaced inset vertical dark v-if="VDB.session.store._type != 1" />
+          <q-btn color="primary" icon="trolley" outline title="devolucion" class="col"
+            v-if="VDB.session.store._type != 1">
             <q-menu>
               <q-card style="width: 300px;">
                 <q-card-section class="text-h6 text-bold text-center">
@@ -110,11 +122,27 @@
                 </q-card-section>
                 <q-card-section class=" items-center">
                   <div class="row">
-                    <q-select v-model="newRefund._warehouse" :options="warehousStore.warehouses" label="Almacen"
-                      class="col" option-label="name" emit-value option-value="id" map-options
-                      :option-disable="(val) => optionDisableMov(val)" />
+                    <div class="col">
+                      <q-select v-model="VDB.session.store" :options="warehousStore.stores" label="Origen"
+                        option-label="alias" :option-disable="(val) => optionDisable(val)" disable dense />
+                      <q-separator spaced inset vertical dark />
+                      <q-select v-model="newRefund._origin"
+                        :options="warehousStore.warehouses.filter(e => e._type == 1)" label="Almacen" outlined dense
+                        emit-value option-value="id" map-options option-label="alias"
+                        @update:model-value="newRefund._destiny = null" />
+                    </div>
+                    <q-separator spaced inset vertical dark />
+                    <div class="col">
+                      <q-select v-model="cedisDes" :options="userCedis" label="Destino" option-label="alias" dense
+                        :disable="!newRefund._origin" @update:model-value="newRefund._destiny = null" />
+                      <q-separator spaced inset vertical dark />
+                      <q-select v-if="cedisDes" v-model="newRefund._destiny" :options="cedisDes.warehouses"
+                        label="Alamcen" outlined dense emit-value option-value="id" map-options option-label="alias" />
+                    </div>
                   </div>
+
                   <q-input v-model="newRefund.notes" type="text" label="Notas" />
+
                 </q-card-section>
                 <q-card-actions align="center">
                   <q-btn flat label="Contultar" color="primary" @click="mosRefunds = !mosRefunds" />
@@ -170,6 +198,10 @@ import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
 import reportExc from "src/Excel/reports.js";
+import transferApi from 'src/API/transferApi';
+import refundsApi from 'src/API/refundsApi';
+import outApi from "src/API/outputsApi";
+
 const VDB = useVDBStore();
 const $q = useQuasar();
 const $router = useRouter();
@@ -185,13 +217,16 @@ const nwTransfer = ref({
   _destiny: null,
   notes: null
 })
+const storeDes = ref(null);
+const cedisDes = ref(null);
 const nwStore = ref({
   _origin: null,
   _destiny: null,
   notes: null
 })
 const newRefund = ref({
-  _warehouse: null,
+  _origin: null,
+  _destiny: null,
   notes: null
 })
 const newOut = ref({
@@ -229,10 +264,12 @@ const reportmm = ref({
 })
 
 const validTransfer = computed(() => nwTransfer.value._origin && nwTransfer.value._destiny && nwTransfer.value.notes)
-const validRefund = computed(() => newRefund.value._warehouse && newRefund.value.notes)
+const validRefund = computed(() => newRefund.value._origin && newRefund.value._destiny && newRefund.value.notes)
 const validOut = computed(() => newOut.value._warehouse && newOut.value.notes)
-const validTransferStore = computed(() => nwStore.value._destiny && nwStore.value.notes)
-const userStores = computed(() => warehousStore.stores.filter(e => e.id != VDB.session.store.id))
+const validTransferStore = computed(() => nwStore.value._origin && nwStore.value._destiny && nwStore.value.notes)
+const userStores = computed(() => warehousStore.stores.filter(e => e.id != VDB.session.store.id && e._type == 2))
+const userCedis = computed(() => warehousStore.stores.filter(e => e._type == 1))
+
 
 const title = computed(() => warehousStore.title)
 
@@ -349,6 +386,7 @@ const optionDisableMov = (val) => {
 
 }
 const init = async () => {
+  $q.loading.show({ message: 'Obteniendo Almacenes' })
   const resp = await warehouseApi.index();
   if (resp.fail) {
     console.log(resp)
@@ -356,65 +394,64 @@ const init = async () => {
     console.log(resp)
     warehousStore.setWarehouse(resp.warehouses)
     warehousStore.setStore(resp.stores)
+    $q.loading.hide()
   }
 }
 
 
 const addingTransfer = async () => {
   console.log(nwTransfer.value)
-  $q.loading.show({message:'Creando Traspaso'})
-  const resp = await warehouseApi.addingTransfer(nwTransfer.value);
-  if(resp.fail){
+  $q.loading.show({ message: 'Creando Traspaso' })
+  const resp = await transferApi.addingTransfer(nwTransfer.value);
+  if (resp.fail) {
     console.log(resp)
-  }else{
+  } else {
     console.log(resp)
     $router.push(`transfers/${resp.id}`);
     $q.loading.hide()
 
   }
 }
-const addingOut = () => {
+const addingOut = async () => {
   console.log(newOut.value)
-
+  $q.loading.show({ message: 'Creando Salida Interna' })
+  newOut.value._state = 1;
+  const resp = await outApi.addOuts(newOut.value);
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    $router.push(`outputs/${resp.id}`);
+    $q.loading.hide()
+  }
 }
-const addingRefund = () => {
-  console.log(newRefund.value)
-
+const addingRefund = async () => {
+  $q.loading.show({ message: 'Creando Traspaso' })
+  newRefund.value._type = 2;
+  newRefund.value._state = 1;
+  const resp = await refundsApi.addRefund(newRefund.value);
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    $router.push(`refunds/${resp.id}`);
+    $q.loading.hide()
+  }
 }
-const addingTransferStore = () =>{
-  nwStore.value._origin = VDB.session.store.id
-    console.log(nwStore.value)
+const addingTransferStore = async () => {
+  $q.loading.show({ message: 'Creando Traspaso' })
+  nwStore.value._type = 1;
+  nwStore.value._state = 1;
+  const resp = await refundsApi.addRefund(nwStore.value);
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    $router.push(`refunds/${resp.id}`);
+    $q.loading.hide()
+  }
 }
 
-
-
-// const direct = (transfer) => {
-//   console.log(transfer);
-//   let oid = transfer.id
-//   console.log((transfer.origin.id !== 4 && transfer.destiny.id !== 4))
-//   if (
-//     VDB.session.rol == 'aud' ||  VDB.session.rol == 'root' || VDB.session.rol == 'audc'
-//   ) {
-//     $router.push(`transfers/${oid}`);
-//   } else if (
-//     (VDB.session.rol == 'aux' || VDB.session.rol == 'gen') &&
-//     (transfer.origin.id !== 4 && transfer.destiny.id !== 4)
-//   ) {
-//     $router.push(`transfers/${oid}`);
-//   } else if (
-//    ( VDB.session.rol == 'alm' || VDB.session.rol == 'vld' || VDB.session.rol == 'gce'   ) &&
-//     ([5, 6,7].includes(transfer.destiny.id) || [5, 6,7].includes(transfer.origin.id))
-//   ) {
-//     $router.push(`transfers/${oid}`);
-//   } else {
-//     $q.notify({
-//       message: 'No tienes acceso a este traspaso',
-//       type: 'negative',
-//       position: 'center'
-//     });
-//   }
-//   // console.log(allowedIds.includes(transfer.origin.id) || allowedIds.includes(transfer.destiny.id));
-// }
 
 init()
 </script>
