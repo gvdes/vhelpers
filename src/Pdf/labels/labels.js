@@ -3,6 +3,11 @@ import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
 import dayjs from 'dayjs';
 import QRCode from 'qrcode';
+import {
+  MontserratMedium,
+  MontserratSemiBold,
+  MontserratBold
+} from "/src/Pdf/utils/pdfFonts";
 // import 'jspdf-qrcode'
 
 
@@ -2232,6 +2237,118 @@ const VerticalLabelLap = (data, nick, name, prices) => {
   });
 }
 
+const institucionalizacion10 = (data, nick, name, prices) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new jsPDF({ format: 'letter' })
+      doc.addFileToVFS("Montserrat-Medium.ttf", MontserratMedium);
+      doc.addFont("Montserrat-Medium.ttf", "Montserrat", "medium");
+      doc.addFileToVFS("Montserrat-SemiBold.ttf", MontserratSemiBold);
+      doc.addFont("Montserrat-SemiBold.ttf", "Montserrat", "semibold");
+      doc.addFileToVFS("Montserrat-Bold.ttf", MontserratBold);
+      doc.addFont("Montserrat-Bold.ttf", "Montserrat", "bold");
+      console.log(doc.getFontList());
+      const image = "/icons/Estandar/estandar.jpg";
+      const type = "PNG";
+      const marginX = 5
+      const marginY = 10
+      const labelWidth = 100
+      const labelHeight = 60
+      const spacingX = 5
+      const spacingY = 5
+      const labelsPerRow = 2
+      const labelsPerColumn = 4
+      const totalLabelsPerPage = labelsPerRow * labelsPerColumn
+      const products = data
+      const expandedProducts = [];
+      products.forEach(product => {
+        for (let i = 0; i < product._copies; i++) {
+          expandedProducts.push(product);
+        }
+      });
+      expandedProducts.forEach((product, index) => {
+        const currentPageIndex = Math.floor(index / totalLabelsPerPage); // Página actual
+        const indexInPage = index % totalLabelsPerPage; // Índice dentro de la página
+        const row = Math.floor(indexInPage / labelsPerRow); // Calcula la fila
+        const col = indexInPage % labelsPerRow; // Calcula la columna
+        const x = marginX + col * (labelWidth + spacingX); // Calcula la posición X
+        const y = marginY + row * (labelHeight + spacingY); // Calcula la posición Y
+        // Si el índice es un múltiplo del totalLabelsPerPage, agrega una nueva página
+        if (index > 0 && indexInPage === 0) {
+          doc.addPage(); // Agrega una nueva página cuando el índice es un múltiplo de totalLabelsPerPage
+        }
+        doc.addImage(image, type, x, y, labelWidth, labelHeight); // Agrega la imagen
+        // doc.addImage(barcode(product.name), type, x + 75, y + 8, 15, 15); // Agrega el código de barras
+        const qrText = JSON.stringify(
+          product.historic_prices?.length === 1
+            ? { modelo: product.id, idChange: product.historic_prices[0].id }
+            : { modelo: product.id, idChange: null }
+        )
+
+        QRCode.toDataURL(qrText, {
+          errorCorrectionLevel: 'H',
+          color: {
+            dark: '#000000',  // color de los puntos del QR
+            light: '#00000000' // fondo transparente (usa rgba o hex con alfa)
+          }
+        }, (err, url) => {
+          if (err) throw err
+          doc.addImage(url, 'PNG', x + 77, y + 37, 22, 22)
+        })
+        doc.rect(x, y, labelWidth, labelHeight)//agrega rectangulo buey
+        doc.setFontSize(20)
+        doc.setFont('Montserrat', 'bold')
+        doc.text(product.name, x + 2, y + 10, { align: 'left' })
+        doc.setFontSize(12)
+        doc.setFont('Montserrat', 'medium')
+        // const maxLineWidth = labelWidth - 13
+        // const textLines = doc.splitTextToSize(product.label, maxLineWidth)
+        const description = product.label?.slice(0, 32)
+        doc.text(description, x + 2, y + 15, { align: 'left' })
+        let ypri = y + 27
+        let yprincrement = 7
+        product.usedPrices
+          .filter(item => prices.val.includes(item.id))
+          .forEach((e, i) => {
+            if (e.alias === 'OFERTA') {
+              doc.setFontSize(16)
+              doc.setFont('Montserrat', 'semibold')
+              doc.text('PRECIO UNICO', x+ 2, ypri + i * yprincrement)
+              doc.setFontSize(21)
+              doc.text(
+                `$ ${Number(e.pivot.price).toFixed(2)}`,
+                x + 2,
+                ypri + i * yprincrement + 15
+              )
+            } else {
+              doc.setFontSize(18)
+              doc.setFont('Montserrat', 'semibold')
+              doc.text(e.alias, x+ 2, ypri + i * yprincrement)
+              doc.text(
+                `$${Number(e.pivot.price).toFixed(0)}`,
+                x + 22,
+                ypri + i * yprincrement
+              )
+            }
+          })
+        doc.setFontSize(12)
+        doc.setFont('Montserrat', 'bold')
+        doc.text(`${product.code}`, x + 49, y + 25)
+        doc.setFont('Montserrat', 'semibold')
+        const large = product.large?.slice(0, 11)
+        doc.text(large, x + 49, y + 35)
+        doc.text(`${product.pieces} PZS`, x + 49, y + 30)
+        // doc.setFontSize(4)
+      });
+      doc.save(`${nick} etiquetas ${name}`)
+      resolve()
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+
 const barcode = (text) => {
   const qrData = text;
   const qrOptions = {
@@ -2244,4 +2361,4 @@ const barcode = (text) => {
   return canvas.toDataURL("image/png");
 }
 
-export default { largeLabel, xtralargeLabel, mediumLabel, smallLabel, verticalLabelNavidad, toyBoys, toyGirls, xlargenina, xlargenino, Hlargenino, Hlargenina, xlargeExhnino, xlargeExhnina, HorizontalLabel, VerticalLabel, Paquetes, HorizontalLabelwarehouse, locationsWarehouse, VerticalLabelCalc, VerticalLabelLap };
+export default { largeLabel, xtralargeLabel, mediumLabel, smallLabel, verticalLabelNavidad, toyBoys, toyGirls, xlargenina, xlargenino, Hlargenino, Hlargenina, xlargeExhnino, xlargeExhnina, HorizontalLabel, VerticalLabel, Paquetes, HorizontalLabelwarehouse, locationsWarehouse, VerticalLabelCalc, VerticalLabelLap, institucionalizacion10 };
