@@ -717,13 +717,13 @@ const xlargenina = (data, nick, name, prices) => {
           }
         })
         //CONTINUA CODIGO
-        doc.setFontSize(45);
+        doc.setFontSize(40);
         doc.setFont('helvetica', 'bold');
-        doc.text(`${product.code}`, x + 18, y + 23); // codigo de el producto
+        doc.text(`${product.code}`, x + 18, y + 20); // codigo de el producto
         doc.text(product.large, x + 35, y + 112); // largo de el producto
         doc.setFont('helvetica', 'normal');
-        doc.text(`${product.pieces} PZS`, x + 185, y + 23, { align: 'right' }); // piezas por caja
-        doc.setFontSize(6)
+        doc.text(`${product.pieces} PZS`, x + 185, y + 20, { align: 'right' }); // piezas por caja
+        doc.setFontSize(4)
         doc.setFont('helvetica', 'normal');
         doc.text(product.locations ? product.locations.map(location => location.path).join('/') : '', x + 38, y + 114); //ubicacion de exhibicion de el producto
       });
