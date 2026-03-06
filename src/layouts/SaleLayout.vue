@@ -33,6 +33,14 @@
               Faltan {{ remainingtcks.toFixed(0) }}
             </div>
           </div>
+          <q-separator spaced inset vertical dark />
+          <div class="col">
+            <div class="text-center text-h6">Crecimiento de Sucursal</div>
+            <div class="text-center">
+              <span class="text-h3">{{ growth.toFixed(1) }}%</span>
+              <q-icon :name="growth < 0 ? 'arrow_downward' :'arrow_upward' " class="q-mb-md" size="md" :color="growth < 0 ? 'negative' :'positive' "/>
+            </div>
+          </div>
         </div>
         <q-separator spaced inset vertical dark />
         <q-card class="my-card" @click="mosHoy">
@@ -301,6 +309,7 @@ const progressTcks = computed(() =>
     ? (totalCurrentTcks.value / goalTcks.value) * 100
     : 0
 )
+const growth = computed(() => (((totalCurrent.value - totalLastYear.value) / totalLastYear.value) * 100))
 // tabla de las secciones
 const sectionTable = computed(() => {
   const grouped = {}
@@ -484,7 +493,7 @@ const clientBarData = computed(() => {
       total: Math.max(current[name] || 0, last[name] || 0)
     }))
     .sort((a, b) => b.total - a.total)
-    // .slice(0, 5)
+  // .slice(0, 5)
 
   const labels = sorted.map(c => c.name)
 
