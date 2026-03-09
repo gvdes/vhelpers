@@ -83,17 +83,7 @@ const routes = [
   //     { path: 'year', name: 'ryr', component: () => import('pages/Report/Sales/year.vue'), meta: { moduleId: 29, requiresAuth: true } },
   //   ],
   // },
-  {
-    path: '/ciclicos',
-    component: () => import('layouts/CiclicosLayout.vue'),
-    meta: { moduleId: 2, requiresAuth: true },
-    children: [
-      { path: 'report', name: 'crpt', component: () => import('pages/Ciclicos/reports.vue'), meta: { moduleId: 2, requiresAuth: true } },
-      { path: 'counted', name: 'cntd', component: () => import('pages/Ciclicos/counted.vue'), meta: { moduleId: 73, requiresAuth: true } },
-      { path: 'counted/:cid', name: 'crte', component: () => import('pages/Ciclicos/viewCounted.vue'), meta: { moduleId: 73, requiresAuth: true } },
 
-    ],
-  },
 
   {
     path: '/cardStores',
@@ -365,19 +355,19 @@ const routes = [
       { path: 'index', name: 'win', component: () => import('pages/warehouse/Index.vue'), meta: { moduleId: 95 } },
       {
         path: ':wid', name: 'wid',
-        beforeEnter: (to, from, next) => {
-          const warehousStore = useWarehouse()
+        // beforeEnter: (to, from, next) => {
+        //   const warehousStore = useWarehouse()
 
-          const exists = warehousStore.warehouses.some(
-            w => w.id == to.params.wid
-          )
+        //   const exists = warehousStore.warehouses.some(
+        //     w => w.id == to.params.wid
+        //   )
 
-          if (!exists) {
-            return next({ name: 'win' }) // warehouse/index
-          }
+        //   if (!exists) {
+        //     return next({ name: 'win' }) // warehouse/index
+        //   }
 
-          next()
-        },
+        //   next()
+        // },
         children: [
           { path: 'minmax', name: 'wmm', component: () => import('pages/warehouse/minmax.vue'), meta: { moduleId: 3, requiresAuth: true } },
           {
@@ -390,6 +380,16 @@ const routes = [
               { path: 'massive', name: 'wmss', component: () => import('pages/warehouse/locations/massive.vue'), meta: { moduleId: 3, requiresAuth: true } },
             ],
             meta: { moduleId: 3 }
+          },
+          {
+            path: 'ciclicos',
+            component: () => import('layouts/CiclicosLayout.vue'),
+            meta: { moduleId: 3, requiresAuth: true },
+            children: [
+              { path: 'report', name: 'crpt', component: () => import('pages/Ciclicos/reports.vue'), meta: { moduleId: 3, requiresAuth: true } },
+              { path: 'counted', name: 'cntd', component: () => import('pages/Ciclicos/counted.vue'), meta: { moduleId: 3, requiresAuth: true } },
+              { path: 'counted/:cid', name: 'crte', component: () => import('pages/Ciclicos/viewCounted.vue'), meta: { moduleId: 3, requiresAuth: true } },
+            ],
           },
         ], meta: { moduleId: 3, requiresAuth: true }
       },

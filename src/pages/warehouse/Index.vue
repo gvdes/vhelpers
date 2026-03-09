@@ -16,6 +16,18 @@
                 <q-item clickable v-close-popup @click="$router.push(`/warehouse/${props.row.id}/locations/sections`)">
                   <q-item-section>Ubicaciones</q-item-section>
                 </q-item>
+                <q-expansion-item expand-separator label="Cíclicos" :default-opened="false" :content-inset-level="1">
+                  <q-item clickable v-close-popup @click="$router.push(`/warehouse/${props.row.id}/ciclicos/report`)">
+                    <q-item-section>
+                      Reportes
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable v-close-popup @click="$router.push(`/warehouse/${props.row.id}/ciclicos/counted`)">
+                    <q-item-section>
+                      Conteos
+                    </q-item-section>
+                  </q-item>
+                </q-expansion-item>
               </q-list>
             </q-menu>
           </q-card>

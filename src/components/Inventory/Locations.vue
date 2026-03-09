@@ -1,5 +1,6 @@
 <template>
   <div >
+    <!-- {{ sections.filter(s => s.root == null) }} -->
     <div v-for="(nivel, index) in niveles" :key="index" >
       <q-select class="col" v-model="nivel.selected" :options="nivel.options" :label="`Nivel ${ index + 1 }`" option-value="id"
         option-label="name" emit-value map-options @update:model-value="val => onSelectChange(val, index)" dense filled multiple
@@ -21,11 +22,11 @@ const props = defineProps({
 const emit = defineEmits(['obtProducts'])
 
 const getChildren = (rootId) => {
-  return props.sections.filter(s => s.root === rootId)
+  return props.sections.filter(s => s._root === rootId)
 }
 const niveles = ref([
   {
-    options: props.sections.filter(s => s.root === 0),
+    options: props.sections.filter(s => s._root === null),
     selected: null
   }
 ])

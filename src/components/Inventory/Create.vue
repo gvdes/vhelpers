@@ -3,7 +3,7 @@
     <q-card-section class="row items-center">
       <div class="col">
         Creacion: <span class="text-bold">{{ dayjs().format('YYYY-MM-DD') }}</span> <br>
-        Creador: <span class="text-bold">{{ VDB.session.credentials.staff.complete_name }}</span>
+        Creador: <span class="text-bold">{{ VDB.session.credentials.nick.toUpperCase() }}</span>
       </div>
       <q-separator spaced inset vertical dark />
       <q-input v-model="config.notes" type="text" label="Notas" />
@@ -17,20 +17,15 @@
   <q-card bordered>
     <q-card-section>
       <q-expansion-item expand-separator icon="fas fa-users" label="Responsables" header-class="text-grey-5"
-        v-model="expands.team" :caption="`Exh: ${config.resexh.length} -- Gen ${config.resgen.length}`">
+        v-model="expands.team" :caption="`${config.resgen.length}`">
         <q-card-section>
           <q-input v-model="tableUsers.filter" type="text" label="Buscar" />
           <q-separator spaced inset vertical dark />
           <div class="row">
-            <div class="col">
-              <q-table selection="multiple" v-model:selected="config.resexh" title="Ventas"
-                :rows="cycleStore.users.filter(e => [8, 9].includes(e._rol))" :columns="tableUsers.columns"
-                :filter="tableUsers.filter" :filter-method="customFilter" />
-            </div>
             <q-separator spaced inset vertical dark />
             <div class="col">
               <q-table selection="multiple" v-model:selected="config.resgen" title="Almacen"
-                :rows="cycleStore.users.filter(e => [4, 24].includes(e._rol))" :columns="tableUsers.columns"
+                :rows="cycleStore.users" :columns="tableUsers.columns"
                 :filter="tableUsers.filter" :filter-method="customFilter" />
             </div>
           </div>
@@ -43,10 +38,10 @@
 
   <q-card class="my-card q-ml-md q-mr-md " bordered v-if="config.option.val">
     <div v-if="config.option.val.id == 1" class="row">
-      <q-select class="col" v-model="selectedUbicacion" :options="cycleStore.locations" label="ALMACEN" filled
-        optionLabel="name" dense />
+      <!-- <q-select class="col" v-model="selectedUbicacion" :options="cycleStore.locations" label="ALMACEN" filled
+        optionLabel="name" dense /> -->
       <q-separator spaced inset vertical dark />
-      <selectsSections class="col" v-if="selectedUbicacion" :sections="selectedUbicacion.sections"
+      <selectsSections class="col" :sections="cycleStore.locations"
         @obtProducts="obtenerProductsSection" />
     </div>
   </q-card>
@@ -78,8 +73,8 @@
   </q-card>
   <q-footer v-if="config.option.val">
     <q-card v-if="config.option.val.id == 3" class="row">
-      <ProductAutocomplete class="col" :checkState="true" @input="add" @agregar="agregar"
-        :with_locations_loc="VDB.session.credentials._rol" />
+      <ProductAutocomplete class="col" :checkState="true"  @agregar="agregar"
+        :with_locations_loc="parseInt($route.params.wid)" with_locations />
       <q-separator spaced inset vertical dark />
       <q-btn color="primary" icon="send" @click="createCyclico" />
     </q-card>
@@ -135,7 +130,7 @@ const expands = ref({
 })
 const tableUsers = ref({
   columns: [
-    { name: 'name', label: 'Nombre', field: r => r.staff?.complete_name, align: 'left' },
+    { name: 'name', label: 'Nombre', field: r => `${r.name} ${r.surnames}`, align: 'left' },
   ],
   filter: null
 })
@@ -143,8 +138,8 @@ const tableProducts = ref({
   columns: [
     { name: 'code', label: 'Codigo', field: r => r.code, align: 'left' },
     { name: 'description', label: 'Descripcion', field: r => r.description, align: 'left' },
-    { name: 'locationExh', label: 'Exhibicion', field: r => r.locations?.filter(e => e.celler._type == 2)?.map(e => e.path).join('/'), align: 'left' },
-    { name: 'locationGen', label: 'General', field: r => r.locations?.filter(e => e.celler._type == 1)?.map(e => e.path).join('/'), align: 'left' },
+    { name: 'locations', label: 'Ubicacion', field: r => r.locations?.map(e => e.path).join('/'), align: 'left' },
+    // { name: 'locationGen', label: 'General', field: r => r.locations?.filter(e => e.celler._type == 1)?.map(e => e.path).join('/'), align: 'left' },
   ],
   filter: null
 })
@@ -153,7 +148,7 @@ const validCiclico = computed(() =>
   props.config.type.val &&
   props.config.option.val &&
   props.config.notes &&
-  props.config.resexh.length > 0 &&
+  // props.config.resexh.length > 0 &&
   props.config.resgen.length > 0 &&
   props.config.products.length > 0)
 
@@ -190,21 +185,12 @@ const agregar = (opt) => {
   }
 }
 
-const add = (opt) => {
-  console.log(opt)
-  let inx = props.config.products.findIndex(e => e.id == opt.id)
-  if (inx >= 0) {
-    $q.notify({ message: 'El producto ya esta en la lista :)', type: 'warning', position: 'top' })
-  } else {
-    props.config.products.push(opt);
-  }
-}
 
 const obtener = async () => {
   if (props.config.option.val.id == 2) {
     $q.loading.show({ message: 'Obteniendo Datos' });
     let data = {
-      workpoint: VDB.session.store.id_viz,
+      _warehouse: $route.params.wid,
       seccion: props.config.section.map(e => e.id)
     };
     console.log(data);
@@ -222,8 +208,8 @@ const obtener = async () => {
 const obtenerProductsSection = async (nivel) => {
   $q.loading.show({ message: 'Obteniendo Productos' })
   let data = {
+    _warehouse: $route.params.wid,
     ubicacion: nivel.selected,
-    workpoint: VDB.session.store.id_viz,
     seccion: props.config.section.map(e => e.id)
   }
   console.log(data);
@@ -258,9 +244,9 @@ const createCyclico = () => {
     if (!props.config.notes) {
       $q.notify({ message: 'Faltan notas', type: 'warning', position: 'left' })
     }
-    if (props.config.resexh.length === 0) {
-      $q.notify({ message: 'Falta Responsable exhibición', type: 'warning', position: 'left' })
-    }
+    // if (props.config.resexh.length === 0) {
+    //   $q.notify({ message: 'Falta Responsable exhibición', type: 'warning', position: 'left' })
+    // }
     if (props.config.resgen.length === 0) {
       $q.notify({ message: 'Falta Responsable general', type: 'warning', position: 'left' })
     }
@@ -293,7 +279,7 @@ const readFileCreate = () => {
     })
     let sendData = Object.keys(datos).map(codigo => ({
       _product: codigo,
-      _workpoint: VDB.session.store.id_viz
+      _warehouse: $route.params.wid
     }))
     console.log(sendData)
 

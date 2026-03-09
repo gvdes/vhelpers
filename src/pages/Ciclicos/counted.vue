@@ -7,14 +7,14 @@
             <q-card-section class="flex flex-left">
               <div class="text-h4 text-primary">{{ props.row.id }}</div>
               <q-space />
-              <div><q-badge rounded :color="colors[props.row._status - 1].name" /></div>
+              <div><q-badge rounded :color="colors[props.row._state - 1].name" /></div>
             </q-card-section>
             <q-card-section>
               <q-list bordered>
                 <q-item>
                   <q-item-section>
                     <q-item-label class="text-center">Almacen:</q-item-label>
-                    <q-item-label class="text-center">{{ JSON.parse(props.row.settings).warehouse.name }}</q-item-label>
+                    <q-item-label class="text-center">{{props.row.warehouse.name }}</q-item-label>
                   </q-item-section>
                   <q-item-section>
                     <q-item-label class="text-center">Creacion:</q-item-label>
@@ -58,7 +58,7 @@ const $route = useRoute();
 const $router = useRouter();
 const $user = useVDBStore();
 const cycleStore = cyclecountStore()
-cycleStore.settitle('Conteo')
+// cycleStore.settitle('Conteo')
 cycleStore.setshowBtns(false)
 
 const table = ref({
@@ -77,7 +77,7 @@ const meCyclecount = computed(() => {
 
 const click = row => {
   console.log(row)
-  $router.push(`/ciclicos/counted/${row.id}`)
+  $router.push(`/warehouse/${$route.params.wid}/ciclicos/counted/${row.id}`)
 }
 
 const colors = ref([

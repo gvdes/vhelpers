@@ -15,28 +15,28 @@ export const cyclecountStore = defineStore('cyclecount', {
   }),
 
   getters: {
-    socket_user(state) {
-      const creds = VDB.session.credentials;
-      const store = VDB.session.store;
-      if (!creds || !creds.staff) return null;
-      return {
-        profile: {
-          me: {
-            id: creds.staff.id_va,
-            nick: creds.nick,
-            picture: '',
-            names: creds.staff.complete_name,
-            surname_pat: '',
-            surname_mat: '',
-            change_password: false,
-            _rol: creds._rol
-          },
-          workpoint: store
-        },
-        workpoint: store,
-        // room: getRoom(creds._rol)
-      }
-    }
+    // socket_user(state) {
+    //   const creds = VDB.session.credentials;
+    //   const store = VDB.session.store;
+    //   if (!creds || !creds.id) return null;
+    //   return {
+    //     profile: {
+    //       me: {
+    //         id: creds.id,
+    //         nick: creds.nick,
+    //         picture: '',
+    //         names: creds.name,
+    //         surname_pat: '',
+    //         surname_mat: '',
+    //         change_password: false,
+    //         _rol: creds._rol
+    //       },
+    //       workpoint: store
+    //     },
+    //     workpoint: store,
+    //     // room: getRoom(creds._rol)
+    //   }
+    // }
   },
 
   actions: {

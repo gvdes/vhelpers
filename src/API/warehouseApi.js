@@ -15,5 +15,5 @@ export default {
   },
   updateStatusProduct(data){
     return assist.post(`/warehouses/updateStatusProduct`, data).then(done => done.data).catch(fail => { return { fail } });
-  },
+  }
 }

@@ -22,7 +22,7 @@
       <q-table :rows="cyclecount?.products || []" :columns="columns" row-key="id" dense flat bordered
         @row-click="updateTabelProduct" :pagination="pagination" />
     </q-card>
-    <q-footer v-if="cyclecount?._status == 2" class="row q-ml-sm q-mr-sm"
+    <q-footer v-if="cyclecount?._state == 2" class="row q-ml-sm q-mr-sm"
       :class="isBlack ? 'bg-grey-10 text-white' : 'bg-grey-4 text-dark'">
       <q-select class="col" v-model="filter" :options="opts" filled option-label="code" use-input fill-input
         hide-selected input-debounce="0" @filter="filterFn" @input-value="setModel" dense
@@ -31,8 +31,8 @@
       <q-btn v-if="validProduct?.length > 0" size="sm" icon="send" @click="confirm = !confirm" />
     </q-footer>
 
-    <q-footer v-if="cyclecount?._status > 2" class=" q-ml-sm q-mr-sm">
-      <q-btn v-if="validProduct?.length > 0" size="sm" label="Salir" @click="$router.push('/ciclicos/counted')"
+    <q-footer v-if="cyclecount?._state > 2" class=" q-ml-sm q-mr-sm">
+      <q-btn v-if="validProduct?.length > 0" size="sm" label="Salir" @click="$router.push(`/warehouse/${$route.params.wid}/ciclicos/counted`)"
         class="full-width" />
     </q-footer>
 
@@ -126,15 +126,15 @@ const init = async () => {
   $q.loading.show({ message: 'Obteniendo Datos' })
   let data = {
     cyclecount: $route.params.cid,
-    _rol: VDB.session.credentials._rol,
-    id: VDB.session.credentials.staff.id_va
+    _warehouse: $route.params.wid,
+    // id: VDB.session.credentials.staff.id_va
   }
   console.log(data)
   const resp = await CDB.getCyclecount(data)
   if (resp.fail) {
     if (resp.fail.status == 403 || resp.fail.status == 404) {
       $q.notify({ message: `${resp.fail.response.data.message}`, type: 'negative', position: 'top' })
-      $router.push('/ciclicos/counted')
+      $router.push(`/warehouse/${$route.params.wid}/ciclicos/counted`)
     } else {
       console.log(resp)
     }
@@ -142,7 +142,7 @@ const init = async () => {
     cyclecount.value = resp
     console.log(resp)
     $q.loading.hide()
-    $sktCounters.emit('joinat', { user: cycleStore.socket_user.profile, room: `COUNTER${$route.params.cid}` })
+    $sktCounters.emit('joinat', { user: VDB.session, room: `COUNTER${$route.params.cid}` })
   }
 }
 
@@ -180,7 +180,7 @@ const progress = computed(() => {
 const setDeliveryProduct = async () => {
   $q.loading.show({ message: 'Registrando Contreo' })
   let data = {
-    _user: VDB.session.credentials.staff.id_va,
+    // _user: VDB.session.credentials.staff.id_va,
     _inventory: $route.params.cid,
     _product: countProduct.value.val.id,
     stock: countProduct.value.val.pivot.stock_acc,
@@ -190,7 +190,7 @@ const setDeliveryProduct = async () => {
     console.log(resp);
   } else {
     let socketData = {
-      by: cycleStore.socket_user.profile,
+      by: VDB.session,
       product: countProduct.value.val,
       room: `COUNTER${$route.params.cid}`,
       settings: 'config'
@@ -206,7 +206,7 @@ const setDeliveryProduct = async () => {
 
 const cancelCounting = () => {
   let socketData = {
-    by: cycleStore.socket_user.profile,
+    by: VDB.session,
     product: countProduct.value.val,
     room: `COUNTER${$route.params.cid}`
   }
@@ -234,7 +234,7 @@ const updateProduct = (a) => {
     countProduct.value.val = a
     filter.value = null;
     let socketData = {
-      by: cycleStore.socket_user.profile,
+      by: VDB.session,
       product: a,
       room: `COUNTER${$route.params.cid}`
     }
@@ -253,12 +253,12 @@ const updateTabelProduct = (b, a) => {
     return
   }
 
-  if (cyclecount.value._status == 2) {
+  if (cyclecount.value._state == 2) {
     countProduct.value.state = true;
     countProduct.value.val = a
     filter.value = null;
     let socketData = {
-      by: cycleStore.socket_user.profile,
+      by: VDB.session,
       product: a,
       room: `COUNTER${$route.params.cid}`
     }
@@ -278,8 +278,8 @@ const nextep = async () => {
   $q.loading.show({ message: 'Terminando Conteo' })
   let data = {
     _inventory: $route.params.cid,
-    workpoint: VDB.session.credentials._rol,
-    user: VDB.session.credentials.staff.id_va
+    // workpoint: VDB.session.credentials._rol,
+    // user: VDB.session.credentials.staff.id_va
   }
   const resp = await CDB.nextStep(data)
   if (resp.fail) {
@@ -287,7 +287,7 @@ const nextep = async () => {
   } else {
     console.log(resp)
     let socketData = {
-      by: cycleStore.socket_user.profile,
+      by: VDB.session,
       counter: resp.inventario,
       room: `COUNTER${$route.params.cid}`
     }

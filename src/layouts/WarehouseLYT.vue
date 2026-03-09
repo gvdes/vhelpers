@@ -50,6 +50,23 @@
           </q-btn>
         </div>
         <div class="row" v-if="warehousStore.showOptions">
+          <q-btn class="col" color="primary" outline icon="inventory" title="Precision de Inventario">
+            <q-menu>
+              <div class="q-pa-md">Inventarios Ciclicos</div>
+              <q-separator />
+              <q-card-section>
+                <div>
+                  <div class="q-pb-sm text-center">
+                  </div>
+                  <q-date v-model="dateProducts.date" range minimal />
+                </div>
+              </q-card-section>
+              <q-card-actions vertical align="center">
+                <q-btn flat label="Obtener" color="positive" @click="presitionInventory" :disable="!hasDate" />
+              </q-card-actions>
+            </q-menu>
+          </q-btn>
+          <q-separator spaced inset vertical dark />
           <q-btn class="col" color="primary" outline icon="swap_horiz" title="traspaso entre almacenes">
             <q-menu>
               <q-card style="width: 350px;">
@@ -194,6 +211,7 @@ import { computed, ref } from 'vue';
 import reportApi from "src/API/reportApi";
 import warehouseApi from "src/API/warehouseApi";
 import locationsApi from 'src/API/locationsApi';
+import CDB from 'src/API/cicsdb';
 import ExcelJS from 'exceljs';
 import JsBarcode from 'jsbarcode'
 import QRCode from 'qrcode';
@@ -212,6 +230,16 @@ const mosRefunds = ref(false);
 const mosTransfers = ref(false)
 const mosTransfersStore = ref(false)
 // {{ VDB.session.credentials.rol._type }}
+const dateProducts = ref({
+  date: { from: null, to: null }
+});
+const hasDate = computed(() => {
+  const d = dateProducts.value.date
+  if (!d) return false
+  if (typeof d === 'string') return d.length > 0
+  return d.from && d.to
+})
+
 const nwTransfer = ref({
   _origin: null,
   _destiny: null,
@@ -449,6 +477,34 @@ const addingTransferStore = async () => {
     console.log(resp)
     $router.push(`refunds/${resp.id}`);
     $q.loading.hide()
+  }
+}
+
+const presitionInventory = async () => {
+  $q.loading.show({ message: "Obteniendo Datos..." });
+  let data = {
+    params: dateProducts.value
+  }
+  console.log(data);
+  const resp = await CDB.presitionInventory(data);
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    let key = '';
+    const f = dateProducts.value.date
+
+    if (typeof f === 'string') {
+      key = `PSC_${f.replaceAll('/', '_')}`
+    } else {
+      key = `PSC_${f.from.replaceAll('/', '_')}_a_${f.to.replaceAll('/', '-')}`
+    }
+    let impor = {
+      key: key,
+      value: resp
+    }
+    reportExc.inventoryPresition(impor)
+    $q.loading.hide();
   }
 }
 
