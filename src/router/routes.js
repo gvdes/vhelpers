@@ -405,6 +405,28 @@ const routes = [
       { path: 'billers', name: 'bil', component: () => import('pages/Billing/Billers.vue'), meta: { moduleId: 75, requiresAuth: true } }
     ],
   },
+
+  {
+    path: '/operation',
+    component: () => import('layouts/OperationLYT.vue'),
+    children: [
+      {
+        path: 'reports', name: 'opr', component: () => import('pages/Operation/Reports.vue'), meta: { moduleId: 76, requiresAuth: true },
+        children: [
+          { path: 'rcg', name: 'rcg', component: () => import('pages/Operation/RCG.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'eoe', name: 'eoe', component: () => import('pages/Operation/EOE.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'cip', name: 'cip', component: () => import('pages/Operation/CIP.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'gpl', name: 'gpl', component: () => import('pages/Operation/GPL.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'ecm', name: 'ecm', component: () => import('pages/Operation/ECM.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'daci', name: 'daci', component: () => import('pages/Operation/DACI.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'mct', name: 'mct', component: () => import('pages/Operation/MCT.vue'), meta: { moduleId: 76, requiresAuth: true } },
+
+
+
+        ]
+      }
+    ],
+  },
   // {
   //   path: '/deposits',
   //   component: () => import('layouts/Deposits.vue'),

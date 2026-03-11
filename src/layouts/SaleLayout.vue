@@ -38,7 +38,8 @@
             <div class="text-center text-h6">Crecimiento de Sucursal</div>
             <div class="text-center">
               <span class="text-h3">{{ growth.toFixed(1) }}%</span>
-              <q-icon :name="growth < 0 ? 'arrow_downward' :'arrow_upward' " class="q-mb-md" size="md" :color="growth < 0 ? 'negative' :'positive' "/>
+              <q-icon :name="growth < 0 ? 'arrow_downward' : 'arrow_upward'" class="q-mb-md" size="md"
+                :color="growth < 0 ? 'negative' : 'positive'" />
             </div>
           </div>
         </div>
@@ -62,6 +63,25 @@
             </div>
           </q-card-section>
         </q-card>
+        <div class="q-mt-sm text-caption">
+          Meta diaria necesaria:
+          <b>{{ money(requiredPerDay) }}</b>
+        </div>
+
+        <div class="q-mt-xs text-caption">
+          Deberías llevar hoy:
+          <b>{{ money(expectedToday) }}</b>
+        </div>
+
+        <div class="text-caption" :class="todayDiff >= 0 ? 'text-positive' : 'text-negative'">
+          {{ todayDiff >= 0 ? 'Arriba' : 'Abajo' }}
+          {{ money(Math.abs(todayDiff)) }}
+        </div>
+        <div class="text-caption">
+          Proyección fin de mes:
+          <b>{{ money(projectedEnd) }}</b>
+          <span class="text-bold" :class="(((projectedEnd - totalLastYear) / totalLastYear) * 100) > 0 ? 'text-positive' : 'text-negative' "> ({{ (((projectedEnd - totalLastYear) / totalLastYear) * 100).toFixed(1) }}%)</span>
+        </div>
         <q-separator spaced inset vertical dark />
         <div class="row">
           <q-card class="q-mt-xl col">
@@ -202,6 +222,7 @@ const lastSales = ref([])
 
 const onlyToday = ref(false)
 
+
 const sectionColumns = [
   { name: 'section', label: 'Sección', field: 'section', align: 'left' },
   { name: 'qty', label: 'Cantidad', field: 'qty', align: 'right' },
@@ -222,6 +243,38 @@ const clientColumns = [
     align: 'right'
   }
 ]
+
+const daysInMonth = computed(() =>
+  dayjs().daysInMonth()
+)
+
+const currentDay = computed(() =>
+  dayjs().date()
+)
+
+const daysRemaining = computed(() =>
+  daysInMonth.value - currentDay.value
+)
+const requiredPerDay = computed(() => {
+  if (remaining.value <= 0) return 0
+  if (daysRemaining.value <= 0) return 0
+
+  return remaining.value / daysRemaining.value
+})
+const expectedToday = computed(() => {
+  if (goal.value <= 0) return 0
+
+  return (goal.value / daysInMonth.value) * currentDay.value
+})
+const todayDiff = computed(() =>
+  totalCurrent.value - expectedToday.value
+)
+const projectedEnd = computed(() => {
+  if (currentDay.value === 0) return 0
+
+  const dailyAvg = totalCurrent.value / currentDay.value
+  return dailyAvg * daysInMonth.value
+})
 // obtener dias anteriores y dias de hoy
 const todayStr = computed(() =>
   dayjs().format('YYYY-MM-DD')
@@ -390,83 +443,12 @@ const mosHoy = () => {
   console.log('solo se debe de mostrar en todo lo de hoy ')
   onlyToday.value = !onlyToday.value
 }
-//datos de clientes
-// const clientBarData = computed(() => {
 
-//   const group = (sales) => {
-//     const g = {}
-//     sales.forEach(s => {
-//       const name = s.client?.name || 'PÚBLICO GENERAL'
-//       if (!g[name]) g[name] = 0
-//       g[name] += s.total
-//     })
-//     return g
-//   }
-
-//   const current = group(baseSales.value)
-//   const last = group(baseSalesLY.value)
-
-//   const allClients = Array.from(
-//     new Set([...Object.keys(current), ...Object.keys(last)])
-//   )
-
-//   return {
-//     labels: allClients,
-//     datasets: [
-//       {
-//         label: 'Actual',
-//         data: allClients.map(c => current[c] || 0),
-//         backgroundColor: '#6367FF'
-//       },
-//       {
-//         label: 'Año Pasado',
-//         data: allClients.map(c => last[c] || 0),
-//         backgroundColor: '#FF5A5A'
-//       }
-//     ]
-//   }
-// })
 const clientChartHeight = computed(() => {
   const totalClients = clientBarData.value.labels.length
   const barHeight = 55
   return totalClients * barHeight
 })
-// const clientBarData = computed(() => {
-//   const group = (sales) => {
-//     const g = {}
-//     sales.forEach(s => {
-//       const name = s.client?.name || 'PÚBLICO GENERAL'
-//       if (!g[name]) g[name] = 0
-//       g[name] += s.total
-//     })
-//     return g
-//   }
-//   const current = group(baseSales.value)
-//   const last = group(baseSalesLY.value)
-//   const allClients = Array.from(
-//     new Set([...Object.keys(current), ...Object.keys(last)])
-//   )
-
-//   const sorted = allClients.sort(
-//     (a, b) => (current[b] || 0) - (current[a] || 0)
-//   )
-
-//   return {
-//     labels: sorted,
-//     datasets: [
-//       {
-//         label: 'Actual',
-//         data: sorted.map(c => current[c] || 0),
-//         backgroundColor: '#6367FF'
-//       },
-//       {
-//         label: 'Año Pasado',
-//         data: sorted.map(c => last[c] || 0),
-//         backgroundColor: '#FF5A5A'
-//       }
-//     ]
-//   }
-// })
 
 const clientBarData = computed(() => {
 
