@@ -215,7 +215,9 @@ const stocks = ref({
   { id: 2, label: 'Mayor a 1' },
   { id: 3, label: 'Mayor a 25' },
   { id: 4, label: 'Mayor a 50' },
-  { id: 5, label: 'Mayor a 100' },]
+  { id: 5, label: 'Mayor a 100' },
+   [{id: 6, label: 'Mayor a 10 ' }]//opcion extra para stocks mayores a 100
+]
 })
 
 const categories = ref({
@@ -241,6 +243,7 @@ const filteredProducts = computed(() => {
         case 3: matchStock = stock > 25; break
         case 4: matchStock = stock > 50; break
         case 5: matchStock = stock > 100; break
+        case 6: matchStock = stock > 10; break;
       }
     }
     return matchCategory && matchStock

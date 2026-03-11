@@ -6,7 +6,7 @@ import { LocalStorage } from 'quasar'
 
 // const ipAssist = 'http://192.168.10.238:2902'ESTEYANO
 
-// const ipAssist = 'http://192.168.10.189:1920'
+//const ipAssist = 'http://192.168.10.142:9000/api'
 
 const ipAssist = 'https://vhelpers.grupovizcarra.mx/assist'
 

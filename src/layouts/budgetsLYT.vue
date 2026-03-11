@@ -147,7 +147,7 @@ const table = ref({
 
 const getInvoice = () => {
   $q.loading.show({ message: 'Obteniendo Salida' })
-  let url = '192.168.10.53:1619';
+  let url = '192.168.10.207:1619';
   // let url = '192.168.10.160:1619';
   let sale = null;
   if (types.value.val.id == 1) {
