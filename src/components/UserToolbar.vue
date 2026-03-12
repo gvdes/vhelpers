@@ -191,6 +191,9 @@ const mosAvatar = ref({
     'avatar25.png',
     'avatar26.png',
     'avatar27.png',
+    'avatar28.png',
+    'avatar29.png',
+    'avatar30.png',
   ]
 })
 const init = async () => {
