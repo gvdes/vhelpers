@@ -222,7 +222,7 @@ const direct = (transfer) => {
 
   if (
     ['root', 'gro', 'des'].includes(rol) ||
-    (['aux', 'gen'].includes(rol) && warehauseSucursales.value.some(w => w.id === origin.id || w.id === destiny.id)) ||
+    (['aux', 'gen', 'jfz', 'axo'].includes(rol) && warehauseSucursales.value.some(w => w.id === origin.id || w.id === destiny.id)) ||
     (['alm', 'vld', 'gce'].includes(rol) && warehauseCedis.value.some(w => w.id === origin.id || w.id === destiny.id))
   ) {
     $router.push(`transfers/${id}`);
