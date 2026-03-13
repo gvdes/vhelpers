@@ -15,7 +15,7 @@ const routes = [
   },
   {
     path: '/client/quiz/form',
-    name: 'bifomx',
+    name: 'clquif',
     component: () => import('layouts/clientQuizFormLYT.vue'),
     meta: { requiresAuth: false }
   },
