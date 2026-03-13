@@ -16,4 +16,7 @@ export default {
   getStatusPerson(data) {
     return assist.post(`/operations/getStatusPerson`, data).then(done => done.data).catch(fail => { return { fail } });
   },
+  getSatisfactionClient(data) {
+    return assist.post(`/operations/getSatisfactionClient`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }

@@ -14,6 +14,12 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
+    path: '/client/quiz/form',
+    name: 'bifomx',
+    component: () => import('layouts/clientQuizFormLYT.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
     path: '/launcher',
     component: () => import('layouts/LauncherLayout.vue'),
     meta: { requiresAuth: true }
@@ -234,6 +240,8 @@ const routes = [
     children: [
       { path: 'formClient', name: 'rcl', component: () => import('pages/clients/formCli.vue'), meta: { moduleId: 34, requiresAuth: true } },
       { path: 'addClient', name: 'acl', component: () => import('pages/clients/addCli.vue'), meta: { moduleId: 35, requiresAuth: true } },
+      { path: 'formQuiz', name: 'qzi', component: () => import('pages/clients/formQuiz.vue'), meta: { moduleId: 35, requiresAuth: true } },
+
     ],
   },
   {

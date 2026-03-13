@@ -5,33 +5,44 @@
         <q-spinner-gears size="50px" color="primary" />
       </q-inner-loading></div>
     <div v-else>
-      <div class="row q-col-gutter-md q-mb-md">
-        <div class="col">
-          <q-card class="">
-            <q-card-section>
-              <div class="text-h6 text-center">Productos Contados</div>
-              <div class="text-h4 text-center">{{ totals.products }}</div>
-            </q-card-section>
-          </q-card>
-        </div>
-        <div class="col">
-          <q-card class="">
-            <q-card-section>
-              <div class="text-h6 text-center">Exactitud</div>
-              <div class="text-h4 text-center" :class="`text-${colorAccuracy(totals.accuracy)}`">{{ totals.accuracy }}%
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
-        <div class="col">
-          <q-card class="">
-            <q-card-section>
-              <div class="text-h6 text-center text-bold">Precisión</div>
-              <div class="text-h4 text-center" :class="`text-${colorAccuracy(totals.precision)}`">{{ totals.precision
-              }}%</div>
-            </q-card-section>
-          </q-card>
-        </div>
+      <div class="row q-mb-md">
+        <q-card class="col">
+          <q-card-section>
+            <div class="text-h6 text-center">Productos Contados</div>
+            <div class="text-h5 text-center">{{ totals.products }}</div>
+            <div>
+              <q-list>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label class="text-center">Correctos</q-item-label>
+                    <q-item-label class="text-center">{{ totals.correct }}</q-item-label>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-center">Incorrectos</q-item-label>
+                    <q-item-label class="text-center">{{ totals.incorrect }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </div>
+          </q-card-section>
+        </q-card>
+        <q-separator spaced inset vertical />
+        <q-card class="col">
+          <q-card-section>
+            <div class="text-h6 text-center">Exactitud</div>
+            <div class="text-h4 text-center" :class="`text-${colorAccuracy(totals.accuracy)}`">{{ totals.accuracy }}%
+            </div>
+          </q-card-section>
+        </q-card>
+        <q-separator spaced inset vertical />
+
+        <q-card class="col">
+          <q-card-section>
+            <div class="text-h6 text-center text-bold">Diferencia</div>
+            <div class="text-h4 text-center" :class="`text-${colorAccuracy(totals.diff)}`">{{ totals.diff
+            }}%</div>
+          </q-card-section>
+        </q-card>
       </div>
       <q-card class="q-mb-md">
         <q-card-section>
@@ -51,12 +62,12 @@
           </div>
         </q-card-section>
       </q-card>
-      <q-table title="Detalle por Sucursal" :rows="tableRows" :columns="columns" row-key="id" flat bordered />
+      <q-table title="Detalle por Sucursal" :rows="tableRows" :columns="columns" row-key="id" flat bordered   @row-click="onRowClick" :row-class="row => row.store === selectedStore ? 'bg-blue-1' : ''" />
     </div>
   </q-page>
 </template>
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount, onActivated  } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount, onActivated } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es'
@@ -70,27 +81,35 @@ const $router = useRouter();
 const $q = useQuasar();
 const VDB = useVDBStore()
 const $store = useOperationStore()
-onActivated(() => {$store.setTitle('Control de Inventarios y Perdidas')})
-
+onActivated(() => { $store.setTitle('Control de Inventarios y Perdidas') })
+const selectedStore = ref(null)
 const loading = ref(true)
 const report = ref([])
 const totals = computed(() => {
   let products = 0
   let accuracy = 0
   let precision = 0
+  let correct = 0
+  let incorrect = 0
   let count = 0
+  let diff = 0
   filteredData.value.forEach(store => {
     store.cyclecounts.forEach(cc => {
       products += cc.products
       accuracy += cc.accuracy
+      diff += cc.diff
       precision += cc.precision
+      correct += cc.correctos
+      incorrect += cc.incorrect
       count++
     })
   })
   return {
     products,
+    correct,
+    incorrect,
     accuracy: count ? (accuracy / count).toFixed(2) : 0,
-    precision: count ? (precision / count).toFixed(2) : 0
+    diff: count ? (diff / count).toFixed(2) : 0
   }
 
 })
@@ -120,14 +139,14 @@ const columns = [
 
   { name: 'gen_products', label: 'GEN Productos', field: 'gen_products', sortable: true },
   { name: 'gen_accuracy', label: 'GEN Exactitud', field: 'gen_accuracy', format: v => v + '%', sortable: true },
-  { name: 'gen_precision', label: 'GEN Precisión', field: 'gen_precision', format: v => v + '%', sortable: true },
+  // { name: 'gen_precision', label: 'GEN Precisión', field: 'gen_precision', format: v => v + '%', sortable: true },
 
   { name: 'exh_products', label: 'EXH Productos', field: 'exh_products', sortable: true },
   { name: 'exh_accuracy', label: 'EXH Exactitud', field: 'exh_accuracy', format: v => v + '%', sortable: true },
-  { name: 'exh_precision', label: 'EXH Precisión', field: 'exh_precision', format: v => v + '%', sortable: true },
+  // { name: 'exh_precision', label: 'EXH Precisión', field: 'exh_precision', format: v => v + '%', sortable: true },
 
   { name: 'global_accuracy', label: 'Exactitud Global', field: 'global_accuracy', format: v => v + '%', sortable: true },
-  { name: 'global_precision', label: 'Precisión Global', field: 'global_precision', format: v => v + '%', sortable: true }
+  // { name: 'global_precision', label: 'Precisión Global', field: 'global_precision', format: v => v + '%', sortable: true }
 
 ]
 
@@ -164,14 +183,14 @@ const tableRows = computed(() => {
 
       gen_products: genProducts,
       gen_accuracy: genAccuracy,
-      gen_precision: genPrecision,
+      // gen_precision: genPrecision,
 
       exh_products: exhProducts,
       exh_accuracy: exhAccuracy,
-      exh_precision: exhPrecision,
+      // exh_precision: exhPrecision,
 
       global_accuracy: globalAccuracy.toFixed(2),
-      global_precision: globalPrecision.toFixed(2)
+      // global_precision: globalPrecision.toFixed(2)
 
     }
 
@@ -183,7 +202,15 @@ const colorAccuracy = (value) => {
   if (value >= 80) return 'orange'
   return 'red'
 }
+const onRowClick = (evt, row) => {
 
+  if (selectedStore.value === row.store) {
+    selectedStore.value = null
+  } else {
+    selectedStore.value = row.store
+  }
+
+}
 // const colorAccuracy = (value) => {
 //   if (value >= 90) return 'green'
 //   if (value >= 80) return 'orange'
@@ -212,12 +239,30 @@ const zoneStores = computed(() => {
   )
 })
 
-const filteredData = computed(() => {
-  if ($store.tab === 'all') return report.value
+// const filteredData = computed(() => {
+//   if ($store.tab === 'all') return report.value
 
-  return report.value.filter(r =>
-    zoneStores.value.has(r.id)
-  )
+//   return report.value.filter(r =>
+//     zoneStores.value.has(r.id)
+//   )
+// })
+
+const filteredData = computed(() => {
+
+  let data = report.value
+
+  if ($store.tab !== 'all') {
+    data = data.filter(r =>
+      zoneStores.value.has(r.id)
+    )
+  }
+
+  if (selectedStore.value) {
+    data = data.filter(r => r.name === selectedStore.value)
+  }
+
+  return data
+
 })
 
 init()

@@ -36,8 +36,12 @@
           <q-separator spaced inset vertical dark />
           <div class="col">
             <div class="text-center text-h6">Crecimiento de Sucursal</div>
+            <!-- {{ totalCurrent }} -- {{ goalToday }} -->
+            <!-- (((totalCurrent.value - expectedToday.value) / expectedToday.value) * 100)) -->
             <div class="text-center">
-              <span class="text-h3">{{ growth.toFixed(1) }}%</span>
+              <span class="text-h3" v-if="!onlyToday">{{ growth.toFixed(1) }}%</span>
+              <span class="text-h3" v-else>{{ (((totalCurrent - goalToday) / goalToday) * 100).toFixed(1) }}%</span>
+
               <q-icon :name="growth < 0 ? 'arrow_downward' : 'arrow_upward'" class="q-mb-md" size="md"
                 :color="growth < 0 ? 'negative' : 'positive'" />
             </div>
@@ -63,24 +67,47 @@
             </div>
           </q-card-section>
         </q-card>
-        <div class="q-mt-sm text-caption">
-          Meta diaria necesaria:
-          <b>{{ money(requiredPerDay) }}</b>
+
+        <div v-if="!onlyToday">
+
+          <div class="q-mt-sm text-caption">
+            Meta diaria necesaria:
+            <b>{{ money(requiredPerDay) }}</b>
+          </div>
+
+          <div class="q-mt-xs text-caption">
+            Deberías llevar hoy:
+            <b>{{ money(expectedToday) }}</b>
+          </div>
+
+          <div class="text-caption" :class="todayDiff >= 0 ? 'text-positive' : 'text-negative'">
+            {{ todayDiff >= 0 ? 'Arriba' : 'Abajo' }}
+            {{ money(Math.abs(todayDiff)) }}
+          </div>
+
+          <div class="text-caption">
+            Proyección fin de mes:
+            <b>{{ money(projectedEnd) }}</b>
+            <span class="text-bold"
+              :class="(((projectedEnd - totalLastYear) / totalLastYear) * 100) > 0 ? 'text-positive' : 'text-negative'">
+              ({{ (((projectedEnd - totalLastYear) / totalLastYear) * 100).toFixed(1) }}%)
+            </span>
+          </div>
+
         </div>
 
-        <div class="q-mt-xs text-caption">
-          Deberías llevar hoy:
-          <b>{{ money(expectedToday) }}</b>
-        </div>
 
-        <div class="text-caption" :class="todayDiff >= 0 ? 'text-positive' : 'text-negative'">
-          {{ todayDiff >= 0 ? 'Arriba' : 'Abajo' }}
-          {{ money(Math.abs(todayDiff)) }}
-        </div>
-        <div class="text-caption">
-          Proyección fin de mes:
-          <b>{{ money(projectedEnd) }}</b>
-          <span class="text-bold" :class="(((projectedEnd - totalLastYear) / totalLastYear) * 100) > 0 ? 'text-positive' : 'text-negative' "> ({{ (((projectedEnd - totalLastYear) / totalLastYear) * 100).toFixed(1) }}%)</span>
+        <div v-else>
+          <div class="q-mt-sm text-caption">
+            Meta de hoy:
+            <b>{{ money(goalToday) }}</b>
+          </div>
+
+          <div class="text-caption" :class="todayDiffOnly >= 0 ? 'text-positive' : 'text-negative'">
+            {{ todayDiffOnly >= 0 ? 'Arriba' : 'Abajo' }}
+            {{ money(Math.abs(todayDiffOnly)) }}
+          </div>
+
         </div>
         <q-separator spaced inset vertical dark />
         <div class="row">
@@ -88,14 +115,44 @@
             <q-card-section>
               <div class="text-h6">Venta por Sección</div>
             </q-card-section>
-            <q-table :rows="sectionTable" :columns="sectionColumns" row-key="section" flat dense />
+            <q-table :rows="sectionTable" :columns="sectionColumns" row-key="section" flat dense>
+              <template v-slot:bottom-row>
+                <q-tr class=" text-bold">
+                  <q-td>
+                    TOTAL
+                  </q-td>
+                  <q-td align="right">
+                    {{  sectionTable.reduce((sum, r) => sum + r.qty, 0) }}
+                  </q-td>
+
+                  <q-td align="right">
+                    {{ money( sectionTable.reduce((sum, r) => sum + r.total, 0)) }}
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
           </q-card>
           <q-separator spaced inset vertical dark />
           <q-card class="q-mt-xl col">
             <q-card-section>
               <div class="text-h6">Venta por Dependiente</div>
             </q-card-section>
-            <q-table :rows="DependienteTable" :columns="clientColumns" row-key="client" flat dense />
+            <q-table :rows="DependienteTable" :columns="clientColumns" row-key="client" flat dense >
+              <template v-slot:bottom-row>
+                <q-tr class=" text-bold">
+                  <q-td>
+                    TOTAL
+                  </q-td>
+                  <q-td align="right">
+                    {{  DependienteTable.reduce((sum, r) => sum + r.tickets, 0) }}
+                  </q-td>
+
+                  <q-td align="right">
+                    {{ money( DependienteTable.reduce((sum, r) => sum + r.total, 0)) }}
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
           </q-card>
         </div>
 
@@ -252,28 +309,85 @@ const currentDay = computed(() =>
   dayjs().date()
 )
 
-const daysRemaining = computed(() =>
-  daysInMonth.value - currentDay.value
-)
+// const daysRemaining = computed(() =>
+//   daysInMonth.value - currentDay.value
+// )
+//dias faltantes
+const daysRemaining = computed(() => {
+  const today = dayjs()
+  const end = dayjs().endOf('month')
+
+  let days = 0
+  let cursor = today.add(1, 'day')
+
+  while (cursor.isBefore(end) || cursor.isSame(end, 'day')) {
+
+    const isSunday = cursor.day() === 0
+
+    if (hasSundayLastYear.value || !isSunday) {
+      days++
+    }
+
+    cursor = cursor.add(1, 'day')
+  }
+
+  return days
+})
+// const requiredPerDay = computed(() => {
+//   if (remaining.value <= 0) return 0
+//   if (daysRemaining.value <= 0) return 0
+
+//   return remaining.value / daysRemaining.value
+// })
+const todayDiffOnly = computed(() => {
+  return totalToday.value - goalToday.value
+})
 const requiredPerDay = computed(() => {
   if (remaining.value <= 0) return 0
   if (daysRemaining.value <= 0) return 0
 
   return remaining.value / daysRemaining.value
 })
+const goalToday = computed(() =>
+  ((lastSales.value.reduce((sum, s) => sum + s.total, 0) * VDB.session.store.increment) - currentSales.value.reduce((sum, s) => sum + s.total, 0)) / daysRemaining.value
+)
+// const expectedToday = computed(() => {
+//   if (goal.value <= 0) return 0
+
+//   return (goal.value / daysInMonth.value) * currentDay.value
+// })
 const expectedToday = computed(() => {
+
+  if (onlyToday.value) {
+    return requiredPerDay.value
+  }
+
   if (goal.value <= 0) return 0
 
   return (goal.value / daysInMonth.value) * currentDay.value
 })
-const todayDiff = computed(() =>
-  totalCurrent.value - expectedToday.value
-)
+// const todayDiff = computed(() =>
+//   totalCurrent.value - expectedToday.value
+// )
+const todayDiff = computed(() => {
+
+  if (onlyToday.value) {
+    return totalToday.value - requiredPerDay.value
+  }
+
+  return totalCurrent.value - expectedToday.value
+})
 const projectedEnd = computed(() => {
   if (currentDay.value === 0) return 0
 
   const dailyAvg = totalCurrent.value / currentDay.value
   return dailyAvg * daysInMonth.value
+})
+//deteccion de domingos
+const hasSundayLastYear = computed(() => {
+  return lastSales.value.some(s =>
+    dayjs(s.created_at).day() === 0
+  )
 })
 // obtener dias anteriores y dias de hoy
 const todayStr = computed(() =>
@@ -362,7 +476,7 @@ const progressTcks = computed(() =>
     ? (totalCurrentTcks.value / goalTcks.value) * 100
     : 0
 )
-const growth = computed(() => (((totalCurrent.value - totalLastYear.value) / totalLastYear.value) * 100))
+const growth = computed(() => (((totalCurrent.value - expectedToday.value) / expectedToday.value) * 100))
 // tabla de las secciones
 const sectionTable = computed(() => {
   const grouped = {}
