@@ -18,6 +18,7 @@
             <div v-if="remaining > 0" class="text-negative">
               Faltan {{ money(remaining) }}
             </div>
+
           </div>
           <!-- {{ totalLastYear }} -->
           <q-separator spaced inset vertical dark />
@@ -39,11 +40,21 @@
             <!-- {{ totalCurrent }} -- {{ goalToday }} -->
             <!-- (((totalCurrent.value - expectedToday.value) / expectedToday.value) * 100)) -->
             <div class="text-center">
-              <span class="text-h3" v-if="!onlyToday">{{ growth.toFixed(1) }}%</span>
-              <span class="text-h3" v-else>{{ (((totalCurrent - goalToday) / goalToday) * 100).toFixed(1) }}%</span>
+              <div v-if="!onlyToday">
+                <span class="text-h3">{{ growth.toFixed(1) }}%</span>
+                <q-icon :name="growth < 0 ? 'arrow_downward' : 'arrow_upward'" class="q-mb-md" size="md"
+                  :color="growth < 0 ? 'negative' : 'positive'" />
+              </div>
+              <div v-else>
+                <span class="text-h3">{{ (((totalCurrent - goalToday) / goalToday) * 100).toFixed(1) }}%</span>
+                <q-icon :name="(((totalCurrent - goalToday) / goalToday) * 100) < 0 ? 'arrow_downward' : 'arrow_upward'"
+                  class="q-mb-md" size="md"
+                  :color="(((totalCurrent - goalToday) / goalToday) * 100) < 0 ? 'negative' : 'positive'" />
+              </div>
 
-              <q-icon :name="growth < 0 ? 'arrow_downward' : 'arrow_upward'" class="q-mb-md" size="md"
-                :color="growth < 0 ? 'negative' : 'positive'" />
+
+
+
             </div>
           </div>
         </div>
@@ -122,11 +133,18 @@
                     TOTAL
                   </q-td>
                   <q-td align="right">
-                    {{  sectionTable.reduce((sum, r) => sum + r.qty, 0) }}
+                    {{sectionTable.reduce((sum, r) => sum + r.qtyLY, 0)}}
                   </q-td>
 
                   <q-td align="right">
-                    {{ money( sectionTable.reduce((sum, r) => sum + r.total, 0)) }}
+                    {{money(sectionTable.reduce((sum, r) => sum + r.totalLY, 0))}}
+                  </q-td>
+                  <q-td align="right">
+                    {{sectionTable.reduce((sum, r) => sum + r.qty, 0)}}
+                  </q-td>
+
+                  <q-td align="right">
+                    {{money(sectionTable.reduce((sum, r) => sum + r.total, 0))}}
                   </q-td>
                 </q-tr>
               </template>
@@ -137,18 +155,18 @@
             <q-card-section>
               <div class="text-h6">Venta por Dependiente</div>
             </q-card-section>
-            <q-table :rows="DependienteTable" :columns="clientColumns" row-key="client" flat dense >
+            <q-table :rows="DependienteTable" :columns="clientColumns" row-key="client" flat dense>
               <template v-slot:bottom-row>
                 <q-tr class=" text-bold">
                   <q-td>
                     TOTAL
                   </q-td>
                   <q-td align="right">
-                    {{  DependienteTable.reduce((sum, r) => sum + r.tickets, 0) }}
+                    {{DependienteTable.reduce((sum, r) => sum + r.tickets, 0)}}
                   </q-td>
 
                   <q-td align="right">
-                    {{ money( DependienteTable.reduce((sum, r) => sum + r.total, 0)) }}
+                    {{money(DependienteTable.reduce((sum, r) => sum + r.total, 0))}}
                   </q-td>
                 </q-tr>
               </template>
@@ -246,6 +264,8 @@ import { computed, ref } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 import saleApi from 'src/API/saleApi';
 import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek'
+
 const $router = useRouter();
 const VDB = useVDBStore();
 const $q = useQuasar();
@@ -268,10 +288,12 @@ ChartJS.register(
   Legend,
   ChartDataLabels
 )
+dayjs.extend(isoWeek)
 dayjs.locale('es')
-const firstDay = dayjs().startOf('month').format('YYYY-MM-DD')
-const endDay = dayjs().endOf('month').format('YYYY-MM-DD')
-
+// const firstDay = dayjs().startOf('month').format('YYYY-MM-DD')
+// const endDay = dayjs().endOf('month').format('YYYY-MM-DD')
+const firstDay = dayjs().startOf('week').add(1, 'day').format('YYYY-MM-DD')
+const endDay = dayjs().endOf('week').add(1, 'day').format('YYYY-MM-DD')
 const today = dayjs().format('YYYY-MM-DD')
 const currentSales = ref([]);
 const lastSales = ref([])
@@ -282,13 +304,10 @@ const onlyToday = ref(false)
 
 const sectionColumns = [
   { name: 'section', label: 'Sección', field: 'section', align: 'left' },
+  { name: 'qty', label: 'Cantidad LY', field: 'qtyLY', align: 'right' },
+  { name: 'total', label: 'Total LY', field: row => money(row.totalLY), align: 'right' },
   { name: 'qty', label: 'Cantidad', field: 'qty', align: 'right' },
-  {
-    name: 'total',
-    label: 'Total',
-    field: row => money(row.total),
-    align: 'right'
-  }
+  { name: 'total', label: 'Total', field: row => money(row.total), align: 'right' }
 ]
 const clientColumns = [
   { name: 'client', label: 'Dependiente', field: 'client', align: 'left' },
@@ -301,34 +320,64 @@ const clientColumns = [
   }
 ]
 
-const daysInMonth = computed(() =>
-  dayjs().daysInMonth()
-)
+// const daysInMonth = computed(() =>
+//   dayjs().daysInMonth()
+// )
+const daysInWeek = 7
 
-const currentDay = computed(() =>
-  dayjs().date()
-)
+// const currentDay = computed(() =>
+//   dayjs().date()
+// )
+const currentDay = computed(() => {
+  const d = dayjs().day()
+  return d === 0 ? 7 : d
+})
+
 
 // const daysRemaining = computed(() =>
 //   daysInMonth.value - currentDay.value
 // )
 //dias faltantes
+// const daysRemaining = computed(() => {
+//   const today = dayjs()
+//   const end = dayjs().endOf('month')
+
+//   let days = 0
+//   let cursor = today.add(1, 'day')
+
+//   while (cursor.isBefore(end) || cursor.isSame(end, 'day')) {
+
+//     const isSunday = cursor.day() === 0
+
+//     if (hasSundayLastYear.value || !isSunday) {
+//       days++
+//     }
+
+//     cursor = cursor.add(1, 'day')
+//   }
+
+//   return days
+// })
+const daysLY = computed(() => {
+  const days = new Set()
+
+  lastSales.value.forEach(s => {
+    let d = dayjs(s.created_at).day()
+    d = d === 0 ? 7 : d
+    days.add(d)
+  })
+
+  return days
+})
+const daysValid = computed(() => daysLY.value.size)
 const daysRemaining = computed(() => {
-  const today = dayjs()
-  const end = dayjs().endOf('month')
-
   let days = 0
-  let cursor = today.add(1, 'day')
+  const today = currentDay.value
 
-  while (cursor.isBefore(end) || cursor.isSame(end, 'day')) {
-
-    const isSunday = cursor.day() === 0
-
-    if (hasSundayLastYear.value || !isSunday) {
+  for (let d = today; d <= 7; d++) {
+    if (daysLY.value.has(d)) {
       days++
     }
-
-    cursor = cursor.add(1, 'day')
   }
 
   return days
@@ -357,14 +406,7 @@ const goalToday = computed(() =>
 //   return (goal.value / daysInMonth.value) * currentDay.value
 // })
 const expectedToday = computed(() => {
-
-  if (onlyToday.value) {
-    return requiredPerDay.value
-  }
-
-  if (goal.value <= 0) return 0
-
-  return (goal.value / daysInMonth.value) * currentDay.value
+  return (goal.value / daysValid.value) * currentDay.value
 })
 // const todayDiff = computed(() =>
 //   totalCurrent.value - expectedToday.value
@@ -377,11 +419,17 @@ const todayDiff = computed(() => {
 
   return totalCurrent.value - expectedToday.value
 })
+// const projectedEnd = computed(() => {
+//   if (currentDay.value === 0) return 0
+
+//   const dailyAvg = totalCurrent.value / currentDay.value
+//   return dailyAvg * daysInWeek.value
+// })
 const projectedEnd = computed(() => {
   if (currentDay.value === 0) return 0
 
   const dailyAvg = totalCurrent.value / currentDay.value
-  return dailyAvg * daysInMonth.value
+  return dailyAvg * daysValid.value
 })
 //deteccion de domingos
 const hasSundayLastYear = computed(() => {
@@ -393,8 +441,19 @@ const hasSundayLastYear = computed(() => {
 const todayStr = computed(() =>
   dayjs().format('YYYY-MM-DD')
 )
-const todayLYStr = computed(() =>
-  dayjs().subtract(1, 'year').format('YYYY-MM-DD')
+const todayLYStr = computed(() => {
+  const today = dayjs()
+  const week = today.isoWeek()
+  const weekday = today.isoWeekday()
+
+  return dayjs()
+    .subtract(1, 'year')
+    .isoWeek(week)
+    .isoWeekday(weekday)
+    .format('YYYY-MM-DD')
+}
+  // dayjs().subtract(1, 'year').format('YYYY-MM-DD')
+
 )
 //base de las ventas
 const baseSales = computed(() =>
@@ -481,26 +540,42 @@ const growth = computed(() => (((totalCurrent.value - expectedToday.value) / exp
 const sectionTable = computed(() => {
   const grouped = {}
 
+  const add = (sectionName) => {
+    if (!grouped[sectionName]) {
+      grouped[sectionName] = {
+        section: sectionName,
+        total: 0,
+        qty: 0,
+        totalLY: 0,
+        qtyLY: 0
+      }
+    }
+  }
   baseSales.value.forEach(sale => {
     sale.products.forEach(prod => {
       const sectionName =
         prod.category?.familia?.seccion?.name || 'SIN SECCIÓN'
 
-      if (!grouped[sectionName]) {
-        grouped[sectionName] = {
-          section: sectionName,
-          total: 0,
-          qty: 0
-        }
-      }
+      add(sectionName)
 
       grouped[sectionName].total += prod.pivot.total
       grouped[sectionName].qty += prod.pivot.amount
     })
   })
+  baseSalesLY.value.forEach(sale => {
+    sale.products.forEach(prod => {
+      const sectionName =
+        prod.category?.familia?.seccion?.name || 'SIN SECCIÓN'
+
+      add(sectionName)
+
+      grouped[sectionName].totalLY += prod.pivot.total
+      grouped[sectionName].qtyLY += prod.pivot.amount
+    })
+  })
 
   return Object.values(grouped)
-    .sort((a, b) => b.total - a.total)
+    .sort((a, b) => (b.total + b.totalLY) - (a.total + a.totalLY))
 })
 // tabla dependientes
 const DependienteTable = computed(() => {
@@ -534,11 +609,6 @@ const index = async () => {
     to: endDay,
     id_viz: VDB.session.store.id_viz
   }
-  // let dates = {
-  //   from: dayjs('2026-02-01').format('YYYY-MM-DD'),
-  //   to: dayjs('2026-02-28').format('YYYY-MM-DD'),
-  //   id_viz: VDB.session.store.id_viz
-  // }
   console.log(dates);
   const resp = await saleApi.index(dates)
   if (resp.fail) {
@@ -617,14 +687,52 @@ const money = (value) =>
   '$' + (value || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })
 //datos acumulados por dia
 
+// const ventaPorDia = computed(() => {
+//   const todayDay = dayjs().date()
+
+//   const group = (sales) => {
+//     const g = {}
+
+//     sales.forEach(s => {
+//       const day = parseInt(dayjs(s.created_at).format('DD'))
+//       if (!g[day]) g[day] = 0
+//       g[day] += s.total
+//     })
+
+//     return g
+//   }
+
+//   const current = group(baseSales.value)
+//   const last = group(baseSalesLY.value)
+//   const allDays = Array.from({ length: todayDay }, (_, i) => i + 1)
+
+//   return {
+//     labels: allDays.map(d => d.toString().padStart(2, '0')),
+//     datasets: [
+//       {
+//         label: 'Actual',
+//         data: allDays.map(d => current[d] || 0),
+//         backgroundColor: '#6367FF'
+//       },
+//       {
+//         label: 'Año Pasado',
+//         data: allDays.map(d => last[d] * VDB.session.store.increment || 0),
+//         backgroundColor: '#FF5A5A'
+//       }
+//     ]
+//   }
+// })
 const ventaPorDia = computed(() => {
-  const todayDay = dayjs().date()
+
+  const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 
   const group = (sales) => {
     const g = {}
 
     sales.forEach(s => {
-      const day = parseInt(dayjs(s.created_at).format('DD'))
+      let day = dayjs(s.created_at).day()
+      day = day === 0 ? 6 : day - 1
+
       if (!g[day]) g[day] = 0
       g[day] += s.total
     })
@@ -634,24 +742,22 @@ const ventaPorDia = computed(() => {
 
   const current = group(baseSales.value)
   const last = group(baseSalesLY.value)
-  const allDays = Array.from({ length: todayDay }, (_, i) => i + 1)
 
   return {
-    labels: allDays.map(d => d.toString().padStart(2, '0')),
+    labels: days,
     datasets: [
       {
         label: 'Actual',
-        data: allDays.map(d => current[d] || 0),
+        data: days.map((_, i) => current[i] || 0),
         backgroundColor: '#6367FF'
       },
       {
         label: 'Año Pasado',
-        data: allDays.map(d => last[d] * VDB.session.store.increment || 0),
+        data: days.map((_, i) => (last[i] || 0) * VDB.session.store.increment),
         backgroundColor: '#FF5A5A'
       }
     ]
   }
 })
-
 index()
 </script>

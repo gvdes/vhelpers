@@ -28,10 +28,8 @@
                     {{ item.label }}
                   </div>
                   <div class="flex flex-center">
-                    <q-btn-group  push>
-                      <q-btn v-for="(value, index) in icons" :key="index" flat :icon="value" :color="ratingColors[index]"
-                        size="1em" @click="item.value = index"  />
-                    </q-btn-group>
+                    <q-rating v-model="item.value" :max="5" size="3em" :color="ratingColors"
+                      :color-selected="ratingColors" :icon="icons" />
                   </div>
                 </template>
                 <template v-else-if="item.name === 'fifth'">
@@ -166,20 +164,5 @@ const enviar = async () => {
   }
 }
 $q.dark.set(false)
-// const icons = {
-//   1: 'sentiment_very_dissatisfied',
-//   2: 'sentiment_dissatisfied',
-//   3: 'sentiment_neutral',
-//   4: 'sentiment_satisfied',
-//   5: 'sentiment_very_satisfied'
-// }
-
-// const ratingColors = {
-//   1: 'red',
-//   2: 'orange',
-//   3: 'yellow',
-//   4: 'light-green',
-//   5: 'green'
-// }
 
 </script>

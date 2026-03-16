@@ -1,1 +1,0 @@
-import{a as r}from"./axios.b5948f1c.js";var s={addQuiz(a){return r.post("/quizResponse/addQuiz",a).then(t=>t.data).catch(t=>({fail:t}))},getStats(a){return r.post("/quiz/getStats",a).then(t=>t.data).catch(t=>({fail:t}))}};export{s as q};
