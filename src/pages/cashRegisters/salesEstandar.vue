@@ -739,13 +739,13 @@ const handleKeyDown = (e) => {
 watch(
   () => sale.value,
   (val) => {
-    localStorage.setItem('current_sale', JSON.stringify(val))
+    sessionStorage.setItem('current_sale', JSON.stringify(val))
   },
   { deep: true }
 )
 
 onMounted(() => {
-  const savedSale = localStorage.getItem('current_sale')
+  const savedSale = sessionStorage.getItem('current_sale')
   if (savedSale) {
     sale.value = JSON.parse(savedSale)
   }
