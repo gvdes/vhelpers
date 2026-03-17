@@ -19,4 +19,7 @@ export default {
   getSatisfactionClient(data) {
     return assist.post(`/operations/getSatisfactionClient`, data).then(done => done.data).catch(fail => { return { fail } });
   },
+  statusAdm(data) {
+    return assist.post(`/operations/statusAdm`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }
