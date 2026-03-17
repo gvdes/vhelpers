@@ -60,7 +60,7 @@ const VDB = useVDBStore()
 const $store = useOperationStore()
 const loading = ref(true)
 const report = ref([])
-onActivated(() => { $store.setTitle('Diciplina Administrativa y Control Interno') })
+onActivated(() => { $store.setTitle('Disciplina Administrativa y Control Interno') })
 const summary = computed(() => {
 
   const actas = filteredData.value.reduce((a, b) => a + (Number(b.ACTAS) || 0), 0)

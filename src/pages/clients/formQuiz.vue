@@ -10,40 +10,42 @@
       <q-tab-panel name="global">
         <q-card class="q-pa-md q-mb-md text-center">
           <div class="text-subtitle1">Satisfacción</div>
-          <q-rating :model-value="stats.average" size="2em" readonly color="amber" />
-          <div class="text-h6">
+          <q-circular-progress :value="stats.average * 20" size="100px" show-value class="q-my-md">
             {{ stats.average }}
+          </q-circular-progress>
+          <q-rating :model-value="stats.average" size="2em" readonly color="amber" />
+        </q-card>
+        <q-card class="q-pa-md q-mb-md">
+          <div class="text-subtitle1 q-mb-sm">Recomendación</div>
+          <div class="q-mb-sm">
+            <q-linear-progress :value="stats.recommend.si / 100" color="positive" />
+            <div>Si: {{ stats.recommend.si }}%</div>
+          </div>
+          <div>
+            <q-linear-progress :value="stats.recommend.no / 100" color="negative" />
+            <div>No: {{ stats.recommend.no }}%</div>
           </div>
         </q-card>
         <q-card class="q-pa-md q-mb-md">
-          <div class="text-subtitle1">Recomendación</div>
-          <div>
-            Si: {{ stats.recommend.si }}%
-          </div>
-          <div>
-            No: {{ stats.recommend.no }}%
-          </div>
-        </q-card>
+          <div class="text-subtitle1">Encuestas</div>
+          <div class="text-h6 q-mb-md">{{ stats.total }}</div>
 
-
-        <q-card class="q-pa-md q-mb-md">
-          <div>Encuestas</div>
-          <div>{{ stats.total }}</div>
-          <div>Servicio</div>
-          <q-rating :model-value="stats.questions.service" readonly color="amber" />
-          <div>Agilidad</div>
-          <q-rating :model-value="stats.questions.speed" readonly color="amber" />
-          <div>Información del personal</div>
-          <q-rating :model-value="stats.questions.info" readonly color="amber" />
+          <div v-for="(value, key) in stats.questions" :key="key" class="q-mb-sm">
+            <div>{{ questionLabels[key] || key }}</div>
+            <q-rating :model-value="value" readonly color="amber" />
+          </div>
         </q-card>
         <q-card class="q-pa-md">
           <div class="text-subtitle1 q-mb-md">
-            Comentarios recientes
+            Motivos de No recomendación
           </div>
           <q-list bordered>
             <q-item v-for="c in stats.comments" :key="c.id">
+              <q-item-section avatar>
+                <q-icon name="warning" color="negative" />
+              </q-item-section>
               <q-item-section>
-                {{ c.sixth }}
+                {{ c.comment }}
               </q-item-section>
             </q-item>
           </q-list>
@@ -55,6 +57,7 @@
             <q-item-section>
               {{ s.name }}
             </q-item-section>
+
             <q-item-section side>
               <q-rating :model-value="s.score" readonly size="1.5em" />
             </q-item-section>
@@ -67,6 +70,7 @@
             <q-item-section>
               {{ c.name }}
             </q-item-section>
+
             <q-item-section side>
               <q-rating :model-value="c.score" readonly size="1.5em" />
             </q-item-section>
@@ -79,7 +83,7 @@
 
 <script setup>
 import { exportFile, useQuasar } from 'quasar';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import dayjs from 'dayjs';
 import quizApi from 'src/API/quizApi';
@@ -89,32 +93,40 @@ const $q = useQuasar();
 const $route = useRoute();
 const $router = useRouter();
 const tab = ref('global')
-
 const stats = ref({
   average: 0,
   recommend: { si: 0, no: 0 },
-  questions: {
-    service: 0,
-    speed: 0,
-    info: 0
-  },
-  comments: [],
+  questions: {},
   sellers: [],
   cashiers: [],
-  total:0
+  total: 0
 })
 
+const questionLabels = {
+  first: 'Amabilidad del personal',
+  second: 'Ayuda para encontrar productos',
+  third: 'Disponibilidad de productos',
+  fourth: 'Orden y limpieza',
+  fifth: 'Rapidez en caja',
+  sixth: 'Experiencia general',
+  seventh: 'Volvería a comprar'
+}
 const init = async () => {
-  $q.loading.show({message:'Obteniendo Datos'})
-  const resp = await quizApi.getStats({ store: VDB.session.store.id })
-  if (resp.fail) {
-    console.log(resp)
-  } else {
-    stats.value = resp
+  $q.loading.show({ message: 'Obteniendo Datos...' })
+  try {
+    const resp = await quizApi.getStats({
+      store: VDB.session.store.id
+    })
+    if (!resp.fail) {
+      console.log(resp)
+      stats.value = resp
+    }
+  } catch (error) {
+    console.error(error)
+  } finally {
     $q.loading.hide()
-    console.log(resp)
   }
 }
-init()
 
+onMounted(init)
 </script>

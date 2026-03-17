@@ -14,16 +14,7 @@
                 </div>
               </q-card-section>
               <q-card-section v-for="(item, i) in form" :key="item.name" class="q-px-md q-pb-lg">
-                <template v-if="item.name === 'first'">
-                  <div class=" text-center q-mb-md">
-                    {{ item.label }}
-                  </div>
-                  <q-btn-toggle v-model="item.value" spread rounded toggle-color="primary" :options="[
-                    { label: 'Sí', value: 'Si' },
-                    { label: 'No', value: 'No' }
-                  ]" />
-                </template>
-                <template v-else-if="['second', 'third', 'fourth',].includes(item.name)">
+                <template v-if="['first', 'second', 'third', 'fourth', 'fiveth', 'sixth', 'seventh'].includes(item.name)">
                   <div class=" text-center q-mb-md">
                     {{ item.label }}
                   </div>
@@ -32,7 +23,7 @@
                       :color-selected="ratingColors" :icon="icons" />
                   </div>
                 </template>
-                <template v-else-if="item.name === 'fifth'">
+                <template v-else-if="item.name === 'eightth'">
                   <div class=" text-center q-mb-md">
                     {{ item.label }}
                   </div>
@@ -41,7 +32,7 @@
                     { label: 'No', value: 'No' }
                   ]" />
                 </template>
-                <template v-else-if="item.name === 'fifthno'">
+                <template v-else-if="item.name === 'eightthno'">
                   <div v-if="fifthAnswer === 'No'">
                     <div class=" text-center q-mb-md">
                       {{ item.label }}
@@ -50,7 +41,7 @@
                       dense />
                   </div>
                 </template>
-                <template v-else-if="item.name === 'sixth'">
+                <template v-else-if="item.name === 'eightth'">
                   <div class=" text-center q-mb-md">
                     {{ item.label }}
                   </div>
@@ -84,13 +75,15 @@ const vendedor = $route.query.v ?? null
 const ticket = $route.query.tck ?? null
 
 const form = ref([
-  { name: 'first', label: "1 .Conocias GRUPO VIZCARRA?", value: 'No' },
-  { name: 'second', label: "2 .Como consideras nuestro servicio?", value: 0 },
-  { name: 'third', label: "3 .Que tan agil a sido tu compra?", value: 0 },
-  { name: 'fourth', label: "4 .El personal le brindo informacion clara y util sobre el articulo? ", value: 0 },
-  { name: 'fifth', label: "5 .Nos recomendarias con tus amigos o conocidos?", value: 'Si' },
-  { name: 'fifthno', label: "Por que ?", value: null },
-  { name: 'sixth', label: "6 .¿Que podriamos mejorar para que tu experiencia sea mejor?", value: null }
+  { name: 'first', label: "1. El personal te atendió de forma amable? ", value: 0 },
+  { name: 'second', label: "2. Te ayudaron a encontrar lo que buscabas ", value: 0 },
+  { name: 'third', label: "3. Encontraste los productos que buscabas? ", value: 0 },
+  { name: 'fourth', label: "4. sentiste la tienda ordenada y agradable? ", value: 0 },
+  { name: 'fifth', label: "5. el proceso de pago fue rápido? ", value: 0 },
+  { name: 'sixth', label: "6. como calificarías tu experiencia en general en la tienda? ", value: 0 },
+  { name: 'seventh', label: "7. volverías a comprar con nosotros? ", value: 0 },
+  { name: 'eightth', label: "8. nos recomendarías?", value: 'Si' },
+  { name: 'eightthno', label: "Por que ?", value: null },
 ])
 const icons = ref([
   'sentiment_very_dissatisfied',
@@ -101,7 +94,7 @@ const icons = ref([
 ])
 
 const fifthAnswer = computed(() => {
-  return form.value.find(f => f.name === 'fifth')?.value
+  return form.value.find(f => f.name === 'eightth')?.value
 })
 const isBadExperience = computed(() => {
   const ratings = form.value
@@ -113,13 +106,15 @@ const isBadExperience = computed(() => {
 
 const reset = () => {
   form.value = [
-    { name: 'first', label: "1 .Conocias GRUPO VIZCARRA?", value: 'No' },
-    { name: 'second', label: "2 .Como consideras nuestro servicio?", value: 0 },
-    { name: 'third', label: "3 .Que tan agil a sido tu compra?", value: 0 },
-    { name: 'fourth', label: "4 .El personal le brindo informacion clara y util sobre el articulo? ", value: 0 },
-    { name: 'fifth', label: "5 .Nos recomendarias con tus amigos o conocidos?", value: 'Si' },
-    { name: 'fifthno', label: "Por que ?", value: null },
-    { name: 'sixth', label: "6 .¿Que podriamos mejorar para que tu experiencia sea mejor?", value: null }
+    { name: 'first', label: "1. El personal te atendió de forma amable? ", value: 0 },
+    { name: 'second', label: "2. Te ayudaron a encontrar lo que buscabas ", value: 0 },
+    { name: 'third', label: "3. Encontraste los productos que buscabas? ", value: 0 },
+    { name: 'fourth', label: "4. sentiste la tienda ordenada y agradable? ", value: 0 },
+    { name: 'fifth', label: "5. el proceso de pago fue rápido? ", value: 0 },
+    { name: 'sixth', label: "6. como calificarías tu experiencia en general en la tienda? ", value: 0 },
+    { name: 'seventh', label: "7. volverías a comprar con nosotros? ", value: 0 },
+    { name: 'eightth', label: "8. nos recomendarías?", value: 'Si' },
+    { name: 'eightthno', label: "Por que ?", value: null },
   ]
 }
 
@@ -136,7 +131,7 @@ const enviar = async () => {
       form.value.map(e => [e.name, e.value])
     )
   }
-  console.log(payload)
+  // console.log(payload)
   const resp = await quizApi.addQuiz(payload)
   if (resp.fail) {
     console.log(resp)
@@ -152,7 +147,8 @@ const enviar = async () => {
       $q.notify({
         type: 'positive',
         message: '¡Gracias por tu opinión!',
-        timeout: 5000
+        timeout: 5000,
+        position:'center'
       })
     }
     $router.replace({
