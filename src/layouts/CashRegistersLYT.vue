@@ -188,35 +188,35 @@ onMounted(() => {
   if (!cashLYT.showtoolbar && $route.params.cid) {
     init()
   }
-  if (localStorage.getItem("app_open") === "true") {
-    // Ya existe otra sesión → NO cambiamos nada en localStorage
-    $q.notify({
-      message: "La aplicación ya está abierta en otra pestaña",
-      type: "negative",
-      position: "center"
-    })
-    $router.push("/")
-  } else {
-    localStorage.setItem("app_open", "true")
-    window.addEventListener("beforeunload", () => {
-      localStorage.setItem("app_open", "false")
-    })
-  }
-  window.addEventListener("storage", (event) => {
-    if (event.key === "app_open" && event.newValue === "true") {
-      $q.notify({
-        message: "Ya tienes la aplicación abierta en otra pestaña",
-        type: "warning",
-        position: "center"
-      })
-      $router.push("/")
-    }
-  })
+  // if (localStorage.getItem("app_open") === "true") {
+  //   // Ya existe otra sesión → NO cambiamos nada en localStorage
+  //   $q.notify({
+  //     message: "La aplicación ya está abierta en otra pestaña",
+  //     type: "negative",
+  //     position: "center"
+  //   })
+  //   $router.push("/")
+  // } else {
+  //   localStorage.setItem("app_open", "true")
+  //   window.addEventListener("beforeunload", () => {
+  //     localStorage.setItem("app_open", "false")
+  //   })
+  // }
+  // window.addEventListener("storage", (event) => {
+  //   if (event.key === "app_open" && event.newValue === "true") {
+  //     $q.notify({
+  //       message: "Ya tienes la aplicación abierta en otra pestaña",
+  //       type: "warning",
+  //       position: "center"
+  //     })
+  //     $router.push("/")
+  //   }
+  // })
 
 })
-onBeforeUnmount(() => {
-  localStorage.setItem("app_open", "false")
-});
+// onBeforeUnmount(() => {
+//   localStorage.setItem("app_open", "false")
+// });
 
 
 watch(() => $route.params.cid, (newVal) => {
