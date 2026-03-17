@@ -45,7 +45,7 @@
             dense @update:model-value="typeChange" />
           <q-separator spaced inset vertical dark />
           <q-select class="col" v-model="supply.val" :options="supply.opts" label="Surtir Por" filled dense
-            option-label="name" :disable="typeSurti.val.id == 1" @update:model-value="processProduct"  />
+            option-label="name"  @update:model-value="processProduct"  />
         </div>
 
         <q-separator spaced inset vertical dark />
