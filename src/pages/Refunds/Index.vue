@@ -25,7 +25,7 @@
         <q-card-section>
           <q-slide-transition>
             <div v-show="expanded">
-              <viewRefund :refunds="refunds.to" :status="status" />
+              <viewRefund :refunds="refunds.to?.sort((a,b) => b.id - a.id)" :status="status" />
             </div>
           </q-slide-transition>
 
@@ -44,7 +44,7 @@
         <q-card-section>
           <q-slide-transition>
             <div v-show="expandedfrom">
-              <viewRefund :refunds="refunds.from" :status="status" />
+              <viewRefund :refunds="refunds.from?.sort((a,b) => b.id - a.id)" :status="status" />
             </div>
           </q-slide-transition>
 

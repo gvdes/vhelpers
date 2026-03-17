@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-sm bg-grey-2 text-bold row justify-between items-center" style="min-width:250px;">
+  <div class="q-pa-sm  text-bold row justify-between items-center" style="min-width:250px;">
     <div>Impresion</div>
     <div class="row justify-between items-center" v-if="wkp">
       <q-btn-group flat>

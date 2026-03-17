@@ -37,4 +37,34 @@ export default{
   checkLabel(data) {
     return assist.post(`/Products/checkLabels`,data).then(done => done.data).catch(fail => { return { fail } });
   },
+  setMin(data) {
+    return assist.post(`/Products/setMin`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  setMax(data) {
+    return assist.post(`/Products/setMax`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  setMassisveMinMax(data) {
+    return assist.post(`/Products/setMassisveMinMax`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  autoCompleteProduct(data) {
+    return assist.post(`/Products/autoCompleteProduct`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  exactSearch(data) {
+    return assist.post(`/Products/exactSearch`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  scanSearch(data) {
+    return assist.post(`/Products/scanSearch`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  getReportProvider(data) {
+    return assist.post(`/Products/getReportProvider`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  updateImgProduct(data) {
+    return assist.post(`/Products/updateImgProduct`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  massiveUpdateImg(data) {
+    return assist.post(`/Products/massiveUpdateImg`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  updateStatusProduct(data){
+    return assist.post(`/Products/updateStatusProduct`, data).then(done => done.data).catch(fail => { return { fail } });
+  }
 }

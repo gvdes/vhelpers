@@ -347,7 +347,7 @@ const modifyRet = async () => {
   // console.log(fechas.value);
   let host = stores.value.val.ip_address;
   // let host = '192.168.10.160:1619'
-  let url = `http://${host}/storetools/public/api/reports/modifyWithdrawal`;
+  let url = `http://${host}/storetools/public/api/reports/modifyWithdrawalOficina`;
   const resp = await axios.post(url, cut.value.val);
   if (resp.status != 200) {
     console.log(resp);

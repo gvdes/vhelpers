@@ -3,7 +3,7 @@
     <q-toolbar class="">
       <q-toolbar-title>
       </q-toolbar-title>
-      <q-btn flat round dense icon="settings" class="q-mr-xs">
+      <!-- <q-btn flat round dense icon="settings" class="q-mr-xs">
         <q-menu style="width:200px;">
           <q-card class="my-card">
             <q-card-section>
@@ -21,7 +21,7 @@
             </q-card-section>
           </q-card>
         </q-menu>
-      </q-btn>
+      </q-btn> -->
 
       <q-btn flat round dense icon="receipt_long">
         <q-menu>
@@ -38,7 +38,7 @@
         </q-menu>
       </q-btn>
       <q-btn icon="delete_sweep" @click="sumPrices" flat round dense title="Eliminar Productos" />
-      <q-btn icon="notes" flat round dense title="Agregar Notas" >
+      <q-btn icon="notes" flat round dense title="Agregar Notas">
         <q-menu>
           <q-list style="min-width: 100px">
             <q-item>
@@ -54,7 +54,8 @@
 
 
     </q-toolbar>
-    <q-card class="my-card ">
+
+    <q-card class="my-card q-ml-sm q-mr-sm ">
       <q-card-section class="row">
         <div class="col">
           <div class="text-caption text-center">Dependiente</div>
@@ -69,7 +70,7 @@
       </q-card-section>
     </q-card>
     <q-separator spaced inset vertical dark />
-    <q-card class="my-card">
+    <q-card class="my-card q-ml-sm q-mr-sm">
       <q-card-section class="row">
         <div class="col ">
           <div class="text-caption text-center">{{ config.option ? 'SUBTOTAL' : 'TOTAL' }}</div>
@@ -91,7 +92,7 @@
       </q-card-section>
     </q-card>
     <q-separator spaced inset vertical dark />
-    <q-input class="q-ml-md q-mr-md" v-model="table.filter" type="text" label="Buscar" filled dense/>
+    <q-input class="q-ml-md q-mr-md" v-model="table.filter" type="text" label="Buscar" filled dense />
     <q-separator spaced inset vertical dark />
 
     <div class="row q-ml-sm q-mr-sm">
@@ -99,22 +100,24 @@
         <q-table :rows="bascketProductInVerified" :columns="columns" hide-bottom :pagination="table.pagination"
           @row-click="getProduct" :filter="table.filter" />
       </div>
-      <q-separator spaced inset vertical dark  v-if="bascketProductInVerified.length > 0" />
-      <div class="col" >
-        <q-table  :rows="bascketProductVerified" :columns="columns" hide-bottom :pagination="table.pagination"
-          @row-click="getProduct" :filter="table.filter" />
-
+      <q-separator spaced inset vertical dark v-if="bascketProductInVerified.length > 0" />
+      <div class="col">
+        <q-table :rows="bascketProductVerified" :columns="columns" hide-bottom :pagination="table.pagination"
+          @row-click="getProduct" :filter="table.filter">
+          <template v-slot:body-cell-promo="props">
+            <q-td align="center">
+              <q-badge v-if="props.row.pivot.promo_units > 0" color="red" label="OFERTA " />
+            </q-td>
+          </template></q-table>
       </div>
     </div>
 
 
     <q-dialog v-model="product.state" persistent position="bottom">
-      <viewProduct :product="product.val" :_price_list="clients.val ? clients.val._price_list : 1" :edit="product.edit"
+      <viewProduct :product="product.val" :_price_list="sale.client ? sale.client._price_list : 1" :edit="product.edit"
         @reset="reset" :products="sale.products" :rules="cashLYT.rules" @addProduct="addProdcut"
-        @deleteProduct="deleteProduct" @editProduct="editProduct" />
+        :promotion="cashLYT.promotion" @deleteProduct="deleteProduct" @editProduct="editProduct" />
     </q-dialog>
-
-
     <q-dialog v-model="clients.state">
       <q-card style="width: 700px;">
         <q-form @submit="searchClient">
@@ -224,7 +227,7 @@ const pivots = ref({
   price: 0,
   toDelivered: 0,
   total: 0,
-  units: 0,
+  units: 1,
   _price_list: 1,
   _supply_by: 1
 })
@@ -259,7 +262,7 @@ const sale = ref({
   },
   dependiente: VDB.session.credentials.staff,
   products: [],
-  observation:null,
+  observation: null,
 })
 
 const bascketProductVerified = computed(() => {
@@ -278,15 +281,14 @@ const table = ref({
     { name: 'code', label: 'Codigo', field: r => r.code, align: 'left' },
     { name: 'description', label: 'Descripcion', field: r => r.description, align: 'left' },
     // { name: 'amount', label: 'Pedido', field: r => r.pivot.units, align: 'center' },
-    { name: 'verify', label: 'Cantidad', field: r => r.pivot.toDelivered, align: 'center' },
+    { name: 'verify', label: 'Cantidad', field: r => r.pivot.units, align: 'center' },
     { name: 'price', label: 'Precio', field: r => r.pivot.price, align: 'center' },
     { name: 'bruto', label: config.option ? 'Bruto' : 'Total', field: r => r.pivot.total, align: 'center' },
     { name: 'iva', label: 'Total', field: r => r.pivot.total, align: 'center' },
     { name: 'neto', label: 'Total', field: r => r.pivot.total, align: 'center' },
-
   ],
   pagination: { rowsPerPage: 0 },
-  filter:null
+  filter: null
 })
 const tableClients = ref({
   columns: [
@@ -306,7 +308,7 @@ const tableDep = ref({
 
 const total = computed(() => Number(sale.value.products.reduce((a, e) => a + e.pivot.total, 0)).toFixed(2));
 
-const cantidad = computed(() => sale.value.products.reduce((a, e) => a + Number(e.pivot.toDelivered), 0))
+const cantidad = computed(() => sale.value.products.reduce((a, e) => a + Number(e.pivot.units), 0))
 
 const validForm = computed(() => sale.value.products.length > 0 && sale.value.dependiente && sale.value.client)
 const columns = computed(() => {
@@ -327,13 +329,19 @@ const columns = computed(() => {
     {
       name: 'verify',
       label: 'Verificado',
-      field: row => row.pivot.toDelivered,
+      field: row => row.pivot.units,
       align: 'center'
     },
     {
       name: 'price',
       label: 'Precio',
       field: row => row.pivot.price,
+      align: 'center'
+    },
+    {
+      name: 'promo',
+      label: 'Oferta',
+      field: row => Number(row.pivot.promo_amount) > 0,
       align: 'center'
     },
     {
@@ -344,6 +352,16 @@ const columns = computed(() => {
       align: 'center'
     }
   ]
+
+  // if (config.value.option) {
+  //   cols.splice(6, 0, {
+  //     name: 'iva',
+  //     label: 'IVA',
+  //     field: row => row.pivot.total * (config.value.value / 100),
+  //     format: val => `$ ${val.toFixed(2)}`,
+  //     align: 'center'
+  //   })
+  // }
 
   // // Si IVA está activo, agregamos columnas de IVA y Total con IVA
   // if (config.value.option) {
@@ -444,6 +462,10 @@ const changeNewClient = async (a, b) => {
   $q.loading.show({ message: 'Recalculando Ticket' })
   sale.value.client = b
   Resourse.actualizarPreciosProductosSales(sale.value.products, b._price_list, cashLYT.rules)
+  Resourse.aplicarPromociones(
+    sale.value.products,
+    cashLYT.promotion
+  )
   clients.value = {
     state: false,
     val: null,
@@ -493,6 +515,15 @@ const changeNewDep = (a, b) => {
 
 const addProdcut = (product) => {
   sale.value.products.push(product)
+  Resourse.aplicarPromociones(
+    sale.value.products,
+    cashLYT.promotion
+  )
+  Resourse.actualizarPreciosProductosSales(
+    sale.value.products,
+    sale.value.client._price_list,
+    cashLYT.rules
+  )
   reset();
   nextTick(() => {
     productRef.value?.focus()
@@ -500,6 +531,16 @@ const addProdcut = (product) => {
 }
 
 const editProduct = () => {
+  Resourse.aplicarPromociones(
+    sale.value.products,
+    cashLYT.promotion
+  )
+
+  Resourse.actualizarPreciosProductosSales(
+    sale.value.products,
+    sale.value.client._price_list,
+    cashLYT.rules
+  )
   nextTick(() => {
     productRef.value?.focus()
   })
@@ -509,6 +550,16 @@ const deleteProduct = (product) => {
   let inx = sale.value.products.findIndex(e => e.id == product.id)
   if (inx >= 0) {
     sale.value.products.splice(inx, 1)
+    Resourse.aplicarPromociones(
+      sale.value.products,
+      cashLYT.promotion
+    )
+
+    Resourse.actualizarPreciosProductosSales(
+      sale.value.products,
+      sale.value.client._price_list,
+      cashLYT.rules
+    )
     reset();
   }
   nextTick(() => {
@@ -562,25 +613,6 @@ const finallytck = async (pagos) => {
       observation: null
     }
     sale.value = current_sale;
-    // sale.value.client = {
-    //   // client: {
-    //     "id": 0,
-    //     "name": "PUBLICO EN GENERAL",
-    //     "phone": "",
-    //     "email": "",
-    //     "rfc": "",
-    //     "address": "{\"cp\": 6300, \"calle\": \"PLAZA DE LOS ANGELEES 5\", \"colonia\": \"Guerrero\", \"municipio\": \"Deleg. Cuauhtemoc CDMX\"}",
-    //     "created_at": "2020-12-28T07:00:00.000000Z",
-    //     "updated_at": null,
-    //     "_price_list": 1,
-    //     "store_name": null
-    //   // },
-    //   // dependiente: null,
-    //   // products: []
-    // }
-    // sale.value.products = [];
-
-
     config.value.value = 0
     config.value.option = false
     // localStorage.removeItem('current_sale')
@@ -663,6 +695,16 @@ const searchOrd = async (order) => {
           sale.value.products.push({ ...newProduct })
         }
       })
+      Resourse.aplicarPromociones(
+        sale.value.products,
+        cashLYT.promotion
+      )
+
+      Resourse.actualizarPreciosProductosSales(
+        sale.value.products,
+        sale.value.client._price_list,
+        cashLYT.rules
+      )
       reut.value.valueVal = null
       console.log(resp)
       $q.loading.hide();

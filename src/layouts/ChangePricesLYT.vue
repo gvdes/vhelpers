@@ -55,16 +55,28 @@
                 <q-btn round dense flat icon="close" @click="categories.categorias.val = null" />
               </template>
             </q-select>
-
+            <q-separator spaced inset vertical dark />
+            <q-select class="col" v-model="stocks.val" :options="stocks.opts" label="STOCK" filled option-label="label">
+              <template v-if="stocks.val" v-slot:append>
+                <q-btn round dense flat icon="close" @click="stocks.val = null" />
+              </template>
+            </q-select>
             <q-separator spaced inset vertical dark />
           </q-card-section>
         </q-card>
+
+        <q-separator spaced inset vertical dark />
+        <div class="text-center">
+          <div class="text-bold">Selecciona los Precios</div>
+          <q-separator spaced inset vertical dark />
+          <q-option-group :options="prices.opts" type="toggle" v-model="prices.val" inline />
+        </div>
         <q-separator spaced inset vertical dark />
 
         <q-table :rows="bascket" :columns="table.columns" />
 
         <q-dialog v-model="mosPDF.state" persistent>
-          <optionLabels :products="products" :prices="prices" />
+        <optionLabels :products="bascket" :prices="prices" />
         </q-dialog>
 
         <q-dialog v-model="fechas.state">
@@ -145,6 +157,10 @@ const categories = ref({
     val: null,
     opts: []
   },
+  stocks: {
+    val: null,
+    opts: []
+  }
 })
 
 const table = ref({
@@ -152,13 +168,22 @@ const table = ref({
     { name: 'code', label: 'CODIGO', field: row => row.code, align: 'left', sortable: true },
     { name: 'barcode', label: 'CB', field: row => row.barcode, align: 'left', sortable: true },
     { name: 'description', label: 'DESCRIPCION', field: row => row.description, align: 'left', sortable: true },
-    { name: 'section', label: 'SECCION', field: row => row.categories.familia.seccion.name, align: 'left', sortable: true },
-    { name: 'family', label: 'FAMILIA', field: row => row.categories.familia.name, align: 'left', sortable: true },
-    { name: 'category', label: 'CATEGORIA', field: row => row.categories.name, align: 'left', sortable: true },
+    { name: 'section', label: 'SECCION', field: row => row.category.familia.seccion.name, align: 'left', sortable: true },
+    { name: 'family', label: 'FAMILIA', field: row => row.category.familia.name, align: 'left', sortable: true },
+    { name: 'category', label: 'CATEGORIA', field: row => row.category.name, align: 'left', sortable: true },
     { name: 'locations', label: 'UBICACION', field: row => row.locations?.map(e => e.path).join('/'), align: 'center', sortable: true },
     ...priceColumns.value,
     ...stocksColumns.value
   ]
+})
+const stocks = ref({
+    val: null,
+  opts: [{ id: 1, label: 'Agotados' },
+  { id: 2, label: 'Mayor a 1' },
+  { id: 3, label: 'Mayor a 25' },
+  { id: 4, label: 'Mayor a 50' },
+  { id: 5, label: 'Mayor a 100' },
+]
 })
 
 const mosPDF = ref({
@@ -179,18 +204,51 @@ const filterPrices = computed(() => products.value.filter(e => e.prices.some(i =
 
 
 const bascket = computed(() => {
-  if (categories.value?.seccion?.val && !categories.value?.seccion?.familia?.val) {
-    return filterPrices.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
+  let filtered = filterPrices.value;
+  if (categories.value.seccion.val) {
+    filtered = filtered.filter(e =>
+      e.category?.familia?.seccion?.id === categories.value.seccion.val.id
+    );
   }
-  else if (categories.value?.seccion?.val && categories.value?.seccion?.familia?.val && !categories.value?.seccion?.familia?.categorias?.val) {
-    return filterPrices.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
+
+  if (categories.value.familias.val) {
+    filtered = filtered.filter(e =>
+      e.category?.familia?.id === categories.value.familias.val.id
+    );
   }
-  else if (categories.value?.seccion?.val && categories.value?.seccion?.familia?.val && categories.value?.seccion?.familia?.categorias?.val) {
-    return filterPrices.value.filter(e => e.categories?.familia?.seccion?.id === categories.value.seccion.val.id);
+
+  if (categories.value.categorias.val) {
+    filtered = filtered.filter(e =>
+      e.category?.id === categories.value.categorias.val.id
+    );
   }
-  else {
-    return filterPrices.value;
+
+  if (stocks.value.val) {
+    filtered = filtered.filter(e => {
+      const stock = e.stocks?.find(s => s.pivot);
+      if (!stock) return false;
+      const total = (stock.pivot.exh || 0) + (stock.pivot.gen || 0);
+
+      switch (stocks.value.val.id) {
+        case 1: return total === 0;
+        case 2: return total > 1;
+        case 3: return total > 25;
+        case 4: return total > 50;
+        case 5: return total > 100;
+        default: return true;
+      }
+    });
   }
+
+
+    return filtered.map(e => {
+      let _labelType = labelType(e.prices)
+      e._copies = 1;
+      e.type = _labelType.type;
+      e.usedPrices = _labelType.prices;
+      return e
+    });
+
 });
 
 const famiCat = computed(() => {
@@ -228,15 +286,15 @@ const init = async () => {
       e.type = _labelType.type;
       e.usedPrices = _labelType.prices;
 
-      const seccion = e.categories.familia.seccion
+      const seccion = e.category.familia.seccion
       if (seccion && !categories.value.seccion.opts.map(e => e.id).includes(seccion.id)) {
         categories.value.seccion.opts.push(seccion)
       }
-      const familia = e.categories.familia
+      const familia = e.category.familia
       if (familia && !categories.value.familias.opts.map(e => e.id).includes(familia.id)) {
         categories.value.familias.opts.push(familia)
       }
-      const categoria = e.categories
+      const categoria = e.category
       if (categoria && !categories.value.categorias.opts.map(e => e.id).includes(categoria.id)) {
         categories.value.categorias.opts.push(categoria)
       }
@@ -284,15 +342,15 @@ const buscas = async () => {
       e.type = _labelType.type;
       e.usedPrices = _labelType.prices;
 
-      const seccion = e.categories.familia.seccion
+      const seccion = e.category.familia.seccion
       if (seccion && !categories.value.seccion.opts.map(e => e.id).includes(seccion.id)) {
         categories.value.seccion.opts.push(seccion)
       }
-      const familia = e.categories.familia
+      const familia = e.category.familia
       if (familia && !categories.value.familias.opts.map(e => e.id).includes(familia.id)) {
         categories.value.familias.opts.push(familia)
       }
-      const categoria = e.categories
+      const categoria = e.category
       if (categoria && !categories.value.categorias.opts.map(e => e.id).includes(categoria.id)) {
         categories.value.categorias.opts.push(categoria)
       }

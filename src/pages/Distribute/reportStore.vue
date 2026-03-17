@@ -7,6 +7,7 @@
     }}</div>
     <q-separator spaced inset vertical dark />
     <div class="row">
+
       <q-btn color="primary" icon="event" @click="date = !date" flat rounded />
       <q-separator spaced inset vertical dark />
       <q-select v-model="workpoints.cedis" :options="workpoints.workpoints" label="Cedis" class="col"
@@ -18,7 +19,8 @@
     </div>
     <q-separator spaced inset vertical dark />
 
-    <q-table title="Comparativo" :rows="table.rows" :filter="table.filter">
+    <q-table title="Comparativo" :rows="respData" :filter="table.filter" :loading="table.loading"
+      :columns="table.columns">
       <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Buscar">
           <template v-slot:append>
@@ -26,9 +28,26 @@
           </template>
         </q-input>
         <q-separator spaced inset vertical dark />
-        <q-btn color="primary" icon="ios_share" @click="exportTable" flat :disable="table.rows.length <= 0" />
+        <q-btn color="primary" icon="ios_share" @click="exportTable" flat :disable="respData.length <= 0" />
+      </template>
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td v-for="col in props.cols" :key="col.name" :props="props">
+            {{ col.value }}
+          </q-td>
+          <q-td>
+            <q-btn size="sm" color="primary" round dense @click="props.expand = !props.expand"
+              :icon="props.expand ? 'remove' : 'add'" />
+          </q-td>
+        </q-tr>
+        <q-tr v-show="props.expand" :props="props">
+          <q-td colspan="50%">
+            <q-table :rows="props.row.comparaciones" :columns="table.columnsSub" />
+          </q-td>
+        </q-tr>
       </template>
     </q-table>
+
     <q-dialog v-model="date">
       <q-card class="my-card">
         <q-card-section>
@@ -46,15 +65,13 @@
         </q-card-section>
       </q-card>
     </q-dialog>
-
-
   </q-page>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 // import restockApi from 'src/API/RestockApi.js';
-import { useQuasar } from 'quasar';
+import { Loading, useQuasar } from 'quasar';
 import { useRestockStore } from 'stores/Restock';
 import { useRoute, useRouter } from 'vue-router';
 import { useVDBStore } from 'stores/VDB';
@@ -82,9 +99,31 @@ const match = ref({
   entradas: null
 })
 
+const respData = ref([])
+
 const table = ref({
+  columns: [
+    { name: 'partition', label: 'Particion', field: r => r.id, sortable: true, align: 'left' },
+    { name: 'status', label: 'Estado', field: r => r.status.name, sortable: true, align: 'left' },
+    { name: 'invoice', label: 'Salida', field: r => r.invoice, sortable: true, align: 'left' },
+    { name: 'invoiceReceived', label: 'Entrada', field: r => r.invoice_received, sortable: true, align: 'left' },
+    { name: 'warehouse', label: 'Almacen', field: r => r._warehouse, sortable: true, align: 'left' },
+  ],
   rows: [],
   filter: '',
+  loading: false,
+  columnsSub: [
+    { name: 'invoice', label: 'Salida', field: r => r.SALIDA_FACTURA, sortable: true, align: 'left' },
+    { name: 'code', label: 'Codigo', field: r => r.CODIGO, sortable: true, align: 'left' },
+    // { name: 'description', label: 'Descripcion', field: r => r.DESCRIPCION, sortable: true, align: 'left' },
+    { name: 'amount', label: 'Cantidad', field: r => r.CANTIDAD, sortable: true, align: 'left' },
+    { name: 'codevalid', label: 'CodigoI', field: r => r.codigoIGUAL, sortable: true, align: 'left' },
+    { name: 'amountvalid', label: 'CantiI', field: r => r.CANTIDADIGUAL, sortable: true, align: 'left' },
+    { name: 'invoicereceived', label: 'Entrada', field: r => r.ENTRADA_FACTURA, sortable: true, align: 'left' },
+    { name: 'codereceived', label: 'Codigo', field: r => r.ENTRADA_CODIGO, sortable: true, align: 'left' },
+    // { name: 'descriptionreceived', label: 'Descripcion', field: r => r.ENTRADA_DESCRIPCION, sortable: true, align: 'left' },
+    { name: 'amountreceived', label: 'Cantidad', field: r => r.ENTRADA_CANTIDAD, sortable: true, align: 'left' },
+  ]
 })
 
 const init = async () => {
@@ -107,6 +146,7 @@ const init = async () => {
 
 const getData = async () => {
   table.value.rows = []
+  table.value.loading = true;
   $q.loading.show({ message: 'Obteniendo datos' })
   let data = {
     cedis: workpoints.value.cedis,
@@ -118,169 +158,16 @@ const getData = async () => {
   console.log(resp)
   if (resp.status == 200) {
     console.log(resp.data);
-    match.value.salidas = resp.data.salidas;
-    match.value.entradas = resp.data.entradas;
+    respData.value = resp.data
     $q.loading.hide()
-    process()
+    table.value.loading = false
+    // process()
   } else {
     alert(resp)
 
   }
 }
 
-
-const process = () => {
-  $q.loading.show({ message: 'Haciendo Match' })
-
-  match.value.entradas.sort((a, b) => {
-    if (b.ARTICULOS !== a.ARTICULOS) {
-      return b.ARTICULOS.localeCompare(a.ARTICULOS); // Ordena por codigo
-    }
-    return b.SALIDA.localeCompare(a.SALIDA); // Si los codigos son iguales, ordena por factura
-  });
-
-  // Ordenar salidas por codigo y luego por factura (de mayor a menor)
-  match.value.salidas.sort((a, b) => {
-    if (b.ARTICULOS !== a.ARTICULOS) {
-      return b.ARTICULOS.localeCompare(a.ARTICULOS); // Ordena por codigo
-    }
-    return b.FACTURA.localeCompare(a.FACTURA); // Si los codigos son iguales, ordena por factura
-  });
-
-  const matchedIndices = new Set();
-
-  // Procesar todas las entradas
-  match.value.entradas.forEach(entrada => {
-    const salidaCoincidente = match.value.salidas.find((salida, index) => {
-
-      const salidaFacturaStr = ('FAC ' + salida.FACTURA).trim().toUpperCase();
-      const entradaSalidaStr = (entrada.SALIDA || '').trim().toUpperCase();
-      if (salidaFacturaStr !== entradaSalidaStr) {
-        console.log('❌ No match por FACTURA:', {
-          articulo: salida.ARTICULOS,
-          salidaFacturaStr,
-          entradaSalidaStr
-        });
-      }
-
-      const matchFound = salida.ARTICULOS === entrada.ARTICULOS && salidaFacturaStr === entradaSalidaStr;
-      // const matchFound = salida.ARTICULOS === entrada.ARTICULOS && 'FAC ' + salida.FACTURA === entrada.SALIDA;
-      if (matchFound) {
-        matchedIndices.add(index); // Marcar el índice como coincidente
-      }
-      return matchFound;
-    });
-    if (salidaCoincidente) {
-      const totalEntrada = entrada.CANTIDAD * entrada.PRECIO;
-      const totalSalida = salidaCoincidente.CANTIDAD * salidaCoincidente.PRECIO;
-
-      const codigoIgual = salidaCoincidente.ARTICULOS === entrada.ARTICULOS;
-      const cantidadIgual = salidaCoincidente.CANTIDAD === entrada.CANTIDAD;
-      const precioIgual = salidaCoincidente.PRECIO === entrada.PRECIO;
-      const totalIgual = totalSalida === totalEntrada;
-
-      table.value.rows.push({
-        SALIDA: salidaCoincidente.FACTURA,
-        FECHA: salidaCoincidente.FECHAYHORA,
-        REFERENCIA: salidaCoincidente.REFERENCIA,
-        CLIENTE: salidaCoincidente.NOMBRECLIENTE,
-        CODIGO: salidaCoincidente.ARTICULOS,
-        DESCRIPCION: salidaCoincidente.DESCRIPCION,
-        CANTIDAD: Number(salidaCoincidente.CANTIDAD).toFixed(2),
-        // PRECIO: Number(salidaCoincidente.PRECIO).toFixed(2),
-        // TOTAL: Number(totalSalida).toFixed(2),
-
-        codigoIGUAL: codigoIgual ? 'verdadero' : 'falso',
-        CANTIDADIGUAL: cantidadIgual ? 'verdadero' : 'falso',
-        PRECIOIGUAL: precioIgual ? 'verdadero' : 'falso',
-        TOTALIGUAL: totalIgual ? 'verdadero' : 'falso',
-
-        ENTRADA: entrada.FACTURA,
-        ENTRADA_SALIDA: entrada.SALIDA,
-        ENTRADA_FECHA: entrada.FECHA,
-        ENTRADA_CODIGO: entrada.ARTICULOS,
-        ENTRADA_DESCRIPCION: entrada.DESCRIPCION,
-        ENTRADA_CANTIDAD: Number(entrada.CANTIDAD).toFixed(2),
-        // ENTRADA_PRECIO: Number(entrada.PRECIO).toFixed(2),
-        // ENTRADA_TOTAL: Number(totalEntrada).toFixed(2)
-      });
-
-      // Eliminar la salida coincidente para que luego podamos procesar las que no tienen entrada
-      const index = match.value.salidas.indexOf(salidaCoincidente);
-      if (index > -1) {
-        match.value.salidas.splice(index, 1);
-      }
-    } else {
-      // No hay salida coincidente, campos de salida vacíos
-      const totalEntrada = entrada.CANTIDAD * entrada.PRECIO;
-      table.value.rows.push({
-        SALIDA: '',
-        FECHA: '',
-        REFERENCIA: '',
-        CLIENTE: '',
-        CODIGO: '',
-        DESCRIPCION: '',
-        CANTIDAD: '',
-        // PRECIO: '',
-        // TOTAL: '',
-
-        codigoIGUAL: false,
-        CANTIDADIGUAL: false,
-        PRECIOIGUAL: false,
-        TOTALIGUAL: false,
-
-        ENTRADA: entrada.FACTURA,
-        ENTRADA_SALIDA: entrada.SALIDA,
-        ENTRADA_FECHA: entrada.FECHA,
-        ENTRADA_CODIGO: entrada.ARTICULOS,
-        ENTRADA_DESCRIPCION: entrada.DESCRIPCION,
-        ENTRADA_CANTIDAD: Number(entrada.CANTIDAD).toFixed(2),
-        // ENTRADA_PRECIO: Number(entrada.PRECIO).toFixed(2),
-        // ENTRADA_TOTAL: Number(totalEntrada).toFixed(2)
-      });
-    }
-  });
-
-  // Procesar las salidas que no tienen entradas correspondientes
-  match.value.salidas.forEach((salida, index) => {
-    if (!matchedIndices.has(index)) {
-
-      const totalSalida = salida.CANTIDAD * salida.PRECIO;
-
-      table.value.rows.push({
-
-
-        SALIDA: salida.FACTURA,
-        FECHA: salida.FECHAYHORA,
-        REFERENCIA: salida.REFERENCIA,
-        CLIENTE: salida.NOMBRECLIENTE,
-        CODIGO: salida.ARTICULOS,
-        DESCRIPCION: salida.DESCRIPCION,
-        CANTIDAD: Number(salida.CANTIDAD).toFixed(2),
-        // PRECIO: Number(salida.PRECIO).toFixed(2),
-        // TOTAL: Number(totalSalida).toFixed(2),
-
-        codigoIGUAL: false,
-        CANTIDADIGUAL: false,
-        PRECIOIGUAL: false,
-        TOTALIGUAL: false,
-
-        ENTRADA: '',
-        ENTRADA_SALIDA: '',
-        ENTRADA_FECHA: '',
-        ENTRADA_CODIGO: '',
-        ENTRADA_DESCRIPCION: '',
-        ENTRADA_CANTIDAD: '',
-        // ENTRADA_PRECIO: '',
-        // ENTRADA_TOTAL: ''
-
-
-      });
-    }
-  });
-
-  $q.loading.hide();
-}
 
 const buscas = async () => {
   console.log(fechas.value);
@@ -291,19 +178,58 @@ const buscas = async () => {
 
 const exportTable = async () => {
   const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet(`Comparativo ${workpoints.value.val.name}`);
-  console.log()
-  worksheet.addTable({
-    name: 'Comparativo',
-    ref: 'A1',
-    headerRow: true,
-    totalsRow: false,
-    style: {
-      // theme: 'TableStyleBlue2',
-      showRowStripes: true,
-    },
-    columns: Object.keys(table.value.rows[0]).map(e => { return { name: e, filterButton: true } }),
-    rows: table.value.rows.map(e => Object.values(e)),
+  const worksheet = workbook.addWorksheet('SALIDASVSENTRADAS');
+
+  // Encabezados
+  const headers = [
+    'PARTICION', 'STATUS', 'SALIDA', 'ENTRADA', 'ALMACEN',
+    'SALIDA FACTURA', 'SALIDAFECHA', 'REFERENCIA',
+    'CODIGO', 'DESCRIPCION', 'CANTIDAD',
+    'CODIGOIGUAL', 'CANTIDADIGUAL', 'PRECIOIGUAL', 'TOTALIGUAL',
+    'ENTRADA FACTURA', 'ENTRADA SALIDA', 'ENTRADA FECHA',
+    'ENTRADA CODIGO', 'ENTRADA DESCRIPCION', 'ENTRADA CANTIDAD'
+  ];
+
+  worksheet.addRow(headers);
+
+  // Definir columna de particion como ancho mayor
+  worksheet.getColumn(1).width = 15;
+
+  respData.value.forEach((partition) => {
+    const products = partition.comparaciones;
+    const startRow = worksheet.lastRow.number + 1;
+
+    products.forEach((p) => {
+      worksheet.addRow([
+        partition.id, // aquí luego combinamos las celdas
+        partition.status.name,
+        partition.invoice,
+        partition.invoice_received,
+        partition._warehouse,
+        p.SALIDA_FACTURA,
+        p.SALIDA_FECHA,
+        p.REFERENCIA,
+        p.CODIGO,
+        p.DESCRIPCION,
+        p.CANTIDAD,
+        p.codigoIGUAL ? 'VERDADERO' : 'FALSO',
+        p.CANTIDADIGUAL ? 'VERDADERO' : 'FALSO',
+        p.PRECIOIGUAL ? 'VERDADERO' : 'FALSO',
+        p.TOTALIGUAL ? 'VERDADERO' : 'FALSO',
+        p.ENTRADA_FACTURA,
+        p.ENTRADA_SALIDA,
+        p.ENTRADA_FECHA,
+        p.ENTRADA_CODIGO,
+        p.ENTRADA_DESCRIPCION,
+        p.ENTRADA_CANTIDAD
+      ]);
+    });
+    const endRow = worksheet.lastRow.number;
+    ['A', 'B', 'C', 'D', 'E'].forEach(col => {
+      worksheet.mergeCells(`${col}${startRow}:${col}${endRow}`);
+      const cell = worksheet.getCell(`${col}${startRow}`);
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
   });
 
   worksheet.columns.forEach(column => {
@@ -316,9 +242,6 @@ const exportTable = async () => {
     });
     column.width = maxLength < 10 ? 10 : maxLength; // Ajusta el ancho mínimo y máximo
   });
-
-
-
   const downloadExcel = async () => {
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/octet-stream' });
@@ -326,7 +249,7 @@ const exportTable = async () => {
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Comparativo ${workpoints.value.val.name} ${typeof (fechas.value) == 'object' ? `Del ${fechas.value.from} a ${fechas.value.to}` : fechas.value}.xlsx`;
+    a.download = `SalidasVSEntradas ${workpoints.value.val.name} ${typeof (fechas.value) == 'object' ? `Del ${fechas.value.from} a ${fechas.value.to}` : fechas.value}.xlsx`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

@@ -45,20 +45,20 @@
 
           <div class="row items-center justify-center q-gutter-md">
             <q-btn flat color="negative" icon="remove" class="text-h5"
-              @click="product.pivot.amountDelivered > 1 ? product.pivot.amountDelivered-- : ''" />
+              @click="product.pivot.units > 1 ? product.pivot.units-- : ''" />
 
-            <q-input v-model.number="product.pivot.amountDelivered" type="number" outlined min="1" step="1"
+            <q-input v-model.number="product.pivot.units" type="number" outlined min="1" step="1"
               input-class="text-center text-h3" style="width: 100px" autofocus
               @keydown.enter="edit ? editProduct() : addProduct()"
               @keypress="($event.key === '.' || $event.key === '-') && $event.preventDefault()" @update:model-value="val => {
                 if (!val) {
-                  product.pivot.amountDelivered = 1
+                  product.pivot.units = 1
                 }
                 else if (val < 1) {
-                  product.pivot.amountDelivered = 1
+                  product.pivot.units = 1
                 }
                 else if (!Number.isInteger(val)) {
-                  product.pivot.amountDelivered = Math.floor(val)
+                  product.pivot.units = Math.floor(val)
                 }
               }" />
 
@@ -67,7 +67,7 @@
 
             <!-- <input /> -->
 
-            <q-btn flat color="positive" icon="add" class="text-h5" @click="product.pivot.amountDelivered++" />
+            <q-btn flat color="positive" icon="add" class="text-h5" @click="product.pivot.units++" />
           </div>
         </div>
       </div>
@@ -89,7 +89,6 @@ import { useVDBStore } from 'stores/VDB';
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";
 import { exportFile, useQuasar, date } from 'quasar';
 import { computed, ref } from 'vue';
-import orderApi from 'src/API/orderApi';
 import Resourse from 'src/API/resoursesOrder';
 
 const VDB = useVDBStore();
@@ -102,15 +101,16 @@ const props = defineProps({
   _price_list: { type: Number, default: 1 },
   edit: { type: Boolean, default: false },
   products: { type: Array, default: [] },
-  rules: { type: Array, default: [] }
+  rules: { type: Array, default: [] },
+  promotion: { type: Array, default: [] },
 })
 
 
 
 const emit = defineEmits(['reset', 'addProduct', 'deleteProduct', 'editProduct'])
 
-const validDelivered = computed(() => !props.product.pivot.amountDelivered || props.product.pivot.amountDelivered <= 0)
-const totalPzs = computed(() => props.product.pivot.amountDelivered)
+const validDelivered = computed(() => !props.product.pivot.units || props.product.pivot.units <= 0)
+const totalPzs = computed(() => props.product.pivot.units)
 
 
 const mostPrice = computed(() => {
@@ -122,13 +122,14 @@ const mostPrice = computed(() => {
 });
 
 const selectPrice = computed(() => {
+  console.log(props._price_list)
   if (props._price_list <= 3) {
     // if ((totalPzs.value >= props.product.pieces && (props.product.pivot._supply_by == 1 || props.product.pivot._supply_by == 2)) || props.product.pivot._supply_by == 3) {
     //   return 4;
     // }
     if (Resourse.verificarPrecioCaja(props.products, props.product, props.rules)) {
       return 4;
-    }  else if (Resourse.verificarPrecioDocena(props.products, props.product, props.rules)) {
+    } else if (Resourse.verificarPrecioDocena(props.products, props.product, props.rules)) {
       return 3;
     } else if (Resourse.verificarPrecioMayoreo(props.products, props.product, props.rules)) {
       return 2;
@@ -154,14 +155,15 @@ const editProduct = async () => {
   props.product.pivot.total = total
   $q.loading.hide();
   reset()
+  Resourse.aplicarPromociones(props.products, props.promotion)
   Resourse.actualizarPreciosProductosSales(props.products, props._price_list, props.rules)
   emit('editProduct')
 
 }
 
 const addProduct = async () => {
-  if (!props.product.pivot.amountDelivered || props.product.pivot.amountDelivered < 1) {
-    props.product.pivot.amountDelivered = 1
+  if (!props.product.pivot.units || props.product.pivot.units < 1) {
+    props.product.pivot.units = 1
   }
   $q.loading.show({ message: 'Agregando producto' })
   let price = props.product.prices.find(e => e.id == selectPrice.value).pivot.price
@@ -174,6 +176,7 @@ const addProduct = async () => {
   console.log(props.product)
   emit('addProduct', props.product);
   $q.loading.hide()
+  Resourse.aplicarPromociones(props.products, props.promotion)
   Resourse.actualizarPreciosProductosSales(props.products, props._price_list, props.rules)
   // }
 }
@@ -183,6 +186,7 @@ const deleteProduct = async () => {
 
   emit('deleteProduct', props.product);
   $q.loading.hide()
+  Resourse.aplicarPromociones(props.products, props.promotion)
   Resourse.actualizarPreciosProductosSales(props.products, props._price_list, props.rules)
   // }
 }

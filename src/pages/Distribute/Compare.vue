@@ -196,6 +196,7 @@ const init = async () => {
   $restockStore.setShowLYT(true)
   $restockStore.setTitle('Modificaciones')
   $restockStore.setButtonShow(true)
+  $restockStore.setButtonShowAdd(false)
 }
 
 const table = ref({

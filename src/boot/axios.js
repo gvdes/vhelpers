@@ -1,13 +1,10 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
+import { LocalStorage } from 'quasar'
 
-// Be careful when using SSR for cross-request state pollution
-// due to creating a Singleton instance here;
-// If any client changes this (global) instance, it might be a
-// good idea to move this instance creation inside of the
-// "export default () => {}" function below (which runs individually
-// for each client)
+// const ipAssist = 'http://192.168.10.160:1920'
 
+<<<<<<< HEAD
 //conexion vizapi
 // const vizapi = axios.create({ baseURL: 'http://192.168.10.189/vizapi/public/LVH' });
 // const vizapi = axios.create({ baseURL: 'http://192.168.10.160:1619/vizapi/public/LVH' });
@@ -25,22 +22,52 @@ const vizapi = axios.create({ baseURL: 'https://vizapp.gvizpru.com/api/LVH' });
 // const assist = axios.create({ baseURL: 'http://192.168.10.238:2902/Assist/public/api'});
 const assist = axios.create({ baseURL: 'https://vhelpers.gvizpru.com/api/api'});
 
+=======
+// const ipAssist = 'http://192.168.10.238:2902'ESTEYANO
+
+//const ipAssist = 'http://192.168.10.142:9000/api'
+
+const ipAssist = 'https://vhelpers.grupovizcarra.mx/assist'
+
+// const assist = axios.create({ baseURL: `${ipAssist}/assist/public/api` });
+const assist = axios.create({ baseURL: `${ipAssist}` });
+// const assist = axios.create({ baseURL: `${ipAssist}/Assist/public/api` });
+// const assist = axios.create({ baseURL: `${ipAssist}/api/api/` });
+>>>>>>> origin/main
 
 
+const vizmedia = `https://mersbock.s3.us-east-2.amazonaws.com/vhelpers`;
 
-export default boot(({ app }) => {
-  // for use inside Vue files (Options API) through this.$axios and this.$api
-
-  app.config.globalProperties.$axios = axios
-  // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
-  //       so you won't necessarily have to import axios in each vue file
-
-  app.config.globalProperties.$api = vizapi
-  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
-  //       so you can easily perform requests against your app's API
-  app.config.globalProperties.$assist = assist
-  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
-  //       so you can easily perform requests against your app's API
+export default boot(({ router }) => {
+  // Interceptor de assist
+  assist.interceptors.response.use(
+    response => response,
+    error => {
+      if (!error.response) {
+        console.error('Servidor no disponible o network error:', error.message)
+        alert('El servidor no está disponible. Verifica tu conexión o intenta más tarde.')
+        return Promise.reject(error)
+      }
+      if (error.response && error.response.status === 401) {
+        if (error.response.data === "Token expired.") {
+          LocalStorage.clear('auth')
+          alert('Tu sesión expiró, favor de ingresar de nuevo')
+          router.push('/auth')
+        } else if (error.response.data.error === "Acceso denegado") {
+          LocalStorage.clear('auth')
+          alert('Ya no puedes ingresar a la aplicacion');
+          router.push('/auth')
+        }
+      } else if (error.response && error.response.status === 403) {
+        if (error.response.data.error === "Acceso denegado: IP no permitida") {
+          LocalStorage.clear('auth')
+          alert('Te estas conectando fuera de tu VPN')
+          router.push('/auth')
+        }
+      }
+      return Promise.reject(error)
+    }
+  )
 })
 
-export { vizapi, assist }
+export { assist, vizmedia }

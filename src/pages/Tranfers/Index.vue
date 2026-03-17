@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <q-header class="transparent text-dark" bordered>
+    <q-header :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'" bordered>
       <UserToolbar />
       <q-separator />
       <div class=" row justify-between">
@@ -112,7 +112,9 @@ const fechas = ref(null);
 const addTransfer = ref(false);
 const transfers = ref([]);
 const warehouses = ref([]);
-
+const warehauseSucursales = computed(() => warehouses.value.filter(w => [1, 2].includes(w.id)))
+const warehauseCedis = computed(() => warehouses.value.filter(w => [ 5, 6, 7, 8, 9].includes(w.id)))
+const warehauseGerente = computed(() => warehouses.value.filter(w => [1, 2, 3, 4] .includes(w.id)))
 const nwTransfer = ref({
   _origin: null,
   _destiny: null,
@@ -121,7 +123,14 @@ const nwTransfer = ref({
 
 
 const validTransfer = computed(() => nwTransfer.value._origin && nwTransfer.value._destiny && nwTransfer.value.notes)
-const userWarehouse = computed(() => VDB.session.rol !== 'alm' && VDB.session.rol !== 'vld'  ? warehouses.value.filter(w => [1, 2, 3, 4].includes(w.id)) : warehouses.value.filter(w => [5, 6, 7].includes(w.id)))
+const userWarehouse = computed(() => (VDB.session.store.id === 1 || VDB.session.store.id === 2 || VDB.session.store.id === 21 || VDB.session.store.id === 22 )
+    ? warehauseCedis.value
+    : VDB.session.rol === 'gro' || VDB.session.rol ==='des' || VDB.session.rol === 'root'
+          ? warehauseGerente.value
+      : warehauseSucursales.value
+
+);
+
 
 const index = async () => {
   console.log("Recibiendo Datos :)")
@@ -166,15 +175,15 @@ const reset = () => {
 }
 
 const optionDisable = (val) => {
+
   return (
     val.id === nwTransfer.value._origin.id ||
-    (VDB.session.rol !== 'aud' && val.id === 4)
+    ((VDB.session.rol !== 'gro'  && VDB.session.rol !== 'jfz' &&  VDB.session.rol !== 'axo' && VDB.session.rol !== 'des' ) && val.id === 4)
   );
 }
 
 const optionDisAud = (val) => {
-  console.log(val)
-  if (VDB.session.rol != 'aud' && val.id == 4) {
+  if (val.id == 4 && (VDB.session.rol != 'gro' && VDB.session.rol  != 'jfz' && VDB.session.rol != 'des' )  ) {
     return true
   } else {
     return false
@@ -207,22 +216,16 @@ const buscas = async () => {
 
 const direct = (transfer) => {
   console.log(transfer);
-  let oid = transfer.id
-  console.log((transfer.origin.id !== 4 && transfer.destiny.id !== 4))
+
+  const rol = VDB.session.rol;
+  const { origin, destiny, id } = transfer;
+
   if (
-    VDB.session.rol == 'aud' ||  VDB.session.rol == 'root' || VDB.session.rol == 'audc'
+    ['root', 'gro', 'des'].includes(rol) ||
+    (['aux', 'gen', 'jfz', 'axo'].includes(rol) && warehauseSucursales.value.some(w => w.id === origin.id || w.id === destiny.id)) ||
+    (['alm', 'vld', 'gce'].includes(rol) && warehauseCedis.value.some(w => w.id === origin.id || w.id === destiny.id))
   ) {
-    $router.push(`transfers/${oid}`);
-  } else if (
-    (VDB.session.rol == 'aux' || VDB.session.rol == 'gen') &&
-    (transfer.origin.id !== 4 && transfer.destiny.id !== 4)
-  ) {
-    $router.push(`transfers/${oid}`);
-  } else if (
-   ( VDB.session.rol == 'alm' || VDB.session.rol == 'vld'  ) &&
-    ([5, 6,7].includes(transfer.destiny.id) || [5, 6,7].includes(transfer.origin.id))
-  ) {
-    $router.push(`transfers/${oid}`);
+    $router.push(`transfers/${id}`);
   } else {
     $q.notify({
       message: 'No tienes acceso a este traspaso',
@@ -230,8 +233,8 @@ const direct = (transfer) => {
       position: 'center'
     });
   }
+};
   // console.log(allowedIds.includes(transfer.origin.id) || allowedIds.includes(transfer.destiny.id));
-}
 
 index();
 

@@ -1,12 +1,12 @@
 <template>
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
-    <q-header class="bg-grey-3 text-dark" bordered>
+    <q-header class="" bordered>
       <UserToolbar />
       <q-separator />
       <q-toolbar class="justify-between row">
         <div class="col">
-          <span class="text-grey">Helpers</span>
-          <q-icon name="navigate_next" color="primary" />
+          <span class="">Helpers</span>
+          <q-icon name="navigate_next" color="" />
           <span class="text-h6">Información Producto</span>
         </div>
       </q-toolbar>
@@ -60,7 +60,7 @@
               <q-card-section>
                 <q-table :rows="product.details" hideBottom :columns="table.columns" :pagination="{ rowsPerPage: 0 }">
                   <template v-slot:bottom-row>
-                    <q-tr class="text-bold bg-yellow-12">
+                    <q-tr class="text-bold text-dark bg-yellow-12">
                       <q-td class="text-center">
                         Total
                       </q-td>
@@ -81,7 +81,7 @@
           <q-separator spaced inset vertical dark />
           <div class="row q-ml-sm">
             <q-card class="col">
-              <ProductAutocomplete :checkState="false" @input="add" with_prices_Invoice with_stock @agregar="agregar"
+              <ProductAutocomplete :checkState="false" @input="add" with_prices_Invoice with_stock
                 with_locations />
             </q-card>
             <q-separator spaced inset vertical dark />
@@ -95,7 +95,7 @@
 
 <script setup>
 import { useVDBStore } from 'stores/VDB';
-import ProductAutocomplete from 'src/components/ProductsAutocomplete.vue';// encabezado aoiida
+import ProductAutocomplete from 'src/components/Products/ProductAutocomplete.vue';// encabezado aoiida
 import UserToolbar from "src/components/UserToolbar.vue";
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";
 import { exportFile, useQuasar, date } from 'quasar';
@@ -116,16 +116,16 @@ const table = ref({
   ]
 })
 const add = (opt) => {
-  //CODIGO DE BARRAS
+  // CODIGO DE BARRAS
   console.log(opt);
   getProduct(opt.id)
 }
 
-const agregar = (ops) => {
-  //BUSQUEDA
-  console.log(ops)
-  getProduct(ops.id)
-}
+// const agregar = (ops) => {
+//   //BUSQUEDA
+//   // console.log(ops)
+//   // getProduct(ops.id)
+// }
 
 const getProduct = async (id) => {
   $q.loading.show({ message: 'Obteniendo Datos' });

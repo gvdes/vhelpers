@@ -45,7 +45,7 @@
             dense @update:model-value="typeChange" />
           <q-separator spaced inset vertical dark />
           <q-select class="col" v-model="supply.val" :options="supply.opts" label="Surtir Por" filled dense
-            option-label="name" :disable="typeSurti.val.id == 1" @update:model-value="processProduct"  />
+            option-label="name"  @update:model-value="processProduct"  />
         </div>
 
         <q-separator spaced inset vertical dark />
@@ -164,18 +164,17 @@
                 {{ props.row.description }}
               </q-td>
               <q-td key="Seccion" :props="props">
-
-                {{ props.row.categories.familia.seccion.name }}
+                {{ props.row.category?.familia?.seccion?.name }}
 
               </q-td>
               <q-td key="Familia" :props="props">
 
-                {{ props.row.categories.familia.name }}
+                {{ props.row.category?.familia?.name }}
 
               </q-td>
               <q-td key="Categoria" :props="props">
 
-                {{ props.row.categories.name }}
+                {{ props.row.category?.name }}
 
               </q-td>
               <q-td key="pieces" :props="props">
@@ -358,9 +357,9 @@ const table = ref({
   columns: [
     { name: 'codigo', required: true, label: 'Codigo', align: 'left', sortable: true, field: row => row.code },
     { name: 'description', label: 'Descripcion', align: 'left', sortable: true, field: row => row.description },
-    { name: 'Seccion', label: 'Seccion', align: 'left', sortable: true, field: row => row.categories.familia.seccion.name },
-    { name: 'Familia', label: 'Familia', align: 'left', sortable: true, field: row => row.categories.familia.name },
-    { name: 'Categoria', label: 'Categoria', align: 'left', sortable: true, field: row => row.categories.name },
+    { name: 'Seccion', label: 'Seccion', align: 'left', sortable: true, field: row => row.category?.familia?.seccion?.name },
+    { name: 'Familia', label: 'Familia', align: 'left', sortable: true, field: row => row.category?.familia?.name },
+    { name: 'Categoria', label: 'Categoria', align: 'left', sortable: true, field: row => row.category?.name },
     { name: 'pieces', label: 'PXC', align: 'center', sortable: true, field: row => row.pieces },
     { name: 'locations', label: 'Ubicacion', align: 'center', sortable: true, field: row => row.locations },
     { name: 'cedis', label: 'Ced CJ', align: 'center', sortable: true, field: row => row.cedis },
@@ -423,7 +422,7 @@ const suggested = computed(() => {
       code: product.code,
       cost: product.cost,
       description: product.description,
-      categories: product.categories,
+      category: product.category,
       pieces: product.pieces,
       min: Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.min)),
       max: Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)),
@@ -431,6 +430,7 @@ const suggested = computed(() => {
       texcoco: CajasTexcoco,
       brasil: CajasBrasil,
       sucursal: Sucursal,
+      transito:Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit)),
       percentage: Porcentaje,
       required: product.required,
       locations: product.locations
@@ -441,7 +441,7 @@ const suggested = computed(() => {
       if (VDB.session.store.id_viz == 1) {
         return (e.texcoco) > 0 && e.percentage <= percentage.value.val
       } else {
-        return (e.cedis + e.texcoco) > 0 && e.percentage <= percentage.value.val
+        return (e.cedis + e.texcoco) > 0 && e.percentage <= percentage.value.val && e.sucursal <= 0
       }
     } else if (condition.value.state == 'minmax') {
       if (VDB.session.store.id_viz == 1) {
@@ -591,15 +591,15 @@ const reportLocations = async () => {
     console.log(resp);
     products.value = resp
     products.value.forEach(e => {
-      const seccion = e.categories.familia.seccion
+      const seccion = e.category.familia.seccion
       if (seccion && !categoriesLocations.value.seccion.opts.map(e => e.id).includes(seccion.id)) {
         categoriesLocations.value.seccion.opts.push(seccion)
       }
-      const familia = e.categories.familia
+      const familia = e.category.familia
       if (familia && !categoriesLocations.value.familias.opts.map(e => e.id).includes(familia.id)) {
         categoriesLocations.value.familias.opts.push(familia)
       }
-      const categoria = e.categories
+      const categoria = e.category
       if (categoria && !categoriesLocations.value.categorias.opts.map(e => e.id).includes(categoria.id)) {
         categoriesLocations.value.categorias.opts.push(categoria)
       }
@@ -699,13 +699,14 @@ const download = async () => {
       { name: 'Texcoco CJ', filterButton: true },
       { name: 'Brasil CJ', filterButton: true },
       { name: 'Sucursal', filterButton: true },
+      { name: 'Transito', filterButton: true },
       { name: 'MIN', filterButton: true },
       { name: 'MAX', filterButton: true },
       { name: 'Porcentaje', filterButton: true },
       { name: 'Solicitado', filterButton: true },
 
     ],
-    rows: bascket.value.map(e => { return [e.code, e.description, e.categories.familia.seccion.name, e.categories.familia.name, e.categories.name, e.pieces, e.locations.map(e => e.path).join(", "), e.cedis, e.texcoco, e.brasil, e.sucursal, e.min, e.max, e.percentage, e.required] }),
+    rows: bascket.value.map(e => { return [e.code, e.description, e.category?.familia?.seccion?.name, e.category?.familia?.name, e.category?.name, e.pieces, e.locations.map(e => e.path).join(", "), e.cedis, e.texcoco, e.brasil, e.sucursal, e.transito , e.min, e.max, e.percentage, e.required] }),
   });
 
   worksheet.columns.forEach(column => {
@@ -761,25 +762,6 @@ const impre = async () => {
   }
 }
 
-// const processProduct = async () => {
-//   console.log(condition.value.state)
-//   if (products.value.length > 0) {
-//     if (condition.value.state == 'minmax') {
-//       return products.value.forEach(e => {
-//         // console.log(Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces)))
-//         let CajasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces));
-//         let maxCajas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces))
-//         if ((maxCajas - CajasSucursal) >= 1) {
-//           e.required = Math.round(maxCajas - CajasSucursal);
-//         } else {
-//           e.required = 1
-//         }
-//       })
-//     } else {
-//       return products.value.forEach(e => e.required = 1)
-//     }
-//   }
-// }
 
 const processProduct = async () => {
   console.log(condition.value.state)
@@ -787,8 +769,8 @@ const processProduct = async () => {
     if (condition.value.state == 'minmax') {
       if (supply.value.val.id == 3) {
         return products.value.forEach(e => {
-          let CajasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces));
-          let maxCajas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces))
+          let CajasSucursal = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces);
+          let maxCajas = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces)
           if ((maxCajas - CajasSucursal) >= 1) {
             e.required = Math.round(maxCajas - CajasSucursal);
           } else {
@@ -828,14 +810,14 @@ init()
 
   td:first-child
     /* bg color is important for td; just specify one */
-    background-color: #FBFBFB
+
 
   tr th
     position: sticky
     /* higher than z-index for td below */
     z-index: 2
     /* bg color is important; just specify one */
-    background: #FBFBFB
+
 
   /* this will be the loading indicator */
   thead tr:last-child th

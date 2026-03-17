@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-toolbar-title>
           Pedido {{ $route.params.chk }} <span class="text--3" v-if="order">- {{ order.requisition.from.alias
-          }}</span>
+            }}</span>
         </q-toolbar-title>
         <div class="text-bold text-h6">Diferencias : {{ diff }}</div>
         <div v-if="order?.invoice_received" class="text-white">
@@ -237,9 +237,9 @@ const counteds = computed(() => productsdb.value.filter(p => typeof p.pivot.toRe
 
 const basket = computed(() => {
   let target = finder.value.toUpperCase().trim();
-  return target.length ? productsdb.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)))) : productsdb.value;
+  return target.length ? productsdb.value.filter(p => (p.code.match(target) || (p.barcode && p.barcode.match(target)) || p.variants.some(e => e.barcode.toUpperCase().includes(target)))) : productsdb.value;
 });
-const totalpieces = computed(() => basket.value.reduce((am, p) => (am + (p.pivot._supply_by == 3 ? (p.pivot.amount * p.pieces) : p.pivot.amount)), 0));
+const totalpieces = computed(() => basket.value.reduce((am, p) => (am + (p.pivot._supply_by == 3 ? (p.pivot.amount * p.pivot.ipack) : p.pivot.amount)), 0));
 const diff = computed(() => productsdb.value.reduce((am, p) => am + Number(p.pivot.toReceived !== p.pivot.toDelivered), 0))
 
 const init = async () => {
@@ -261,10 +261,10 @@ const init = async () => {
         order.value = resp.data.order
         $q.loading.hide();
       }
-    }else{
-        $router.push('/distribute/checkin')
-        $q.notify({message:'No perteneces a la sucursal',type:'negative',position:'center'})
-        $q.loading.hide();
+    } else {
+      $router.push('/distribute/checkin')
+      $q.notify({ message: 'No perteneces a la sucursal', type: 'negative', position: 'center' })
+      $q.loading.hide();
     }
   } else {
     alert(`Error ${resp.status}: ${resp.response.data} `);
@@ -322,7 +322,7 @@ const openEditor = (item) => {
 const searchToSet = () => {
   let target = finder.value.toUpperCase().trim();
   if (target.length) {
-    let item = basket.value.length == 1 ? basket.value[0] : basket.value.find(p => (p.code == target || p.barcode == target));
+    let item = basket.value.length == 1 ? basket.value[0] : basket.value.find(p => (p.code == target || p.barcode == target || p.variants.some(e => e.barcode.toUpperCase().includes(target))));
     if (item) { openEditor(item); } else {
       $q.notify({
         message: `Sin coincidencias para <b>${target}</b>`,
@@ -385,15 +385,17 @@ const tryGenEntry = async () => {
       console.log(response.data)
       $sktRestock.emit("orderpartition_refresh", { order: response.data.order })
       let message = await diff.value > 0 ? RestockApi.sendMessageDiff(response.data.order) : '';
-      let freshTransit = await RestockApi.refresTransit({id:response.data.order.id});
-      console.log(freshTransit)
+      if (order.value._warehouse == 'GEN') {
+        let freshTransit = await RestockApi.refresTransit({ id: response.data.order.id });
+        console.log(freshTransit)
+      }
       console.log(message);
       if (order.value.requisition.from._type != 1) {
         // InvoicePdf.invoiceFormat(response.data.order)
-       await createEntryFS(response.data.order)
+        await createEntryFS(response.data.order)
       } else {
         // InvoicePdf.transferFormat(response.data.order)
-       await createTransferFS(response.data.order)
+        await createTransferFS(response.data.order)
       }
     } else { alert(`Error ${response.status}: ${response.data}`) };
   } else { console.log(resp) }

@@ -14,7 +14,7 @@
         <div>Helpers <q-icon name="navigate_next" color="primary" /> <span class="text-h6">TICKETS</span></div>
         <q-btn color="primary" icon="add">
           <q-menu>
-            <div class="q-pa-md bg-grey-2 text-primary">Buscar Folio</div>
+            <div class="q-pa-md  text-primary">Buscar Folio</div>
             <q-separator />
             <q-form dense @submit="search" class="q-gutter-md q-pa-md">
               <q-select v-model="cashdesk" :options="cashdesks" label="Serie" autofocus />
@@ -28,7 +28,7 @@
       </q-toolbar>
 
 
-      <q-page class="bg-grey-3" padding>
+      <q-page class="" padding>
         <!-- comienza div de opciones hacia el ticket contiene el envio de reimpresion y la devolucion -->
         <div class="row justify-center">
           <transition name="bounce">
@@ -51,7 +51,7 @@
                   <q-item-section>$ {{ ticket.body.total }}</q-item-section>
                 </q-item>
                 <q-separator />
-                <q-item class="bg-indigo-2">
+                <q-item class="" :class="$q.dark.isActive ? 'text-white bg-indigo' : 'text-dark bg-indigo-2'">
                   <q-item-section>Movimiento</q-item-section>
                   <q-item-section>
                     <q-select dense v-model="mod" :options="listmod" label="Seleccione" filled autofocus />

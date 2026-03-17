@@ -16,6 +16,9 @@ export default{
   create(data){
     return assist.post(`/admincli`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  updateImageClient(data){
+    return assist.post(`/admincli/updateImageClient`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
   addClient(data){
     return assist.post(`/admincli/addClient`,data).then( done=>done.data ).catch( fail =>  { return {fail}} );
   },
@@ -31,6 +34,14 @@ export default{
   synclient(){
     return assist.get(`/admincli/syncClient`).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  getClients(){
+    return assist.get(`/Client`).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+  getSalesC(data){
+    return assist.post(`/Client/getSalesC`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+
+
 
 
 }

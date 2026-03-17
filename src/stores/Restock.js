@@ -10,8 +10,10 @@ export const useRestockStore = defineStore('restock', {
     users: [],
     tittle: null,
     showButton: false,
+    showButtonAdd: false,
     showLoad:false,
-    showLYT:true
+    showLYT:true,
+    cedis:[]
   }),
   getters: {
     ordersSize(state) { return state.ordersdb.length; },
@@ -79,11 +81,23 @@ export const useRestockStore = defineStore('restock', {
     setButtonShow(simon) {
       this.showButton = simon
     },
+    setButtonShowAdd(simon) {
+      this.showButtonAdd = simon
+    },
     setShowLoad(simon){
       this.showLoad = simon
     },
     setShowLYT(simon){
       this.showLYT = simon
+    },
+    setCedis(data){
+      this.cedis = data
+    },
+    setStatusPartition(data){
+     let inx  = this.partitions.findIndex(e => e.id == data.id)
+     if(inx >= 0){
+      this.partitions[inx]._blocked = data.status
+     }
     }
   }
 })

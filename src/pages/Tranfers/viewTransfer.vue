@@ -1,6 +1,6 @@
 <template>
   <q-page padding v-if="traspaso">
-    <q-header reveal bordered class="bg-white text-black">
+    <q-header reveal bordered :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'">
       <q-toolbar class="justify-between">
         <q-btn color="primary" icon="arrow_back" flat @click="$router.push('/transfers')" round />
         <div>{{ traspaso.store.name }} </div>
@@ -200,7 +200,7 @@ const init = async () => {
     console.log(resp)
   } else {
     console.log(resp)
-    if (VDB.session.rol == 'aud' || VDB.session.rol == 'root' || VDB.session.rol == 'audc') {
+    if (VDB.session.rol == 'gro' || VDB.session.rol == 'root' || VDB.session.rol == 'des' || VDB.session.rol == 'jfz' || VDB.session.rol == 'axo') {
       traspaso.value = resp
       products.value = resp.bodie
       console.log(traspaso.value)
@@ -208,7 +208,7 @@ const init = async () => {
       traspaso.value = resp
       products.value = resp.bodie
       console.log(traspaso.value)
-    } else if (VDB.session.rol == 'alm' || VDB.session.rol == 'vld' && ([5, 6].includes(resp.destiny.id) || [5, 6].includes(resp.origin.id))) {
+    } else if (VDB.session.rol == 'alm' || VDB.session.rol == 'vld' || VDB.session.rol == 'gce' && ([5, 6, 7, 8, 9].includes(resp.destiny.id) || [5, 6, 7, 8, 9].includes(resp.origin.id))) {
       traspaso.value = resp
       products.value = resp.bodie
       console.log(traspaso.value)

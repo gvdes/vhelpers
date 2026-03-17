@@ -226,7 +226,8 @@ const transferFormat = async (invoice) => {
 
   const doc = new jsPDF();
   let chunks = [];
-  const product = invoice.products.map(e => {
+  const filterPro = invoice.products.filter(e => e.pivot.checkout == 1)
+  const product = filterPro.map(e => {
     return {
       code: e.code,
       caja: e.pivot._supply_by == 3 ? e.pivot.toDelivered : 1,

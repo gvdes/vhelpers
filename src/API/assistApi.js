@@ -9,5 +9,8 @@ export default{
   },
   getSales(data){
     return assist.post(`/sales/getSale`,data).then( done=>done.data ).catch( fail => { return {fail}} );
-  }
+  },
+  GetReportVhelp(data){
+    return assist.get(`/sales/GetReportVhelp/${data}`).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
 }

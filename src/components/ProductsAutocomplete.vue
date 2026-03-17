@@ -40,7 +40,6 @@
             <!-- <q-item-section avatar v-if="with_image">
               <q-img src="~/assets/_boxprod.png" width="35px" />
             </q-item-section> -->
-
             <q-item-section>
               <div class="row items-center justify-between no-wrap QuickRegular">
                 <div class="col">
@@ -54,7 +53,7 @@
                                   <div>{{block(scope.opt.stateToVal)}}</div> -->
                 </div>
 
-                <q-icon name="fas fa-circle" class="q-pl-md" :class="`bullet-${scope.opt.stateToVal.state.id}`"
+                <q-icon name="fas fa-circle" class="q-pl-md" :class="`bullet-${scope.opt.stateToVal.state + 1}`"
                   size="10px" />
               </div>
             </q-item-section>
@@ -86,10 +85,12 @@ const props = defineProps({
   "with_prices": { default: null, type: Boolean },
   "with_prices_Invoice": { default: null, type: Boolean },
   "with_stock": { default: null, type: Boolean },
+  "with_stock_cedis": { default: null, type: Number },
   "checkState": { default: true, type: Boolean },
   "workpointStatus": { default: null, type: [Array, String] },
   "withHistoric":{ default: null, type: Boolean },
   "wkpToVal": { default: null, type: Number },
+  "with_locations_loc":{ default: null, type: Number },
   "blockStates": { type: Array, default: () => [4, 5, 6] }
 })
 
@@ -109,17 +110,19 @@ const attrs = computed(() => {
     "_status": props._status,
     "_location": props._location,
     "with_locations": props.with_locations,
+    "with_locations_loc":props.with_locations_loc,
     "with_stock": props.with_stock,
     "check_stock": props.check_stock,
     "with_prices": props.with_prices,
     "withHistoric": props.withHistoric,
     "_celler": props._celler,
     "limit": props.limit,
+    "with_stock_cedis":props.with_stock_cedis,
     "_workpoint_status": props.workpointStatus,
     "_workpoint":$user.session.store.id_viz
   }
 })
-const block = computed(() => { return st => props.checkState ? props.blockStates.some(e => e == st.state.id) : false; })
+const block = computed(() => { return st => props.checkState ? props.blockStates.some(e => e == st.state) && ![1,2,5,6,12,18,19,21,22,24].includes($user.session.credentials._rol) : false; })
 
 
 onMounted(() => {
@@ -142,14 +145,14 @@ const autocomplete = (val, update, abort) => {
   if (val.trim().length > 1) {
     data.value.target = val.toUpperCase().trim();
     console.log(data.value.target)
-
+    console.log(attrs.value)
     dbproduct.autocomplete(attrs.value).then(done => {
       console.log(done);
       let options = done.data.map(p => {
         if (props.checkState) {
           if (props.wkpToVal) {
-            let wkp = p.stocks.find(s => s._workpoint == props.wkpToVal);
-            p.stateToVal = wkp ? { own: wkp, state: wkp.status } : { own: null, state: p.status };
+            let wkp = p.stocks.find(s => s.id == props.wkpToVal);
+            p.stateToVal = wkp ? { own: wkp, state: wkp.pivot._status } : { own: null, state: p.status };
           } else { p.stateToVal = { own: true, state: p.status }; }
         } else { p.stateToVal = { own: true, state: p.status }; }
 

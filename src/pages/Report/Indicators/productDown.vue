@@ -1,0 +1,227 @@
+<template>
+  <q-page padding>
+    <q-toolbar>
+      <q-toolbar-title>
+        PRODUCTO SIN VENTA
+      </q-toolbar-title>
+    </q-toolbar>
+    <q-separator />
+    <q-card class="my-card">
+      <q-card-section class="row">
+        <q-select class="col" v-model="categories.seccion.val" :options="sections" label="Seccion" filled dense
+          option-label="name" multiple use-chips />
+        <q-separator spaced inset vertical dark />
+        <q-select class="col" v-model="categories.familias.val" :options="families" label="Familia" filled dense
+          option-label="name" multiple use-chips :disable="categories.seccion.val.length == 0" />
+        <q-separator spaced inset vertical dark />
+        <q-select class="col" v-model="categories.categories.val" :options="caty" label="Categoria" filled dense
+          option-label="name" multiple use-chips
+          :disable="categories.seccion.val.length == 0 || categories.familias.val.length == 0" />
+        <q-separator spaced inset vertical dark />
+        <q-btn color="primary" :label="categories.seccion.val.length > 0 ? 'Obtener' : 'Todos'" flat
+          @click="getReport" />
+      </q-card-section>
+    </q-card>
+
+    <!-- {{ dayjs().format('YYYY-MM-DD') }} -->
+    <q-separator spaced inset vertical dark />
+    <q-table :rows="report" :pagination="table.pagination" :loading="loading" :columns="table.columns">
+      <template v-slot:top-right>
+        <q-btn :disable="report.length <= 0" color="primary" icon="download" flat @click="exportData"  />
+      </template>
+    </q-table>
+  </q-page>
+</template>
+
+<script setup>
+import { useVDBStore } from 'stores/VDB';
+import reportApi from 'src/API/reportApi.js';//para dirigirme bro
+import { exportFile, useQuasar } from 'quasar';
+import { jsPDF } from "jspdf";
+import autoTable from 'jspdf-autotable'
+import { computed, ref, onMounted, watch } from 'vue';
+import ExcelJS from 'exceljs';
+import JsBarcode from 'jsbarcode'
+import QRCode from 'qrcode';
+import dayjs from 'dayjs';
+
+
+const VDB = useVDBStore();
+const $q = useQuasar();
+
+
+const categories = ref({
+  all: [],
+  seccion: {
+    val: [],
+  },
+  familias: {
+    val: [],
+  },
+  categories: {
+    val: [],
+  }
+})
+
+const loading = ref(false)
+const report = ref([])
+
+const table = computed(() => ({
+  pagination: {
+    rowsPerPage: 10,
+  },
+  columns: [
+    { name: 'code', label: 'CODIGO', field: r => r.code, align: 'left',sortable:true },
+    { name: 'description', label: 'DESCRIPCION', field: r => r.description, align: 'left',sortable:true },
+    { name: 'barcode', label: 'CB', field: r => r.barcode, align: 'left',sortable:true },
+    { name: 'section', label: 'SECCION', field: r => r.category.familia.seccion.name, align: 'left',sortable:true },
+    { name: 'family', label: 'FAMILIA', field: r => r.category.familia.name, align: 'left',sortable:true },
+    { name: 'category', label: 'CATEGORIA', field: r => r.category.name, align: 'left',sortable:true },
+    { name: 'mennav', label: 'MEDNAV/PERS', field: r => r.large, align: 'left',sortable:true },
+    { name: 'provider', label: 'PROVEEDOR', field: r => r.providers.name, align: 'left',sortable:true },
+    { name: 'maker', label: 'FABRICANTE', field: r => r.makers?.name, align: 'left',sortable:true },
+    { name: 'pxc', label: 'PXC', field: r => r.pieces, align: 'center',sortable:true },
+    { name: 'lastVent', label: 'Ult Venta', field: r => r.saleLast ? dayjs(r.saleLast).format('YYYY-MM-DD') : '', align: 'center' ,sortable:true},
+    {
+      name: 'dayoffsales', label: 'Dias S/V', field: r => {
+        const last = r.saleLast ? dayjs(r.saleLast) : dayjs('2025-01-01')
+        return last.diff(dayjs(), 'day') * -1
+      }, align: 'center',sortable:true
+    },
+    { name: 'stockSuc', label: 'Sucursal PZS', field: r => Number(r.stocks.find(e => e.id == VDB.session.store.id_viz).pivot.stock), align: 'center',sortable:true },
+    { name: 'stocktotal', label: 'TOTALCEDIS CJ', field: r =>  Math.round(Number(Number(r.stocks.find(e => e.id == 1).pivot.stock) + Number(r.stocks.find(e => e.id == 2).pivot.stock) + Number(r.stocks.find(e => e.id == 16).pivot.stock)) / Number(r.pieces)) , align: 'center',sortable:true },
+    { name: 'stockCed', label: 'CEDIS CJ', field: r => Math.round(Number(r.stocks.find(e => e.id == 1).pivot.stock) / Number(r.pieces)) , align: 'center',sortable:true },
+    { name: 'stockTex', label: 'TEXCOCO CJ', field: r => Math.round(Number(r.stocks.find(e => e.id == 2).pivot.stock) / Number(r.pieces)), align: 'center',sortable:true },
+    { name: 'stockBra', label: 'BRASIL CJ', field: r => Math.round(Number(r.stocks.find(e => e.id == 16).pivot.stock) /Number(r.pieces)), align: 'center',sortable:true },
+
+  ]
+}))
+
+const sections = computed(() => categories.value.all.filter(e => e.deep == 0))
+const families = computed(() => {
+  if (categories.value.seccion.val.length > 0) {
+    return categories.value.all.filter(e => e.deep == 1 && categories.value.seccion.val.map(e => e.id).includes(e.root))
+  } else {
+    return categories.value.all.filter(e => e.deep == 1)
+  }
+})
+const caty = computed(() => {
+  if (categories.value.seccion.val.length > 0 && categories.value.familias.val.length == 0) {
+    let familias = categories.value.all.filter(e => e.deep == 1 && categories.value.seccion.val.map(e => e.id).includes(e.root)).map(e => e.id);
+    return categories.value.all.filter(e => e.deep == 2 && familias.includes(e.root))
+  } else if (categories.value.familias.val.length > 0) {
+    return categories.value.all.filter(e => e.deep == 2 && categories.value.familias.val.map(e => e.id).includes(e.root))
+  } else {
+    return categories.value.all.filter(e => e.deep == 2)
+  }
+})
+
+
+const init = async () => {
+  $q.loading.show({ message: 'Obteniendo Familias' })
+  const resp = await reportApi.init();
+  if (resp.fail) {
+    console.log(resp);
+    $q.loading.hide()
+  } else {
+    console.log(resp)
+    categories.value.all = resp
+    $q.loading.hide();
+  }
+}
+
+const getReport = async () => {
+  $q.loading.show({ message: 'El reporte puede tardar unos minutos' })
+  loading.value = true
+  let data = {
+    filters: {
+      sections: categories.value.seccion.val?.map(e => e.id),
+      familys: categories.value.familias.val?.map(e => e.id),
+      categories: categories.value.categories.val?.map(e => e.id),
+    },
+    store: VDB.session.store.id_viz
+  }
+  console.log(data);
+  const resp = await reportApi.getProductsDown(data);
+  if (resp.fail) {
+    console.log(resp);
+    $q.notify({ message: 'No se pudo obtener el reporte comuniquese con soporte', type: 'negative', position: 'center' })
+  } else {
+    console.log(resp);
+    report.value = resp;
+    loading.value = false
+    $q.loading.hide()
+  }
+}
+
+const exportData = async () => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('PSV');
+
+  const cols = table.value.columns.map(col => ({
+    header: col.label, // encabezado
+    key: col.name, // key única
+    width: 15
+  }));
+  worksheet.columns = cols;
+
+  const rows = report.value.map(r => {
+    const row = {};
+    table.value.columns.forEach(col => {
+      let val;
+      if (typeof col.field === 'function') {
+        val = col.field(r);
+      } else {
+        val = r[col.field];
+      }
+      row[col.name] = val;
+    });
+    return row;
+  });
+
+  const rowsArray = rows.map(row =>
+    table.value.columns.map(col => row[col.name])
+  );
+
+
+  worksheet.addTable({
+    name: 'Almacenes', // nombre interno de la tabla
+    ref: 'A1', // desde dónde empieza
+    headerRow: true,
+    style: {
+      theme: 'TableStyleMedium9', // estilo
+      showRowStripes: true,
+    },
+    columns: table.value.columns.map(col => ({
+      name: col.label, // encabezado visible
+      filterButton: true, // habilitar filtros
+    })),
+    rows: rowsArray, // filas reales
+  });
+  worksheet.columns.forEach(column => {
+    let maxLength = 0;
+    column.eachCell({ includeEmpty: true }, (cell) => {
+      const columnLength = cell.value ? cell.value.toString().length : 10;
+      if (columnLength > maxLength) {
+        maxLength = columnLength;
+      }
+    });
+    column.width = maxLength < 10 ? 10 : maxLength;
+  });
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type:
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'ProductoSinVenta.xlsx';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
+init()
+
+</script>

@@ -3,6 +3,8 @@ import { useVDBStore } from 'stores/VDB';
 const VDB = useVDBStore();
 const host = VDB.session.store.ip_address;
 const store = axios.create({ baseURL: `http://${host}/storetools/public/api` })
+// const store = axios.create({ baseURL: `http://192.168.10.160:1619/storetools/public/api` })
+
 
 export default {
   addSale(data) {

@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="bg-grey-2">
+  <q-page padding class="">
     <div v-if="orderserrors.length" class="bg-negative text-white q-pa-md q-mb-md">
       <div class="text-warning text-bold">Los siguientes folios tienen errores que no permiten ser listados en la tabla.
       </div>

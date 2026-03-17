@@ -1,8 +1,8 @@
 <template>
   <q-page padding v-if="salida">
-    <q-header reveal bordered class="bg-white text-black">
+    <q-header reveal bordered :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'">
       <q-toolbar class="justify-between">
-        <q-btn color="primary" icon="arrow_back" flat @click="$router.push('/transfers')" round />
+        <q-btn color="primary" icon="arrow_back" flat @click="$router.push('/outputs')" round />
         <div>{{ salida.store.name }} </div>
         <div class="row items-center">
           <div class="col"> {{ salida.warehouse.name }}</div> <q-icon name="arrow_forward" class="col" />
@@ -198,7 +198,7 @@ const init = async () => {
   } else {
     console.log(resp)
     $q.loading.hide();
-    if (VDB.session.rol == 'aud' || VDB.session.rol == 'audc' || VDB.session.rol == 'root') {
+    if (VDB.session.rol == 'gro' || VDB.session.rol == 'jfz' || VDB.session.rol == 'root' || VDB.session.rol == 'des'  || VDB.session.rol == 'axo') {
       salida.value = resp
       products.value = resp.bodie
       console.log(salida.value)

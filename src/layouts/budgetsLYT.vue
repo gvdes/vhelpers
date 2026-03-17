@@ -18,7 +18,7 @@
             <q-select class="col" v-model="types.val" :options="types.opts" label="Tipo" filled
               @update:model-value="updateType" />
             <q-separator spaced inset vertical dark />
-            <q-input class="col" v-model="form.number" type="text" :label="types.val?.id == 1 ? 'Salida' : 'Comanda'"
+            <q-input class="col" v-model="form.number"  :label="types.val?.label"
               :mask="types.val?.id == 1 ? '#-######' : ''" :type="types.val?.id == 1 ? 'text' : 'number'" filled
               :disable="types.val == null" />
             <q-separator spaced inset vertical dark />
@@ -38,7 +38,7 @@
                 <q-card-section>
                   <q-item class="text-center">
                     <q-item-section>
-                      <q-item-label caption lines="2">{{ types.val?.id == 1 ? 'Salida' : 'Comanda' }}</q-item-label>
+                      <q-item-label caption lines="2">{{ types.val?.label }}</q-item-label>
                       <q-item-label class="text-h4">{{ `${presupuesto.factura.FOLIO}`
                       }}</q-item-label>
                     </q-item-section>
@@ -119,7 +119,7 @@ const $q = useQuasar();
 
 const types = ref({
   val: null,
-  opts: [{ id: 1, label: 'Salida' }, { id: 2, label: 'Comanda' }]
+  opts: [{ id: 1, label: 'Salida' }, { id: 2, label: 'Comanda' }, {id: 3, label:'Particion'}]
 })
 const form = ref({
   number: null,
@@ -147,7 +147,7 @@ const table = ref({
 
 const getInvoice = () => {
   $q.loading.show({ message: 'Obteniendo Salida' })
-  let url = '192.168.10.53:1619';
+  let url = '192.168.10.207:1619';
   // let url = '192.168.10.160:1619';
   let sale = null;
   if (types.value.val.id == 1) {
@@ -156,6 +156,9 @@ const getInvoice = () => {
     sale = `http://${url}/storetools/public/api/Resources/getInvoiceBudget`;
   } else if (types.value.val.id == 2) {
     sale = `http://${url}/storetools/public/api/Resources/getCommand`;
+    form.value.store = VDB.session.store.id_viz;
+  } else if (types.value.val.id == 3) {
+    sale = `http://${url}/storetools/public/api/Resources/getPartition`;
     form.value.store = VDB.session.store.id_viz;
   }
   axios.post(sale, form.value)
@@ -226,7 +229,6 @@ const createBudget = () => {
   .q-table__top,
   .q-table__bottom,
   thead tr:first-child th /* bg color is important for th; just specify one */
-    background-color: #F7F7F8
 
   thead tr th
     position: sticky

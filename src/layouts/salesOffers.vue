@@ -2,7 +2,7 @@
   <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
 
     <!-- (Optional) The Header -->
-    <q-header class="transparent text-dark" bordered>
+    <q-header class="transparent" bordered>
       <UserToolbar />
       <q-separator />
 
@@ -13,7 +13,7 @@
         <div>Total $<span class="text-bold">{{products.reduce((a, e) => a + e.amount * e.price?.pivot.price, 0)
         }}</span> </div>
       </q-toolbar>
-      <q-page class="bg-grey-3" padding>
+      <q-page class="" padding>
 
         <q-card class="my-card">
           <q-card-section v-if="products.length > 0">
@@ -28,7 +28,7 @@
     <q-dialog v-model="editProduct.state" persistent position="bottom">
       <q-card>
 
-        <q-card-section class="bg-grey-4">
+        <q-card-section class="">
           <div class="row text-h6">
             <div class="col">Codigo: <span class="text-bold">{{ editProduct.val.code }}</span></div>
             <div class="col">Cco: <span class="text-bold ">{{ editProduct.val.name }}</span></div>
@@ -73,7 +73,7 @@
                 :error="editProduct.val.notes.length <= 0" error-message="Campo Obligatorio" />
               <q-separator spaced inset vertical dark />
               <q-list>
-                <q-item class="bg-grey-11">
+                <q-item class="">
                   <q-item-section class="text-left text-caption">P x C</q-item-section>
                   <q-item-section class="text-bold text-center">{{ editProduct.pieces }} pzs</q-item-section>
                 </q-item>
@@ -81,7 +81,7 @@
                   <q-item-section class="text-left text-caption">Unidades</q-item-section>
                   <q-item-section class="text-bold text-center">{{ editProduct.val.amount }} pzs</q-item-section>
                 </q-item>
-                <q-item class="bg-grey-11">
+                <q-item class="">
                   <q-item-section class="text-left text-caption text-bold">Total</q-item-section>
                   <q-item-section class="text-bold text-center">$ {{ editProduct.val.price ? editProduct.val.amount
                     * editProduct.val.price?.pivot.price : 0 }} </q-item-section>
@@ -203,11 +203,11 @@
     </q-dialog>
 
 
-    <q-footer reveal elevated bordered class="bg-white">
+    <q-footer reveal elevated bordered :class="$q.dark.isActive ? 'text-white bg-dark' : 'text-dark bg-white'">
       <div class="row">
         <ProductAutocomplete :checkState="false" @input="add" with_prices @agregar="agregar" class="col" />
         <q-separator spaced inset vertical dark v-if="products.length > 0" />
-        <q-btn color="primary" icon="send" @click="nextStep" flat v-if="products.length > 0" />
+        <q-btn color="" icon="send" @click="nextStep" flat v-if="products.length > 0" />
       </div>
 
     </q-footer>
