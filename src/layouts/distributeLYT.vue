@@ -125,23 +125,6 @@ const addRequisition = ref({
 const optranges = ref({
   val: { from: null, to: null }
 });
-const user_socket = {
-  profile: {
-    me: {
-      id: VDB.session.credentials.staff.id_va,
-      nick: VDB.session.credentials.nick,
-      picture: '',
-      names: VDB.session.credentials.staff.complete_name,
-      surname_pat: '',
-      surname_mat: '',
-      change_password: false,
-      _rol: 1
-    },
-    workpoint: VDB.session.store
-  },
-  workpoint: VDB.session.store
-}
-
 
 const ismobile = computed(() => $q.platform.is.mobile);
 const foioError = computed(() => {
@@ -170,7 +153,7 @@ const init = async () => {
   console.log("%cIniciando MainLayout...", "font-size:2em;color:orange;");
   let fecha = dayjs(new Date()).format("YYYY/MM/DD")
   optranges.value.val = { from: fecha, to: fecha }
-  const req = await RestockApi.index({ date: optranges.value.val, storeTo: VDB.session.store.id_viz });
+  const req = await RestockApi.index({ date: optranges.value.val});
   if (req.fail) {
     console.log(req);
   } else {
@@ -194,7 +177,7 @@ const init = async () => {
 const buscas = async () => {
   stateDate.value = false
   $q.loading.show({ message: 'Obteniendo Datos' })
-  const req = await RestockApi.index({ date: optranges.value.val, storeTo: VDB.session.store.id_viz });
+  const req = await RestockApi.index({ date: optranges.value.val });
   console.log(req);
   $restockStore.fillOrders(req.orders);
   $restockStore.fillPartitions(req.partitions)
@@ -269,7 +252,7 @@ const sktOrderPartFresh = async skt => {
 
 const sktJoinatRes = skt => {
   console.log(
-    `%c${skt.user.me.nick} de ${skt.from.alias} se ha unido a Restock (UID: ${skt.user.me.id})`,
+    `%c${skt.user.nick} de ${skt.from.alias} se ha unido a Restock (UID: ${skt.user.id})`,
     "background:#076F3E;color:#f5f6fa;border-radius:10px;padding:10px;font-size:1.1em;"
   );
 }
@@ -346,7 +329,7 @@ const sktOrderOrderFresh = async skt => {
 
 onMounted(async () => {
   $sktRestock.connect();
-  $sktRestock.emit("joinat", user_socket);
+  $sktRestock.emit("joinat", VDB.session);
   $sktRestock.on("joineddashreq", sktJoinatRes);
   $sktRestock.on("creating", sktOrderCreate);
   $sktRestock.on("order_update", sktOrderUpdate);
