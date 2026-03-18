@@ -4,28 +4,53 @@ import orderApi from 'src/API/orderApi';
 const verificarPrecioMayoreo = (prdts, product, rules) => {
   const categoria = product.category.familia.seccion.id;
   const categoriaReglas = rules.find(e => e._category == categoria).rules;
-  let model = 0;
-  let family = 0;
-  let distinct = 0
+  // let model = 0;
+  // let family = 0;
+  // let distinct = 0
   let rev;
   if (!categoriaReglas) {
     return false;
   }
-  let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
 
-  let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let inx = prdts.findIndex((e) => e.id == product.id);
-  if (inx >= 0) {
-    model = sameModel
-    family = sameFamily
-    distinct = distin
+  // let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let inx = prdts.findIndex((e) => e.id == product.id);
+  // if (inx >= 0) {
+  //   model = sameModel
+  //   family = sameFamily
+  //   distinct = distin
+  // } else {
+  //   model = sameModel + Number(product.pivot.units)
+  //   family = sameFamily + Number(product.pivot.units)
+  //   distinct = distin + Number(product.pivot.units)
+  // }
+  const piezasActuales = Number(product.pivot.units);
+  const model = prdts
+    .filter(p => p.id === product.id)
+    .reduce((acc, curr) => {
+      if (curr.id === product.id) {
+        return acc + piezasActuales;
+      }
+      return acc + Number(totalPiezas(curr.pivot, curr.pieces));
+    }, 0);
 
-  } else {
-    model = sameModel + Number(product.pivot.units)
-    family = sameFamily + Number(product.pivot.units)
-    distinct = distin + Number(product.pivot.units)
-  }
+  const family = prdts
+    .filter(p => p.category.familia.id === product.category.familia.id)
+    .reduce((acc, curr) => {
+      if (curr.id === product.id) {
+        return acc + piezasActuales;
+      }
+      return acc + Number(totalPiezas(curr.pivot, curr.pieces));
+    }, 0);
+  const distinct = prdts
+    .filter(p =>
+      p.category.familia.seccion.id === product.category.familia.seccion.id &&
+      p.id !== product.id
+    )
+    .reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0)
+    + piezasActuales;
+
   for (const regla of categoriaReglas) {
     if (regla._type === 2) {
       if (regla.sameModel == 1 && model >= regla.min && (!regla.max || model <= regla.max)) {
@@ -34,7 +59,7 @@ const verificarPrecioMayoreo = (prdts, product, rules) => {
       if (regla.sameModel == 0 && family >= regla.min && (!regla.max || family <= regla.max)) {
         return true;
       }
-      if (regla.sameModel == 0 && distinct >= regla.min && (!regla.max || family <= regla.max) && regla.family == 0) {
+      if (regla.sameModel == 0 && distinct >= regla.min && (!regla.max || distinct <= regla.max) && regla.family == 0) {
         return true;
       }
     }
@@ -45,27 +70,52 @@ const verificarPrecioMayoreo = (prdts, product, rules) => {
 const verificarPrecioDocena = (prdts, product, rules) => {
   const categoria = product.category.familia.seccion.id;
   const categoriaReglas = rules.find(e => e._category == categoria).rules;
-  let model = 0;
-  let family = 0;
-  let distinct = 0
+  // let model = 0;
+  // let family = 0;
+  // let distinct = 0
   let rev;
   if (!categoriaReglas) {
     return false;
   }
-  let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let inx = prdts.findIndex((e) => e.id == product.id);
-  if (inx >= 0) {
-    model = sameModel
-    family = sameFamily
-    distinct = distin
+  // let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let inx = prdts.findIndex((e) => e.id == product.id);
+  // if (inx >= 0) {
+  //   model = sameModel
+  //   family = sameFamily
+  //   distinct = distin
 
-  } else {
-    model = sameModel + Number(product.pivot.units)
-    family = sameFamily + Number(product.pivot.units)
-    distinct = distin + Number(product.pivot.units)
-  }
+  // } else {
+  //   model = sameModel + Number(product.pivot.units)
+  //   family = sameFamily + Number(product.pivot.units)
+  //   distinct = distin + Number(product.pivot.units)
+  // }
+  const piezasActuales = Number(product.pivot.units);
+  const model = prdts
+    .filter(p => p.id === product.id)
+    .reduce((acc, curr) => {
+      if (curr.id === product.id) {
+        return acc + piezasActuales;
+      }
+      return acc + Number(totalPiezas(curr.pivot, curr.pieces));
+    }, 0);
+
+  const family = prdts
+    .filter(p => p.category.familia.id === product.category.familia.id)
+    .reduce((acc, curr) => {
+      if (curr.id === product.id) {
+        return acc + piezasActuales;
+      }
+      return acc + Number(totalPiezas(curr.pivot, curr.pieces));
+    }, 0);
+  const distinct = prdts
+    .filter(p =>
+      p.category.familia.seccion.id === product.category.familia.seccion.id &&
+      p.id !== product.id
+    )
+    .reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0)
+    + piezasActuales;
   for (const regla of categoriaReglas) {
     if (regla._type === 3) {
       if (regla.sameModel == 1 && model >= regla.min && (!regla.max || model <= regla.max)) {
@@ -74,7 +124,7 @@ const verificarPrecioDocena = (prdts, product, rules) => {
       if (regla.sameModel == 0 && family >= regla.min && (!regla.max || family <= regla.max)) {
         return true;
       }
-      if (regla.sameModel == 0 && distinct >= regla.min && (!regla.max || family <= regla.max) && regla.family == 0) {
+      if (regla.sameModel == 0 && distinct >= regla.min && (!regla.max || distinct <= regla.max) && regla.family == 0) {
         return true;
       }
     }
@@ -199,9 +249,9 @@ const aplicarPromociones = (products, promotions) => {
   promotions.forEach(promo => {
     if (promo.type === 'NXM') {
       aplicar2x1(products, promo)
-    }else if(promo.type === 'COM') {
+    } else if (promo.type === 'COM') {
       aplicarComboExacto(products, promo)
-    }else if(promo.type === 'BLOCK') {
+    } else if (promo.type === 'BLOCK') {
       aplicarPrecioPorBloque(products, promo)
     }
   })
