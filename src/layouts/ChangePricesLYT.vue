@@ -180,9 +180,6 @@ const stocks = ref({
     val: null,
   opts: [{ id: 1, label: 'Agotados' },
   { id: 2, label: 'Mayor a 1' },
-  { id: 3, label: 'Mayor a 25' },
-  { id: 4, label: 'Mayor a 50' },
-  { id: 5, label: 'Mayor a 100' },
 ]
 })
 

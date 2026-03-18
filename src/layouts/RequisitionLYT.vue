@@ -44,9 +44,12 @@
           <q-select class="col" v-model="types.val" :options="types.opts" label="Tipo" filled :disable="!cedis.val"
             dense @update:model-value="typeChange" />
           <q-separator spaced inset vertical dark />
-          <q-select class="col" v-model="supply.val" :options="supply.opts" label="Surtir Por" filled dense
-            option-label="name"  @update:model-value="processProduct"  />
+          <q-selectclass="col" v-model="supply.val" :options="supply.opts" label="Surtir Por" filled dense
+            option-label="name" @update:model-value="processProduct" />
+          <q-select v-if="typeSurti.val?.name === 'Sucursal'" class="col" v-model="supply.val" :options="supply.opts"
+            label="Surtir Por" filled dense option-label="name" @update:model.value="processProduct" />
         </div>
+
 
         <q-separator spaced inset vertical dark />
         <div class="row" v-if="categories.state">
@@ -433,6 +436,7 @@ const suggested = computed(() => {
       transito:Number(product.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.in_transit)),
       percentage: Porcentaje,
       required: product.required,
+      supply_by: product.supply_by,
       locations: product.locations
     }
 
@@ -764,33 +768,98 @@ const impre = async () => {
 
 
 const processProduct = async () => {
+
   console.log(condition.value.state)
+
+  console.log(typeSurti.value.val.id)
+
+
+
   if (products.value.length > 0) {
+
     if (condition.value.state == 'minmax') {
-      if (supply.value.val.id == 3) {
+
+      if (typeSurti.value.val.id == 1) {
+        console.log('por producto')
         return products.value.forEach(e => {
-          let CajasSucursal = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces);
-          let maxCajas = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces)
-          if ((maxCajas - CajasSucursal) >= 1) {
-            e.required = Math.round(maxCajas - CajasSucursal);
+
+          if (e._unit == 3) {
+
+            let CajasSucursal = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces);
+
+            let maxCajas = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces)
+
+            if ((maxCajas - CajasSucursal) >= 1) {
+
+              e.required = Math.round(maxCajas - CajasSucursal);
+              e.supply_by = 3
+            } else {
+              e.supply_by = 3
+              e.required = 1
+
+            }
+
+
+
           } else {
-            e.required = 1
+
+            let piezasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)));
+
+            let maxPiezas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)))
+
+            if ((maxPiezas - piezasSucursal) >= 1) {
+
+              e.required = Math.round(maxPiezas - piezasSucursal);
+              e.supply_by = 1
+            } else {
+              e.supply_by = 1
+              e.required = 1
+
+            }
+
           }
+
         })
+
       } else {
-        return products.value.forEach(e => {
-          let piezasSucursal = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)));
-          let maxPiezas = Math.round(Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)))
-          if ((maxPiezas - piezasSucursal) >= 1) {
-            e.required = Math.round(maxPiezas - piezasSucursal);
-          } else {
-            e.required = 1
-          }
-        })
+
+        if (supply.value.val.id == 3) {
+
+          return products.value.forEach(e => {
+
+            let CajasSucursal = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.stock + e.pivot.in_transit)) / Number(e.pieces);
+
+            let maxCajas = Number(e.stocks.filter(e => e.id == VDB.session.store.id_viz).map(e => e.pivot.max)) / Number(e.pieces)
+
+            if ((maxCajas - CajasSucursal) >= 1) {
+
+              e.required = Math.round(maxCajas - CajasSucursal);
+               e.supply_by = 3
+            } else {
+              e.supply_by = 3
+              e.required = 1
+
+            }
+
+          })
+        } else {
+          products.value.forEach(e => {
+            let piezasSucursal = Math.round(Number(e.stocks.filter(s => s.id == VDB.session.store.id_viz).map(s => s.pivot.stock + s.pivot.in_transit)));
+            let maxPiezas = Math.round(Number(e.stocks.filter(s => s.id == VDB.session.store.id_viz).map(s => s.pivot.max)));
+
+            if ((maxPiezas - piezasSucursal) >= 1) {
+               e.supply_by = 1
+              e.required = Math.round(maxPiezas - piezasSucursal);
+            } else {
+              e.supply_by = 1
+              e.required = 1;
+            }
+          })
+        }
       }
-    }
-    else {
-      return products.value.forEach(e => e.required = 1)
+
+    } else {
+      products.value.forEach(e => e.required = 1);
     }
   }
 }
