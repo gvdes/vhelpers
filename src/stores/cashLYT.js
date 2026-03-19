@@ -23,6 +23,8 @@ export const useLayoutCash = defineStore('layout', {
       // { id: 7, name: 'Modificaciones', description: 'Modificaciones de ticket', icon: "edit_note" },
       // { id: 8, name: 'Consulta', description: 'Consulta de tickets', icon: "query_stats" },
       // { id: 9, name: 'Crear Vales', description: 'Vales', icon: "confirmation_number" },
+      // { id: 10, name: 'Arqueo de ', description: 'Vales', icon: "confirmation_number" },
+
     ]
   }),
   getters: {

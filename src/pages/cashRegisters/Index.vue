@@ -19,14 +19,22 @@
       </q-card-section>
       <q-card-actions align="left">
         <q-btn color="negative" icon="close" flat rounded @click="reset" />
+        <q-btn flat color="primary" icon="account_balance"
+          v-if="cash.val._status == 1 && ['gen', 'gro', 'aux', 'root', 'des'].includes(VDB.session.rol)"
+          title="Arqueo de Caja" @click="cash_count" />
         <q-space />
         <!-- <div v-if="!disableOpen"> -->
         <q-btn color="positive" label="Abrir" @click="openCash" flat
-          v-if="cash.val._status == 2 && ['gen','aud','aux','root'].includes(VDB.session.rol) && !disableOpen" :disable="disableOpen || !cash.val.cashier.user || !cash.val.cashier.print" />
-        <q-btn color="positive" label="Ir" @click="redirect" flat v-if="cash.val?._status == 1"  />
+          v-if="cash.val._status == 2 && ['gen', 'gro', 'aux', 'root', 'des'].includes(VDB.session.rol) && !disableOpen"
+          :disable="disableOpen || !cash.val.cashier.user || !cash.val.cashier.print" />
+        <q-btn color="positive" label="Ir" @click="redirect" flat v-if="cash.val?._status == 1" />
         <!-- </div> -->
       </q-card-actions>
     </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="openCashCount" persistent>
+    <cashCount :cash="cash.val"/>
   </q-dialog>
 
 </template>
@@ -44,6 +52,8 @@ import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
 import { computed, ref } from 'vue';
 import cashApi from 'src/API/cashApi';
+import cashCount from 'src/components/Cash/cashCount.vue';
+
 const VDB = useVDBStore();
 const $q = useQuasar();
 const $router = useRouter();
@@ -87,6 +97,8 @@ const disableOpen = computed(() => {
   console.log("Hoy:", today, "OpenDate:", cashierDate);
   return cash.value.val?._status == 1 || today === cashierDate;
 });
+const openCashCount = computed(() => cashLYT.dialogModule === 10);
+
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Cajas' });
@@ -123,7 +135,7 @@ const mosCash = (a, b) => {
 
   if (b._status == 1) {
     cash.value.val = b
-  } else if(b._status == 2 && today === cashierDate) {
+  } else if (b._status == 2 && today === cashierDate) {
     cash.value.val = b
   } else {
     nwOpnCash.value.id = b.id
@@ -170,7 +182,12 @@ const redirect = () => {
   cashLYT.setCash(cash.value.val.id);
 }
 
+const cash_count = () => {
+  console.log('se realizara arqueo de caja')
+  cashLYT.openDialogModule(10)
+  console.log(cashLYT.dialogModule)
 
+}
 
 
 init();

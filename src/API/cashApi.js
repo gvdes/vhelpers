@@ -25,6 +25,9 @@ export default{
   closeCash(data){
     return assist.post(`/cashs/closeCash`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
+  countCash(data){
+    return assist.post(`/cashs/countCash`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
   addWitrawal(data){
     return assist.post(`/cashs/addWitrawal`,data).then( done=>done.data ).catch( fail => { return {fail}} );
   },
