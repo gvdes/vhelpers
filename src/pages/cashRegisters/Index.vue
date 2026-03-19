@@ -20,7 +20,7 @@
       <q-card-actions align="left">
         <q-btn color="negative" icon="close" flat rounded @click="reset" />
         <q-btn flat color="primary" icon="account_balance"
-          v-if="cash.val._status == 1 && ['gen', 'gro', 'aux', 'root', 'des'].includes(VDB.session.rol) && !disableOpen"
+          v-if="cash.val._status == 1 && ['gen', 'gro', 'aux', 'root', 'des'].includes(VDB.session.rol) && countDisable"
           title="Arqueo de Caja" @click="cash_count" />
         <q-space />
         <!-- <div v-if="!disableOpen"> -->
@@ -34,7 +34,7 @@
   </q-dialog>
 
   <q-dialog v-model="openCashCount" persistent>
-    <cashCount :cash="cash.val"/>
+    <cashCount :cash="cash.val" />
   </q-dialog>
 
 </template>
@@ -97,6 +97,14 @@ const disableOpen = computed(() => {
   console.log("Hoy:", today, "OpenDate:", cashierDate);
   return cash.value.val?._status == 1 || today === cashierDate;
 });
+const countDisable = computed(() => {
+  const openDate = cash.value.val?.cashier?.open_date;
+  if (!openDate) return false;
+  const today = dayjs().format("YYYY-MM-DD");
+  const cashierDate = dayjs(openDate).format("YYYY-MM-DD");
+  console.log("Hoy:", today, "OpenDate:", cashierDate);
+  return today === cashierDate;
+})
 const openCashCount = computed(() => cashLYT.dialogModule === 10);
 
 
