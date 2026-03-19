@@ -20,7 +20,7 @@
       <q-card-actions align="left">
         <q-btn color="negative" icon="close" flat rounded @click="reset" />
         <q-btn flat color="primary" icon="account_balance"
-          v-if="cash.val._status == 1 && ['gen', 'gro', 'aux', 'root', 'des'].includes(VDB.session.rol)"
+          v-if="cash.val._status == 1 && ['gen', 'gro', 'aux', 'root', 'des'].includes(VDB.session.rol) && !disableOpen"
           title="Arqueo de Caja" @click="cash_count" />
         <q-space />
         <!-- <div v-if="!disableOpen"> -->
