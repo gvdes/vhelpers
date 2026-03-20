@@ -5,7 +5,7 @@
     </q-header>
     <q-page-container>
       <q-toolbar class="row justify-between items-center" v-if="$restockStore.showLYT">
-        <div class="text-bold">{{ store.title }} </div>
+        <div class="text-bold">{{ store.tittle }} </div>
         <div>{{
           optranges.val && optranges.val.from
             ? `Del ${optranges.val.from} a ${optranges.val.to}`
@@ -51,11 +51,16 @@
           Nuevo Pedido
         </q-card-section>
         <q-card-section :class="!ismobile ? 'row' : ''">
+          <div>Sucursal</div>
+          <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.warehouseFrom.val" class="bg-negative"
+            :options="addRequisition.warehouseFrom.opts" label="Almacen Origen" filled option-label="alias" dense />
+          <q-separator spaced inset vertical dark />
+          <div>Cedis</div>
           <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.suply_by.val"
             :options="addRequisition.suply_by.opts" label="Cedis" filled option-label="alias" dense />
           <q-separator spaced inset vertical dark />
           <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.warehouse.val"
-            :options="addRequisition.warehouse.opts" label="Almacen" filled dense />
+            :options="addRequisition.warehouse.opts" label="Almacen" filled dense option-label="name" />
           <q-separator spaced inset vertical dark />
           <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.types.val"
             :options="addRequisition.types.opts" label="Tipo" filled dense />
@@ -63,7 +68,8 @@
         <q-card-section v-if="addRequisition.types?.val?.id != 1">
           <q-input v-model="addRequisition.folio" :type="addRequisition.types.val.id == 3 ? 'text' : 'number'"
             :label="addRequisition.types.val.id == 3 ? 'Ticket' : 'Folio'"
-            :mask="addRequisition.types.val.id == 3 ? '#-######' : ''" filled dense :error="foioError" :error-message="foioErrorMssg"   />
+            :mask="addRequisition.types.val.id == 3 ? '#-######' : ''" filled dense :error="foioError"
+            :error-message="foioErrorMssg" />
         </q-card-section>
         <q-card-section>
           <q-input v-model="addRequisition.notes" type="text" label="Notas" filled dense />
@@ -71,7 +77,7 @@
         <q-card-section>
           <q-card-actions align="right">
             <q-btn flat icon="close" color="negative" @click="addRequisition.state = !addRequisition.state" />
-            <q-btn flat icon="check" color="positive" @click="addRequired" :disable="foioError"  />
+            <q-btn flat icon="check" color="positive" @click="addRequired" :disable="foioError" />
           </q-card-actions>
         </q-card-section>
       </q-card>
@@ -110,16 +116,17 @@ const addRequisition = ref({
       { id: 4, label: 'Preventa' },
     ],
   },
+  warehouseFrom: {
+    val: null,
+    opts: [],
+  },
   suply_by: {
     val: null,
     opts: []
   },
   warehouse: {
-    val: { id: 'GEN', label: 'General' },
-    opts: [
-      { id: 'GEN', label: 'General' },
-      { id: 'EMP', label: 'Empaques' },
-    ]
+    val: null,
+    opts: []
   }
 })
 const optranges = ref({
@@ -128,21 +135,21 @@ const optranges = ref({
 
 const ismobile = computed(() => $q.platform.is.mobile);
 const foioError = computed(() => {
-  if(addRequisition.value.types.val.id == 3 && addRequisition.value.folio?.length != 8 ){
+  if (addRequisition.value.types.val.id == 3 && addRequisition.value.folio?.length != 8) {
     return true
-  }else if(addRequisition.value.types.val.id == 4 && !addRequisition.value.folio ){
+  } else if (addRequisition.value.types.val.id == 4 && !addRequisition.value.folio) {
     return true
-  }else{
+  } else {
     return false
   }
 })
 
 const foioErrorMssg = computed(() => {
-  if(addRequisition.value.types.val.id == 3 && addRequisition.value.folio?.length != 8 ){
+  if (addRequisition.value.types.val.id == 3 && addRequisition.value.folio?.length != 8) {
     return 'reduerda ingresar 0'
-  }else if(addRequisition.value.types.val.id == 4 && !addRequisition.value.folio ){
+  } else if (addRequisition.value.types.val.id == 4 && !addRequisition.value.folio) {
     return 'debe de tener minimo un caracter'
-  }else{
+  } else {
     return ''
   }
 })
@@ -153,7 +160,7 @@ const init = async () => {
   console.log("%cIniciando MainLayout...", "font-size:2em;color:orange;");
   let fecha = dayjs(new Date()).format("YYYY/MM/DD")
   optranges.value.val = { from: fecha, to: fecha }
-  const req = await RestockApi.index({ date: optranges.value.val});
+  const req = await RestockApi.index({ date: optranges.value.val });
   if (req.fail) {
     console.log(req);
   } else {
@@ -165,9 +172,14 @@ const init = async () => {
     $restockStore.fillPartitions(req.partitions)
     $restockStore.setShowLoad(false)
     $restockStore.setCedis(req.cedis)
+    $restockStore.setWarehouses(req.warehouses)
     // supply_cedis.value = req.cedis
     addRequisition.value.suply_by.opts = req.cedis;
     addRequisition.value.suply_by.val = req.cedis[0];
+    addRequisition.value.warehouse.val = addRequisition.value.suply_by.val.warehouses[0]
+    addRequisition.value.warehouse.opts = addRequisition.value.suply_by.val.warehouses
+    addRequisition.value.warehouseFrom.val = req.warehouses.length > 0 ? req.warehouses[0] : null
+    addRequisition.value.warehouseFrom.opts = req.warehouses ?? []
     console.log("%cMainLayout listo!!", "font-size:2em;color:orange;");
     $q.loading.hide();
   }
@@ -188,44 +200,47 @@ const buscas = async () => {
 
 const addRequired = async () => {
   $q.loading.show({ message: 'Creando Pedido' })
-  addRequisition.value.workpointFrom = VDB.session.store.id_viz;
-  addRequisition.value.created_by = VDB.session.credentials.staff.id_va
   console.log(addRequisition.value)
   const resp = await RestockApi.newRequisition(addRequisition.value)
+  console.log(resp)
   if (resp.fail) {
     console.log(resp)
   } else {
     console.log(resp)
     $q.loading.hide();
     $sktRestock.emit('creating', { order: resp.requisition })
-    addRequisition.value = {
-      state: false,
-      folio: null,
-      notes: null,
-      types: {
-        val: { id: 1, label: 'Manual' },
-        opts: [
-          { id: 1, label: 'Manual' },
-          { id: 3, label: 'Venta' },
-          { id: 4, label: 'Preventa' },
-        ],
-      },
-      suply_by: {
-        val: $restockStore.cedis[0],
-        opts: $restockStore.cedis
-      },
-      warehouse: {
-        val: { id: 'GEN', label: 'General' },
-        opts: [
-          { id: 'GEN', label: 'General' },
-          { id: 'EMP', label: 'Empaques' },
-        ]
-      }
-    }
+    reset();
     $router.push(`/distribute/dashboardStore/${resp.requisition.id}`)
   }
 }
 
+const reset = () => {
+  addRequisition.value = {
+    state: false,
+    folio: null,
+    notes: null,
+    types: {
+      val: { id: 1, label: 'Manual' },
+      opts: [
+        { id: 1, label: 'Manual' },
+        { id: 3, label: 'Venta' },
+        { id: 4, label: 'Preventa' },
+      ],
+    },
+    warehouseFrom: {
+      val: null,
+      opts: [],
+    },
+    suply_by: {
+      val: $restockStore.cedis[0],
+      opts: $restockStore.cedis
+    },
+    warehouse: {
+      val: $restockStore.warehouses[0],
+      opts: $restockStore.warehouses
+    }
+  }
+}
 
 const sktOrderPartFresh = async skt => {
   console.log(skt)
@@ -294,7 +309,7 @@ const sktPartitionDelete = async skt => {
 const sktOrderUpdate = skt => {
   console.log(skt)
   $restockStore.orderUpdate(skt);
- }
+}
 
 const sktOrderChangeState = async skt => {
   if (skt.order.to.id === VDB.session.store.id_viz) {

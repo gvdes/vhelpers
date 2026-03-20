@@ -13,7 +13,8 @@ export const useRestockStore = defineStore('restock', {
     showButtonAdd: false,
     showLoad:false,
     showLYT:true,
-    cedis:[]
+    cedis:[],
+    warehouses:[],
   }),
   getters: {
     ordersSize(state) { return state.ordersdb.length; },
@@ -92,6 +93,9 @@ export const useRestockStore = defineStore('restock', {
     },
     setCedis(data){
       this.cedis = data
+    },
+    setWarehouses(data){
+      this.warehouses = data
     },
     setStatusPartition(data){
      let inx  = this.partitions.findIndex(e => e.id == data.id)

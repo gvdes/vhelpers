@@ -14,8 +14,8 @@
           <div class="text-bold">{{ order.id }}</div>
         </div>
         <div class="q-pa-sm col text-center">
-          <div class="text--2">Almacen:</div>
-          <div class="text-bold">{{ order._warehouse }}</div>
+          <div class="text--2">Almacen D:</div>
+          <div class="text-bold">{{ order.from.alias }}</div>
         </div>
       </div>
     </div>
@@ -209,7 +209,7 @@
     </q-dialog>
 
 
-    <q-footer reveal elevated bordered v-if="order._status == 1">
+    <q-footer reveal elevated bordered v-if="order._state == 1">
       <q-separator spaced inset vertical dark />
       <div class="row q-ml-sm">
         <div>
