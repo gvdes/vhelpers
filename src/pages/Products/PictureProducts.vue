@@ -1,7 +1,23 @@
 <template>
   <q-page padding>
-
-
+    <q-toolbar>
+      <q-toolbar-title>
+      </q-toolbar-title>
+      <q-btn flat round dense icon="download">
+        <q-menu>
+          <q-card class="my-card" style="width: 200px;">
+            <q-card-section>
+              <q-select v-model="categories" :options="layoutProduct.categories.filter(e => e.deep == 0)"
+                label="Categorias" option-label="name" filled multiple emit-value option-value="id" map-options
+                use-chips dense />
+            </q-card-section>
+            <q-card-actions align="center">
+              <q-btn flat color="primary" label="Obetener" @click="download" />
+            </q-card-actions>
+          </q-card>
+        </q-menu>
+      </q-btn>
+    </q-toolbar>
     <div class="row justify-center">
       <transition name="bounce">
         <div v-if="product.state">
@@ -146,12 +162,52 @@ const massive = ref({
     val: null
   }
 })
+
+const columns = ref([])
+const report = ref([]);
 const product = ref({
   state: false,
   val: null
 })
+const baseColumns = [
+  { name: 'code', label: 'CODIGO', field: r => r.code, align: 'left' },
+  { name: 'description', label: 'DESCRIPCION', field: r => r.description, align: 'left' },
+  { name: 'barcode', label: 'CB', field: r => r.barcode, align: 'left' },
+  { name: 'section', label: 'SECCION', field: r => r.category.familia.seccion.name, align: 'left' },
+  { name: 'family', label: 'FAMILIA', field: r => r.category.familia.name, align: 'left' },
+  { name: 'category', label: 'CATEGORIA', field: r => r.category.name, align: 'left' },
+  { name: 'mennav', label: 'MEDNAV/PERS', field: r => r.large, align: 'left' },
+  { name: 'pxc', label: 'PXC', field: r => r.pieces, align: 'center' },
+  { name: 'stock', label: 'STOCK', field: r => r.total_stock, align: 'center' },
+  { name: 'stock PXC', label: 'STOCK PXC', field: r => Number(r.total_stock / r.pieces).toFixed(2), align: 'center' }
+]
+const generateColumns = (products) => {
+  const sucursales = []
+  products.forEach(p => {
+    if (p.stocks) {
+      p.stocks.forEach(s => {
+        if (!sucursales.find(x => x.id === s.id)) {
+          sucursales.push(s)
+        }
+      })
+    }
+  })
+
+  const sucursalColumns = sucursales.map(s => ({
+    name: `s_${s.alias}`,
+    label: `${s.alias}`,
+    field: r => {
+      const stockSucursal = r.stocks?.find(x => x.id === s.id)
+      return stockSucursal ? stockSucursal.pivot.stock : 0
+    },
+    align: 'center'
+  }))
+
+  return [...baseColumns, ...sucursalColumns]
+}
 
 
+const categories = ref([])
 
 const inputFile = ref(null);
 
@@ -247,6 +303,24 @@ const updateImage = async () => {
     $q.loading.hide();
   }
 }
+
+const download = async () => {
+  $q.loading.show({message:'Obteniendo Reporte'})
+  console.log(categories.value)
+  let data = {
+    sections: categories.value
+  }
+  const resp = await productApi.getReportnotPicture(data)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    report.value = resp
+    columns.value =  generateColumns(resp)
+    exportData()
+    $q.loading.hide();
+  }
+}
 watch(() => massive.value.result.state, (val) => {
   if (!val) {
     massive.value.result.val = { actualizados: [], error: [] };
@@ -254,6 +328,73 @@ watch(() => massive.value.result.state, (val) => {
   }
 });
 
+
+const exportData = async () => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Almacenes');
+
+  const cols = columns.value.map(col => ({
+    header: col.label, // encabezado
+    key: col.name, // key única
+    width: 15
+  }));
+  worksheet.columns = cols;
+
+  const rows = report.value.map(r => {
+    const row = {};
+    columns.value.forEach(col => {
+      let val;
+      if (typeof col.field === 'function') {
+        val = col.field(r);
+      } else {
+        val = r[col.field];
+      }
+      row[col.name] = val;
+    });
+    return row;
+  });
+
+  const rowsArray = rows.map(row =>
+    columns.value.map(col => row[col.name])
+  );
+
+
+  worksheet.addTable({
+    name: 'FaltantesFotos', // nombre interno de la tabla
+    ref: 'A1', // desde dónde empieza
+    headerRow: true,
+    style: {
+      theme: 'TableStyleMedium9', // estilo
+      showRowStripes: true,
+    },
+    columns: columns.value.map(col => ({
+      name: col.label, // encabezado visible
+      filterButton: true, // habilitar filtros
+    })),
+    rows: rowsArray, // filas reales
+  });
+  worksheet.columns.forEach(column => {
+    let maxLength = 0;
+    column.eachCell({ includeEmpty: true }, (cell) => {
+      const columnLength = cell.value ? cell.value.toString().length : 10;
+      if (columnLength > maxLength) {
+        maxLength = columnLength;
+      }
+    });
+    column.width = maxLength < 10 ? 10 : maxLength;
+  });
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type:
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'FaltantesFotos.xlsx';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 </script>
 <style lang="scss">

@@ -128,7 +128,7 @@ const baseColumns = [
   { name: 'stock PXC', label: 'STOCK PXC', field: r => Number(r.SumStock / r.pieces).toFixed(2), align: 'center' }
 ]
 
-// ahora agregamos las columnas dinámicas por sucursal
+
 const generateColumns = (products) => {
   const sucursales = []
   products.forEach(p => {

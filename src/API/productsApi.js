@@ -66,5 +66,8 @@ export default{
   },
   updateStatusProduct(data){
     return assist.post(`/Products/updateStatusProduct`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  getReportnotPicture(data){
+    return assist.post(`/Products/getReportnotPicture`, data).then(done => done.data).catch(fail => { return { fail } });
   }
 }
