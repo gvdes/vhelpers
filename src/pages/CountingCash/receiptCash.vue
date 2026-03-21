@@ -15,10 +15,10 @@
                   <div class="col"></div>
                   <div class="text-bold col text-h5">Caja</div>
                   <div class="col">
-                    <q-btn color="pink" icon="print" flat dense>
+                    <q-btn color="pink" icon="print" flat dense  v-if="props.row.corte?.movimientos.MOVIMIENTOS != 0" >
                       <q-menu>
                         <div style="min-width: 200px">
-                          <q-select v-model="printer" :options="$counter.printers" label="Impresora" filled dense
+                          <q-select  v-model="printer" :options="$counter.printers" label="Impresora" filled dense
                             option-label="name">
                             <template v-slot:after>
                               <q-btn round dense flat icon="send" @click="imprimir(props.row)" />
