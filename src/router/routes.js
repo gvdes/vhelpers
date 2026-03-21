@@ -114,6 +114,9 @@ const routes = [
   {
     path: '/openbox',
     component: () => import('layouts/OpneBoxesLYT.vue'),
+    children: [
+      { path: ':sid', name: 'onsi', component: () => import('pages/CountingCash/receiptCash.vue'), meta: { moduleId:22, requiresAuth: true } }
+    ],
     meta: { moduleId: 22, requiresAuth: true }
   },
   {
