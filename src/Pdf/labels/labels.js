@@ -1658,13 +1658,13 @@ const VerticalLabel = (data, nick, name, prices) => {
             .filter(item => prices.val.includes(item.id))
             .forEach((e, i) => {
               if (e.alias === 'OFERTA') {
-                doc.setFontSize(12)
+                doc.setFontSize(19)
                 doc.setFont('helvetica', 'bold')
-                doc.text('Unico Precio', x + 25, ypri + i * yprincrement)
-                doc.setFontSize(20)
+                doc.text('Unico Precio', x + 20, ypri + i * yprincrement)
+                doc.setFontSize(31)
                 doc.text(
                   `$ ${Number(e.pivot.price).toFixed(2)}`,
-                  x + 25,
+                  x + 18,
                   ypri + i * yprincrement + 15
                 )
               } else {
