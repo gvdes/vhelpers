@@ -9,102 +9,31 @@
         <div>
           <span class="text-grey">Helpers</span>
           <q-icon name="navigate_next" color="primary" />
-          <span class="text-h6">Cajas Abiertas</span>
+          <span class="text-h6">Reporte Cajas</span>
         </div>
+        {{ $counter.date }}
         <div class="row">
-          <q-btn color="primary" icon="event" @click="date = !date" flat round />
+          <q-btn color="primary" icon="event" flat round>
+            <q-menu>
+              <!-- <div class="q-pa-md"> -->
+              <q-date v-model="dateModel" minimal mask="YYYY-MM-DD" />
+              <!-- </div> -->
+            </q-menu>
+          </q-btn>
           <q-btn color="primary" icon="download" @click="crearPdf" flat round />
           <q-btn color="primary" icon="calculate" @click="calculate" flat round />
-
         </div>
-
       </q-toolbar>
+      <q-tabs v-model="$counter.tabs.val">
+        <q-route-tab v-for="store in $counter.tabs.opts" :key="store.id" :label="store.alias" :name="store.id"
+          icon="store" class="text-caption" :to="`/openBox/${store.id}`" />
+      </q-tabs>
 
-      <q-table title="Sucursales" :rows="stores" hide-header :pagination=table.pagination :filter="table.filter">
-        <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="table.filter" placeholder="Buscar">
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </template>
-
-        <template v-slot:body="props">
-
-          <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
-            <q-list bordered dense>
-              <q-item>
-                <q-item-section>
-                  <q-item-label class="flex justify-between">
-                    <div class="text-bold">{{ props.row.name }}</div>
-                    <div class="text-overline">{{ props.row.sales?.length }}
-                      <q-btn color="grey" flat dense :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                        " @click="props.expand = !props.expand" />
-                    </div>
-                  </q-item-label>
-                </q-item-section>
-
-              </q-item>
-              <q-slide-transition>
-                <div class="" v-show="props.expand" v-if="props.row.sales">
-                  <q-separator />
-                  <q-item class="text-center">
-                    <q-item-section>
-                      FECHA
-                    </q-item-section>
-                    <q-item-section>
-                      CAJA
-                    </q-item-section>
-                    <q-item-section>
-                      TICKETS
-                    </q-item-section>
-                  </q-item>
-                  <q-item class="text-center" dense clickable v-ripple v-for="(sales, index) in (props.row.sales)">
-                    <q-item-section>
-                      {{ dayjs(sales.FECFAC).format('YYYY-MM-DD') }}
-                    </q-item-section>
-                    <q-item-section>
-                      {{ sales.DESTER }}
-                    </q-item-section>
-                    <q-item-section>
-                      {{ sales.TICKETS }}
-                    </q-item-section>
-                  </q-item>
-                </div>
-              </q-slide-transition>
-            </q-list>
-            <q-separator spaced inset vertical dark />
-          </div>
-        </template>
-      </q-table>
-
-
-
-      <q-dialog v-model="date">
-        <q-card class="my-card">
-          <q-card-section>
-            <div class="q-pa-md">
-              <div class="q-pb-sm">
-                <!-- Desde: {{ fechas.from }} : Hasta {{ fechas.to }} -->
-                <!-- {{ fechas }} -->
-              </div>
-              <q-date v-model="fechas" range minimal />
-            </div>
-          </q-card-section>
-          <q-card-section>
-            <q-card-actions align="right">
-              <q-btn flat icon="close" color="negative" @click="date = !date" />
-              <q-btn flat icon="check" color="positive" @click="buscas" />
-            </q-card-actions>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-
-
-
-
-
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <!-- <keep-alive> -->
+          <component :is="Component" />
+        <!-- </keep-alive> -->
+      </router-view>
     </q-page-container>
   </q-layout>
 </template>
@@ -121,100 +50,46 @@ import autoTable from 'jspdf-autotable'
 import UserToolbar from "src/components/UserToolbar.vue";
 import ApiAssist from "src/API/assistApi";
 import { useVDBStore } from "src/stores/VDB";
+import { useCounterStore } from "src/stores/countingCash";
+
 import axios from "axios"; //para dirigirme bro
 const $q = useQuasar();
 const $route = useRoute();
 const $router = useRouter();
 const $user = useVDBStore();
+const $counter = useCounterStore();
 
 
 const date = ref(false);
 
 const fechas = ref(null);
 const stores = ref([]);
-const table = ref({
-  pagination: { rowsPerPage: 0 },
-  filter: "",
-});
-
 
 const ismobile = computed(() => $q.platform.is.mobile);
-
+const dateModel = computed({
+  get: () => $counter.date,
+  set: (val) => $counter.setDate(val)
+});
 
 const init = async () => {
-
-  // smonth.value.val = meses.filter(e => e.id === mes)[0]
   $q.loading.show({ message: "Cargando Informacion" });
   console.log("se inicia el init");
-  const resp = await ApiAssist.index();
+  let date = new Date();
+  $counter.setDate(dayjs(date).format("YYYY-MM-DD"))
+  const resp = await ApiAssist.getOpenCash({date:$counter.date, sid:$user.session.store.id});
   if (resp.error) {
     console.log(resp);
   } else {
     console.log(resp);
-    stores.value = resp;
-    let date = new Date();
-    let fecha = dayjs(date).format("YYYY/MM/DD")
-    fechas.value = fecha
-    console.log(fecha);
-    getSale(stores.value, fechas.value).finally(() => {
-      $q.loading.hide();
-    });
+    $counter.setTabVal(resp.stores.length > 0 ? resp.stores[0].id : null)
+    if ($counter.tabs.val) {
+      $router.push(`/openBox/${$counter.tabs.val}`)
+    }
+    $counter.setPrinters(resp.printers)
+    $counter.setTabOpts(resp.stores);
+    $q.loading.hide()
   }
 };
-
-const getSale = async (sucursales, date) => {
-  console.log(date);
-
-  // Creamos un array de promesas para manejar las solicitudes
-  const promises = sucursales.map((e, index) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        e.sale = null;
-        let host = e.ip_address;
-        // let host = '192.168.10.160:1619'
-        let sale = `http://${host}/access/public/reports/OpenCash`;
-        //let sale = `http://192.168.10.160:1619/access/public/reports/OpenCash`;
-        axios
-          .post(sale, { filt: date })
-          .then((done) => {
-            e.sales = done.data || null; // Guardar datos si la respuesta es válida
-            console.log(done.data)
-            console.log(`Sucursal ${e.name} procesada con éxito.`);
-            resolve({ success: true, data: done.data });
-          })
-          .catch((fail) => {
-            console.log(`Error en sucursal ${e.name}: ${fail.message}`);
-            e.sales = []; // Establecer como null si hubo error
-            $q.notify({ message: `Sucursal ${e.name} no tiene conexion`, type: 'negative', position: 'center' })
-            resolve({ success: false, error: fail.message }); // Resuelve con el estado de error
-          });
-      }, index * 1000);
-    });
-  });
-
-  try {
-    await Promise.all(promises);
-  } catch (error) {
-    console.error("Error en alguna de las solicitudes:", error);
-  }
-};
-
-
-
-// if ($user.session.rol === 'adm' || $user.session.rol === 'root') {
-  init()
-// } else {
-//   $q.notify({ message: 'No tienes acceso a esta pagina', type: 'negative', position: 'center' })
-//   $router.replace('/');
-// }
-
-const buscas = () => {
-  date.value = false
-  $q.loading.show({ message: 'Obteniendo Datos' })
-  getSale(stores.value, fechas.value).finally(() => {
-    $q.loading.hide();
-  })
-}
 
 const crearPdf = () => {
   return new Promise((resolve, reject) => {
@@ -298,4 +173,29 @@ const calculate = () => {
 
 }
 
+init();
+
+watch(() => $counter.date, async (newDate) => {
+  if (!newDate) return;
+
+  $q.loading.show({ message: "Actualizando cajas..." });
+
+  const resp = await ApiAssist.getOpenCash({
+    date: newDate,
+    sid: $user.session.store.id
+  });
+
+  if (!resp.error) {
+    $counter.setTabVal(resp.stores.length > 0 ? resp.stores[0].id : null);
+
+    if ($counter.tabs.val) {
+      $router.push(`/openBox/${$counter.tabs.val}`);
+    }
+
+    $counter.setPrinters(resp.printers);
+    $counter.setTabOpts(resp.stores);
+  }
+
+  $q.loading.hide();
+});
 </script>
