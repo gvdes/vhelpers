@@ -1,131 +1,138 @@
 <template>
   <q-page padding>
-    <div v-if="loading">
-      <q-inner-loading :showing="loading">
-        <q-spinner-gears size="50px" color="primary" />
-      </q-inner-loading>
-    </div>
-    <div v-else>
-      <q-table :rows="cash" grid hide-bottom :pagination="table.pagination" :columns="table.columns">
-        <template v-slot:item="props">
-          <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-            <q-card flat bordered>
-              <q-card-section class="text-center">
-                <div class="row">
-                  <div class="col"></div>
-                  <div class="text-bold col text-h5">Caja</div>
-                  <div class="col">
-                    <q-btn color="pink" icon="print" flat dense v-if="props.row.corte?.movimientos.MOVIMIENTOS != 0">
-                      <q-menu>
-                        <div style="min-width: 200px">
-                          <q-select v-model="printer" :options="$counter.printers" label="Impresora" filled dense
-                            option-label="name">
-                            <template v-slot:after>
-                              <q-btn round dense flat icon="send" @click="imprimir(props.row)" />
-                            </template>
-                          </q-select>
-                        </div>
-                      </q-menu>
-                    </q-btn>
-                    <q-icon name="circle" :color="props.row.cashier ? 'positive' : 'negative'" />
+    <q-inner-loading :showing="loading">
+      <q-spinner-gears size="50px" color="primary" />
+    </q-inner-loading>
+
+    <q-table v-if="!loading" :rows="cash" grid hide-bottom :pagination="table.pagination" :columns="table.columns">
+      <template v-slot:item="props">
+        <div class="q-pa-sm col-xs-12 col-sm-6 col-md-4">
+          <q-card class="q-pa-sm shadow-2 rounded-borders">
+            <q-card-section class="row items-center justify-between">
+              <div class="column">
+                <div class="text-subtitle2 text-grey-7">Caja</div>
+                <div class="text-h6 text-weight-bold">
+                  {{ props.row.name }}
+                </div>
+              </div>
+              <div class="row items-center q-gutter-sm">
+                <q-icon name="circle" size="12px" :color="props.row.cashier ? 'positive' : 'negative'" />
+                <q-btn flat round icon="print" color="primary" v-if="props.row.corte?.movimientos.MOVIMIENTOS != 0">
+                  <q-menu>
+                    <div class="q-pa-sm" style="min-width: 200px">
+                      <q-select v-model="printer" :options="$counter.printers" label="Impresora" dense filled
+                        option-label="name">
+                        <template v-slot:after>
+                          <q-btn round dense flat icon="send" @click="imprimir(props.row)" />
+                        </template>
+                      </q-select>
+                    </div>
+                  </q-menu>
+                </q-btn>
+              </div>
+
+            </q-card-section>
+
+            <q-separator />
+            <div v-if="props.row.corte?.movimientos.MOVIMIENTOS > 0">
+              <q-card-section class="row justify-around text-center">
+                <div>
+                  <div class="text-caption text-grey">Ingresos</div>
+                  <div class=" text-weight-bold">
+                    {{ money(props.row.corte?.INGRESOS) }}
                   </div>
                 </div>
-                <br>
-                <strong>{{ props.row.name }}</strong>
-                <q-space />
+                <div>
+                  <div class="text-caption text-grey">Retiradas</div>
+                  <div class=" text-weight-bold">
+                    {{ money(props.row.corte?.RETIRADAS) }}
+                  </div>
+                </div>
+                <div>
+                  <div class="text-caption text-grey">Inicial</div>
+                  <div class="text-weight-bold">
+                    {{ money(parseFloat(props.row.corte?.SINATE)) }}
+                  </div>
+                </div>
+              </q-card-section>
+              <q-separator />
+              <q-card-section class="row justify-around text-center">
+                <div>
+                  <div class="text-caption text-grey">Ventas</div>
+                  <div class="text-weight-bold">
+                    {{ money(props.row.corte?.VENTASEFE) }}
+                  </div>
+                </div>
+                <div>
+                  <div class="text-caption text-grey">Descuadre</div>
+                  <div class="text-weight-bold"
+                    :class="(props.row.corte?.RETIRADAS - (props.row.corte?.VENTASEFE + props.row.corte?.INGRESOS)) != 0 ? 'text-negative' : 'text-positive'">
+                    {{
+                      money(
+                        props.row.corte?.RETIRADAS -
+                        (props.row.corte?.VENTASEFE + props.row.corte?.INGRESOS)
+                      )
+                    }}
+                  </div>
+                </div>
+                <div v-if="props.row.receipt == null">
+                  <div class="text-caption text-grey">Entregado</div>
+                  <q-chip clickable color="blue-1" text-color="primary" icon="edit">
+                    {{ money(0) }}
+                    <q-popup-edit v-model="models" v-slot="scope" @save="(val) => updateReceipt(val, props.row)">
+                      <q-input dense outlined type="number" label="Ingreso" v-model.number="scope.value.ingreso"
+                        @keyup.enter="scope.set" />
+                      <q-input dense outlined type="number" label="Gasto" v-model.number="scope.value.gasto"
+                        @keyup.enter="scope.set" />
+                    </q-popup-edit>
+
+                  </q-chip>
+                </div>
+              </q-card-section>
+              <q-card-section v-if="props.row.receipt">
+                <div class="row justify-around text-center">
+                  <div>
+                    <div class="text-caption text-grey">Enviado</div>
+                    <div class="text-weight-bold">
+                      {{ money(props.row.receipt.cash_send) }}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="text-caption text-grey">Recibido</div>
+                    <div class="text-weight-bold">
+                      {{ money(props.row.receipt.cash_receipt) }}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="text-caption text-grey">Gastos</div>
+                    <div class="text-weight-bold">
+                      {{ money(props.row.receipt.cash_expenses) }}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="text-caption text-grey">Diferencia</div>
+                    <q-badge :color="props.row.receipt.discrepancy != 0 ? 'negative' : 'positive'">
+                      {{ money(props.row.receipt.discrepancy) }}
+                    </q-badge>
+                  </div>
+
+                </div>
+
               </q-card-section>
 
-              <div v-if="props.row.corte?.movimientos.MOVIMIENTOS > 0">
-                <q-card-section class="flex flex-center">
-                  <q-list>
-                    <q-item>
-                      <q-item-section>
-                        <q-item-label class="q-ml-lg text-center" text-caption>Ingresos</q-item-label>
-                        <q-item-label class="q-ml-lg text-bold text-center">{{ money(props.row.corte?.INGRESOS)
-                        }}</q-item-label>
-                      </q-item-section>
-                      <q-item-section>
-                        <q-item-label class="q-ml-lg text-center" text-caption>Retiradas</q-item-label>
-                        <q-item-label class="q-ml-lg text-bold text-center">{{ money(props.row.corte?.RETIRADAS)
-                        }}</q-item-label>
-                      </q-item-section>
-                      <q-item-section>
-                        <q-item-label class="q-ml-lg text-center" text-caption>SInicial</q-item-label>
-                        <q-item-label class="q-ml-lg text-bold text-center">{{
-                          money(parseFloat(props.row.corte?.SINATE)) }}</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-card-section>
-                <q-card-section>
-                  <q-list>
-                    <q-item>
-                      <q-item-section>
-                        <q-item-label class=" q-ml-lg text-center" text-caption>Ventas</q-item-label>
-                        <q-item-label class="q-ml-lg text-bold text-center">{{ money(props.row.corte?.VENTASEFE)
-                        }}</q-item-label>
-                      </q-item-section>
-                      <q-item-section>
-                        <q-item-label class="q-ml-lg text-center" text-caption>Descuadre</q-item-label>
-                        <q-item-label class="q-ml-lg text-bold text-center"
-                          :class="(props.row.corte?.RETIRADAS - (props.row.corte?.VENTASEFE + props.row.corte?.INGRESOS)) != 0 ? 'text-negative' : 'text-positive'">{{
-                            money(props.row.corte?.RETIRADAS - (props.row.corte?.VENTASEFE + props.row.corte?.INGRESOS))
-                          }}</q-item-label>
-                      </q-item-section>
-                      <q-item-section v-if="props.row.receipt == null">
-                        <q-item-label class="q-ml-lg text-center" text-caption>Entregado</q-item-label>
-                        <q-item-label class="q-ml-lg text-bold text-center cursor-pointer">
-                          {{ props.row.receipt ? money(props.row.receipt.cash_receipt) : money(0) }}
-                          <q-popup-edit v-if="props.row.receipt == null" v-model.number="models" v-slot="scope"
-                            @save="(val) => updateReceipt(val, props.row)">
-                            <q-input type="number" label="Ingreso" v-model.number="scope.value.ingreso" dense autofocus
-                              @keyup.enter="scope.set">
-                            </q-input>
-                            <q-input type="number" label="Gasto" v-model.number="scope.value.gasto" dense autofocus
-                              @keyup.enter="scope.set">
-                            </q-input>
-                          </q-popup-edit>
-                        </q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-card-section>
-                <q-card-section v-if="props.row.receipt">
-                  <q-list>
-                    <q-item>
-                      <q-item-section>
-                        <q-item-label class=" q-ml-lg text-center" text-caption>Enviado</q-item-label>
-                        <q-item-label class="q-ml-lg text-bold text-center">{{ money(props.row.receipt.cash_send)
-                        }}</q-item-label>
-                      </q-item-section>
-                      <q-item-section>
-                        <q-item-label class="q-ml-lg text-center" text-caption>Recibido</q-item-label>
-                        <q-item-label class="q-ml-lg text-bold text-center">{{
-                          money(props.row.receipt.cash_receipt)
-                        }}</q-item-label>
-                      </q-item-section>
-                      <q-item-section>
-                        <q-item-label class="q-ml-lg text-center" text-caption>Diferencia</q-item-label>
-                        <q-item-label class="q-ml-lg text-bold text-center"
-                          :class="props.row.receipt.discrepancy != 0 ? 'text-negative' : 'text-positive'">
-                          {{ money(props.row.receipt.discrepancy) }}
+            </div>
+            <q-card-section v-else class="text-center text-grey">
+              Sin movimientos
+            </q-card-section>
 
-                        </q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-card-section>
-              </div>
-              <div v-else>
-                <q-card-section class="text-center text-h6">
-                  Caja Sin Movimientos
-                </q-card-section>
-              </div>
-            </q-card>
-          </div>
-        </template>
-      </q-table>
-    </div>
+          </q-card>
+        </div>
+      </template>
+    </q-table>
+
   </q-page>
 </template>
 
@@ -166,14 +173,10 @@ const table = ref({
   ]
 })
 const printer = ref(null)
-const modelReceipt = ref(null)
 const models = ref({
   ingreso: 0,
   gasto: 0
 })
-const errorReceipt = ref(false)
-const errorMessageReceipt = ref('')
-
 const getSale = async () => {
   if (!store.value) return;
 
@@ -247,6 +250,7 @@ const updateReceipt = async (val, row) => {
   } else {
     console.log(resp)
     $q.loading.hide()
+    models.value = { ingreso: 0, gasto: 0 }
     row.receipt = resp
   }
 }
