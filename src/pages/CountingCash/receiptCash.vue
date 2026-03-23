@@ -4,7 +4,8 @@
       <q-spinner-gears size="50px" color="primary" />
     </q-inner-loading>
 
-    <q-table v-if="!loading" :rows="cash" grid hide-bottom :pagination="table.pagination" :columns="table.columns">
+    <q-table v-if="cash.length > 0" :rows="cash" grid hide-bottom :pagination="table.pagination"
+      :columns="table.columns">
       <template v-slot:item="props">
         <div class="q-pa-sm col-xs-12 col-sm-6 col-md-4">
           <q-card class="q-pa-sm shadow-2 rounded-borders">
@@ -35,6 +36,27 @@
 
             <q-separator />
             <div v-if="props.row.corte?.movimientos.MOVIMIENTOS > 0">
+              <q-card-section class="row justify-around text-center">
+                <div>
+                  <div class="text-caption text-grey">Cajero</div>
+                  <div class=" text-weight-bold">
+                    {{ props.row.cashier?.user?.staff?.complete_name || 'N/A' }}
+                  </div>
+                </div>
+                <!-- <div> -->
+                  <!-- <div class="text-caption text-grey">Retiradas</div>
+                  <div class=" text-weight-bold">
+                    {{ money(props.row.corte?.RETIRADAS) }}
+                  </div>
+                </div>
+                <div>
+                  <div class="text-caption text-grey">Inicial</div>
+                  <div class="text-weight-bold">
+                    {{ money(parseFloat(props.row.corte?.SINATE)) }}
+                  </div> -->
+                <!-- </div> -->
+              </q-card-section>
+              <q-separator />
               <q-card-section class="row justify-around text-center">
                 <div>
                   <div class="text-caption text-grey">Ingresos</div>
@@ -167,10 +189,11 @@ const $route = useRoute();
 const $router = useRouter();
 const $user = useVDBStore();
 const $counter = useCounterStore();
-const cash = ref([])
+
 const store = computed(() => {
   return $counter.tabs.opts.find(e => e.id == $counter.tabs.val)
 });
+const cash = computed(() => store.value ? store.value.cashs : [])
 const loading = ref(false)
 const table = ref({
   pagination: { rowsPerPages: 0 },
@@ -188,29 +211,9 @@ const models = ref({
   ingreso: 0,
   gasto: 0
 })
-const getSale = async () => {
-  if (!store.value) return;
 
-  loading.value = true;
-
-  cash.value = store.value.cashs || [];
-
-  const resp = await ApiAssist.OpenBoxes(
-    store.value.ip_address,
-    { filt: $counter.date, cash: cash.value }
-  );
-
-  if (!resp.fail) {
-    cash.value = resp;
-  }
-
-  loading.value = false;
-};
 const money = (value) =>
   '$' + (value || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })
-
-const getSaleDebounced = debounce(getSale, 300)
-
 
 const imprimir = async (cash) => {
   console.log(store.value.ip_address)
@@ -290,12 +293,5 @@ const ModifyExpense = async (val, row) => {
     row.receipt = resp
   }
 }
-watch(() => $counter.tabs.val, getSaleDebounced);
-watch(() => $counter.date, getSaleDebounced);
-watch(
-  () => $counter.tabs.opts,
-  () => {
-    getSaleDebounced()
-  }
-);
+
 </script>

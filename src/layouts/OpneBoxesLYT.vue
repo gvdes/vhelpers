@@ -20,18 +20,19 @@
               <!-- </div> -->
             </q-menu>
           </q-btn>
-          <q-btn color="primary" icon="download" @click="crearPdf" flat round />
+          <!-- <q-btn color="primary" icon="download" @click="crearPdf" flat round /> -->
           <q-btn color="primary" icon="calculate" @click="calculate" flat round />
         </div>
       </q-toolbar>
       <q-tabs v-model="$counter.tabs.val">
         <q-route-tab v-for="store in $counter.tabs.opts" :key="store.id" :label="store.alias" :name="store.id"
-          icon="store" class="text-caption" :to="`/openBox/${store.id}`" />
+          :class="store.hasIssue ? 'text-negative' : 'text-positive'" icon="store" class="text-caption"
+          :to="`/openBox/${store.id}`" />
       </q-tabs>
 
       <router-view v-slot="{ Component }">
         <!-- <keep-alive> -->
-          <component :is="Component" />
+        <component :is="Component" />
         <!-- </keep-alive> -->
       </router-view>
     </q-page-container>
@@ -76,7 +77,7 @@ const init = async () => {
   console.log("se inicia el init");
   let date = new Date();
   $counter.setDate(dayjs(date).format("YYYY-MM-DD"))
-  const resp = await ApiAssist.getOpenCash({date:$counter.date, sid:$user.session.store.id});
+  const resp = await ApiAssist.getOpenCash({ date: $counter.date, sid: $user.session.store.id });
   if (resp.error) {
     console.log(resp);
   } else {
@@ -85,6 +86,12 @@ const init = async () => {
     if ($counter.tabs.val) {
       $router.push(`/openBox/${$counter.tabs.val}`)
     }
+    resp.stores.forEach(store => {
+      store.hasIssue = store.cashs?.some(cash =>
+        cash?.corte?.movimientos?.MOVIMIENTOS > 0 &&
+        cash?.receipt == null
+      ) || false
+    })
     $counter.setPrinters(resp.printers)
     $counter.setTabOpts(resp.stores);
     $q.loading.hide()
@@ -126,33 +133,55 @@ const crearPdf = () => {
 }
 
 const calculate = () => {
-  $q.loading.show({ message: 'Importando Ticket' })
+  $q.loading.show({ message: 'Descargando Info' })
+  console.log($counter.tabs.opts)
   const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('Comparativo');
-
-
+  const worksheet = workbook.addWorksheet('Cajas');
   worksheet.columns = [
-    { header: 'Fecha', key: 'FECFAC', width: 20 },
-    { header: 'Destino', key: 'DESTER', width: 30 },
-    { header: 'Tickets', key: 'TICKETS', width: 10 },
-  ];
+    { header: 'Sucursal', key: 'sucursal', width: 25 },
+    { header: 'Caja', key: 'caja', width: 20 },
+    { header: 'Cajero', key: 'cajero', width: 20 },
+    { header: 'Retiradas', key: 'retiradas', width: 15 },
+    { header: 'Descuadre', key: 'descuadre', width: 15 },
+    { header: 'Enviado', key: 'enviado', width: 15 },
+    { header: 'Recibido', key: 'recibido', width: 15 },
+    { header: 'Diferencia', key: 'diferencia', width: 15 },
+    { header: 'Gastos', key: 'gastos', width: 15 },
+  ]
+  let currentRow = 2
+  $counter.tabs.opts.forEach(store => {
+    const validCashs = store.cashs.filter(c =>
+      Number(c?.corte?.movimientos?.MOVIMIENTOS) > 0
+    )
+    if (!validCashs.length) return
+    const startRow = currentRow
+    validCashs.forEach(cash => {
+      const retiradas = cash.corte?.RETIRADAS
+      const enviado = cash.receipt?.cash_send || 0
+      const recibido = cash.receipt?.cash_receipt || 0
+      const diferencia = cash.receipt?.discrepancy || 0
+      const descuadre = (cash.corte?.RETIRADAS - (cash.corte?.VENTASEFE + cash.corte?.INGRESOS))
+      const gastos = cash.receipt?.cash_expenses || 0
+      worksheet.addRow({
+        sucursal: store.name,
+        caja: cash.name,
+        cajero:cash.cashier?.user?.staff?.complete_name || 'N/A',
+        retiradas,
+        descuadre,
+        enviado,
+        recibido,
+        diferencia,
+        gastos
+      })
+      currentRow++
+    })
+    const endRow = currentRow - 1
+    if (endRow > startRow) {
+      worksheet.mergeCells(`A${startRow}:A${endRow}`)
+    }
+  })
 
-  stores.value.forEach((store) => {
-    const headerRow = worksheet.addRow([store.name]);
-    headerRow.font = { bold: true };
-    headerRow.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'ADD8E6' }, // Azul claro
-    };
-    headerRow.alignment = { horizontal: 'center' };
-
-
-    store.sales.forEach((sale) => {
-      worksheet.addRow(sale);
-    });
-    worksheet.addRow([]);
-  });
+  worksheet.getRow(1).font = { bold: true }
 
 
 
@@ -177,21 +206,22 @@ init();
 
 watch(() => $counter.date, async (newDate) => {
   if (!newDate) return;
-
   $q.loading.show({ message: "Actualizando cajas..." });
-
   const resp = await ApiAssist.getOpenCash({
     date: newDate,
     sid: $user.session.store.id
   });
-
   if (!resp.error) {
     $counter.setTabVal(resp.stores.length > 0 ? resp.stores[0].id : null);
-
     if ($counter.tabs.val) {
       $router.push(`/openBox/${$counter.tabs.val}`);
     }
-
+    resp.stores.forEach(store => {
+      store.hasIssue = store.cashs?.some(cash =>
+        cash?.corte?.movimientos?.MOVIMIENTOS > 0 &&
+        cash?.receipt == null
+      ) || false
+    })
     $counter.setPrinters(resp.printers);
     $counter.setTabOpts(resp.stores);
   }
