@@ -15,10 +15,10 @@
                   <div class="col"></div>
                   <div class="text-bold col text-h5">Caja</div>
                   <div class="col">
-                    <q-btn color="pink" icon="print" flat dense  v-if="props.row.corte?.movimientos.MOVIMIENTOS != 0" >
+                    <q-btn color="pink" icon="print" flat dense v-if="props.row.corte?.movimientos.MOVIMIENTOS != 0">
                       <q-menu>
                         <div style="min-width: 200px">
-                          <q-select  v-model="printer" :options="$counter.printers" label="Impresora" filled dense
+                          <q-select v-model="printer" :options="$counter.printers" label="Impresora" filled dense
                             option-label="name">
                             <template v-slot:after>
                               <q-btn round dense flat icon="send" @click="imprimir(props.row)" />
@@ -36,18 +36,18 @@
               </q-card-section>
 
               <div v-if="props.row.corte?.movimientos.MOVIMIENTOS > 0">
-                <q-card-section class="flex flex-center" >
+                <q-card-section class="flex flex-center">
                   <q-list>
                     <q-item>
                       <q-item-section>
                         <q-item-label class="q-ml-lg text-center" text-caption>Ingresos</q-item-label>
                         <q-item-label class="q-ml-lg text-bold text-center">{{ money(props.row.corte?.INGRESOS)
-                          }}</q-item-label>
+                        }}</q-item-label>
                       </q-item-section>
                       <q-item-section>
                         <q-item-label class="q-ml-lg text-center" text-caption>Retiradas</q-item-label>
                         <q-item-label class="q-ml-lg text-bold text-center">{{ money(props.row.corte?.RETIRADAS)
-                          }}</q-item-label>
+                        }}</q-item-label>
                       </q-item-section>
                       <q-item-section>
                         <q-item-label class="q-ml-lg text-center" text-caption>SInicial</q-item-label>
@@ -63,7 +63,7 @@
                       <q-item-section>
                         <q-item-label class=" q-ml-lg text-center" text-caption>Ventas</q-item-label>
                         <q-item-label class="q-ml-lg text-bold text-center">{{ money(props.row.corte?.VENTASEFE)
-                          }}</q-item-label>
+                        }}</q-item-label>
                       </q-item-section>
                       <q-item-section>
                         <q-item-label class="q-ml-lg text-center" text-caption>Descuadre</q-item-label>
@@ -76,17 +76,14 @@
                         <q-item-label class="q-ml-lg text-center" text-caption>Entregado</q-item-label>
                         <q-item-label class="q-ml-lg text-bold text-center cursor-pointer">
                           {{ props.row.receipt ? money(props.row.receipt.cash_receipt) : money(0) }}
-                          <q-popup-edit v-if="props.row.receipt == null" v-model.number="modelReceipt"
-                            :validate="receiptRangeValidation" @hide="receiptRangeValidation" v-slot="scope"
+                          <q-popup-edit v-if="props.row.receipt == null" v-model.number="models" v-slot="scope"
                             @save="(val) => updateReceipt(val, props.row)">
-                            <q-input type="number" v-model.number="scope.value" hint="Ingresa la recepcion"
-                              :error="errorReceipt" :error-message="errorMessageReceipt" dense autofocus
+                            <q-input type="number" label="Ingreso" v-model.number="scope.value.ingreso" dense autofocus
                               @keyup.enter="scope.set">
-                              <template v-slot:after>
-                                <q-btn flat dense color="negative" icon="cancel" @click.stop.prevent="scope.cancel" />
-                                <q-btn flat dense color="positive" icon="check_circle" @click.stop.prevent="scope.set"
-                                  :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value" />
-                              </template></q-input>
+                            </q-input>
+                            <q-input type="number" label="Gasto" v-model.number="scope.value.gasto" dense autofocus
+                              @keyup.enter="scope.set">
+                            </q-input>
                           </q-popup-edit>
                         </q-item-label>
                       </q-item-section>
@@ -99,13 +96,13 @@
                       <q-item-section>
                         <q-item-label class=" q-ml-lg text-center" text-caption>Enviado</q-item-label>
                         <q-item-label class="q-ml-lg text-bold text-center">{{ money(props.row.receipt.cash_send)
-                          }}</q-item-label>
+                        }}</q-item-label>
                       </q-item-section>
                       <q-item-section>
                         <q-item-label class="q-ml-lg text-center" text-caption>Recibido</q-item-label>
                         <q-item-label class="q-ml-lg text-bold text-center">{{
                           money(props.row.receipt.cash_receipt)
-                          }}</q-item-label>
+                        }}</q-item-label>
                       </q-item-section>
                       <q-item-section>
                         <q-item-label class="q-ml-lg text-center" text-caption>Diferencia</q-item-label>
@@ -169,7 +166,11 @@ const table = ref({
   ]
 })
 const printer = ref(null)
-const modelReceipt = ref(0)
+const modelReceipt = ref(null)
+const models = ref({
+  ingreso: 0,
+  gasto: 0
+})
 const errorReceipt = ref(false)
 const errorMessageReceipt = ref('')
 
@@ -197,16 +198,16 @@ const money = (value) =>
 const getSaleDebounced = debounce(getSale, 300)
 
 
-const receiptRangeValidation = (val) => {
-  if (val <= 0) {
-    errorReceipt.value = true
-    errorMessageReceipt.value = 'No puedes Validar en 0 '
-    return false
-  }
-  errorReceipt.value = false
-  errorMessageReceipt.value = ''
-  return true
-}
+// const receiptRangeValidation = (val) => {
+//   if (val <= 0) {
+//     errorReceipt.value = true
+//     errorMessageReceipt.value = 'No puedes Validar en 0 '
+//     return false
+//   }
+//   errorReceipt.value = false
+//   errorMessageReceipt.value = ''
+//   return true
+// }
 
 const imprimir = async (cash) => {
   console.log(store.value.ip_address)
