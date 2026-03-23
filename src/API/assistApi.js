@@ -21,12 +21,18 @@ export default {
     return assist.get(`/sales/GetReportVhelp/${data}`).then(done => done.data).catch(fail => { return { fail } });
   },
   getOpenCash(data) {
-    return assist.post(`/sales/getOpenCash`,data).then(done => done.data).catch(fail => { return { fail } });
+    return assist.post(`/sales/getOpenCash`, data).then(done => done.data).catch(fail => { return { fail } });
   },
   updateReceipt(data) {
-    return assist.post(`/sales/updateReceipt`,data).then(done => done.data).catch(fail => { return { fail } });
+    return assist.post(`/sales/updateReceipt`, data).then(done => done.data).catch(fail => { return { fail } });
   },
-  OpenBoxes(host,data) {
+  ModifyReceipt(data) {
+    return assist.post(`/sales/ModifyReceipt`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  ModifyExpense(data) {
+    return assist.post(`/sales/ModifyExpense`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  OpenBoxes(host, data) {
     const store = axios.create({ baseURL: `http://${host}/storetools/public/api` })
     // const store = axios.create({ baseURL: `http://192.168.10.160:1619/storetools/public/api` })
     return store.post(`/reports/OpenBoxes`, data).then(done => done.data).catch(fail => { return { fail } });

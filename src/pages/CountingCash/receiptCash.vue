@@ -103,6 +103,11 @@
                     <div class="text-weight-bold">
                       {{ money(props.row.receipt.cash_receipt) }}
                     </div>
+                    <q-popup-edit v-model="props.row.receipt.cash_receipt" v-slot="scope"
+                      @save="(val) => ModifyReceipt(val, props.row)">
+                      <q-input dense outlined type="number" label="Ingreso" v-model.number="scope.value"
+                        @keyup.enter="scope.set" />
+                    </q-popup-edit>
                   </div>
 
                   <div>
@@ -110,6 +115,12 @@
                     <div class="text-weight-bold">
                       {{ money(props.row.receipt.cash_expenses) }}
                     </div>
+                    <q-popup-edit v-model="props.row.receipt.cash_expenses" v-slot="scope"
+                      @save="(val) => ModifyExpense(val, props.row)">
+                      <q-input dense outlined type="number" label="Gasto" v-model.number="scope.value"
+                        @keyup.enter="scope.set" />
+                    </q-popup-edit>
+
                   </div>
 
                   <div>
@@ -201,17 +212,6 @@ const money = (value) =>
 const getSaleDebounced = debounce(getSale, 300)
 
 
-// const receiptRangeValidation = (val) => {
-//   if (val <= 0) {
-//     errorReceipt.value = true
-//     errorMessageReceipt.value = 'No puedes Validar en 0 '
-//     return false
-//   }
-//   errorReceipt.value = false
-//   errorMessageReceipt.value = ''
-//   return true
-// }
-
 const imprimir = async (cash) => {
   console.log(store.value.ip_address)
   console.log(cash)
@@ -254,7 +254,42 @@ const updateReceipt = async (val, row) => {
     row.receipt = resp
   }
 }
-
+const ModifyReceipt = async (val, row) => {
+  $q.loading.show({ message: 'Editando Registro' })
+  let data = {
+    "val": val,
+    "receipt": row.receipt.id
+  };
+  console.log(data);
+  const resp = await ApiAssist.ModifyReceipt(data)
+  console.log(resp)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    $q.loading.hide()
+    models.value = { ingreso: 0, gasto: 0 }
+    row.receipt = resp
+  }
+}
+const ModifyExpense = async (val, row) => {
+  $q.loading.show({ message: 'Editando Registro' })
+  let data = {
+    "val": val,
+    "receipt": row.receipt.id
+  };
+  console.log(data);
+  const resp = await ApiAssist.ModifyExpense(data)
+  console.log(resp)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    $q.loading.hide()
+    models.value = { ingreso: 0, gasto: 0 }
+    row.receipt = resp
+  }
+}
 watch(() => $counter.tabs.val, getSaleDebounced);
 watch(() => $counter.date, getSaleDebounced);
 watch(
