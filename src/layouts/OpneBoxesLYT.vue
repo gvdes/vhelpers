@@ -76,8 +76,8 @@ const init = async () => {
   $q.loading.show({ message: "Cargando Informacion" });
   console.log("se inicia el init");
   let date = new Date();
-  // $counter.setDate(dayjs(date).format("YYYY-MM-DD"))
-  $counter.setDate(dayjs('2026-03-19').format("YYYY-MM-DD"))
+  $counter.setDate(dayjs(date).format("YYYY-MM-DD"))
+  // $counter.setDate(dayjs('2026-03-19').format("YYYY-MM-DD"))
 
   const resp = await ApiAssist.getOpenCash({ date: $counter.date, sid: $user.session.store.id });
   if (resp.error) {

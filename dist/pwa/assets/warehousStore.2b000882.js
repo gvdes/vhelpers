@@ -1,0 +1,1 @@
+import{b2 as o}from"./index.b46b2c3e.js";const e=o("layout",{state:()=>({title:null,showReportLocations:!1,showReportMinMax:!1}),getters:{},actions:{setTitle(t){this.title=t},setshowReportMinMax(t){this.showReportMinMax=t},setshowReportLocations(t){this.showReportLocations=t}}});export{e as u};
