@@ -67,7 +67,7 @@ const months = Array.from({ length: 12 }, (_, i) => ({
   value: i + 1
 }))
 const isGlobal = computed(() => {
-  return [6, 10].includes(VDB.session.credentials.rol.id)
+  return [6, 10, 35].includes(VDB.session.credentials.rol.id)
 })
 const visibleZones = computed(() => {
   if (isGlobal.value) return zones.value

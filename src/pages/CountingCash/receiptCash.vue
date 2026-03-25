@@ -252,9 +252,9 @@ const table = ref({
 })
 const printer = ref(null)
 const models = ref({
-  ingreso: 0,
-  gasto: 0,
-  tarjetas: 0
+  ingreso: null,
+  gasto: null,
+  tarjetas: null
 })
 
 const money = (value) =>

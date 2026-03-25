@@ -125,7 +125,7 @@ const nwTransfer = ref({
 const validTransfer = computed(() => nwTransfer.value._origin && nwTransfer.value._destiny && nwTransfer.value.notes)
 const userWarehouse = computed(() => (VDB.session.store.id === 1 || VDB.session.store.id === 2 || VDB.session.store.id === 21 || VDB.session.store.id === 22 )
     ? warehauseCedis.value
-    : VDB.session.rol === 'gro' || VDB.session.rol ==='des' || VDB.session.rol === 'root'
+    : VDB.session.rol === 'gro' || VDB.session.rol === 'dro' || VDB.session.rol ==='des' || VDB.session.rol === 'root'
           ? warehauseGerente.value
       : warehauseSucursales.value
 
@@ -178,12 +178,12 @@ const optionDisable = (val) => {
 
   return (
     val.id === nwTransfer.value._origin.id ||
-    ((VDB.session.rol !== 'gro'  && VDB.session.rol !== 'jfz' &&  VDB.session.rol !== 'axo' && VDB.session.rol !== 'des' ) && val.id === 4)
+    ((VDB.session.rol !== 'gro'  && VDB.session.rol !== 'dro'  && VDB.session.rol !== 'jfz' &&  VDB.session.rol !== 'axo' && VDB.session.rol !== 'des' ) && val.id === 4)
   );
 }
 
 const optionDisAud = (val) => {
-  if (val.id == 4 && (VDB.session.rol != 'gro' && VDB.session.rol  != 'jfz' && VDB.session.rol != 'des' )  ) {
+  if (val.id == 4 && (VDB.session.rol != 'gro' && VDB.session.rol != 'dro' &&  VDB.session.rol  != 'jfz' && VDB.session.rol != 'des' )  ) {
     return true
   } else {
     return false
@@ -221,7 +221,7 @@ const direct = (transfer) => {
   const { origin, destiny, id } = transfer;
 
   if (
-    ['root', 'gro', 'des'].includes(rol) ||
+    ['root', 'gro', 'des', 'dro'].includes(rol) ||
     (['aux', 'gen', 'jfz', 'axo'].includes(rol) && warehauseSucursales.value.some(w => w.id === origin.id || w.id === destiny.id)) ||
     (['alm', 'vld', 'gce'].includes(rol) && warehauseCedis.value.some(w => w.id === origin.id || w.id === destiny.id))
   ) {

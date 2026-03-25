@@ -200,7 +200,7 @@ const init = async () => {
     console.log(resp)
   } else {
     console.log(resp)
-    if (VDB.session.rol == 'gro' || VDB.session.rol == 'root' || VDB.session.rol == 'des' || VDB.session.rol == 'jfz' || VDB.session.rol == 'axo') {
+    if (VDB.session.rol == 'gro' || VDB.session.rol == 'dro' || VDB.session.rol == 'root' || VDB.session.rol == 'des' || VDB.session.rol == 'jfz' || VDB.session.rol == 'axo') {
       traspaso.value = resp
       products.value = resp.bodie
       console.log(traspaso.value)

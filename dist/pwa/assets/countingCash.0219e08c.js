@@ -1,0 +1,1 @@
+import{b2 as s}from"./index.ce94614a.js";const a=s("layout",{state:()=>({title:null,tabs:{val:null,opts:[]},printers:[],date:null}),getters:{},actions:{setTitle(t){this.title=t},setTabVal(t){this.tabs.val=t},setTabOpts(t){this.tabs.opts=t},setDate(t){this.date=t},setPrinters(t){this.printers=t}}});export{a as u};
