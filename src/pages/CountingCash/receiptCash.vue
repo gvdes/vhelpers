@@ -44,7 +44,7 @@
                   </div>
                 </div>
                 <!-- <div> -->
-                  <!-- <div class="text-caption text-grey">Retiradas</div>
+                <!-- <div class="text-caption text-grey">Retiradas</div>
                   <div class=" text-weight-bold">
                     {{ money(props.row.corte?.RETIRADAS) }}
                   </div>
@@ -96,6 +96,13 @@
                       )
                     }}
                   </div>
+                  <q-popup-edit
+                    v-if="(props.row.corte?.RETIRADAS - (props.row.corte?.VENTASEFE + props.row.corte?.INGRESOS)) != 0 && props.row.receipt"
+                    v-model="props.row.receipt.mismatch_observation" v-slot="scope"
+                    @save="(val) => addCommentMismatch(val, props.row)">
+                    <q-input dense outlined type="text" label="Observacion" v-model.text="scope.value"
+                      @keyup.enter="scope.set" :disable="props.row.receipt.mismatch_observation != null" />
+                  </q-popup-edit>
                 </div>
                 <div v-if="props.row.receipt == null">
                   <div class="text-caption text-grey">Entregado</div>
@@ -105,6 +112,8 @@
                       <q-input dense outlined type="number" label="Ingreso" v-model.number="scope.value.ingreso"
                         @keyup.enter="scope.set" />
                       <q-input dense outlined type="number" label="Gasto" v-model.number="scope.value.gasto"
+                        @keyup.enter="scope.set" />
+                      <q-input dense outlined type="number" label="Tarjetas" v-model.number="scope.value.tarjetas"
                         @keyup.enter="scope.set" />
                     </q-popup-edit>
 
@@ -155,7 +164,42 @@
                 </div>
 
               </q-card-section>
+              <q-card-section v-if="props.row.receipt">
+                <div class="row justify-around text-center">
+                  <div>
+                    <div class="text-caption text-grey">Enviado Tarjeta</div>
+                    <div class="text-weight-bold">
+                      {{ money(props.row.receipt.card_send) }}
+                    </div>
+                  </div>
 
+                  <div>
+                    <div class="text-caption text-grey">Recibido Tarjeta</div>
+                    <div class="text-weight-bold">
+                      {{ money(props.row.receipt.card_receipt) }}
+                    </div>
+                    <q-popup-edit v-model="props.row.receipt.card_receipt" v-slot="scope"
+                      @save="(val) => ModifyReceiptCard(val, props.row)">
+                      <q-input dense outlined type="number" label="Tarjeta" v-model.number="scope.value"
+                        @keyup.enter="scope.set" />
+                    </q-popup-edit>
+                  </div>
+
+                  <div>
+                    <div class="text-caption text-grey">Diferencia</div>
+                    <q-badge :color="props.row.receipt.card_discrepancy != 0 ? 'negative' : 'positive'">
+                      {{ money(props.row.receipt.card_discrepancy) }}
+                    </q-badge>
+                    <q-popup-edit v-if="props.row.receipt.card_discrepancy != 0"
+                      v-model="props.row.receipt.card_observation" v-slot="scope"
+                      @save="(val) => addCommentCard(val, props.row)">
+                      <q-input dense outlined type="text" label="Observacion" v-model.text="scope.value"
+                        @keyup.enter="scope.set" :disable="props.row.receipt.card_observation != null" />
+                    </q-popup-edit>
+                  </div>
+
+                </div>
+              </q-card-section>
             </div>
             <q-card-section v-else class="text-center text-grey">
               Sin movimientos
@@ -209,7 +253,8 @@ const table = ref({
 const printer = ref(null)
 const models = ref({
   ingreso: 0,
-  gasto: 0
+  gasto: 0,
+  tarjetas: 0
 })
 
 const money = (value) =>
@@ -253,7 +298,7 @@ const updateReceipt = async (val, row) => {
   } else {
     console.log(resp)
     $q.loading.hide()
-    models.value = { ingreso: 0, gasto: 0 }
+    models.value = { ingreso: 0, gasto: 0, tarjetas: 0 }
     row.receipt = resp
   }
 }
@@ -271,7 +316,7 @@ const ModifyReceipt = async (val, row) => {
   } else {
     console.log(resp)
     $q.loading.hide()
-    models.value = { ingreso: 0, gasto: 0 }
+    models.value = { ingreso: 0, gasto: 0, tarjetas: 0 }
     row.receipt = resp
   }
 }
@@ -289,7 +334,64 @@ const ModifyExpense = async (val, row) => {
   } else {
     console.log(resp)
     $q.loading.hide()
-    models.value = { ingreso: 0, gasto: 0 }
+    models.value = { ingreso: 0, gasto: 0, tarjetas: 0 }
+    row.receipt = resp
+  }
+}
+
+const ModifyReceiptCard = async (val, row) => {
+  $q.loading.show({ message: 'Editando Registro' })
+  let data = {
+    "val": val,
+    "receipt": row.receipt.id
+  };
+  console.log(data);
+  const resp = await ApiAssist.ModifyReceiptCard(data)
+  console.log(resp)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    $q.loading.hide()
+    models.value = { ingreso: 0, gasto: 0, tarjetas: 0 }
+    row.receipt = resp
+  }
+}
+
+const addCommentCard = async (val, row) => {
+  $q.loading.show({ message: 'Editando Registro' })
+  let data = {
+    "val": val,
+    "receipt": row.receipt.id
+  };
+  console.log(data);
+  const resp = await ApiAssist.addCommentCard(data)
+  console.log(resp)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    $q.loading.hide()
+    models.value = { ingreso: 0, gasto: 0, tarjetas: 0 }
+    row.receipt = resp
+  }
+}
+
+const addCommentMismatch = async (val, row) => {
+  $q.loading.show({ message: 'Editando Registro' })
+  let data = {
+    "val": val,
+    "receipt": row.receipt.id
+  };
+  console.log(data);
+  const resp = await ApiAssist.addCommentMismatch(data)
+  console.log(resp)
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    $q.loading.hide()
+    models.value = { ingreso: 0, gasto: 0, tarjetas: 0 }
     row.receipt = resp
   }
 }

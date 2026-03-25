@@ -32,6 +32,15 @@ export default {
   ModifyExpense(data) {
     return assist.post(`/sales/ModifyExpense`, data).then(done => done.data).catch(fail => { return { fail } });
   },
+  ModifyReceiptCard(data) {
+    return assist.post(`/sales/ModifyReceiptCard`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  addCommentCard(data) {
+    return assist.post(`/sales/addCommentCard`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  addCommentMismatch(data) {
+    return assist.post(`/sales/addCommentMismatch`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
   OpenBoxes(host, data) {
     const store = axios.create({ baseURL: `http://${host}/storetools/public/api` })
     // const store = axios.create({ baseURL: `http://192.168.10.160:1619/storetools/public/api` })

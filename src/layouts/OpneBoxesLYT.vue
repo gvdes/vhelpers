@@ -76,7 +76,9 @@ const init = async () => {
   $q.loading.show({ message: "Cargando Informacion" });
   console.log("se inicia el init");
   let date = new Date();
-  $counter.setDate(dayjs(date).format("YYYY-MM-DD"))
+  // $counter.setDate(dayjs(date).format("YYYY-MM-DD"))
+  $counter.setDate(dayjs('2026-03-19').format("YYYY-MM-DD"))
+
   const resp = await ApiAssist.getOpenCash({ date: $counter.date, sid: $user.session.store.id });
   if (resp.error) {
     console.log(resp);
@@ -101,7 +103,6 @@ const init = async () => {
 const crearPdf = () => {
   return new Promise((resolve, reject) => {
     try {
-
       let body = [];
       stores.value.forEach((store, index) => {
         // Agregar el encabezado con `colSpan` que muestra el nombre de la tienda
@@ -112,7 +113,6 @@ const crearPdf = () => {
             styles: { halign: 'center', fillColor: [173, 216, 230], fontStyle: 'bold' },
           },
         ]);
-
         // Agregar las ventas como filas debajo del encabezado
         store.sales.forEach((sale) => {
           body.push([dayjs(sale.FECFAC).format('YYYY-MM-DD'), sale.DESTER, sale.TICKETS]);
@@ -123,7 +123,6 @@ const crearPdf = () => {
         head: [['Fecha', 'Caja', 'Tickets']],
         body: body
       });
-
       doc.save(`Reporte de Cajas`);
       resolve();
     } catch (error) {
@@ -143,10 +142,17 @@ const calculate = () => {
     { header: 'Cajero', key: 'cajero', width: 20 },
     { header: 'Retiradas', key: 'retiradas', width: 15 },
     { header: 'Descuadre', key: 'descuadre', width: 15 },
+    { header: 'ObservacionDescuadre', key: 'commentsMismatch', width: 15 },
     { header: 'Enviado', key: 'enviado', width: 15 },
     { header: 'Recibido', key: 'recibido', width: 15 },
     { header: 'Diferencia', key: 'diferencia', width: 15 },
     { header: 'Gastos', key: 'gastos', width: 15 },
+    { header: 'TarjetasEnv', key: 'card_send', width: 15 },
+    { header: 'TarjetasRec', key: 'card_rec', width: 15 },
+    { header: 'TarjetasDif', key: 'card_dis', width: 15 },
+    { header: 'TarjetasCom', key: 'card_obs', width: 15 },
+
+
   ]
   let currentRow = 2
   $counter.tabs.opts.forEach(store => {
@@ -168,10 +174,15 @@ const calculate = () => {
         cajero:cash.cashier?.user?.staff?.complete_name || 'N/A',
         retiradas,
         descuadre,
+        commentsMismatch:cash.receipt?.mismatch_observation,
         enviado,
         recibido,
         diferencia,
-        gastos
+        gastos,
+        card_send:cash.receipt?.card_send,
+        card_rec:cash.receipt?.card_receipt,
+        card_dis:cash.receipt?.card_discrepancy,
+        card_obs:cash.receipt?.card_observation
       })
       currentRow++
     })
@@ -180,11 +191,7 @@ const calculate = () => {
       worksheet.mergeCells(`A${startRow}:A${endRow}`)
     }
   })
-
   worksheet.getRow(1).font = { bold: true }
-
-
-
   const downloadExcel = async () => {
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/octet-stream' });
@@ -196,7 +203,6 @@ const calculate = () => {
     a.click();
     document.body.removeChild(a);
   };
-
   downloadExcel();
   $q.loading.hide()
 
@@ -224,6 +230,7 @@ watch(() => $counter.date, async (newDate) => {
     })
     $counter.setPrinters(resp.printers);
     $counter.setTabOpts(resp.stores);
+    console.log(resp.stores)
   }
 
   $q.loading.hide();
