@@ -153,8 +153,8 @@ const buscarvales = async () => {
   $q.loading.show({ message: 'Buscando Vales' })
 
   console.log("Buscando vales");
-  // let host = VDB.session.store.ip_address;
-  let host = '192.168.10.160:1619';
+  let host = VDB.session.store.ip_address;
+  //let host = '192.168.10.160:1619';
 
   let impr = `http://${host}/access/public/modify/vales?price=${props.client}`;
   axios.get(impr)
