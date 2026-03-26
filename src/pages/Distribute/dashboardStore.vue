@@ -6,7 +6,7 @@
         <template v-slot:item="props" bordered>
           <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
             <q-list bordered @dblclick="mosOrder(props.row)">
-              <q-expansion-item :header-class="`${colorCellState[props.row.status.id - 1]}`" dense icon="list"
+              <q-expansion-item :header-class="`${colorCellState[props.row.state.id - 1]}`" dense icon="list"
                 :label="`${props.row.id.toString()} (${props.row.status.name})`"
                 :caption="`${props.row.to.name} (${props.row.notes})`">
                 <q-separator />

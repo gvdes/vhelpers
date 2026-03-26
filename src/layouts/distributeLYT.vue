@@ -46,18 +46,18 @@
     </q-dialog>
 
     <q-dialog v-model="addRequisition.state">
-      <q-card class="my-card" style="width: 400px; max-width: 50vw;">
+      <q-card class="my-card" style="width: 80%;">
         <q-card-section class="text-center text-bold text-h6">
           Nuevo Pedido
         </q-card-section>
         <q-card-section :class="!ismobile ? 'row' : ''">
-          <div>Sucursal</div>
-          <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.warehouseFrom.val" class="bg-negative"
-            :options="addRequisition.warehouseFrom.opts" label="Almacen Origen" filled option-label="alias" dense />
+          <!-- <div :class="!ismobile ? 'col' : ''" v-if="ismobile">Sucursal</div> -->
+          <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.warehouseFrom.val"
+            :options="addRequisition.warehouseFrom.opts" label="Almacen Origen" filled option-label="alias" dense hint="Sucursal" />
           <q-separator spaced inset vertical dark />
-          <div>Cedis</div>
+          <!-- <div :class="!ismobile ? 'col' : ''" v-if="ismobile">Cedis</div> -->
           <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.suply_by.val"
-            :options="addRequisition.suply_by.opts" label="Cedis" filled option-label="alias" dense />
+            :options="addRequisition.suply_by.opts" label="Cedis" filled option-label="alias" dense hint="Cedis" />
           <q-separator spaced inset vertical dark />
           <q-select :class="!ismobile ? 'col' : ''" v-model="addRequisition.warehouse.val"
             :options="addRequisition.warehouse.opts" label="Almacen" filled dense option-label="name" />
