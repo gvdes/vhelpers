@@ -225,7 +225,7 @@ const mosPDF = ref({
   state: false,
 })
 const prices = ref({
-  val: [0, 1, 2, 4],
+  val: [0, 1, 2, 3],
   opts: [
     { label: 'Menudeo', value: 1 },
     { label: 'Mayoreo', value: 2 },
@@ -511,9 +511,11 @@ const obtenerProductsSection = async (nivel) => {
 }
 
 watch(
-  () => products.value,
-  (val) => {
-    localStorage.setItem('applabels', JSON.stringify(val))
+
+  () => [products.value, prices.value.val],
+  () => {
+    localStorage.setItem('applabels', JSON.stringify(products.value))
+    localStorage.setItem('selectedPrices', JSON.stringify(prices.value.val));
   },
   { deep: true }
 )
@@ -522,6 +524,10 @@ onMounted(() => {
   const savedlabel = localStorage.getItem('applabels')
   if (savedlabel) {
     products.value = JSON.parse(savedlabel)
+  }
+  const savedPrices = localStorage.getItem('selectedPrices')
+  if (savedPrices) {
+    prices.value.val = JSON.parse(savedPrices)
   }
   // window.addEventListener('keydown', handleKeyDown)
 })

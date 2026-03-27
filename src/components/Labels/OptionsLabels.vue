@@ -83,15 +83,17 @@ const mosPDF = ref({
     { id: 9, label: 'Juguete Extra Niño', type: 2, icon: '/icons/Juguete/xlargeninio.png' },//OK
     { id: 10, label: 'Juguete Horizontal Niño', type: 2, icon: '/icons/Juguete/Ninio.png' },//OK
     { id: 11, label: 'Juguete Horizontal Niña', type: 2, icon: '/icons/Juguete/Ninia.png' },//OK
-    { id: 12, label: 'Rectangular 9 x 2', type: 3, icon: '/icons/Mochila/rectangular.png' },//OK
-    { id: 15, label: 'Horizontal 9 x 2', type: 3, icon: '/icons/Mochila/horizontal.png' },
+    { id: 12, label: 'Rectangular 4 x 2', type: 3, icon: '/icons/Mochila/rectangular.png' },//OK
+    { id: 15, label: 'Horizontal 7 x 2', type: 3, icon: '/icons/Mochila/horizontal.png' },
     { id: 13, label: 'Exhibicion Nino Mochila', type: 4, icon: '/icons/Mochila/ExhNINO.png' },//OK
     { id: 14, label: 'Exhibicion Nina Mochila', type: 4, icon: '/icons/Mochila/ExhNINA.png' },//OK
     { id: 16, label: 'Paquetes Mochila', type: 4, icon: '/icons/Mochila/STAR12_1.png' },//OK
     { id: 17, label: 'Almacen', type: 5, icon: '/icons/Mochila/horizontal.png' },
     { id: 18, label: 'Calculadora', type: 3, icon: '/icons/Mochila/rectangular.png' },
     { id: 19, label: 'Rectangular 4 X 3', type: 3, icon: '/icons/Mochila/rectangular.png' },
-    { id: 20, label: 'Estandar 9x2', type:6, icon: '/icons/Estandar/estandar.jpg'}
+    { id: 20, label: 'Estandar 9x2', type:6, icon: '/icons/Estandar/estandar.jpg'},
+    { id: 21, label: 'Calculadora x 75', type: 3, icon: '/icons/Mochila/rectangular.png'},
+    { id: 22, label: 'Estrella', type: 4, icon: '/icons/Mochila/STAR12_1(2).png' },
   ]
 })
 
@@ -417,6 +419,38 @@ const pdf = (b) => {
       })
   } else if (mosPDF.value.val.id == 20) {
     labels.institucionalizacion10(products.value, VDB.session.credentials.nick, mosPDF.value.val.label, prices.value)
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
+      })
+      .catch(r => {
+        console.log(r);
+        alert('Hubo un error al descargar las etiquetas')
+      })
+    }  else if (mosPDF.value.val.id == 21) {
+    labels.VerticalLabelCalc75(products.value, VDB.session.credentials.nick, mosPDF.value.val.label, prices.value)
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
+      })
+      .catch(r => {
+        console.log(r);
+        alert('Hubo un error al descargar las etiquetas')
+      })
+      } else if (mosPDF.value.val.id == 22) {
+    labels.Estrella(products.value, VDB.session.credentials.nick, mosPDF.value.val.label, prices.value)
       .then(r => {
         $q.notify({
           message: `Se Descargo las etiquetas Correctamente`,
