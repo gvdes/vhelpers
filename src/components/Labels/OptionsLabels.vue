@@ -94,6 +94,8 @@ const mosPDF = ref({
     { id: 20, label: 'Estandar 9x2', type:6, icon: '/icons/Estandar/estandar.jpg'},
     { id: 21, label: 'Calculadora x 75', type: 3, icon: '/icons/Mochila/rectangular.png'},
     { id: 22, label: 'Estrella', type: 4, icon: '/icons/Mochila/STAR12_1(2).png' },
+    { id: 23, label: 'Juguete Niño x 75', type: 2, icon: '/icons/Juguete/Ninio.png' },//OK
+
   ]
 })
 
@@ -463,6 +465,23 @@ const pdf = (b) => {
       })
       .catch(r => {
         console.log(r);
+        alert('Hubo un error al descargar las etiquetas')
+      })
+      } else if (mosPDF.value.val.id == 23) {
+    labels.toyBoys75(products.value, VDB.session.credentials.nick, mosPDF.value.val.label, prices.value)
+      .then(r => {
+        $q.notify({
+          message: `Se Descargo las etiquetas Correctamente`,
+          type: `positive`,
+          position: `center`,
+        })
+        mosPDF.value.state = false,
+          mosPDF.value.val = null,
+          $q.loading.hide()
+      })
+      .catch(r => {
+        console.log(r);
+
         alert('Hubo un error al descargar las etiquetas')
       })
   }
