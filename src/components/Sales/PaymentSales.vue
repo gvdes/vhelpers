@@ -21,8 +21,8 @@
       <q-separator spaced inset vertical dark />
       <div class="row text-center items-center ">
         <div class="col"> {{ modes.PFPA.id?.id == 2 ? 'Efectivo' : 'Importe Cobrado' }}</div>
-        <div class="col"> <q-input class="col" v-model="modes.PFPA.val" type="number" autofocus :min="0.00" step="any"
-            dense input-class="q-pl-md fw-sbold fs-inc4 text-center" filled>
+        <div class="col"> <q-input class="col" ref="amountRef" v-model="modes.PFPA.val" type="number" autofocus  :min="0.00" step="any"
+            dense input-class="q-pl-md fw-sbold fs-inc4 text-center" filled  @focus="selectAll">
             <template v-slot:after>
               <q-btn color="primary" icon="backspace" flat dense round v-if="parseFloat(modes.PFPA.val)"
                 @click="modes.PFPA.val = 0" />
@@ -40,7 +40,7 @@
         </div>
         <div class="col" v-if="pagos.dafpa">
           <q-select class="col-3" v-model="modes.SFPA.id" :options="paymeths" label="Forma Pago" option-value="id"
-            option-label="name" dense filled :option-disable="(val) => optionDisable(val)">
+            option-label="name" dense filled :option-disable="(val) => optionDisable(val)" autofocus>
           </q-select>
         </div>
       </div>
@@ -117,6 +117,7 @@ const props = defineProps({
   client: { type: Number, default: 0 }
 })
 
+const amountRef = ref(null)
 const emits = defineEmits(['sendTicket'])
 
 const valecli = ref({
@@ -194,6 +195,11 @@ const finallyTck = () => {
   })
   modes.value = { "PFPA": { id: null, val: 0 }, "SFPA": { id: null, val: 0 }, "VALE": { id: null, val: 0 } };
 }
+
+const selectAll = () => {
+  amountRef.value.select()
+}
+
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown);

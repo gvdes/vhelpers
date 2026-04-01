@@ -57,5 +57,11 @@ export default{
   },
   getOrderCash(data) {
     return assist.post(`/cashs/getOrderCash`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  testPrintCash(data) {
+    return assist.post(`/cashs/testPrintCash`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  changePrint(data) {
+    return assist.post(`/cashs/changePrint`, data).then(done => done.data).catch(fail => { return { fail } });
   }
 }

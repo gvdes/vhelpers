@@ -3,7 +3,7 @@
     <q-toolbar class="">
       <q-toolbar-title>
       </q-toolbar-title>
-      <!-- <q-btn flat round dense icon="settings" class="q-mr-xs">
+      <q-btn flat round dense icon="settings" class="q-mr-xs">
         <q-menu style="width:200px;">
           <q-card class="my-card">
             <q-card-section>
@@ -21,7 +21,7 @@
             </q-card-section>
           </q-card>
         </q-menu>
-      </q-btn> -->
+      </q-btn>
 
       <q-btn flat round dense icon="receipt_long">
         <q-menu>
@@ -47,12 +47,10 @@
               </q-item-section>
             </q-item>
             <q-separator />
-
           </q-list>
         </q-menu>
       </q-btn>
-
-
+      <q-btn flat round dense v-if="validForm" icon="save" @click="endSale = !endSale" />
     </q-toolbar>
 
     <q-card class="my-card q-ml-sm q-mr-sm ">
@@ -96,28 +94,47 @@
     <q-separator spaced inset vertical dark />
 
     <div class="row q-ml-sm q-mr-sm">
-      <div class="col" v-if="bascketProductInVerified.length > 0">
-        <q-table :rows="bascketProductInVerified" :columns="columns" hide-bottom :pagination="table.pagination"
-          @row-click="getProduct" :filter="table.filter" />
-      </div>
-      <q-separator spaced inset vertical dark v-if="bascketProductInVerified.length > 0" />
       <div class="col">
         <q-table :rows="bascketProductVerified" :columns="columns" hide-bottom :pagination="table.pagination"
-          @row-click="getProduct" :filter="table.filter">
+          :filter="table.filter">
           <template v-slot:body-cell-promo="props">
             <q-td align="center">
               <q-badge v-if="props.row.pivot.promo_units > 0" color="red" label="OFERTA " />
             </q-td>
-          </template></q-table>
+          </template>
+          <template v-slot:body-cell-verify="props">
+            <q-td align="center">
+              <div class="row">
+                <div class="col" v-if="props.row.pivot.units <= 1"><q-btn color="negative" rounded dense size="xs"
+                    icon="delete" @click="deleteProduct(props.row)" /></div>
+                <div class="col" v-else><q-btn dense color="primary" rounded size="xs" icon="remove"
+                    @click="removeUnit(props.row)" /></div>
+                <div class="col cursor-pointer">
+                  {{ props.row.pivot.units }}
+                  <q-popup-edit v-model="props.row.pivot.units"
+                    @save="(val) => editProduct(validateUnits(val), props.row)" v-slot="scope">
+                    <q-input v-model="scope.value" dense autofocus type="number" hint="Cantidad"
+                      @keyup.enter="scope.set" min="1" step="1" outlined
+                      @keypress="($event.key === '.' || $event.key === '-') && $event.preventDefault()" />
+                  </q-popup-edit>
+                </div>
+                <div class="col"><q-btn dense color="primary" rounded size="xs" icon="add"
+                    @click="addUnit(props.row)" /></div>
+              </div>
+            </q-td>
+          </template>
+          <template v-slot:body-cell-action="props">
+            <q-td align="center">
+              <div class="row">
+                <q-btn color="negative" flat rounded dense size="sm" icon="delete" @click="deleteProduct(props.row)" />
+              </div>
+            </q-td>
+          </template>
+        </q-table>
+
       </div>
     </div>
 
-
-    <q-dialog v-model="product.state" persistent position="bottom">
-      <viewProduct :product="product.val" :_price_list="sale.client ? sale.client._price_list : 1" :edit="product.edit"
-        @reset="reset" :products="sale.products" :rules="cashLYT.rules" @addProduct="addProdcut"
-        :promotion="cashLYT.promotion" @deleteProduct="deleteProduct" @editProduct="editProduct" />
-    </q-dialog>
     <q-dialog v-model="clients.state">
       <q-card style="width: 700px;">
         <q-form @submit="searchClient">
@@ -172,12 +189,24 @@
       </q-dialog>
     </div>
 
+    <q-dialog v-model="searchProduct.state" >
+      <q-card style="width: 700px; max-width: 80vw">
+        <q-card-section>
+          <q-input v-model="searchProduct.target" type="text" label="Producto" filled dense
+            @keypress.enter="searchInfProduct" />
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          <q-table :rows="searchProduct.products" :columns="searchProduct.columns" :loading="searchProduct.loading"
+            @row-click="addProductTable" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
     <q-footer bordered class="bg-white">
       <q-card class="q-mb-md" flat bordered dense>
         <q-card-section class="row">
-          <ProductAutocomplete ref="productRef" class="col" :checkState="false" @input="add" @agregar="agregar" />
-          <q-btn v-if="validForm" color="primary" flat icon="east" @click="endSale = !endSale" round />
+          <ProductAutocomplete ref="productRef" class="col" @input="addProdcut" :products="sale.products"
+            :rules="cashLYT.rules" :promotion="cashLYT.promotion" @infProduct="infProduct" :automate="automate" />
         </q-card-section>
       </q-card>
     </q-footer>
@@ -188,6 +217,7 @@
 <script setup>
 import { useVDBStore } from 'stores/VDB';
 import { useLayoutCash } from 'stores/cashLYT';
+import dbproduct from 'src/API/productsApi'
 import UserToolbar from 'src/components/UserToolbar.vue';// encabezado aoiida
 import ProductAutocomplete from 'src/components/Sales/ProductAutocomplete.vue';// encabezado aoiida
 import viewProduct from 'src/components/Sales/viewProduct.vue';// encabezado aoiida
@@ -201,6 +231,7 @@ import orderApi from 'src/API/orderApi';
 import Resourse from 'src/API/resoursesOrder';
 import { layouts } from 'chart.js';
 import saleLocalApi from 'src/API/saleLocalApi';
+import SalesOffers from 'src/layouts/salesOffers.vue';
 const VDB = useVDBStore();
 const $q = useQuasar();
 const $router = useRouter();
@@ -208,8 +239,28 @@ const $route = useRoute();
 const cashLYT = useLayoutCash();
 
 
+const searchProduct = ref({
+  state: false,
+  target: '',
+  loading: false,
+  products: [],
+  columns: [
+    { name: 'code', label: 'Codigo', field: r => r.code, align: 'left', sortable: true },
+    { name: 'barcode', label: 'CB', field: r => r.barcode, align: 'left', sortable: true },
+    { name: 'description', label: 'Descripcion', field: r => r.description, align: 'left', sortable: true },
+    { name: 'section', label: 'Seccion', field: r => r.category.familia.seccion.alias, align: 'left', sortable: true },
+    { name: 'family', label: 'Familia', field: r => r.category.familia.name, align: 'left', sortable: true },
+    { name: 'category', label: 'Categoria', field: r => r.category.name, align: 'left', sortable: true },
+    { name: 'pieces', label: 'PXC', field: r => r.pieces, align: 'left', sortable: true },
+    { name: 'stockGen', label: 'General', field: r => r.stocks.find(e => e.id == VDB.session.store.id_viz)?.pivot.gen, align: 'left', sortable: true },
+    { name: 'stockExh', label: 'Exhibicion', field: r => r.stocks.find(e => e.id == VDB.session.store.id_viz)?.pivot.exh, align: 'left', sortable: true },
+    { name: 'stockFDT', label: 'Fin de Temp', field: r => r.stocks.find(e => e.id == VDB.session.store.id_viz)?.pivot.fdt, align: 'left', sortable: true },
+    { name: 'stockTRA', label: 'Transito', field: r => r.stocks.find(e => e.id == VDB.session.store.id_viz)?.pivot.in_transit, align: 'left', sortable: true },
+  ]
+})
 const order = ref(null);
 const productRef = ref(null)
+const automate = ref(false);
 const reut = ref({
   val: { id: 1, label: "Preventa", type: "number" },
   opts: [
@@ -217,7 +268,6 @@ const reut = ref({
     // { id: 2, label: "Particion", type: "number" },
     // { id: 3, label: "Presupuesto", type: "text" },
     // { id: 4, label: "Ticket", type: "number" },
-    // {id:1,label:"Preventa"},
   ],
   valueVal: null
 })
@@ -266,27 +316,12 @@ const sale = ref({
 })
 
 const bascketProductVerified = computed(() => {
-  return (sale.value.products || []).filter(e => e.pivot.toDelivered > 0)
+  return (sale.value.products || [])
 })
-
-const bascketProductInVerified = computed(() => {
-  return (sale.value.products || []).filter(e => !e.pivot.toDelivered)
-})
-
 
 const endSale = ref(false)
 
 const table = ref({
-  columns: [
-    { name: 'code', label: 'Codigo', field: r => r.code, align: 'left' },
-    { name: 'description', label: 'Descripcion', field: r => r.description, align: 'left' },
-    // { name: 'amount', label: 'Pedido', field: r => r.pivot.units, align: 'center' },
-    { name: 'verify', label: 'Cantidad', field: r => r.pivot.units, align: 'center' },
-    { name: 'price', label: 'Precio', field: r => r.pivot.price, align: 'center' },
-    { name: 'bruto', label: config.option ? 'Bruto' : 'Total', field: r => r.pivot.total, align: 'center' },
-    { name: 'iva', label: 'Total', field: r => r.pivot.total, align: 'center' },
-    { name: 'neto', label: 'Total', field: r => r.pivot.total, align: 'center' },
-  ],
   pagination: { rowsPerPage: 0 },
   filter: null
 })
@@ -311,6 +346,7 @@ const total = computed(() => Number(sale.value.products.reduce((a, e) => a + e.p
 const cantidad = computed(() => sale.value.products.reduce((a, e) => a + Number(e.pivot.units), 0))
 
 const validForm = computed(() => sale.value.products.length > 0 && sale.value.dependiente && sale.value.client)
+
 const columns = computed(() => {
   const cols = [
     {
@@ -328,7 +364,7 @@ const columns = computed(() => {
     ,
     {
       name: 'verify',
-      label: 'Verificado',
+      label: 'Cantidad',
       field: row => row.pivot.units,
       align: 'center'
     },
@@ -350,88 +386,16 @@ const columns = computed(() => {
       field: row => row.pivot.total,
       format: val => `$ ${val.toFixed(2)}`,
       align: 'center'
+    },
+    {
+      name: 'action',
+      label: '',
+      align: 'center'
     }
   ]
-
-  // if (config.value.option) {
-  //   cols.splice(6, 0, {
-  //     name: 'iva',
-  //     label: 'IVA',
-  //     field: row => row.pivot.total * (config.value.value / 100),
-  //     format: val => `$ ${val.toFixed(2)}`,
-  //     align: 'center'
-  //   })
-  // }
-
-  // // Si IVA está activo, agregamos columnas de IVA y Total con IVA
-  // if (config.value.option) {
-  //   cols.splice(6, 0, {
-  //     name: 'iva',
-  //     label: 'IVA',
-  //     field: row => row.pivot.total * (config.value.value / 100),
-  //     format: val => `$ ${val.toFixed(2)}`,
-  //     align: 'center'
-  //   })
-
-  //   cols.push({
-  //     name: 'total',
-  //     label: 'Total c/IVA',
-  //     field: row => row.pivot.total * (1 + config.value.value / 100),
-  //     format: val => `$ ${val.toFixed(2)}`,
-  //     align: 'center'
-  //   })
-  // }
-
   return cols
 })
 
-const agregar = (ops) => {
-  console.log(ops)
-  let prices = ops.prices.map(e => e.pivot.price).includes(0)
-  if (!prices) {
-    let inx = sale.value.products.findIndex(e => e.id == ops.id)
-    if (inx >= 0) {
-      product.value.val = sale.value.products[inx];
-      product.value.state = true
-      product.value.edit = true
-    } else {
-      ops.pivot = pivots.value;
-      product.value.val = ops;
-      product.value.state = true
-      product.value.edit = false
-    }
-  } else {
-    $q.notify({ message: 'El producto no tiene precio :/', type: 'negative', position: 'center' })
-  }
-}
-
-const add = (opt) => {
-  console.log(opt)
-  let prices = opt.prices.map(e => e.pivot.price).includes(0)
-  if (!prices) {
-    let inx = sale.value.products.findIndex(e => e.id == opt.id)
-    if (inx >= 0) {
-      product.value.val = sale.value.products[inx];
-      product.value.state = true
-      product.value.edit = true
-    } else {
-      opt.pivot = pivots.value;
-      product.value.val = opt;
-      product.value.state = true
-      product.value.edit = false
-    }
-  } else {
-    $q.notify({ message: 'El producto no tiene precio :/', type: 'negative', position: 'center' })
-  }
-
-}
-
-const getProduct = (a, b) => {
-  console.log(b)
-  product.value.val = b;
-  product.value.edit = true
-  product.value.state = true
-}
 
 
 const changeClient = () => {
@@ -461,11 +425,7 @@ const searchClient = async () => {
 const changeNewClient = async (a, b) => {
   $q.loading.show({ message: 'Recalculando Ticket' })
   sale.value.client = b
-  Resourse.actualizarPreciosProductosSales(sale.value.products, b._price_list, cashLYT.rules)
-  Resourse.aplicarPromociones(
-    sale.value.products,
-    cashLYT.promotion
-  )
+  recalculateAll()
   clients.value = {
     state: false,
     val: null,
@@ -514,52 +474,92 @@ const changeNewDep = (a, b) => {
 }
 
 const addProdcut = (product) => {
-  sale.value.products.push(product)
-  Resourse.aplicarPromociones(
-    sale.value.products,
-    cashLYT.promotion
-  )
-  Resourse.actualizarPreciosProductosSales(
-    sale.value.products,
-    sale.value.client._price_list,
-    cashLYT.rules
-  )
-  reset();
+  const copy = JSON.parse(JSON.stringify(product))
+  sale.value.products.push(copy)
+  recalculateProduct(copy)
+  recalculateAll()
+  // reset();
   nextTick(() => {
     productRef.value?.focus()
   })
 }
 
-const editProduct = () => {
-  Resourse.aplicarPromociones(
-    sale.value.products,
-    cashLYT.promotion
-  )
+const validateUnits = (val) => {
+  const num = Number(val)
+  if (isNaN(num) || num < 1) return 1
+  return Math.floor(num)
+}
 
-  Resourse.actualizarPreciosProductosSales(
-    sale.value.products,
-    sale.value.client._price_list,
-    cashLYT.rules
-  )
+const editProduct = (val, product) => {
+  product.pivot.units = Math.max(1, Math.floor(val || 1))
+  recalculateProduct(product)
+  recalculateAll()
+
   nextTick(() => {
     productRef.value?.focus()
   })
+}
+const addUnit = (product) => {
+  product.pivot.units++
+  recalculateProduct(product)
+  recalculateAll()
+}
+
+const removeUnit = (product) => {
+  if (product.pivot.units > 1) {
+    product.pivot.units--
+    recalculateProduct(product)
+    recalculateAll()
+  }
+}
+
+const selectPrice = (product) => {
+  if (sale.value.client._price_list <= 3) {
+    if (Resourse.verificarPrecioCaja(sale.value.products, product, cashLYT.rules)) {
+      return 4;
+    } else if (Resourse.verificarPrecioDocena(sale.value.products, product, cashLYT.rules)) {
+      return 3;
+    } else if (Resourse.verificarPrecioMayoreo(sale.value.products, product, cashLYT.rules)) {
+      return 2;
+    } else {
+      return 1;
+    }
+  } else {
+    return sale.value.client._price_list;
+  }
+};
+
+const recalculateProduct = (product) => {
+  const priceList = selectPrice(product)
+  const price = product.prices.find(e => e.id == priceList)?.pivot.price || 0
+
+  product.pivot.toDelivered = product.pivot.units
+  product.pivot._price_list = priceList
+  product.pivot.price = price
+  product.pivot.total = product.pivot.units * price
+}
+
+const recalculateAll = () => {
+  let debounceTimer = null
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => {
+    Resourse.aplicarPromociones(
+      sale.value.products,
+      cashLYT.promotion
+    )
+    Resourse.actualizarPreciosProductosSales(
+      sale.value.products,
+      sale.value.client._price_list,
+      cashLYT.rules
+    )
+  }, 500)
 }
 
 const deleteProduct = (product) => {
   let inx = sale.value.products.findIndex(e => e.id == product.id)
   if (inx >= 0) {
     sale.value.products.splice(inx, 1)
-    Resourse.aplicarPromociones(
-      sale.value.products,
-      cashLYT.promotion
-    )
-
-    Resourse.actualizarPreciosProductosSales(
-      sale.value.products,
-      sale.value.client._price_list,
-      cashLYT.rules
-    )
+    recalculateAll()
     reset();
   }
   nextTick(() => {
@@ -570,7 +570,6 @@ const deleteProduct = (product) => {
 const finallytck = async (pagos) => {
   $q.loading.show({ message: 'Realizando Ticket' })
   sale.value.payments = pagos
-  // (Number(Number.parseFloat(modes.value.SFPA.val) + Number.parseFloat(modes.value.PFPA.val)) + Number.parseFloat(modes.value.VALE.val) - Number.parseFloat(props.total)).toFixed(2))
   sale.value.change = pagos.conditions.super ? 0 : pagos.change
   if (config.value.option) {
     sale.value.subtotal = sale.value.products.reduce((a, c) => a + c.pivot.total, 0)
@@ -589,7 +588,6 @@ const finallytck = async (pagos) => {
   console.log(data);
   const resp = await saleLocalApi.addSale(data)
   console.log(resp)
-  // const resp = await cashApi.addSaleStandar(data);
   if (resp.fail) {
     console.log(resp)
   } else {
@@ -615,9 +613,7 @@ const finallytck = async (pagos) => {
     sale.value = current_sale;
     config.value.value = 0
     config.value.option = false
-    // localStorage.removeItem('current_sale')
     $q.loading.hide();
-
   }
 }
 
@@ -629,11 +625,11 @@ const reset = () => {
   };
   pivots.value = {
     amount: 0,
-    amountDelivered: null,
+    amountDelivered: 1,
     price: 0,
     toDelivered: 0,
     total: 0,
-    units: 0,
+    units: 1,
     _price_list: 1,
     _supply_by: 1
   }
@@ -643,12 +639,10 @@ const reset = () => {
 }
 
 const reutilizar = async () => {
-  console.log(reut.value)
   switch (reut.value.val.id) {
     case 1:
       searchOrd(reut.value)
       break;
-
     default:
       break;
   }
@@ -695,16 +689,7 @@ const searchOrd = async (order) => {
           sale.value.products.push({ ...newProduct })
         }
       })
-      Resourse.aplicarPromociones(
-        sale.value.products,
-        cashLYT.promotion
-      )
-
-      Resourse.actualizarPreciosProductosSales(
-        sale.value.products,
-        sale.value.client._price_list,
-        cashLYT.rules
-      )
+      recalculateAll()
       reut.value.valueVal = null
       console.log(resp)
       $q.loading.hide();
@@ -728,13 +713,61 @@ const handleKeyDown = (e) => {
     if (!Dependiente.value.state) {
       Dependiente.value.state = true
     }
-  } else if (e.altKey && e.key === 'Enter' && validForm.value) {
+  } else if (e.altKey && e.code === 'Enter' && validForm.value) {
     e.preventDefault()
     if (!endSale.value) {
       endSale.value = true
     }
+  } else if (e.altKey && e.key === 'F1') {
+    e.preventDefault()
+    window.open(window.location.href, '_blank', 'noopener,noreferrer')
+  } else if (e.key === 'F6') {
+    e.preventDefault()
+    cashLYT.openDialogModule(1)
+  } else if (e.key === 'F7') {
+    e.preventDefault()
+    automate.value = !automate.value
+    let message = automate.value ? 'Caja automatica Activada' :'Caja automatica Desactivada';
+    let types = automate.value ? 'positive' :'negative';
+    $q.notify({message:message,type:types,position:'top-right'})
   }
 }
+
+const infProduct = (code) => {
+  code.trim().toUpperCase();
+  searchProduct.value.state = true
+  if (code.length) {
+    searchProduct.value.target = code
+    searchInfProduct()
+  }
+}
+const searchInfProduct = async () => {
+  let data = {
+    autocomplete: searchProduct.value.target,
+    _workpoint: VDB.session.store.id_viz,
+  }
+  console.log(data);
+  searchProduct.value.loading = true
+  const resp = await dbproduct.getProducts(data);
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    console.log(resp)
+    searchProduct.value.products = resp
+    searchProduct.value.loading = false
+  }
+}
+
+const addProductTable = (a, b) => {
+  console.log(b)
+  b.pivot = pivots.value
+  addProdcut(b)
+  searchProduct.value.state = false
+  searchProduct.value.target = ''
+  searchProduct.value.loading = false
+  searchProduct.value.products = []
+}
+
 
 watch(
   () => sale.value,

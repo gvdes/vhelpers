@@ -174,7 +174,7 @@ const init = async () => {
     cashLYT.setDate(dayjs(resp.cash.cahier?.open_date).format('YYYY-MM-DD'))
     cashLYT.setshowtoolbar(true)
     cashLYT.setCash(resp.cash);
-    cashLYT.setMethods(resp.methods);
+    cashLYT.setMethods(resp.methods.methods);
     cashLYT.setProviders(resp.providers);
     cashLYT.setClients(resp.clientIngress);
     cashLYT.setRules(resp.rules);

@@ -196,11 +196,11 @@ const actualizarPreciosProductos = async (products, order, rules) => {
 
 const actualizarPreciosProductosSales = async (products, _price_list, rules,) => {
   const productosCambiados = [];
-
+  // console.log(products)
   for (const p of products) {
     // console.log(p)
     const totalPzsTemp = p.pivot.units
-
+    // console.log(totalPzsTemp)
     let newPriceList = 0;
 
     if (_price_list <= 3) {
@@ -216,7 +216,7 @@ const actualizarPreciosProductosSales = async (products, _price_list, rules,) =>
     } else {
       newPriceList = _price_list;
     }
-    console.log(newPriceList)
+    // console.log(newPriceList)
     const priceData = p.prices.find(e => e.id == newPriceList);
     // console.log(priceData)
     if (priceData) {

@@ -9,13 +9,16 @@
       </q-card-section>
       <q-card-section>
         <q-select v-model="cash.val.cashier.user" :options="cashiers" label="Cajero"
-          :option-label="opt => opt.staff.complete_name" option filled :disable="disableOpen" />
+          :option-label="opt => opt.staff.complete_name" option filled :disable="disableOpen" clearable dense />
         <q-separator spaced inset vertical dark />
         <q-select v-model="cash.val.cashier.print" :options="printers" label="Impresora" option-label="name" filled
-          :disable="disableOpen" />
+           :clearable="!disableOpen" @update:model-value="changePrint" dense>
+          <template v-slot:after v-if="cash.val.cashier.print">
+            <q-btn round dense flat icon="print" @click="testPrint" />
+          </template></q-select>
         <q-separator spaced inset vertical dark />
         <q-input v-model="cash.val.cashier.cash_start" type="number" label="Monto Inicial" filled
-          :disable="disableOpen" />
+          :disable="disableOpen" dense />
       </q-card-section>
       <q-card-actions align="left">
         <q-btn color="negative" icon="close" flat rounded @click="reset" />
@@ -197,6 +200,42 @@ const cash_count = () => {
 
 }
 
+const testPrint = async () => {
+  $q.loading.show({ message: 'Probando Impresora' })
+  let data = {
+    cashier: cash.value.val.cashier.print,
+    uid: VDB.session.credentials.id
+  }
+  const resp = await cashApi.testPrintCash(data)
+  if(resp.fail){
+    console.log(resp)
+  }else{
+    console.log(resp)
+    $q.loading.hide();
+  }
+}
+
+const changePrint =  async (val) => {
+  if(cash.value.val._status == 1){
+    $q.loading.show({message:'Realizando Cambio'})
+    console.log(val)
+    let data = {
+      print:val.id,
+      cashier:cash.value.val.cashier.id
+    }
+    console.log(data)
+    const resp = await cashApi.changePrint(data);
+    if(resp.fail){
+      console.log(resp);
+
+    }else{
+      console.log(resp)
+      $q.loading.hide()
+      $q.notify({message:'Cambio Realizado',type:'positive',position:'center'})
+    }
+
+  }
+}
 
 init();
 </script>

@@ -61,12 +61,6 @@
                   product.pivot.units = Math.floor(val)
                 }
               }" />
-
-            <!-- <q-input type="number" min="1" v-model="product.pivot.amountDelivered" class="text-center exo" step="1"
-              style="width: 100px; font-size: 3em; border: none;" autofocus  @keydown.enter="edit ? editProduct() : addProduct() " /> -->
-
-            <!-- <input /> -->
-
             <q-btn flat color="positive" icon="add" class="text-h5" @click="product.pivot.units++" />
           </div>
         </div>
@@ -124,9 +118,6 @@ const mostPrice = computed(() => {
 const selectPrice = computed(() => {
   console.log(props._price_list)
   if (props._price_list <= 3) {
-    // if ((totalPzs.value >= props.product.pieces && (props.product.pivot._supply_by == 1 || props.product.pivot._supply_by == 2)) || props.product.pivot._supply_by == 3) {
-    //   return 4;
-    // }
     if (Resourse.verificarPrecioCaja(props.products, props.product, props.rules)) {
       return 4;
     } else if (Resourse.verificarPrecioDocena(props.products, props.product, props.rules)) {
