@@ -58,12 +58,12 @@
         <div class="col">
           <div class="text-caption text-center">Dependiente</div>
           <q-btn class="full-width" flat :label="sale.dependiente ? sale.dependiente.complete_name : 'CTRL+d'"
-            @click="changeDepen" />
+            @click="changeDepen"   @keydown.enter.prevent />
         </div>
         <q-separator spaced inset vertical dark />
         <div class="col  ">
           <div class="text-caption text-center">Cliente</div>
-          <q-btn class="full-width" flat :label="sale.client ? sale.client.name : 'CTRL+b'" @click="changeClient" />
+          <q-btn class="full-width" flat :label="sale.client ? sale.client.name : 'CTRL+b'" @click="changeClient"   @keydown.enter.prevent />
         </div>
       </q-card-section>
     </q-card>
@@ -782,9 +782,9 @@ onMounted(() => {
   if (savedSale) {
     sale.value = JSON.parse(savedSale)
   }
-  window.addEventListener('keydown', handleKeyDown)
+  window.addEventListener('keydown', handleKeyDown, true)
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeyDown)
+  window.removeEventListener('keydown', handleKeyDown, true)
 })
 </script>

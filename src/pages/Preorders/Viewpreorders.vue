@@ -25,7 +25,7 @@
             <q-card-actions align="center" class="q-pa-none">
               <q-btn dense flat icon="upload" color="primary" @click="clickFile" />
             </q-card-actions>
-            <q-card-section>
+            <!-- <q-card-section>
               <div class="row items-center justify-between q-mt-xs">
                 <div class="row text-center">
                   <div class="q-px-md col">
@@ -49,11 +49,30 @@
                   </div>
                 </div>
               </div>
-            </q-card-section>
+            </q-card-section> -->
           </q-card>
         </q-menu>
       </q-btn>
     </div>
+    <div class="row items-center justify-between q-mt-sm q-mb-sm">
+      <div class="row text-center">
+        <div class="q-px-md">
+          <div class="text--2">Modelos</div>
+          <span class=" text-bold">
+             {{ order.products.length }}
+          </span>
+        </div>
+        <div class="q-px-md">
+          <div class="text--2">Unidades</div>
+          <span class=" text-bold">{{order.products.reduce((a, v) => a + Number(v.pivot.units), 0)}}</span>
+        </div>
+        <div class="q-px-md">
+          <div class="text--2">Total</div>
+          <span class=" text-bold">  $ {{order.products.reduce((a, v) => a + Number(v.pivot.total), 0)}}</span>
+        </div>
+      </div>
+    </div>
+
     <q-separator />
     <q-list bordered v-for="(uni, index) in $orderStore.units.opts" :key="index">
       <q-expansion-item expand-separator default-opened header-class="text-bold" expand-icon-class="hidden"
@@ -247,11 +266,7 @@ const agregar = (opt) => {
   console.log(opt)
   let inx = order.value.products.findIndex(e => e.id == opt.id)
   if (inx >= 0) {
-    // producto ya existe en el pedido: abrir edición
-    // order.value.products[inx]
-    // opt.units = $orderStore.units.opts.find(e => e.id == opt.pivot._supply_by)
     product.value.val = order.value.products[inx];
-    // console.log(product.value.val)
     product.value.state = true
     product.value.edit = true
   } else {

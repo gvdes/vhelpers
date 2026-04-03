@@ -31,7 +31,7 @@
                 <q-item-section>Estado</q-item-section>
                 <!-- {{ product.val.stateToVal.state }} -->
                 <q-item-section>
-                  <q-select v-model="product.val.stateToVal.state" option-value="id" :options="product_states.opts"
+                  <q-select v-model="product.val.stateToVal" option-value="id" :options="product_states.opts"
                     filled dense @update:model-value="updateStatus" option-label="name" emit-value map-options />
                 </q-item-section>
               </q-item>
@@ -480,7 +480,7 @@ const updateStatus = async (a) => {
   } else {
     console.log(resp);
     $q.loading.hide();
-    $q.notify({ message: 'Estado Actualizado', type: 'positive', position: 'right' })
+    $q.notify({ message: 'Estado Actualizado', type: 'positive', position: 'top-right' })
   }
 
 }
