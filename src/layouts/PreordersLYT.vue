@@ -58,6 +58,7 @@ const getRoom = (rol) => {
     case 1:
     case 2:
     case 6:
+    case 9:
     case 12:
     case 22:
     case 21:

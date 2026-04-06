@@ -114,6 +114,7 @@ const search = async () => {
     if (resp.fail) {
       console.log(resp);
     } else {
+      // console.log(resp)
       switch (Object.keys(resp).length) {
         case 0:
           let code = data.value.target;
