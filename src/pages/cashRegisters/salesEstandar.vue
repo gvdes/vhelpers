@@ -58,12 +58,12 @@
         <div class="col">
           <div class="text-caption text-center">Dependiente</div>
           <q-btn class="full-width" flat :label="sale.dependiente ? sale.dependiente.complete_name : 'CTRL+d'"
-            @click="changeDepen"   @keydown.enter.prevent />
+            @click="changeDepen"   />
         </div>
         <q-separator spaced inset vertical dark />
         <div class="col  ">
           <div class="text-caption text-center">Cliente</div>
-          <q-btn class="full-width" flat :label="sale.client ? sale.client.name : 'CTRL+b'" @click="changeClient"   @keydown.enter.prevent />
+          <q-btn class="full-width" flat :label="sale.client ? sale.client.name : 'CTRL+b'" @click="changeClient"   />
         </div>
       </q-card-section>
     </q-card>
@@ -713,8 +713,9 @@ const handleKeyDown = (e) => {
     if (!Dependiente.value.state) {
       Dependiente.value.state = true
     }
-  } else if (e.altKey && e.code === 'Enter' && validForm.value) {
+  } else if (e.altKey && e.key === 'Enter' && validForm.value) {
     e.preventDefault()
+    e.stopPropagation();
     if (!endSale.value) {
       endSale.value = true
     }
