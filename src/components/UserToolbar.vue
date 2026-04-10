@@ -4,11 +4,11 @@
     <div class="col">
       <q-btn class=" text-pink " flat :label="user.credentials.nick" @click="$router.push('/')" />
     </div>
-    <div v-if="VDB.stores.length == 0" class="col text-center fs-inc1 text-primary fw-sbold">{{ !ismobile ?
+    <div v-if="user.credentials.stores.length == 0" class="col text-center fs-inc1 text-primary fw-sbold">{{ !ismobile ?
       user.store.name : user.store.alias }}</div>
-    <q-select v-model="stores.val" :options="VDB.stores" :option-label="opt => opt.store.name" borderless
-      color="primary" @update:model-value="changeStore" v-if="VDB.stores.length > 1" dense class="text-center"
-      options-selected-class="text-primary text-bold">
+    <q-select v-model="stores.val" :options="user.credentials.stores" :option-label="opt => opt.store.name" borderless
+      color="primary" @update:model-value="changeStore" v-if="user.credentials.stores.length > 1" dense
+      class="text-center" options-selected-class="text-primary text-bold">
       <template v-slot:selected>
         <div class="text-center fs-inc1 text-primary fw-sbold">
           {{ !ismobile ? stores.val.store.name : stores.val.store.alias }}
@@ -29,8 +29,8 @@
     <q-scroll-area class="fit text-bold text-dark">
       <q-list>
         <q-item>
-          <q-btn round flat class="q-mr-md">
-            <q-avatar size="40px">
+          <q-btn rounded flat class="q-mr-md">
+            <q-avatar >
               <q-img :src="`/avatares/${VDB.session.credentials.avatar}`" />
             </q-avatar>
             <q-menu anchor="bottom right" self="top right">
@@ -50,7 +50,8 @@
           </q-btn>
           <q-item-section>
             <q-item-label>{{ user.credentials.staff.complete_name }}</q-item-label>
-            <q-item-label caption>{{ user.store.alias }} <q-space /> ({{ user.credentials.nick }})</q-item-label>
+            <q-item-label caption>{{ user.store.alias }}</q-item-label>
+            <q-item-label caption>{{ user.credentials.rol.area.name }} ({{ user.credentials.rol.name }})</q-item-label>
           </q-item-section>
         </q-item>
         <q-separator />
@@ -64,10 +65,10 @@
         </div>
         <q-separator />
         <q-separator spaced inset vertical dark />
-        <template v-for="(menuItem, index) in VDB.modules" :key="index">
+        <template v-for="(menuItem) in menuModules" :key="menuItem.id">
           <q-expansion-item expand-separator :label="menuItem.name" :dark="$q.dark.isActive"
             :header-class="$q.dark.isActive ? 'text-white' : 'text-dark'">
-            <div v-for="(modul, inx) in menuItem.modules" :key="inx">
+            <div v-for="(modul) in menuItem.modules" :key="modul.id">
               <q-item clickable v-ripple :to="`/${modul.path}`" :dark="$q.dark.isActive">
                 <q-item-section side>
                   <q-btn flat round dense icon="star" :color="favorites.isFavorite(modul.path) ? 'yellow-8' : 'grey'"
@@ -197,21 +198,30 @@ const mosAvatar = ref({
     'avatar31.png',
   ]
 })
-const init = async () => {
-  // $q.loading.show({ message: 'Obteniendo Informacion' })
-  const resp = await authsApi.getResources(user.credentials.id)
-  if (resp.fail) {
-    console.log(resp)
-  } else {
-    console.log(resp)
-    VDB.setModules(resp.grouped_modules)
-    VDB.setStores(resp.stores)
-    VDB.modulesLoaded = true;
-    // stores.value.opts = resp.stores
-    // modules.value = resp.rol.modules
-    // $q.loading.hide()
-  }
-}
+
+
+const menuModules = computed(() => {
+  const map = {}
+  const tree = []
+  VDB.modules.forEach(item => {
+    const mod = {
+      ...item,
+      modules: []
+    }
+    map[mod.id] = mod
+  })
+
+  Object.values(map).forEach(mod => {
+    // console.log(mod)
+    if (mod._root === null) {
+      tree.push(mod)
+    } else if (map[mod._root]) {
+      map[mod._root].modules.push(mod)
+    }
+  })
+  // console.log(VDB.modules)
+  return tree
+})
 
 const changeStore = () => {
   $q.loading.show({ message: 'Cambiando sucursal' })
@@ -269,9 +279,4 @@ const changeAvatar = async () => {
     $q.loading.hide()
   }
 }
-
-
-
-init();
-
 </script>

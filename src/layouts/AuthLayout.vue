@@ -6,7 +6,7 @@
           <q-toolbar-title>
             Accesso
           </q-toolbar-title>
-          <div class="text-primary text-bold">VH v.2.0</div>
+          <div class="text-primary text-bold">VH v.2.2</div>
         </q-toolbar>
       </q-header>
 
@@ -63,7 +63,7 @@ const trySignin = async () => {
   console.log("Iniciando sesion ...", auths.value);
   robot.value.setLoading()
   const user = await authsApi.trySignin(auths.value);
-  // console.log(user)
+  console.log(user)
   if (user.fail) {
     if (user.fail.status == 404) {
       robot.value.setError()
@@ -73,6 +73,8 @@ const trySignin = async () => {
   } else {
     let u = JSON.parse(JSON.stringify(user));
     console.log(u)
+    VDB.setModules(user.credentials.rol.modules)
+    VDB.setStores(user.credentials.stores)
     // delete u.credentials.pass;
     robot.value.setSuccess()
     LocalStorage.set("auth", u);
