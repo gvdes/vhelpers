@@ -2,9 +2,17 @@ import { defineStore } from 'pinia'
 import { Notify } from 'quasar'
 
 export const useFavoritesStore = defineStore('favorites', {
-  state: () => ({
-    items: JSON.parse(localStorage.getItem('favorites')) || []
-  }),
+  state: () => {
+    let stored = null
+    try {
+      stored = JSON.parse(localStorage.getItem('favorites'))
+    } catch (e) {
+      stored = []
+    }
+    return {
+      items: Array.isArray(stored) ? stored : []
+    }
+  },
 
   getters: {
     isFavorite: (state) => (path) =>
