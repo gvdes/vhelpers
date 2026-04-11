@@ -543,14 +543,14 @@ const recalculateAll = () => {
   let debounceTimer = null
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
-    Resourse.aplicarPromociones(
-      sale.value.products,
-      cashLYT.promotion
-    )
     Resourse.actualizarPreciosProductosSales(
       sale.value.products,
       sale.value.client._price_list,
       cashLYT.rules
+    )
+      Resourse.aplicarPromociones(
+      sale.value.products,
+      cashLYT.promotion
     )
   }, 500)
 }
