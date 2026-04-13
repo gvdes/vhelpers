@@ -103,7 +103,7 @@
 import { useVDBStore } from 'stores/VDB';
 import axios from 'axios';//para dirigirme bro
 import { exportFile, useQuasar, date } from 'quasar';
-import { computed, defineProps, ref, onMounted, onBeforeUnmount } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 const VDB = useVDBStore();
 const $q = useQuasar();
 const pagos = ref({
