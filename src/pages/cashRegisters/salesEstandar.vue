@@ -58,12 +58,12 @@
         <div class="col">
           <div class="text-caption text-center">Dependiente</div>
           <q-btn class="full-width" flat :label="sale.dependiente ? sale.dependiente.complete_name : 'CTRL+d'"
-            @click="changeDepen"   />
+            @click="changeDepen" />
         </div>
         <q-separator spaced inset vertical dark />
         <div class="col  ">
           <div class="text-caption text-center">Cliente</div>
-          <q-btn class="full-width" flat :label="sale.client ? sale.client.name : 'CTRL+b'" @click="changeClient"   />
+          <q-btn class="full-width" flat :label="sale.client ? sale.client.name : 'CTRL+b'" @click="changeClient" />
         </div>
       </q-card-section>
     </q-card>
@@ -87,6 +87,12 @@
           <div class="text-caption text-center">Cantidad</div>
           <div class="text-center text-h6">{{ cantidad }}</div>
         </div>
+        <div class="col" v-if="cashback > 0">
+          <div class="text-caption text-center">CashBack</div>
+          <div class="text-center text-h6">{{ cashback }}</div>
+        </div>
+
+
       </q-card-section>
     </q-card>
     <q-separator spaced inset vertical dark />
@@ -100,6 +106,9 @@
           <template v-slot:body-cell-promo="props">
             <q-td align="center">
               <q-badge v-if="props.row.pivot.promo_units > 0" color="red" label="OFERTA " />
+              <q-badge v-if="props.row.pivot.accumulated > 0" color="black"
+                :label="`Acc $${Number(props.row.pivot.accumulated).toFixed(2)} `" />
+
             </q-td>
           </template>
           <template v-slot:body-cell-verify="props">
@@ -189,7 +198,7 @@
       </q-dialog>
     </div>
 
-    <q-dialog v-model="searchProduct.state" >
+    <q-dialog v-model="searchProduct.state">
       <q-card style="width: 700px; max-width: 80vw">
         <q-card-section>
           <q-input v-model="searchProduct.target" type="text" label="Producto" filled dense
@@ -346,6 +355,10 @@ const total = computed(() => Number(sale.value.products.reduce((a, e) => a + e.p
 const cantidad = computed(() => sale.value.products.reduce((a, e) => a + Number(e.pivot.units), 0))
 
 const validForm = computed(() => sale.value.products.length > 0 && sale.value.dependiente && sale.value.client)
+
+const cashback = computed(() => sale.value.products.reduce((a,e) =>  a + (Number(e.pivot.accumulated) || 0), 0 ))
+// const cashback = computed(() => sale.value.products.filter( e => e.pivot))
+
 
 const columns = computed(() => {
   const cols = [
@@ -548,7 +561,8 @@ const recalculateAll = () => {
       sale.value.client._price_list,
       cashLYT.rules
     )
-      Resourse.aplicarPromociones(
+    // console.log(sale.value.products)
+    Resourse.aplicarPromociones(
       sale.value.products,
       cashLYT.promotion
     )
@@ -728,9 +742,9 @@ const handleKeyDown = (e) => {
   } else if (e.key === 'F7') {
     e.preventDefault()
     automate.value = !automate.value
-    let message = automate.value ? 'Caja automatica Activada' :'Caja automatica Desactivada';
-    let types = automate.value ? 'positive' :'negative';
-    $q.notify({message:message,type:types,position:'top-right'})
+    let message = automate.value ? 'Caja automatica Activada' : 'Caja automatica Desactivada';
+    let types = automate.value ? 'positive' : 'negative';
+    $q.notify({ message: message, type: types, position: 'top-right' })
   }
 }
 

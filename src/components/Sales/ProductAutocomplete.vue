@@ -2,16 +2,16 @@
   <div class="QuickRegular row items-center">
     <q-btn color="primary" icon="search" @click="infProduct" dense rounded outline />
     <q-separator spaced inset vertical dark />
-    <q-input ref="iptatc" :loading="data.iptsearch.processing" :disable="data.iptsearch.processing"
+    <q-input ref="iptatc" :loading="data.iptsearch.processing" :disable="data.iptsearch.processing || data.iptsearch.data"
       v-model="product.code" dense filled color="blue-13" class="text-uppercase " @keypress.enter="search"
-      autocomplete="off" autofocus label="Codigo...">
+      autocomplete="off" autofocus label="Codigo..." >
     </q-input>
     <q-separator spaced inset vertical dark />
     <q-input v-model="product.description" type="text" label="Descripcion..." class="col" filled dense disable />
     <q-separator spaced inset vertical dark />
     <q-input ref="iptmount" v-model="product.pivot.units" type="number" label="Cantidad..." dense min="1" step="1" :bg-color="automate ? 'negative'  : ''"
       outlined @keypress="($event.key === '.' || $event.key === '-') && $event.preventDefault()" @update:model-value="val => {
-        if (val < 0) product.pivot.units = 1
+        if (val <= 0) product.pivot.units = 1
       }" @keypress.enter="selItem" :disable="!product.id" />
     <q-separator spaced inset vertical dark />
     <q-select disable v-model="selectedPrice" :options="priceOptions" dense filled emit-value map-options class="col-2"
@@ -79,7 +79,9 @@ const emit = defineEmits(['input', 'addProduct','infProduct']);
 
 const data = ref({
   target: "",
-  iptsearch: { processing: false },
+  iptsearch: {
+    processing: false,
+    data:false },
 })
 const iptatc = ref(null)
 const iptmount = ref(null)
@@ -98,6 +100,7 @@ const reset = () => {
     pivot: createPivot()
   }
   selectedPrice.value = null
+  data.value.iptsearch.data = false
 }
 
 const selItem = () => {
@@ -137,6 +140,7 @@ const search = async () => {
             pivot: createPivot(),
             ...resp
           }
+          data.value.iptsearch.data = true
           if(props.automate){
             selItem()
           }

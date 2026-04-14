@@ -253,6 +253,8 @@ const aplicarPromociones = (products, promotions) => {
       aplicarComboExacto(products, promo)
     } else if (promo.type === 'BLOCK') {
       aplicarPrecioPorBloque(products, promo)
+    } else if (promo.type === 'ACUMULATED') {
+      aplicarAcumulado(products, promo)
     }
   })
 }
@@ -293,7 +295,9 @@ const aplicar2x1 = (products, promo) => {
 
 const aplicarComboExacto = (products, promo) => {
   const promoIds = promo.products.map(p => p._product)
+  if (!promoIds.length) return
   const items = products.filter(p => promoIds.includes(p.id))
+  if (!items.length) return
   if (items.length !== promoIds.length) return // faltan productos
   items.forEach(p => {
     const units = Number(p.pivot.units)
@@ -311,7 +315,7 @@ const aplicarComboExacto = (products, promo) => {
   const freePerBlock = promo.buy - promo.pay // 1
   let remainingFree = blocks * freePerBlock
   const productToDiscount = items.reduce((max, current) =>
-    current.id > max.id ? current : max
+    current.id > max.id ? current : max, 0
   )
   const price = Number(productToDiscount.pivot.price)
   productToDiscount.pivot.promo_units = remainingFree
@@ -319,35 +323,31 @@ const aplicarComboExacto = (products, promo) => {
   productToDiscount.pivot.total -= remainingFree * price
 }
 
-// const aplicarPrecioPorBloque = (products, promo) => {
-//   const promoIds = promo.products.map(p => p._product)
-//   const items = products.filter(p => promoIds.includes(p.id))
-//   if (!items.length) return
-//   items.forEach(p => {
-//     const units = Number(p.pivot.units)
-//     const price = Number(p.pivot.price)
-//     p.pivot.subtotal = units * price
-//     p.pivot.promo_units = 0
-//     p.pivot.promo_discount = 0
-//     p.pivot.total = p.pivot.subtotal
-//     if (units < promo.buy) return
-//     const blocks = Math.floor(units / promo.buy)
-//     const normalPriceOfBlocks = blocks * promo.buy * price
-//     const promoPriceOfBlocks = blocks * promo.block_price
-//     const discount = normalPriceOfBlocks - promoPriceOfBlocks
-//     p.pivot.promo_units = blocks * promo.buy
-//     p.pivot.promo_discount = discount
-//     p.pivot.total -= discount
-//   })
-// }
+
+const aplicarAcumulado = (products, promo) => {
+  const promoIds = promo.products.map(p => p._product)
+
+  const items = products.filter(p => promoIds.includes(p.id))
+  if (!items.length) return
+  const percentage = Number(promo.percentage || 0)
+  let totalAccumulated = 0
+  items.forEach(p => {
+    const units = Number(p.pivot.units)
+    const price = Number(p.pivot.price)
+    const subtotal = units * price
+    const accumulated = subtotal * (percentage / 100)
+    p.pivot.accumulated = accumulated
+    totalAccumulated += accumulated
+  })
+  // console.log('Total acumulado:', totalAccumulated)
+}
+
 
 const aplicarPrecioPorBloque = (products, promo) => {
   const promoIds = promo.products.map(p => p._product)
 
   const items = products.filter(p => promoIds.includes(p.id))
   if (!items.length) return
-
-  // 🔹 Reset base
   items.forEach(p => {
     const units = Number(p.pivot.units)
     const price = Number(p.pivot.price)
@@ -358,7 +358,6 @@ const aplicarPrecioPorBloque = (products, promo) => {
     p.pivot.total = p.pivot.subtotal
   })
 
-  // 🔥 Total combinado
   const totalUnits = items.reduce(
     (sum, p) => sum + Number(p.pivot.units),
     0
@@ -373,7 +372,6 @@ const aplicarPrecioPorBloque = (products, promo) => {
 
   const totalDiscount = blocks * discountPerBlock
 
-  // 🔥 Ahora repartimos el descuento en orden
   let remainingUnitsToDiscount = blocks * promo.buy
   let remainingDiscount = totalDiscount
 
