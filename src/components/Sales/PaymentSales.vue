@@ -21,8 +21,8 @@
       <q-separator spaced inset vertical dark />
       <div class="row text-center items-center ">
         <div class="col"> {{ modes.PFPA.id?.id == 2 ? 'Efectivo' : 'Importe Cobrado' }}</div>
-        <div class="col"> <q-input class="col" ref="amountRef" v-model="modes.PFPA.val" type="number" autofocus  :min="0.00" step="any"
-            dense input-class="q-pl-md fw-sbold fs-inc4 text-center" filled  @focus="selectAll">
+        <div class="col"> <q-input class="col" ref="amountRef" v-model="modes.PFPA.val" type="number" autofocus
+            :min="0.00" step="any" dense input-class="q-pl-md fw-sbold fs-inc4 text-center" filled @focus="selectAll">
             <template v-slot:after>
               <q-btn color="primary" icon="backspace" flat dense round v-if="parseFloat(modes.PFPA.val)"
                 @click="modes.PFPA.val = 0" />
@@ -65,8 +65,8 @@
         </div>
         <div class="col" v-if="pagos.vales">
           <div class="row">
-            <q-select class="col" v-model="modes.VALE" :options="valecli.opts" label="Vale"
-              :option-label="r => (`Vale : ${r.id ? r.id.code : ''}`)" dense filled>
+            <q-select class="col" v-model="modes.VALE" :options="valecli.filt" label="Vale"
+              :option-label="r => (`Vale : ${r.id ? r.id.code : ''}`)" dense filled use-input @filter="filterFn" hide-selected fill-input>
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section>
@@ -121,7 +121,8 @@ const amountRef = ref(null)
 const emits = defineEmits(['sendTicket'])
 
 const valecli = ref({
-  opts: []
+  opts: [],
+  filt: [],
 })
 const modes = ref({ "PFPA": { id: props.paymeths[1], val: Math.round(props.total) }, "SFPA": { id: null, val: 0 }, "VALE": { id: null, val: 0 }, conditions: { createWithdrawal: false, super: null } });
 const cambio = computed(() => (Number(Number.parseFloat(modes.value.SFPA.val) + Number.parseFloat(modes.value.PFPA.val)) + Number.parseFloat(modes.value.VALE.val) - Number.parseFloat(props.total)).toFixed(2))
@@ -198,6 +199,22 @@ const finallyTck = () => {
 
 const selectAll = () => {
   amountRef.value.select()
+}
+
+const filterFn = (val, update) => {
+  if (val === '') {
+    update(() => {
+      valecli.value.filt = valecli.value.opts
+    })
+    return
+  }
+  update(() => {
+    const needle = val
+  console.log(needle)
+
+    console.log(valecli.value.opts);
+    valecli.value.filt = valecli.value.opts.filter( v => String(v.id.code).includes(String(needle)))
+  })
 }
 
 
