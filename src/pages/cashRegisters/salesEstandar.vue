@@ -89,7 +89,7 @@
         </div>
         <div class="col" v-if="cashback > 0">
           <div class="text-caption text-center">CashBack</div>
-          <div class="text-center text-h6">{{ cashback }}</div>
+          <div class="text-center text-h6">{{ Number(cashback).toFixed(2) }}</div>
         </div>
 
 
