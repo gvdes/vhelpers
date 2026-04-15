@@ -423,7 +423,7 @@ const nextState = async () => {
   // let data = { id: $route.params.chk, state: 6, suply: order.value._suplier_id }
   let data = {
     partition: $route.params.chk,
-    verified: VDB.session.credentials.staff.id,
+    verified: VDB.session.credentials.id,
     warehouse: order.value._warehouse,
     state: 6
   }

@@ -128,10 +128,10 @@ const optranges = ref({
 const user_socket = {
   profile: {
     me: {
-      id: VDB.session.credentials.staff.id_va,
+      id: VDB.session.credentials.id_va,
       nick: VDB.session.credentials.nick,
       picture: '',
-      names: VDB.session.credentials.staff.complete_name,
+      names: VDB.session.credentials.complete_name,
       surname_pat: '',
       surname_mat: '',
       change_password: false,
@@ -178,7 +178,6 @@ const init = async () => {
     $restockStore.fillOrders(req.orders);
     $restockStore.fillResume(req.resume);
     $restockStore.fillPrinters(req.printers);
-    // $restockStore.setUsers(req.staff)
     $restockStore.fillPartitions(req.partitions)
     $restockStore.setShowLoad(false)
     $restockStore.setCedis(req.cedis)
@@ -206,7 +205,7 @@ const buscas = async () => {
 const addRequired = async () => {
   $q.loading.show({ message: 'Creando Pedido' })
   addRequisition.value.workpointFrom = VDB.session.store.id_viz;
-  addRequisition.value.created_by = VDB.session.credentials.staff.id_va
+  addRequisition.value.created_by = VDB.session.credentials.id_va
   console.log(addRequisition.value)
   const resp = await RestockApi.newRequisition(addRequisition.value)
   if (resp.fail) {

@@ -3,7 +3,7 @@
     <q-card-section class="row items-center">
       <div class="col">
         Creacion: <span class="text-bold">{{ dayjs().format('YYYY-MM-DD') }}</span> <br>
-        Creador: <span class="text-bold">{{ VDB.session.credentials.staff.complete_name }}</span>
+        Creador: <span class="text-bold">{{ VDB.session.credentials.complete_name }}</span>
       </div>
       <q-separator spaced inset vertical dark />
       <q-input v-model="config.notes" type="text" label="Notas" />
@@ -135,7 +135,7 @@ const expands = ref({
 })
 const tableUsers = ref({
   columns: [
-    { name: 'name', label: 'Nombre', field: r => r.staff?.complete_name, align: 'left' },
+    { name: 'name', label: 'Nombre', field: r => r?.complete_name, align: 'left' },
   ],
   filter: null
 })
@@ -164,7 +164,7 @@ const customFilter = (rows, terms) => {
       String(val ?? '').toUpperCase().includes(t)
     )
     const staffMatch =
-      row.staff?.complete_name.toUpperCase().includes(t) ?? false
+      row?.complete_name.toUpperCase().includes(t) ?? false
     return normalMatch || staffMatch
   })
 }

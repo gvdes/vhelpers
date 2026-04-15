@@ -40,7 +40,7 @@
                 <div>
                   <div class="text-caption text-grey">Cajero</div>
                   <div class=" text-weight-bold">
-                    {{ props.row.cashier?.user?.staff?.complete_name || 'N/A' }}
+                    {{ props.row.cashier?.user?.complete_name || 'N/A' }}
                   </div>
                 </div>
                 <!-- <div> -->

@@ -76,7 +76,7 @@ const searchCommand = async () => {
   if (searchorders.value) {
     $q.loading.show({ message: 'Obteniendo Orden' })
     let data = {
-      uid: VDB.session.credentials.staff.id_va,
+      uid: VDB.session.credentials.id_va,
       oid: searchorders.value
     }
     const resp = await orderApi.getOrderCash(data)
@@ -129,7 +129,7 @@ const sendTicket = async (pagos) => {
 
 const nextState = async () => {
   let data = {
-    uid: VDB.session.credentials.staff.id_va,
+    uid: VDB.session.credentials.id_va,
     oid: order.value.id
   }
   console.log(data);

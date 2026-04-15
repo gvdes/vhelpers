@@ -9,7 +9,7 @@
       </q-card-section>
       <q-card-section>
         <q-select v-model="cash.val.cashier.user" :options="cashiers" label="Cajero"
-          :option-label="opt => opt.staff.complete_name" option filled :disable="disableOpen" clearable dense />
+          :option-label="opt => opt.complete_name" option filled :disable="disableOpen" clearable dense />
         <q-separator spaced inset vertical dark />
         <q-select v-model="cash.val.cashier.print" :options="printers" label="Impresora" option-label="name" filled
            :clearable="!disableOpen" @update:model-value="changePrint" dense>
@@ -86,7 +86,7 @@ const table = ref({
     { name: 'name', label: 'NOMBRE', field: r => r.name },
     { name: 'status', label: 'ESTADO', field: r => r.status.name },
     { name: 'store', label: 'SUCURSAL', field: r => r.store.name },
-    { name: 'cashies', label: 'ULTIMO CAJERO', field: r => r.cashier?.user.staff.complete_name },
+    { name: 'cashies', label: 'ULTIMO CAJERO', field: r => r.cashier?.user.complete_name },
     { name: 'open_at', label: 'ULTIMA APERTURA', field: r => r.cashier ? dayjs(r.cashier?.open_date).format('YYYY-MM-DD HH:mm:ss') : '' },
   ],
   pagination: { rowsPerPage: 0 }

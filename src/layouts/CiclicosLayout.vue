@@ -187,7 +187,7 @@ const reset = () => {
 const createCyclecount = async () => {
   console.log(newCyclecount.value)
   $q.loading.show({ message: 'Creando Ciclicos' })
-  newCyclecount.value._account = VDB.session.credentials.staff.id_va
+  newCyclecount.value._account = VDB.session.credentials.id_va
   newCyclecount.value._workpoint = VDB.session.store.id_viz
   const resp = await CDB.addCyclecount(newCyclecount.value)
   if (resp.fail) {

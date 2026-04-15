@@ -283,7 +283,7 @@ const deleteLocations = async () => {
   console.log(selectedUbicacion.value)
   let data = {
     id:deleteLc.value.val.id,
-    id_viz: VDB.session.credentials.staff.id_va,
+    id_viz: VDB.session.credentials.id_va,
   }
   console.log(data)
 

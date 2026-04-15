@@ -91,7 +91,7 @@ const init = async () => {
 
 const createInvoice = async () => {
   $q.loading.show({ message: 'Creando Salida' })
-  invoice.value.created_by = VDB.session.credentials.staff
+  invoice.value.created_by = VDB.session.credentials
   console.log(invoice.value)
   const resp = await invApi.addInvoice(invoice.value);
   if (resp.fail) {

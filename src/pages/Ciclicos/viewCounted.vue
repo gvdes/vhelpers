@@ -129,7 +129,7 @@ const init = async () => {
   let data = {
     cyclecount: $route.params.cid,
     _rol: VDB.session.credentials._rol,
-    id: VDB.session.credentials.staff.id_va
+    id: VDB.session.credentials.id_va
   }
   console.log(data)
   const resp = await CDB.getCyclecount(data)
@@ -185,7 +185,7 @@ const progress = computed(() => {
 const setDeliveryProduct = async () => {
   $q.loading.show({ message: 'Registrando Contreo' })
   let data = {
-    _user: VDB.session.credentials.staff.id_va,
+    _user: VDB.session.credentials.id_va,
     _inventory: $route.params.cid,
     _product: countProduct.value.val.id,
     stock: countProduct.value.val.pivot.stock_acc,
@@ -288,7 +288,7 @@ const nextep = async () => {
   let data = {
     _inventory: $route.params.cid,
     workpoint: VDB.session.credentials._rol,
-    user: VDB.session.credentials.staff.id_va
+    user: VDB.session.credentials.id_va
   }
   const resp = await CDB.nextStep(data)
   if (resp.fail) {

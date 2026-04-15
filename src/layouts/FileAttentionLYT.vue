@@ -14,7 +14,7 @@
         </div>
       </q-toolbar>
       <div class="text-center">
-        <!-- {{ VDB.session.credentials.staff.complete_name }} -->
+        <!-- {{ VDB.session.credentials.complete_name }} -->
       </div>
       <q-separator spaced inset vertical dark />
       <div class=" q-ml-lg q-mr-lg">
@@ -61,7 +61,7 @@ const impresoras = ref({
 const number = ref(1)
 const dependients = ref({
   opts:[],
-  val:VDB.session.credentials.staff
+  val:VDB.session.credentials
 });
 
 const impre = async () => {
@@ -98,7 +98,7 @@ const printFich = async () => {
   $q.loading.show({message:'Imprimiendo'})
   let data = {
     print:impresoras.value.val.ip_address,
-    staff:dependients.value.val,
+    user:dependients.value.val,
     amount:number.value
   }
   const resp = await printApi.PrintAttention(data)

@@ -244,7 +244,7 @@ const init = async () => {
   let data = {
     pedido: $route.params.oid,
     store: VDB.session.store.id_viz,
-    uid: VDB.session.credentials.staff.id_va,
+    uid: VDB.session.credentials.id_va,
     _rol: VDB.session.credentials._rol
   }
   const resp = await orderApi.getOrderPrv(data)

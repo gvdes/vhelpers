@@ -319,7 +319,7 @@ const sale = ref({
     "_price_list": 1,
     "store_name": null
   },
-  dependiente: VDB.session.credentials.staff,
+  dependiente: VDB.session.credentials,
   products: [],
   observation: null,
 })
@@ -667,7 +667,7 @@ const searchOrd = async (order) => {
   if (order) {
     $q.loading.show({ message: 'Obteniendo Orden' })
     let data = {
-      uid: VDB.session.credentials.staff.id_va,
+      uid: VDB.session.credentials.id_va,
       oid: order.valueVal
     }
     const resp = await cashApi.getOrderCash(data)
@@ -687,7 +687,7 @@ const searchOrd = async (order) => {
       }
     } else {
       sale.value.order = order.valueVal;
-      sale.value.dependiente = resp.staff
+      sale.value.dependiente = resp.user
       sale.value.client = resp.client
       resp.products.forEach(newProduct => {
         console.log(newProduct)

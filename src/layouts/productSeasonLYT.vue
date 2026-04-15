@@ -501,7 +501,7 @@ const newRequsition = async (cedis, basProd) => {
     workpoint_to: cedis,
     products: basProd,
     notes: notes.value,
-    id_userviz: VDB.session.credentials.staff.id_va,
+    id_userviz: VDB.session.credentials.id_va,
     type: 2,
     supply_by: supply.value.val.id
   }

@@ -71,7 +71,7 @@ const meCyclecount = computed(() => {
   if([1,2,5,6,12,22,18].includes(rol)){
     return cycleStore.cyclecounts
   }else{
-    return cycleStore.cyclecounts.filter(e => e.responsables.some(i => i.id == $user.session.credentials.staff.id_va))
+    return cycleStore.cyclecounts.filter(e => e.responsables.some(i => i.id == $user.session.credentials.id_va))
   }
 })
 

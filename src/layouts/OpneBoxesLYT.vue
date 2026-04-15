@@ -171,7 +171,7 @@ const calculate = () => {
       worksheet.addRow({
         sucursal: store.name,
         caja: cash.name,
-        cajero:cash.cashier?.user?.staff?.complete_name || 'N/A',
+        cajero:cash.cashier?.user?.complete_name || 'N/A',
         retiradas,
         descuadre,
         commentsMismatch:cash.receipt?.mismatch_observation,

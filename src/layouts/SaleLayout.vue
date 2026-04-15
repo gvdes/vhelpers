@@ -582,7 +582,7 @@ const DependienteTable = computed(() => {
   const grouped = {}
 
   baseSales.value.forEach(sale => {
-    const dependientName = sale.staff?.complete_name || 'SIN DEPENDIENTE'
+    const dependientName = sale.user?.complete_name || 'SIN DEPENDIENTE'
 
     if (!grouped[dependientName]) {
       grouped[dependientName] = {

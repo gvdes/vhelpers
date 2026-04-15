@@ -49,7 +49,7 @@
             </q-menu>
           </q-btn>
           <q-item-section>
-            <q-item-label>{{ user.credentials.staff.complete_name }}</q-item-label>
+            <q-item-label>{{ user.credentials.complete_name }}</q-item-label>
             <q-item-label caption>{{ user.store.alias }}</q-item-label>
             <q-item-label caption>{{ user.credentials.rol.area.name }} ({{ user.credentials.rol.name }})</q-item-label>
           </q-item-section>

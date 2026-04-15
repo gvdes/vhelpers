@@ -14,7 +14,7 @@
       <template v-slot:top v-if="documentHigh.state">
         <div>
           <div class="text-caption">
-            {{ documentHigh.autor.staff.complete_name }}
+            {{ documentHigh.autor.complete_name }}
             <q-separator />
             {{ documentHigh.date }}
           </div>

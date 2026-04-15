@@ -67,7 +67,7 @@
   const open = (q,row,c) => $router.push(`/distribute/checkout/${row.id}`);
 
   // const ordersSize = computed(() => $restockStore.ordersSize);
-  const ordersdb = computed(() => $restockStore.partitions.filter(o => o._status ==  4 && o._suplier_id == VDB.session.credentials.staff.id));
+  const ordersdb = computed(() => $restockStore.partitions.filter(o => o._status ==  4 && o._suplier_id == VDB.session.credentials.id));
 
   const setOrderViewer = async (evt, row, idx) => {
     orderViewer.value.head=row;
