@@ -315,7 +315,7 @@ const aplicarComboExacto = (products, promo) => {
   const freePerBlock = promo.buy - promo.pay // 1
   let remainingFree = blocks * freePerBlock
   const productToDiscount = items.reduce((max, current) =>
-    current.id > max.id ? current : max, 0
+    current.id > max.id ? current : max, items[0]
   )
   const price = Number(productToDiscount.pivot.price)
   productToDiscount.pivot.promo_units = remainingFree
