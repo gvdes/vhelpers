@@ -5,7 +5,11 @@
       <q-btn class=" text-pink " flat :label="user.credentials.nick" @click="$router.push('/')" />
     </div>
     <div v-if="user.credentials.stores.length == 0" class="col text-center fs-inc1 text-primary fw-sbold">{{ !ismobile ?
+    <div v-if="user.credentials.stores.length == 0" class="col text-center fs-inc1 text-primary fw-sbold">{{ !ismobile ?
       user.store.name : user.store.alias }}</div>
+    <q-select v-model="stores.val" :options="user.credentials.stores" :option-label="opt => opt.store.name" borderless
+      color="primary" @update:model-value="changeStore" v-if="user.credentials.stores.length > 1" dense
+      class="text-center" options-selected-class="text-primary text-bold">
     <q-select v-model="stores.val" :options="user.credentials.stores" :option-label="opt => opt.store.name" borderless
       color="primary" @update:model-value="changeStore" v-if="user.credentials.stores.length > 1" dense
       class="text-center" options-selected-class="text-primary text-bold">
@@ -29,6 +33,8 @@
     <q-scroll-area class="fit text-bold text-dark">
       <q-list>
         <q-item>
+          <q-btn rounded flat class="q-mr-md">
+            <q-avatar >
           <q-btn rounded flat class="q-mr-md">
             <q-avatar >
               <q-img :src="`/avatares/${VDB.session.credentials.avatar}`" />
@@ -66,8 +72,10 @@
         <q-separator />
         <q-separator spaced inset vertical dark />
         <template v-for="(menuItem) in menuModules" :key="menuItem.id">
+        <template v-for="(menuItem) in menuModules" :key="menuItem.id">
           <q-expansion-item expand-separator :label="menuItem.name" :dark="$q.dark.isActive"
             :header-class="$q.dark.isActive ? 'text-white' : 'text-dark'">
+            <div v-for="(modul) in menuItem.modules" :key="modul.id">
             <div v-for="(modul) in menuItem.modules" :key="modul.id">
               <q-item clickable v-ripple :to="`/${modul.path}`" :dark="$q.dark.isActive">
                 <q-item-section side>
@@ -196,7 +204,35 @@ const mosAvatar = ref({
     'avatar29.png',
     'avatar30.png',
     'avatar31.png',
+    'avatar28.png',
+    'avatar29.png',
+    'avatar30.png',
+    'avatar31.png',
   ]
+})
+
+
+const menuModules = computed(() => {
+  const map = {}
+  const tree = []
+  VDB.modules.forEach(item => {
+    const mod = {
+      ...item,
+      modules: []
+    }
+    map[mod.id] = mod
+  })
+
+  Object.values(map).forEach(mod => {
+    // console.log(mod)
+    if (mod._root === null) {
+      tree.push(mod)
+    } else if (map[mod._root]) {
+      map[mod._root].modules.push(mod)
+    }
+  })
+  // console.log(VDB.modules)
+  return tree
 })
 
 
