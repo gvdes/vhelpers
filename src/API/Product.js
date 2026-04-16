@@ -1,6 +1,8 @@
 import { assistOrd } from "src/boot/axios";
 
 export default{
-  autocomplete(data){ return assist.post('/product',data); },
-  getMassive(data){ return assist.post('/product/getMassive',data); },
+  autocomplete(data){
+    return assistOrd.post(`/product`,data).then( done=>done.data ).catch( fail => { return {fail}} );
+  },
+  getMassive(data){ return assistOrd.post('/product/getMassive',data); },
 }

@@ -8,7 +8,7 @@ export default{
     return assistOrd.post(`/Products/autoComplete`, data).then(done => done).catch(fail => { return { fail } });
   },
   searchExact (data) {
-    return assiassistOrdst.post(`/Products/search-exact`, data).then(done => done).catch(fail => { return { fail } });
+    return assistOrd.post(`/Products/search-exact`, data).then(done => done).catch(fail => { return { fail } });
   },
   index () {
     return assistOrd.get(`/Products/index`).then(done => done.data).catch(fail => { return { fail } });
