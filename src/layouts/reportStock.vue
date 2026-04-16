@@ -87,6 +87,8 @@ const init = async () => {
 
 const index = async () => {
   let host = '192.168.10.53:1619';
+ // let host = '192.168.10.207:1619';
+
   // let host = '192.168.10.160:1619';
 
   let url = `http://${host}/storetools/public/api/Products/getReceived`;

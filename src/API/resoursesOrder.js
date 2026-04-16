@@ -4,28 +4,53 @@ import orderApi from 'src/API/orderApi';
 const verificarPrecioMayoreo = (prdts, product, rules) => {
   const categoria = product.category.familia.seccion.id;
   const categoriaReglas = rules.find(e => e._category == categoria).rules;
-  let model = 0;
-  let family = 0;
-  let distinct = 0
+  // let model = 0;
+  // let family = 0;
+  // let distinct = 0
   let rev;
   if (!categoriaReglas) {
     return false;
   }
-  let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
 
-  let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let inx = prdts.findIndex((e) => e.id == product.id);
-  if (inx >= 0) {
-    model = sameModel
-    family = sameFamily
-    distinct = distin
+  // let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let inx = prdts.findIndex((e) => e.id == product.id);
+  // if (inx >= 0) {
+  //   model = sameModel
+  //   family = sameFamily
+  //   distinct = distin
+  // } else {
+  //   model = sameModel + Number(product.pivot.units)
+  //   family = sameFamily + Number(product.pivot.units)
+  //   distinct = distin + Number(product.pivot.units)
+  // }
+  const piezasActuales = Number(product.pivot.units);
+  const model = prdts
+    .filter(p => p.id === product.id)
+    .reduce((acc, curr) => {
+      if (curr.id === product.id) {
+        return acc + piezasActuales;
+      }
+      return acc + Number(totalPiezas(curr.pivot, curr.pieces));
+    }, 0);
 
-  } else {
-    model = sameModel + Number(product.pivot.units)
-    family = sameFamily + Number(product.pivot.units)
-    distinct = distin + Number(product.pivot.units)
-  }
+  const family = prdts
+    .filter(p => p.category.familia.id === product.category.familia.id)
+    .reduce((acc, curr) => {
+      if (curr.id === product.id) {
+        return acc + piezasActuales;
+      }
+      return acc + Number(totalPiezas(curr.pivot, curr.pieces));
+    }, 0);
+  const distinct = prdts
+    .filter(p =>
+      p.category.familia.seccion.id === product.category.familia.seccion.id &&
+      p.id !== product.id
+    )
+    .reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0)
+    + piezasActuales;
+
   for (const regla of categoriaReglas) {
     if (regla._type === 2) {
       if (regla.sameModel == 1 && model >= regla.min && (!regla.max || model <= regla.max)) {
@@ -34,7 +59,7 @@ const verificarPrecioMayoreo = (prdts, product, rules) => {
       if (regla.sameModel == 0 && family >= regla.min && (!regla.max || family <= regla.max)) {
         return true;
       }
-      if (regla.sameModel == 0 && distinct >= regla.min && (!regla.max || family <= regla.max) && regla.family == 0) {
+      if (regla.sameModel == 0 && distinct >= regla.min && (!regla.max || distinct <= regla.max) && regla.family == 0) {
         return true;
       }
     }
@@ -45,27 +70,52 @@ const verificarPrecioMayoreo = (prdts, product, rules) => {
 const verificarPrecioDocena = (prdts, product, rules) => {
   const categoria = product.category.familia.seccion.id;
   const categoriaReglas = rules.find(e => e._category == categoria).rules;
-  let model = 0;
-  let family = 0;
-  let distinct = 0
+  // let model = 0;
+  // let family = 0;
+  // let distinct = 0
   let rev;
   if (!categoriaReglas) {
     return false;
   }
-  let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  let inx = prdts.findIndex((e) => e.id == product.id);
-  if (inx >= 0) {
-    model = sameModel
-    family = sameFamily
-    distinct = distin
+  // let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
+  // let inx = prdts.findIndex((e) => e.id == product.id);
+  // if (inx >= 0) {
+  //   model = sameModel
+  //   family = sameFamily
+  //   distinct = distin
 
-  } else {
-    model = sameModel + Number(product.pivot.units)
-    family = sameFamily + Number(product.pivot.units)
-    distinct = distin + Number(product.pivot.units)
-  }
+  // } else {
+  //   model = sameModel + Number(product.pivot.units)
+  //   family = sameFamily + Number(product.pivot.units)
+  //   distinct = distin + Number(product.pivot.units)
+  // }
+  const piezasActuales = Number(product.pivot.units);
+  const model = prdts
+    .filter(p => p.id === product.id)
+    .reduce((acc, curr) => {
+      if (curr.id === product.id) {
+        return acc + piezasActuales;
+      }
+      return acc + Number(totalPiezas(curr.pivot, curr.pieces));
+    }, 0);
+
+  const family = prdts
+    .filter(p => p.category.familia.id === product.category.familia.id)
+    .reduce((acc, curr) => {
+      if (curr.id === product.id) {
+        return acc + piezasActuales;
+      }
+      return acc + Number(totalPiezas(curr.pivot, curr.pieces));
+    }, 0);
+  const distinct = prdts
+    .filter(p =>
+      p.category.familia.seccion.id === product.category.familia.seccion.id &&
+      p.id !== product.id
+    )
+    .reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0)
+    + piezasActuales;
   for (const regla of categoriaReglas) {
     if (regla._type === 3) {
       if (regla.sameModel == 1 && model >= regla.min && (!regla.max || model <= regla.max)) {
@@ -74,7 +124,7 @@ const verificarPrecioDocena = (prdts, product, rules) => {
       if (regla.sameModel == 0 && family >= regla.min && (!regla.max || family <= regla.max)) {
         return true;
       }
-      if (regla.sameModel == 0 && distinct >= regla.min && (!regla.max || family <= regla.max) && regla.family == 0) {
+      if (regla.sameModel == 0 && distinct >= regla.min && (!regla.max || distinct <= regla.max) && regla.family == 0) {
         return true;
       }
     }
@@ -146,11 +196,11 @@ const actualizarPreciosProductos = async (products, order, rules) => {
 
 const actualizarPreciosProductosSales = async (products, _price_list, rules,) => {
   const productosCambiados = [];
-
+  // console.log(products)
   for (const p of products) {
     // console.log(p)
     const totalPzsTemp = p.pivot.units
-
+    // console.log(totalPzsTemp)
     let newPriceList = 0;
 
     if (_price_list <= 3) {
@@ -166,7 +216,7 @@ const actualizarPreciosProductosSales = async (products, _price_list, rules,) =>
     } else {
       newPriceList = _price_list;
     }
-    console.log(newPriceList)
+    // console.log(newPriceList)
     const priceData = p.prices.find(e => e.id == newPriceList);
     // console.log(priceData)
     if (priceData) {
@@ -199,6 +249,12 @@ const aplicarPromociones = (products, promotions) => {
   promotions.forEach(promo => {
     if (promo.type === 'NXM') {
       aplicar2x1(products, promo)
+    } else if (promo.type === 'COM') {
+      aplicarComboExacto(products, promo)
+    } else if (promo.type === 'BLOCK') {
+      aplicarPrecioPorBloque(products, promo)
+    } else if (promo.type === 'ACUMULATED') {
+      aplicarAcumulado(products, promo)
     }
   })
 }
@@ -220,28 +276,124 @@ const aplicar2x1 = (products, promo) => {
     (sum, p) => sum + Number(p.pivot.units),
     0
   )
-  const freeUnits = Math.floor(totalUnits / 2)
+  const blocks = Math.floor(totalUnits / promo.buy)
+  const freeUnits = blocks * (promo.buy - promo.pay)
   if (freeUnits <= 0) return
-
   let remaining = freeUnits
   for (const p of items) {
     if (remaining <= 0) break
-
     const units = Number(p.pivot.units)
     const price = Number(p.pivot.price)
-
     const freeForProduct = Math.min(units, remaining)
-
     if (freeForProduct <= 0) continue
-
     p.pivot.promo_units += freeForProduct
     p.pivot.promo_discount += freeForProduct * price
     p.pivot.total -= freeForProduct * price
-
     remaining -= freeForProduct
   }
 }
 
+const aplicarComboExacto = (products, promo) => {
+  const promoIds = promo.products.map(p => p._product)
+  if (!promoIds.length) return
+  const items = products.filter(p => promoIds.includes(p.id))
+  if (!items.length) return
+  if (items.length !== promoIds.length) return // faltan productos
+  items.forEach(p => {
+    const units = Number(p.pivot.units)
+    const price = Number(p.pivot.price)
+    p.pivot.subtotal = units * price
+    p.pivot.promo_units = 0
+    p.pivot.promo_discount = 0
+    p.pivot.total = p.pivot.subtotal
+  })
+
+  const blocks = Math.min(
+    ...items.map(p => Number(p.pivot.units))
+  )
+  if (blocks <= 0) return
+  const freePerBlock = promo.buy - promo.pay // 1
+  let remainingFree = blocks * freePerBlock
+  const productToDiscount = items.reduce((max, current) =>
+    current.id > max.id ? current : max, items[0]
+  )
+  const price = Number(productToDiscount.pivot.price)
+  productToDiscount.pivot.promo_units = remainingFree
+  productToDiscount.pivot.promo_discount = remainingFree * price
+  productToDiscount.pivot.total -= remainingFree * price
+}
+
+
+const aplicarAcumulado = (products, promo) => {
+  const promoIds = promo.products.map(p => p._product)
+
+  const items = products.filter(p => promoIds.includes(p.id))
+  if (!items.length) return
+  const percentage = Number(promo.percentage || 0)
+  let totalAccumulated = 0
+  items.forEach(p => {
+    const units = Number(p.pivot.units)
+    const price = Number(p.pivot.price)
+    const subtotal = units * price
+    const accumulated = subtotal * (percentage / 100)
+    p.pivot.accumulated = accumulated
+    totalAccumulated += accumulated
+  })
+  // console.log('Total acumulado:', totalAccumulated)
+}
+
+
+const aplicarPrecioPorBloque = (products, promo) => {
+  const promoIds = promo.products.map(p => p._product)
+
+  const items = products.filter(p => promoIds.includes(p.id))
+  if (!items.length) return
+  items.forEach(p => {
+    const units = Number(p.pivot.units)
+    const price = Number(p.pivot.price)
+
+    p.pivot.subtotal = units * price
+    p.pivot.promo_units = 0
+    p.pivot.promo_discount = 0
+    p.pivot.total = p.pivot.subtotal
+  })
+
+  const totalUnits = items.reduce(
+    (sum, p) => sum + Number(p.pivot.units),
+    0
+  )
+
+  if (totalUnits < promo.buy) return
+
+  const blocks = Math.floor(totalUnits / promo.buy)
+
+  const normalBlockPrice = promo.buy * Number(items[0].pivot.price)
+  const discountPerBlock = normalBlockPrice - promo.block_price
+
+  const totalDiscount = blocks * discountPerBlock
+
+  let remainingUnitsToDiscount = blocks * promo.buy
+  let remainingDiscount = totalDiscount
+
+  for (const p of items) {
+    if (remainingUnitsToDiscount <= 0) break
+
+    const units = Number(p.pivot.units)
+    const price = Number(p.pivot.price)
+
+    const unitsForBlock = Math.min(units, remainingUnitsToDiscount)
+
+    const proportion = unitsForBlock / (blocks * promo.buy)
+    const discountShare = totalDiscount * proportion
+
+    p.pivot.promo_units += unitsForBlock
+    p.pivot.promo_discount += discountShare
+    p.pivot.total -= discountShare
+
+    remainingUnitsToDiscount -= unitsForBlock
+    remainingDiscount -= discountShare
+  }
+}
 
 
 

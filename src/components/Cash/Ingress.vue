@@ -42,6 +42,7 @@ import { exportFile, useQuasar, date } from 'quasar';
 import dayjs from 'dayjs';
 import { computed, ref, onMounted, watch } from 'vue';
 import cashApi from 'src/API/cashApi';
+import saleLocalApi from 'src/API/saleLocalApi';
 const VDB = useVDBStore();
 const $q = useQuasar();
 const $router = useRouter();
@@ -64,12 +65,20 @@ const ingresing = ref({
 });
 
 const table = ref({
+  // columns:[
+  //   {name:'codigo',label:'Codigo',field:r=>r.id},
+  //   {name:'fs_code',label:'Factusol',field:r=>r.fs_id},
+  //   {name:'client',label:'Cliente',field:r=>r.client.name},
+  //   {name:'concept',label:'Concepto',field:r=>r.concept},
+  //   {name:'import',label:'Importe',field:r=>r.import},
+  // ],
   columns:[
-    {name:'codigo',label:'Codigo',field:r=>r.id},
-    {name:'fs_code',label:'Factusol',field:r=>r.fs_id},
-    {name:'client',label:'Cliente',field:r=>r.client.name},
-    {name:'concept',label:'Concepto',field:r=>r.concept},
-    {name:'import',label:'Importe',field:r=>r.import},
+    {name:'fs_code',label:'Codigo',field:r=>r.CODING},
+    {name:'date',label:'Fecha',field:r=>r.FECHA},
+    {name:'hour',label:'Hora',field:r=>r.HORA},
+    {name:'concept',label:'Concepto',field:r=>r.CONING},
+    {name:'import',label:'Importe',field:r=>r.IMPING},
+    {name:'cliente',label:'Cliente',field:r=>r.NOFCLI},,
   ],
   pagination:{rowsPerPage:0}
 })
@@ -80,13 +89,13 @@ const consultIngress = async () => {
     cash: cashLYT.cash,
   }
   console.log(data);
-  const resp = await cashApi.getIngress(data);
+  const resp = await saleLocalApi.getIngress(data);
   if (resp.fail) {
     console.log(resp);
   } else {
     console.log(resp);
     ingresing.value.status = true
-    ingresing.value.vals = resp
+    ingresing.value.vals = resp.ingress
     $q.loading.hide();
   }
 
@@ -110,13 +119,14 @@ const createdIngress = async () => {
     cash: cashLYT.cash,
     ingress: ingress.value
   }
-  console.log(data);
-  const resp = await cashApi.addIngress(data);
+  // console.log(data);
+  const resp = await saleLocalApi.addIngress(data);
+  // console.log(resp)
   if (resp.fail) {
     console.log(resp);
   } else {
     console.log(resp);
-    $q.notify({ message: `Ingreso ${resp.ingreso.fs_id} Creada`, type: 'positive', position: 'bottom' })
+    $q.notify({ message: `Ingreso ${resp.ingress.fs_id} Creada`, type: 'positive', position: 'top' })
     $q.loading.hide();
     reset()
   }
@@ -124,7 +134,12 @@ const createdIngress = async () => {
 
 const printIng = async  (a,b) =>{
   $q.loading.show({ message: 'RIMPRIMIENDO INGRESO' })
-  const resp = await cashApi.reprintIngress(b);
+  console.log(b)
+  let data = {
+    cash:cashLYT.cash,
+    ingress:b.CODING
+  }
+  const resp = await saleLocalApi.printIngress(data);
   if (resp.fail) {
     console.log(resp);
   } else {

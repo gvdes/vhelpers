@@ -9,24 +9,35 @@
       </q-card-section>
       <q-card-section>
         <q-select v-model="cash.val.cashier.user" :options="cashiers" label="Cajero"
-          :option-label="opt => opt.staff.complete_name" option filled :disable="disableOpen" />
+          :option-label="opt => opt.complete_name" option filled :disable="disableOpen" clearable dense />
         <q-separator spaced inset vertical dark />
         <q-select v-model="cash.val.cashier.print" :options="printers" label="Impresora" option-label="name" filled
-          :disable="disableOpen" />
+           :clearable="!disableOpen" @update:model-value="changePrint" dense>
+          <template v-slot:after v-if="cash.val.cashier.print">
+            <q-btn round dense flat icon="print" @click="testPrint" />
+          </template></q-select>
         <q-separator spaced inset vertical dark />
         <q-input v-model="cash.val.cashier.cash_start" type="number" label="Monto Inicial" filled
-          :disable="disableOpen" />
+          :disable="disableOpen" dense />
       </q-card-section>
       <q-card-actions align="left">
         <q-btn color="negative" icon="close" flat rounded @click="reset" />
+        <q-btn flat color="primary" icon="account_balance"
+          v-if="cash.val._status == 1 && ['gen', 'gro', 'aux', 'root', 'des'].includes(VDB.session.rol) && countDisable"
+          title="Arqueo de Caja" @click="cash_count" />
         <q-space />
         <!-- <div v-if="!disableOpen"> -->
         <q-btn color="positive" label="Abrir" @click="openCash" flat
-          v-if="cash.val._status == 2 && ['gen','aud','aux','root'].includes(VDB.session.rol) && !disableOpen" :disable="disableOpen || !cash.val.cashier.user || !cash.val.cashier.print" />
-        <q-btn color="positive" label="Ir" @click="redirect" flat v-if="cash.val?._status == 1"  />
+          v-if="cash.val._status == 2 && ['gen', 'gro', 'aux', 'root', 'des'].includes(VDB.session.rol) && !disableOpen"
+          :disable="disableOpen || !cash.val.cashier.user || !cash.val.cashier.print" />
+        <q-btn color="positive" label="Ir" @click="redirect" flat v-if="cash.val?._status == 1" />
         <!-- </div> -->
       </q-card-actions>
     </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="openCashCount" persistent>
+    <cashCount :cash="cash.val" />
   </q-dialog>
 
 </template>
@@ -44,6 +55,8 @@ import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
 import { computed, ref } from 'vue';
 import cashApi from 'src/API/cashApi';
+import cashCount from 'src/components/Cash/cashCount.vue';
+
 const VDB = useVDBStore();
 const $q = useQuasar();
 const $router = useRouter();
@@ -73,7 +86,7 @@ const table = ref({
     { name: 'name', label: 'NOMBRE', field: r => r.name },
     { name: 'status', label: 'ESTADO', field: r => r.status.name },
     { name: 'store', label: 'SUCURSAL', field: r => r.store.name },
-    { name: 'cashies', label: 'ULTIMO CAJERO', field: r => r.cashier?.user.staff.complete_name },
+    { name: 'cashies', label: 'ULTIMO CAJERO', field: r => r.cashier?.user.complete_name },
     { name: 'open_at', label: 'ULTIMA APERTURA', field: r => r.cashier ? dayjs(r.cashier?.open_date).format('YYYY-MM-DD HH:mm:ss') : '' },
   ],
   pagination: { rowsPerPage: 0 }
@@ -87,6 +100,16 @@ const disableOpen = computed(() => {
   console.log("Hoy:", today, "OpenDate:", cashierDate);
   return cash.value.val?._status == 1 || today === cashierDate;
 });
+const countDisable = computed(() => {
+  const openDate = cash.value.val?.cashier?.open_date;
+  if (!openDate) return false;
+  const today = dayjs().format("YYYY-MM-DD");
+  const cashierDate = dayjs(openDate).format("YYYY-MM-DD");
+  console.log("Hoy:", today, "OpenDate:", cashierDate);
+  return today === cashierDate;
+})
+const openCashCount = computed(() => cashLYT.dialogModule === 10);
+
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Cajas' });
@@ -123,7 +146,7 @@ const mosCash = (a, b) => {
 
   if (b._status == 1) {
     cash.value.val = b
-  } else if(b._status == 2 && today === cashierDate) {
+  } else if (b._status == 2 && today === cashierDate) {
     cash.value.val = b
   } else {
     nwOpnCash.value.id = b.id
@@ -170,8 +193,49 @@ const redirect = () => {
   cashLYT.setCash(cash.value.val.id);
 }
 
+const cash_count = () => {
+  console.log('se realizara arqueo de caja')
+  cashLYT.openDialogModule(10)
+  console.log(cashLYT.dialogModule)
 
+}
 
+const testPrint = async () => {
+  $q.loading.show({ message: 'Probando Impresora' })
+  let data = {
+    cashier: cash.value.val.cashier.print,
+    uid: VDB.session.credentials.id
+  }
+  const resp = await cashApi.testPrintCash(data)
+  if(resp.fail){
+    console.log(resp)
+  }else{
+    console.log(resp)
+    $q.loading.hide();
+  }
+}
+
+const changePrint =  async (val) => {
+  if(cash.value.val._status == 1){
+    $q.loading.show({message:'Realizando Cambio'})
+    console.log(val)
+    let data = {
+      print:val.id,
+      cashier:cash.value.val.cashier.id
+    }
+    console.log(data)
+    const resp = await cashApi.changePrint(data);
+    if(resp.fail){
+      console.log(resp);
+
+    }else{
+      console.log(resp)
+      $q.loading.hide()
+      $q.notify({message:'Cambio Realizado',type:'positive',position:'center'})
+    }
+
+  }
+}
 
 init();
 </script>

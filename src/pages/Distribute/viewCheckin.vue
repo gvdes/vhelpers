@@ -274,7 +274,7 @@ const init = async () => {
 const changeStatus = async () => {
   let data = {
     partition: $route.params.chk,
-    verified: VDB.session.credentials.staff.id,
+    verified: VDB.session.credentials.id,
     state: 9,
     key: $route.query.key
   }

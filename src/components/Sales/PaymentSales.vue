@@ -21,8 +21,8 @@
       <q-separator spaced inset vertical dark />
       <div class="row text-center items-center ">
         <div class="col"> {{ modes.PFPA.id?.id == 2 ? 'Efectivo' : 'Importe Cobrado' }}</div>
-        <div class="col"> <q-input class="col" v-model="modes.PFPA.val" type="number" autofocus :min="0.00" step="any"
-            dense input-class="q-pl-md fw-sbold fs-inc4 text-center" filled>
+        <div class="col"> <q-input class="col" ref="amountRef" v-model="modes.PFPA.val" type="number" autofocus
+            :min="0.00" step="any" dense input-class="q-pl-md fw-sbold fs-inc4 text-center" filled @focus="selectAll">
             <template v-slot:after>
               <q-btn color="primary" icon="backspace" flat dense round v-if="parseFloat(modes.PFPA.val)"
                 @click="modes.PFPA.val = 0" />
@@ -40,7 +40,7 @@
         </div>
         <div class="col" v-if="pagos.dafpa">
           <q-select class="col-3" v-model="modes.SFPA.id" :options="paymeths" label="Forma Pago" option-value="id"
-            option-label="name" dense filled :option-disable="(val) => optionDisable(val)">
+            option-label="name" dense filled :option-disable="(val) => optionDisable(val)" autofocus>
           </q-select>
         </div>
       </div>
@@ -65,8 +65,8 @@
         </div>
         <div class="col" v-if="pagos.vales">
           <div class="row">
-            <q-select class="col" v-model="modes.VALE" :options="valecli.opts" label="Vale"
-              :option-label="r => (`Vale : ${r.id ? r.id.code : ''}`)" dense filled>
+            <q-select class="col" v-model="modes.VALE" :options="valecli.filt" label="Vale"
+              :option-label="r => (`Vale : ${r.id ? r.id.code : ''}`)" dense filled use-input @filter="filterFn" hide-selected fill-input>
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section>
@@ -103,7 +103,7 @@
 import { useVDBStore } from 'stores/VDB';
 import axios from 'axios';//para dirigirme bro
 import { exportFile, useQuasar, date } from 'quasar';
-import { computed, defineProps, ref, onMounted, onBeforeUnmount } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 const VDB = useVDBStore();
 const $q = useQuasar();
 const pagos = ref({
@@ -117,10 +117,12 @@ const props = defineProps({
   client: { type: Number, default: 0 }
 })
 
+const amountRef = ref(null)
 const emits = defineEmits(['sendTicket'])
 
 const valecli = ref({
-  opts: []
+  opts: [],
+  filt: [],
 })
 const modes = ref({ "PFPA": { id: props.paymeths[1], val: Math.round(props.total) }, "SFPA": { id: null, val: 0 }, "VALE": { id: null, val: 0 }, conditions: { createWithdrawal: false, super: null } });
 const cambio = computed(() => (Number(Number.parseFloat(modes.value.SFPA.val) + Number.parseFloat(modes.value.PFPA.val)) + Number.parseFloat(modes.value.VALE.val) - Number.parseFloat(props.total)).toFixed(2))
@@ -153,8 +155,8 @@ const buscarvales = async () => {
   $q.loading.show({ message: 'Buscando Vales' })
 
   console.log("Buscando vales");
-  // let host = VDB.session.store.ip_address;
-  let host = '192.168.10.160:1619';
+  let host = VDB.session.store.ip_address;
+  //let host = '192.168.10.160:1619';
 
   let impr = `http://${host}/access/public/modify/vales?price=${props.client}`;
   axios.get(impr)
@@ -194,6 +196,27 @@ const finallyTck = () => {
   })
   modes.value = { "PFPA": { id: null, val: 0 }, "SFPA": { id: null, val: 0 }, "VALE": { id: null, val: 0 } };
 }
+
+const selectAll = () => {
+  amountRef.value.select()
+}
+
+const filterFn = (val, update) => {
+  if (val === '') {
+    update(() => {
+      valecli.value.filt = valecli.value.opts
+    })
+    return
+  }
+  update(() => {
+    const needle = val
+  console.log(needle)
+
+    console.log(valecli.value.opts);
+    valecli.value.filt = valecli.value.opts.filter( v => String(v.id.code).includes(String(needle)))
+  })
+}
+
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown);

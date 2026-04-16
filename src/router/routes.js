@@ -14,6 +14,12 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
+    path: '/client/quiz/form',
+    name: 'clquif',
+    component: () => import('layouts/clientQuizFormLYT.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
     path: '/launcher',
     component: () => import('layouts/LauncherLayout.vue'),
     meta: { requiresAuth: true }
@@ -108,6 +114,9 @@ const routes = [
   {
     path: '/openbox',
     component: () => import('layouts/OpneBoxesLYT.vue'),
+    children: [
+      { path: ':sid', name: 'onsi', component: () => import('pages/CountingCash/receiptCash.vue'), meta: { moduleId:22, requiresAuth: true } }
+    ],
     meta: { moduleId: 22, requiresAuth: true }
   },
   {
@@ -234,6 +243,8 @@ const routes = [
     children: [
       { path: 'formClient', name: 'rcl', component: () => import('pages/clients/formCli.vue'), meta: { moduleId: 34, requiresAuth: true } },
       { path: 'addClient', name: 'acl', component: () => import('pages/clients/addCli.vue'), meta: { moduleId: 35, requiresAuth: true } },
+      { path: 'formQuiz', name: 'qzi', component: () => import('pages/clients/formQuiz.vue'), meta: { moduleId: 35, requiresAuth: true } },
+
     ],
   },
   {
@@ -403,6 +414,28 @@ const routes = [
     children: [
       // { path: 'form/:sid', name: 'bifomx', component: () => import('pages/Billing/Index.vue'), meta: { requiresAuth: false } },
       { path: 'billers', name: 'bil', component: () => import('pages/Billing/Billers.vue'), meta: { moduleId: 75, requiresAuth: true } }
+    ],
+  },
+
+  {
+    path: '/operation',
+    component: () => import('layouts/OperationLYT.vue'),
+    children: [
+      {
+        path: 'reports', name: 'opr', component: () => import('pages/Operation/Reports.vue'), meta: { moduleId: 76, requiresAuth: true },
+        children: [
+          { path: 'rcg', name: 'rcg', component: () => import('pages/Operation/RCG.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'eoe', name: 'eoe', component: () => import('pages/Operation/EOE.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'cip', name: 'cip', component: () => import('pages/Operation/CIP.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'gpl', name: 'gpl', component: () => import('pages/Operation/GPL.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'ecm', name: 'ecm', component: () => import('pages/Operation/ECM.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'daci', name: 'daci', component: () => import('pages/Operation/DACI.vue'), meta: { moduleId: 76, requiresAuth: true } },
+          { path: 'mct', name: 'mct', component: () => import('pages/Operation/MCT.vue'), meta: { moduleId: 76, requiresAuth: true } },
+
+
+
+        ]
+      }
     ],
   },
   // {

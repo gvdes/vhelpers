@@ -55,10 +55,10 @@ const VDB = useVDBStore()
 const user_socket = {
   profile: {
     me: {
-      id: VDB.session.credentials.staff.id_va,
+      id: VDB.session.credentials.id_va,
       nick: VDB.session.credentials.nick,
       picture: '',
-      names: VDB.session.credentials.staff.complete_name,
+      names: VDB.session.credentials.complete_name,
       surname_pat: '',
       surname_mat: '',
       change_password: false,

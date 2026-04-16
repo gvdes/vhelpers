@@ -16,7 +16,7 @@
     <q-table :rows="data" :columns="table.columns">
       <template v-slot:top v-if="documentHigh.state">
         <div>
-          <div class="text-caption"> {{ documentHigh.autor.staff.complete_name }} <q-separator /> {{ documentHigh.date
+          <div class="text-caption"> {{ documentHigh.autor.complete_name }} <q-separator /> {{ documentHigh.date
           }}
           </div>
           <div class="text-bold"> {{ documentHigh.nameDoc }} </div>

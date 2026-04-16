@@ -128,7 +128,7 @@ const nextState = async () => {
     let state = Number($restockStore.partitions.find(e => e.id == partition.value)._status) + Number(1);
     let data = {
       partition: partition.value,
-      chofi: VDB.session.credentials.staff.id,
+      chofi: VDB.session.credentials.id,
       state: state
     }
     console.log(data)

@@ -32,7 +32,7 @@ const table  = ref({
   columns:[
     {name:'id',label:'ID',field:r=>r.id},
     {name:'client',label:'CLIENTE',field:r=>r.client_name},
-    {name:'staff',label:'COLABORADOR',field:r=>r.staff.complete_name},
+    {name:'staff',label:'COLABORADOR',field:r=>r.complete_name},
     {name:'fpas',label:'FPAS',field:r=> r.payments.length},
   ]
 })

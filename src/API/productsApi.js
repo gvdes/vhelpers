@@ -8,7 +8,7 @@ export default{
     return assistOrd.post(`/Products/autoComplete`, data).then(done => done).catch(fail => { return { fail } });
   },
   searchExact (data) {
-    return assistOrd.post(`/Products/search-exact`, data).then(done => done).catch(fail => { return { fail } });
+    return assiassistOrdst.post(`/Products/search-exact`, data).then(done => done).catch(fail => { return { fail } });
   },
   index () {
     return assistOrd.get(`/Products/index`).then(done => done.data).catch(fail => { return { fail } });
@@ -64,7 +64,10 @@ export default{
   massiveUpdateImg(data) {
     return assistOrd.post(`/Products/massiveUpdateImg`, data).then(done => done.data).catch(fail => { return { fail } });
   },
-  updateStatusProduct(data){
+  updateStatusProduct(data) {
     return assistOrd.post(`/Products/updateStatusProduct`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  getReportnotPicture(data) {
+    return assistOrd.post(`/Products/getReportnotPicture`, data).then(done => done.data).catch(fail => { return { fail } });
   }
 }

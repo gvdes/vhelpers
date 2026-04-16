@@ -9,7 +9,7 @@
         </q-input>
       </template>
     </q-table>
-
+<!-- {{ $orderStore.socket_user }} -->
     <q-dialog v-model="wndOrder.state" persistent>
       <q-card>
         <q-card-section class="row items-center bg-primary text-white">
@@ -138,7 +138,7 @@ const viewOrder = ref({
 const wndOrder = ref({
   state: false,
   order: {
-    _created_by: VDB.session.credentials.staff.id_va,
+    _created_by: VDB.session.credentials.id_va,
     _workpoint: VDB.session.store.id_viz,
     name: null,
     _anex: null
@@ -178,7 +178,7 @@ const colorStatus = ref([
   "light-green-10",
 ])
 
-const myorders = computed(() => $orderStore.orders.filter(e => e.created_by.id == VDB.session.credentials.staff.id_va))
+const myorders = computed(() => $orderStore.orders.filter(e => e.created_by.id == VDB.session.credentials.id_va))
 
 const createdOrder = async () => {
   $q.loading.show({ message: 'Creando Pedido' })

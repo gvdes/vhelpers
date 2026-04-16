@@ -18,14 +18,14 @@ export const cyclecountStore = defineStore('cyclecount', {
     socket_user(state) {
       const creds = VDB.session.credentials;
       const store = VDB.session.store;
-      if (!creds || !creds.staff) return null;
+      if (!creds || !creds) return null;
       return {
         profile: {
           me: {
-            id: creds.staff.id_va,
+            id: creds.id_va,
             nick: creds.nick,
             picture: '',
-            names: creds.staff.complete_name,
+            names: creds.complete_name,
             surname_pat: '',
             surname_mat: '',
             change_password: false,

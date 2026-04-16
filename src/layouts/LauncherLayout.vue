@@ -5,12 +5,16 @@
     </q-header>
 
     <q-page-container>
-      <q-page class="flex flex-center" padding>
-        <animateStudio ref="robot" />
-        <q-table v-if="favorites.items.length" @row-click="(a, b) => $router.push(`/${b.path}`)" :rows="favorites.items"
-          grid flat bordered :columns="[
-            { name: 'name', label: '', field: r => r.name, align: 'left' }
-          ]" dense hide-bottom />
+      <q-page class="flex flex-center column" padding>
+        <div>
+          <animateStudio ref="robot" />
+        </div>
+        <div style="width: 70%;">
+          <q-table v-if="favorites.items.length" @row-click="(a, b) => $router.push(`/${b.path}`)"
+            :rows="favorites.items" grid flat bordered :columns="[
+              { name: 'name', label: '', field: r => r.name, align: 'left' }
+            ]" dense hide-bottom />
+        </div>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -33,21 +37,6 @@ const $router = useRouter();
 const user = VDB.session;
 const $q = useQuasar();
 const robot = ref(null)
-const greetings = ref([
-  "Que gusto verte!",
-  "Excelente dia!",
-  "Que sea un gran dia!",
-  "Paciencia crack, paciencia.",
-  "Como va todo?",
-  "Empecemos...",
-  "Manos a la obra!",
-  "Exito!",
-  "Vacaciones??... pff...",
-  "Si buscas resultados distintos, no hagas siempre lo mismo.",
-  "Quien tiene claro un porque? Puede superar casi cualquier cómo"
-]);
-const greeting = computed(() => greetings.value[Math.floor(Math.random() * greetings.value.length)]);
-
 onMounted(() => {
   robot.value.setIdle()
 })

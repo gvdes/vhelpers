@@ -200,7 +200,7 @@ const init = async () => {
     console.log(resp)
   } else {
     console.log(resp)
-    if (VDB.session.rol == 'gro' || VDB.session.rol == 'root' || VDB.session.rol == 'des' || VDB.session.rol == 'jfz' || VDB.session.rol == 'axo') {
+    if (VDB.session.rol == 'gro' || VDB.session.rol == 'dro' || VDB.session.rol == 'root' || VDB.session.rol == 'des' || VDB.session.rol == 'jfz' || VDB.session.rol == 'axo') {
       traspaso.value = resp
       products.value = resp.bodie
       console.log(traspaso.value)
@@ -208,7 +208,7 @@ const init = async () => {
       traspaso.value = resp
       products.value = resp.bodie
       console.log(traspaso.value)
-    } else if (VDB.session.rol == 'alm' || VDB.session.rol == 'vld' || VDB.session.rol == 'gce' && ([5, 6].includes(resp.destiny.id) || [5, 6].includes(resp.origin.id))) {
+    } else if (VDB.session.rol == 'alm' || VDB.session.rol == 'vld' || VDB.session.rol == 'gce' && ([5, 6, 7, 8, 9].includes(resp.destiny.id) || [5, 6, 7, 8, 9].includes(resp.origin.id))) {
       traspaso.value = resp
       products.value = resp.bodie
       console.log(traspaso.value)

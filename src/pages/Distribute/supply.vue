@@ -142,7 +142,7 @@ const nextState = async () => {
     $q.loading.show({ message: 'Cambiando Estado' })
     let data = {
       partition: partition.value,
-      surtidor: VDB.session.credentials.staff,
+      surtidor: VDB.session.credentials,
       state: 4
     }
     console.log(data)

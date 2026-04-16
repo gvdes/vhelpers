@@ -3,6 +3,8 @@ import { useVDBStore } from 'stores/VDB';
 const VDB = useVDBStore();
 const host = VDB.session.store.ip_address;
 const store = axios.create({ baseURL: `http://${host}/storetools/public/api` })
+// const store = axios.create({ baseURL: `http://192.168.10.160:1619/storetools/public/api` })
+
 
 export default {
   addSale(data) {
@@ -19,6 +21,16 @@ export default {
   },
   reprintSale(data) {
     return store.post(`/sales/reprintSale`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
+
+  getIngress(data) {
+    return store.post(`/sales/getIngress`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  printIngress(data) {
+    return store.post(`/sales/printIngress`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  addIngress(data) {
+    return store.post(`/sales/addIngress`,data).then(done => done.data).catch(fail => { return { fail } });
   },
 
 

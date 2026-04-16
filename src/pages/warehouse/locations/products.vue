@@ -213,7 +213,7 @@ const addLocations = async () => {
   $q.loading.show({ message: 'Agregando Ubicacion' });
   console.log(lvellast.value)
   let data = {
-    id_viz: VDB.session.credentials.staff.id_va,
+    id_viz: VDB.session.credentials.id_va,
     _location: lvellast.value.selected,
     _product: product.value.id
   }
@@ -239,7 +239,7 @@ const deleteLocation = async (_location) => {
   console.log(VDB.session)
   $q.loading.show({ message: 'Eliminando Ubicacion' });
   let data = {
-    id_viz: VDB.session.credentials.staff.id_va,
+    id_viz: VDB.session.credentials.id_va,
     _location: _location,
     _product: product.value.id
   }

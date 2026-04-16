@@ -31,15 +31,6 @@
 
       <q-list class="q-mt-md q-mb-md">
         <q-item>
-          <!-- <q-item-section v-for="(val, index) in product.stocks.sort((a, b) => a.id - b.id)" :key="index">
-            <q-item-label caption class="text-center " :class=" val.id == VDB.session.store.id ? 'text-bold text-blue' : 'text-caption' ">
-              {{ val.alias }}
-            </q-item-label>
-            <q-item-label overline :class="val.pivot.stock < 0 ? 'text-red text-center text-bold' : ' text-center text-bold' val.id == VDB.session.store.id ? 'text-blue' : 'text-caption'">
-              {{ val.pivot.stock }}
-            </q-item-label>
-          </q-item-section> -->
-
           <q-item-section v-for="(val, index) in [...product.stocks].sort((a, b) => a.id - b.id)" :key="index">
             <q-item-label caption class="text-center"
               :class="val.id == VDB.session.store.id ? 'text-bold text-blue' : 'text-caption'">
@@ -62,13 +53,10 @@
           <div :class="price.id == selectPrice ? 'text-strong' : 'text-caption text-muted text-strike'">
             {{ price.alias }}
           </div>
-
           <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
-
           <div :class="price.id == selectPrice ? 'text-bold text-price' : 'text-caption text-muted'">
             {{ price.pivot.price }}
           </div>
-
           <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
         </div>
       </div>
@@ -81,18 +69,14 @@
         <div class="text-center">
           <div class="col q-pa-xs">
             <div class="text-bold text-h6 text-strong">Cantidad:</div>
-
             <q-btn flat color="positive" icon="add" class="text-h5" @click="product.pivot.amount++"
               :disabled="order._status != 1" />
             <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
-
             <div class="col column q-py-md bg-section" style="border-radius: 8px;">
               <input type="number" min="1" v-model="product.pivot.amount" class="text-center exo clean-input"
                 style="width: 100px; font-size: 3em; margin:auto;" :disabled="order._status != 1" />
             </div>
-
             <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
-
             <q-btn flat color="negative" icon="remove" class="text-h5"
               @click="product.pivot.amount > 1 ? product.pivot.amount-- : ''" :disabled="order._status != 1" />
           </div>
@@ -102,49 +86,38 @@
         <div class="col q-pa-xs">
           <q-select dense filled v-model="product.units" :options="units" label="Surtir por" option-label="name"
             @update:model-value="changeUnit" :disable="order._status != 1" />
-
           <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
-
           <q-input dense filled v-model="product.pivot.comments" type="text" label="Notas"
             :disable="order._status != 1" />
-
           <q-separator spaced inset vertical :style="{ background: 'var(--separator)' }" />
-
           <q-list dense>
-
             <q-item class="bg-highlight">
               <q-item-section class="text-left text-caption text-muted">P x C</q-item-section>
               <q-item-section class="text-bold text-center text-strong">{{ product.pieces }} pzs</q-item-section>
             </q-item>
-
             <q-item>
               <q-item-section class="text-left text-caption text-muted">Cajas</q-item-section>
               <q-item-section class="text-bold text-center text-strong">
                 {{ Number(totalPzs / product.pieces).toFixed(1) }}
               </q-item-section>
             </q-item>
-
             <q-item class="bg-highlight">
               <q-item-section class="text-left text-caption text-muted">Unidades</q-item-section>
               <q-item-section class="text-bold text-center text-strong">{{ totalPzs }} pzs</q-item-section>
             </q-item>
-
             <q-item>
               <q-item-section class="text-left text-caption text-muted">Precio</q-item-section>
               <q-item-section class="text-bold text-center text-price">
                 {{product.prices.find(e => e.id == selectPrice).pivot.price}}
               </q-item-section>
             </q-item>
-
             <q-item>
               <q-item-section class="text-left text-caption text-muted">Total</q-item-section>
               <q-item-section class="text-bold text-center text-strong">
                 {{product.prices.find(e => e.id == selectPrice).pivot.price * totalPzs}}
               </q-item-section>
             </q-item>
-
           </q-list>
-
         </div>
       </div>
     </q-card-section>
@@ -156,9 +129,7 @@
         <q-btn flat icon="delete" color="negative" v-if="edit" @click="deleteProduct" />
         <q-btn flat icon="edit" color="warning" v-if="edit" @click="editProduct" :disable="validDelivered" />
       </div>
-
     </q-card-actions>
-
   </q-card>
 </template>
 <script setup>
@@ -203,12 +174,15 @@ const mostPrice = computed(() => {
 });
 
 const selectPrice = computed(() => {
+  if (!props.product?.id) return null;
+  const productosEvaluar = [...props.products, props.product];
   if (props.order.client._price_list <= 3) {
+
     if ((totalPzs.value >= props.product.pieces && (props.product.pivot._supply_by == 1 || props.product.pivot._supply_by == 2)) || props.product.pivot._supply_by == 3) {
       return 4;
-    } else if (Resourse.verificarPrecioDocena(props.products, props.product, props.rules)) {
+    } else if (Resourse.verificarPrecioDocena(productosEvaluar, props.product, props.rules)) {
       return 3;
-    } else if (Resourse.verificarPrecioMayoreo(props.products, props.product, props.rules)) {
+    } else if (Resourse.verificarPrecioMayoreo(productosEvaluar, props.product, props.rules)) {
       return 2;
     } else {
       return 1;
@@ -231,7 +205,6 @@ const editProduct = async () => {
   props.product.pivot.price = price
   props.product.pivot.total = total
   console.log(props.product.pivot)
-
   const resp = await orderApi.editProduct(props.product.pivot)
   if (resp.fail) {
     console.log(resp);
@@ -296,10 +269,7 @@ onMounted(() => {
   if (!props.product.pivot.amount) {
     props.product.pivot.amount = 1
   }
-  // if (!props.product.pivot._supply_by) {
   props.product.pivot.units = totalPzs.value
-  // }
-
 })
 
 

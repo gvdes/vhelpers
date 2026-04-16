@@ -304,7 +304,7 @@ const deleteSectionProducts = async () => {
   let data = {
     products: productSection.value.val.map(e => e.id),
     section: lvellast.value.selected,
-    id_viz: VDB.session.credentials.staff.id_va,
+    id_viz: VDB.session.credentials.id_va,
   }
   console.log(data);
   const resp = await locationsApi.deleteSectionProducts(data);
@@ -351,7 +351,7 @@ const deleteCategoriesLocations = async () => {
         locations: e.locations.map(i => i.id)
       }
     }),
-    id_viz: VDB.session.credentials.staff.id_va,
+    id_viz: VDB.session.credentials.id_va,
   }
   const resp = await locationsApi.deleteCategoriesLocations(data);
   if (resp.fail) {
@@ -397,7 +397,7 @@ const readFileCreate = () => {
     console.log(sendData)
     let sendDb = {
       products: sendData,
-      id_viz: VDB.session.credentials.staff.id_va,
+      id_viz: VDB.session.credentials.id_va,
     }
 
     const resp = await locationsApi.addMassiveLocation(sendDb)
@@ -435,7 +435,7 @@ const readFileDelete = () => {
     console.log(sendData)
     let sendDb = {
       products: sendData,
-      id_viz: VDB.session.credentials.staff.id_va,
+      id_viz: VDB.session.credentials.id_va,
     }
     if (sendData.length) {
       const resp = await locationsApi.deleteMassiveLocation(sendDb)

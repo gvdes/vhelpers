@@ -325,7 +325,7 @@ const handleKeyDown = (e) => {
 const nexState = async () => {
   $q.loading.show({message:'Terminando Verificacion'})
   let data = {
-      uid: VDB.session.credentials.staff.id_va,
+      uid: VDB.session.credentials.id_va,
       oid: order.value.id
   }
   const resp = await orderApi.nextState(data)
@@ -342,7 +342,7 @@ const nexState = async () => {
 const searchCommand = async () => {
   if (addCommand.value.val) {
     let data = {
-      uid: VDB.session.credentials.staff.id_va,
+      uid: VDB.session.credentials.id_va,
       oid: order.value.id
     }
     const resp = await orderApi.getOrderAdd(addCommand.value.val, data);

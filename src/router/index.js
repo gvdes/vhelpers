@@ -14,29 +14,28 @@ export default route(function (/* { store, ssrContext } */) {
     routes,
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
-
   // const vdb = useVDBStore();
   Router.beforeEach(async (to, from, next) => {
     const vdb = useVDBStore();
-    // const $q = useQuasar();
+    const $q = useQuasar()
     if (!vdb.modulesLoaded) {
       await vdb.loadModules();
     }
 
     const requiredModuleId = to.meta.moduleId;
     if (!requiredModuleId) {
-      return next(); // ruta sin restricción
+      return next();
     }
-    // console.log(requiredModuleId)
-    const hasAccess = vdb.modules.some(group =>
-      group.modules.some(mod => mod.id === requiredModuleId)
+    // console.log(vdb.modules)
+    const hasAccess = vdb.modules.some(
+      m => m.id === requiredModuleId
     );
-    // console.log(hasAccess)
+
     if (hasAccess) {
       return next();
     } else {
       // console.log(hasAccess)
-      // $q.notify({ message: 'No tienes permiso para entrar a la pagina', type: 'negative', position: 'center' })
+      $q.notify({ message: 'No tienes permiso para entrar a la pagina', type: 'negative', position: 'center' })
       return next('/launcher');
     }
   });

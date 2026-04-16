@@ -18,7 +18,7 @@
       </q-page-container>
     </template>
     <template v-else>
-      <q-header class="bg-transparent" reveal  bordered v-if="cashLYT.showtoolbar">
+      <q-header class="bg-transparent" reveal bordered v-if="cashLYT.showtoolbar">
         <q-toolbar class="text-primary">
           <q-btn flat round dense @click="leftDrawerOpen = !leftDrawerOpen">
             <q-icon name="menu" />
@@ -30,7 +30,7 @@
         </q-toolbar>
       </q-header>
 
-      <q-drawer v-model="leftDrawerOpen" side="left"  bordered reveal class="bg-transparent">
+      <q-drawer v-model="leftDrawerOpen" side="left" bordered reveal class="bg-transparent">
         <q-separator spaced inset vertical dark />
         <div class="flex justify-start"><q-btn color="primary" icon="arrow_back" flat @click="exitLayout" /></div>
         <q-separator spaced inset vertical dark />
@@ -83,6 +83,7 @@
         <q-dialog v-model="openVouchers" persistent>
           <Vouchers />
         </q-dialog>
+
         <router-view />
       </q-page-container>
     </template>
@@ -103,6 +104,7 @@ import Refunds from 'src/components/Cash/Refunds.vue';
 import Modify from 'src/components/Cash/Modify.vue';
 import Query from 'src/components/Cash/Query.vue';
 import Vouchers from 'src/components/Cash/Voucher.vue';
+
 
 import { loadRouteLocation, useRoute, useRouter } from "vue-router";
 import { exportFile, useQuasar, date } from 'quasar';
@@ -136,6 +138,7 @@ const openRefunds = computed(() => cashLYT.dialogModule === 6);
 const openModify = computed(() => cashLYT.dialogModule === 7);
 const openQuery = computed(() => cashLYT.dialogModule === 8);
 const openVouchers = computed(() => cashLYT.dialogModule === 9);
+
 
 const modulesApp = computed(() => {
   if (VDB.session.rol == 'caj') {
@@ -171,7 +174,7 @@ const init = async () => {
     cashLYT.setDate(dayjs(resp.cash.cahier?.open_date).format('YYYY-MM-DD'))
     cashLYT.setshowtoolbar(true)
     cashLYT.setCash(resp.cash);
-    cashLYT.setMethods(resp.methods);
+    cashLYT.setMethods(resp.methods.methods);
     cashLYT.setProviders(resp.providers);
     cashLYT.setClients(resp.clientIngress);
     cashLYT.setRules(resp.rules);
@@ -188,35 +191,35 @@ onMounted(() => {
   if (!cashLYT.showtoolbar && $route.params.cid) {
     init()
   }
-  if (localStorage.getItem("app_open") === "true") {
-    // Ya existe otra sesión → NO cambiamos nada en localStorage
-    $q.notify({
-      message: "La aplicación ya está abierta en otra pestaña",
-      type: "negative",
-      position: "center"
-    })
-    $router.push("/")
-  } else {
-    localStorage.setItem("app_open", "true")
-    window.addEventListener("beforeunload", () => {
-      localStorage.setItem("app_open", "false")
-    })
-  }
-  window.addEventListener("storage", (event) => {
-    if (event.key === "app_open" && event.newValue === "true") {
-      $q.notify({
-        message: "Ya tienes la aplicación abierta en otra pestaña",
-        type: "warning",
-        position: "center"
-      })
-      $router.push("/")
-    }
-  })
+  // if (localStorage.getItem("app_open") === "true") {
+  //   // Ya existe otra sesión → NO cambiamos nada en localStorage
+  //   $q.notify({
+  //     message: "La aplicación ya está abierta en otra pestaña",
+  //     type: "negative",
+  //     position: "center"
+  //   })
+  //   $router.push("/")
+  // } else {
+  //   localStorage.setItem("app_open", "true")
+  //   window.addEventListener("beforeunload", () => {
+  //     localStorage.setItem("app_open", "false")
+  //   })
+  // }
+  // window.addEventListener("storage", (event) => {
+  //   if (event.key === "app_open" && event.newValue === "true") {
+  //     $q.notify({
+  //       message: "Ya tienes la aplicación abierta en otra pestaña",
+  //       type: "warning",
+  //       position: "center"
+  //     })
+  //     $router.push("/")
+  //   }
+  // })
 
 })
-onBeforeUnmount(() => {
-  localStorage.setItem("app_open", "false")
-});
+// onBeforeUnmount(() => {
+//   localStorage.setItem("app_open", "false")
+// });
 
 
 watch(() => $route.params.cid, (newVal) => {

@@ -28,11 +28,11 @@
         hide-selected input-debounce="0" @filter="filterFn" @input-value="setModel" dense
         @update:model-value="updateProduct">
       </q-select>
-      <q-btn v-if="validProduct?.length > 0" size="sm" icon="send" @click="confirm = !confirm" />
+      <q-btn v-if="validProduct" size="sm" icon="send" @click="confirm = !confirm" />
     </q-footer>
 
     <q-footer v-if="cyclecount?._status > 2" class=" q-ml-sm q-mr-sm">
-      <q-btn v-if="validProduct?.length > 0" size="sm" label="Salir" @click="$router.push('/ciclicos/counted')"
+      <q-btn v-if="validProduct" size="sm" label="Salir" @click="$router.push('/ciclicos/counted')"
         class="full-width" />
     </q-footer>
 
@@ -112,10 +112,12 @@ const pagination = ref({ rowsPerPage: 20 })
 const opts = ref([]);
 const confirm = ref(false)
 const columns = [
-  { name: "code", label: "code", field: "code", align: "left", classes: r => cycleStore.lockedProducts[r.id] ? colorBlocket() : '', sortable:true },
+  { name: "code", label: "code", field: "code", align: "left", classes: r => cycleStore.lockedProducts[r.id] ? colorBlocket() : '', sortable: true },
   // { name: "description", label: "Descripcion", field: "description", align: "left", classes: r => cycleStore.lockedProducts[r.id] ? colorBlocket() : '' },
-  { name: "ubicacion", label: "Ubicacion", field: r => r.locations?.map(e => e.path).join('/'), align: "left", classes: r => cycleStore.lockedProducts[r.id] ? colorBlocket() : '', sortable:true },
-  { name: "conteo", label: "Stock", field: row => row.pivot?.stock_acc || 0, align: "right", classes: r => cycleStore.lockedProducts[r.id] ? colorBlocket() : '' , sortable:true}
+  { name: "ubicacion", label: "Ubicacion", field: r => r.locations?.map(e => e.path).join('/'), align: "left", classes: r => cycleStore.lockedProducts[r.id] ? colorBlocket() : '', sortable: true },
+  { name: "conteo", label: "Stock", field: row => row.pivot?.stock_acc || 0, align: "right", classes: r => cycleStore.lockedProducts[r.id] ? colorBlocket() : '', sortable: true },
+  { name: "resp", label: "Resp", field: row => JSON.parse(row.pivot?.details).editor.nick, align: "right", classes: r => cycleStore.lockedProducts[r.id] ? colorBlocket() : '', sortable: true }
+
 ];
 const countProduct = ref({
   state: false,
@@ -127,7 +129,7 @@ const init = async () => {
   let data = {
     cyclecount: $route.params.cid,
     _rol: VDB.session.credentials._rol,
-    id: VDB.session.credentials.staff.id_va
+    id: VDB.session.credentials.id_va
   }
   console.log(data)
   const resp = await CDB.getCyclecount(data)
@@ -165,13 +167,16 @@ const filterFn = (val, update, abort) => {
 }
 
 const isBlack = computed(() => $q.dark.isActive)
-const validProduct = computed(() => cyclecount.value?.products?.filter(b => b.pivot.stock_acc > 0))
+const validProduct = computed(() => {
+  const items = cyclecount.value?.products || []
+  if (items.length === 0) return 0
+  const counted = items.filter(p => JSON.parse(p.pivot.details).editor).length
+  return counted == items.length
+})
 const progress = computed(() => {
   const items = cyclecount.value?.products || []
   if (items.length === 0) return 0
-
-  const counted = items.filter(p => Number(p.pivot.stock_acc) > 0).length
-
+  const counted = items.filter(p => JSON.parse(p.pivot.details).editor).length
   return Math.round((counted / items.length) * 100)
 })
 
@@ -180,7 +185,7 @@ const progress = computed(() => {
 const setDeliveryProduct = async () => {
   $q.loading.show({ message: 'Registrando Contreo' })
   let data = {
-    _user: VDB.session.credentials.staff.id_va,
+    _user: VDB.session.credentials.id_va,
     _inventory: $route.params.cid,
     _product: countProduct.value.val.id,
     stock: countProduct.value.val.pivot.stock_acc,
@@ -189,6 +194,9 @@ const setDeliveryProduct = async () => {
   if (resp.fail) {
     console.log(resp);
   } else {
+    // console.log(countProduct.value.val.pivot.details)
+    countProduct.value.val.pivot.details = resp.details
+    // console.log(countProduct.value.val.pivot.details)
     let socketData = {
       by: cycleStore.socket_user.profile,
       product: countProduct.value.val,
@@ -200,6 +208,7 @@ const setDeliveryProduct = async () => {
       state: false,
       val: null
     }
+
     $q.loading.hide();
   }
 }
@@ -279,7 +288,7 @@ const nextep = async () => {
   let data = {
     _inventory: $route.params.cid,
     workpoint: VDB.session.credentials._rol,
-    user: VDB.session.credentials.staff.id_va
+    user: VDB.session.credentials.id_va
   }
   const resp = await CDB.nextStep(data)
   if (resp.fail) {

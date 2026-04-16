@@ -156,7 +156,7 @@ const printForPartition = async data => {
 //   $q.loading.show({message:'Cambiando Estado'})
 //   let data = {
 //     partition: partition.value,
-//     verified: VDB.session.credentials.staff.id,
+//     verified: VDB.session.credentials.id,
 //     warehouse: warehouseSel.value.val ? warehouseSel.value.val : 'GEN',
 //     state: 5
 //   }

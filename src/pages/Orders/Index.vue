@@ -47,7 +47,7 @@ const order = ref(null);
 
 const obtOrder = async () => {
   // $q.loading.show({ message: 'Obteniendo Datos' });
-  let data = {uid:VDB.session.credentials.staff.id_va}
+  let data = {uid:VDB.session.credentials.id_va}
   if (order.value) {
     console.log(order.value);
     const resp = await orderApi.getOrder(order.value,data);

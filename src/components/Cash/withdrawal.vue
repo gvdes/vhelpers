@@ -64,11 +64,11 @@ const withdrawals = ref({
 
 const table = ref({
   columns:[
-    {name:'fs_code',label:'code',field:r=>r.CODRET},
-    {name:'date',label:'Factusol',field:r=>r.FECHA},
-    {name:'hour',label:'Factusol',field:r=>r.HORA},
-    {name:'concept',label:'Factusol',field:r=>r.CONRET},
-    {name:'import',label:'Factusol',field:r=>r.IMPRET},
+    {name:'fs_code',label:'Codigo',field:r=>r.CODRET},
+    {name:'date',label:'Fecha',field:r=>r.FECHA},
+    {name:'hour',label:'Hora',field:r=>r.HORA},
+    {name:'concept',label:'Concepto',field:r=>r.CONRET},
+    {name:'import',label:'Importe',field:r=>r.IMPRET},
     {name:'provedor',label:'Provedor',field:r=>r.NOFPRO},,
   ],
   pagination:{rowsPerPage:0}
@@ -109,7 +109,7 @@ const createdWidrawal = async () => {
     console.log(resp);
   } else {
     console.log(resp);
-    $q.notify({ message: `Retirada ${resp} Creada`, type: 'positive', position: 'bottom' })
+    $q.notify({ message: `Retirada ${resp} Creada`, type: 'positive', position: 'top' })
     $q.loading.hide();
     reset()
   }

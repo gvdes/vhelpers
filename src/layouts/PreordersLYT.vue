@@ -58,6 +58,7 @@ const getRoom = (rol) => {
     case 1:
     case 2:
     case 6:
+    case 9:
     case 12:
     case 22:
     case 21:
@@ -108,7 +109,7 @@ const init = async () => {
   let fecha = dayjs(new Date()).format("YYYY/MM/DD")
   obtranges.value = { from: fecha, to: fecha }
   let data = {
-    uid: VDB.session.credentials.staff.id_va,
+    uid: VDB.session.credentials.id_va,
     wid: VDB.session.store.id_viz,
     view: getRoom(VDB.session.credentials._rol),
     date: obtranges.value
@@ -132,7 +133,7 @@ const init = async () => {
 const buscas = async () => {
   $q.loading.show({ message: 'Obteniendo datos' })
   let data = {
-    uid: VDB.session.credentials.staff.id_va,
+    uid: VDB.session.credentials.id_va,
     wid: VDB.session.store.id_viz,
     view: getRoom(VDB.session.credentials._rol),
     date: obtranges.value
