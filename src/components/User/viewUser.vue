@@ -51,11 +51,11 @@
               filled dense :class="changedClass('state')" :disable="editableUser.state.id == 1" v-if="!canView"  />
             <q-select v-model="editableUser.state" :options="states" option-label="name" label="Estado" filled dense
               :class="changedClass('state')" :disable="editableUser.state.id == 1 || canView"
-              :option-disable="(val) => optionDisabled(val)"  />
+              :option-disable="(val) => optionDisabled(val)" />
             <q-select v-model="editableUser.area" :options="areas" option-label="name" label="Área" filled dense
               :class="changedClass('area')" @update:model-value="editableUser.rol = null" :disable="canView" />
             <q-select v-model="editableUser.rol" :options="positions" option-label="name" label="Rol" filled dense
-              :class="changedClass('rol')" :disable="canView" />
+              :class="changedClass('rol')"   :option-disable="(val) => optionDisable(val)" :disable="VDB.session.credentials.rol.deep <= editableUser.rol.deep"  />
             <q-select v-model="editableUser.store" :options="stores" option-label="name" label="Sucursal principal"
               filled dense @update:model-value="insfo" :class="changedClass('store')" :disable="canView">
               <template #after>
@@ -321,6 +321,14 @@ const confirmChanges = async () => {
     emit('termino', resp.user)
     $q.loading.hide()
   }
+}
+const optionDisable = (val, ) => {
+  // console.log(val.deep)
+  // console.log(editableUser.value.rol.deep)
+  if (editableUser.value.rol.deep > val.deep) {
+    return true
+  }
+  return false
 }
 
 const resetchecador = () => {
