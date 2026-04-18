@@ -6,12 +6,12 @@
     </div>
     <div v-if="user.credentials.stores.length == 0" class="col text-center fs-inc1 text-primary fw-sbold">{{ !ismobile ?
       user.store.name : user.store.alias }}</div>
-    <q-select v-model="stores.val" :options="user.credentials.stores" :option-label="opt => opt.store.name" borderless
+    <q-select v-model="stores.val" :options="user.credentials.stores" :option-label="opt => opt.name" borderless
       color="primary" @update:model-value="changeStore" v-if="user.credentials.stores.length > 1" dense
       class="text-center" options-selected-class="text-primary text-bold">
       <template v-slot:selected>
         <div class="text-center fs-inc1 text-primary fw-sbold">
-          {{ !ismobile ? stores.val.store.name : stores.val.store.alias }}
+          {{ !ismobile ? stores.val.name : stores.val.alias }}
         </div>
       </template></q-select>
     <div class="col text-right">
@@ -155,7 +155,7 @@ const $q = useQuasar();
 const modules = ref([]);
 const drawerPr = ref(false)
 const stores = ref({
-  val: VDB.session,
+  val: VDB.session.store,
   opts: []
 })
 
@@ -225,10 +225,10 @@ const menuModules = computed(() => {
 
 const changeStore = () => {
   $q.loading.show({ message: 'Cambiando sucursal' })
-  VDB.session.store = stores.value.val.store
+  VDB.session.store = stores.value.val
   VDB.setSession({
     ...VDB.session,
-    store: stores.value.val.store
+    store: stores.value.val
   })
   console.log(VDB.session)
   window.location.reload()

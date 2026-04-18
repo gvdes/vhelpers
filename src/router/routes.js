@@ -8,6 +8,11 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
+    path: '/changePassword',
+    component: () => import('layouts/changePassword.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/billing/form/:sid',
     name: 'bifomx',
     component: () => import('layouts/BillingFormLYT.vue'),
@@ -84,6 +89,16 @@ const routes = [
       { path: 'counted', name: 'cntd', component: () => import('pages/Ciclicos/counted.vue'), meta: { moduleId: 73, requiresAuth: true } },
       { path: 'counted/:cid', name: 'crte', component: () => import('pages/Ciclicos/viewCounted.vue'), meta: { moduleId: 73, requiresAuth: true } },
 
+    ],
+  },
+
+  {
+    path: '/users',
+    component: () => import('layouts/UsersLYT.vue'),
+    children: [
+      { path: 'index', name: 'uinx', component: () => import('pages/Users/Index.vue'), meta: { moduleId: 79, requiresAuth: true } },
+      { path: 'areas', name: 'uar', component: () => import('pages/Users/Areas.vue'), meta: { moduleId: 97, requiresAuth: true } },
+      { path: 'branches', name: 'ubr', component: () => import('pages/Users/Branches.vue'), meta: { moduleId: 98, requiresAuth: true } },
     ],
   },
 

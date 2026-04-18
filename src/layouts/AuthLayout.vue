@@ -63,14 +63,12 @@ const trySignin = async () => {
   console.log("Iniciando sesion ...", auths.value);
   robot.value.setLoading()
   const user = await authsApi.trySignin(auths.value);
-  console.log(user)
   if (user.fail) {
-    if (user.fail.status == 404) {
-      robot.value.setError()
-      $q.notify({ message: "Credenciales erroneas", color: "negative", icon: "fas fa-bugs" });
-    }
-    console.log(user);
+    let mssg = user.fail.response.data.message
+    robot.value.setError()
+    $q.notify({ message: `${mssg}`, color: "negative", icon: "fas fa-bugs" });
   } else {
+    console.log(user)
     let u = JSON.parse(JSON.stringify(user));
     console.log(u)
     VDB.setModules(user.credentials.rol.modules)
@@ -79,7 +77,14 @@ const trySignin = async () => {
     robot.value.setSuccess()
     LocalStorage.set("auth", u);
     VDB.setSession(u);
-    $router.replace('/');
+    // $router.replace('/');
+    if (user.credentials._state == 1 || user.credentials.change_password == 1) {// si la cuenta es nueva, obliga al cambio de contraseña
+      console.log(`%c¡¡ Cuenta nueva !!`, "color: #00d8d6; font-size:.9em; padding:5px 10px; border:1px solid #00d8d6; margin:5px 0; font-weight:bold; background: #1e272e;");
+      $router.replace('/changePassword');
+    } else {
+      console.log(`%cNueva sesion iniciada`, "color: #706fd3; font-size:.9em; padding:5px 10px; border:1px solid #706fd3; margin:5px 0; font-weight:bold; background: #1e272e;");
+      $router.replace(`/`);
+    }
   }
 }
 

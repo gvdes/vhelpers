@@ -18,6 +18,7 @@ const assist = axios.create({ baseURL: `${ipAssist}` });
 
 const vizmedia = `https://mersbock.s3.us-east-2.amazonaws.com/vhelpers`;
 
+let redirecting = false
 export default boot(({ router }) => {
   // Interceptor de assist
   assist.interceptors.response.use(
@@ -28,26 +29,39 @@ export default boot(({ router }) => {
         alert('El servidor no está disponible. Verifica tu conexión o intenta más tarde.')
         return Promise.reject(error)
       }
-      if (error.response && error.response.status === 401) {
-        if (error.response.data === "Token expired.") {
-          LocalStorage.clear('auth')
-          alert('Tu sesión expiró, favor de ingresar de nuevo')
-          router.push('/auth')
-        } else if (error.response.data.error === "Acceso denegado") {
-          LocalStorage.clear('auth')
-          alert('Ya no puedes ingresar a la aplicacion');
-          router.push('/auth')
-        }
-      } else if (error.response && error.response.status === 403) {
-        if (error.response.data.error === "Acceso denegado: IP no permitida") {
-          LocalStorage.clear('auth')
-          alert('Te estas conectando fuera de tu VPN')
-          router.push('/auth')
+      const { status, data } = error.response
+      if (status == 401 || status === 403) {
+        if (!redirecting) {
+          redirecting = true
+          localStorage.clear()
+          let msg = data.error
+          alert(msg)
+          router.replace('/auth').finally(() => {
+            redirecting = false
+          })
         }
       }
+      // if (error.response && error.response.status === 401) {
+      //   if (error.response.data === "Token expired.") {
+      //     LocalStorage.clear('auth')
+      //     alert('Tu sesión expiró, favor de ingresar de nuevo')
+      //     router.push('/auth')
+      //   } else if (error.response.data.error === "Acceso denegado") {
+      //     LocalStorage.clear('auth')
+      //     alert('Ya no puedes ingresar a la aplicacion');
+      //     router.push('/auth')
+      //   }
+      // } else if (error.response && error.response.status === 403) {
+      //   if (error.response.data.error === "Acceso denegado: IP no permitida") {
+      //     LocalStorage.clear('auth')
+      //     alert('Te estas conectando fuera de tu VPN')
+      //     router.push('/auth')
+      //   }
+      // }
       return Promise.reject(error)
     }
   )
 })
 
 export { assist, vizmedia }
+
