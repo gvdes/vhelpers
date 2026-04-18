@@ -42,6 +42,8 @@
         </q-tab-panel>
 
         <q-tab-panel name="work">
+          {{ VDB.session.credentials.rol.deep }}
+          {{ editableUser.rol.deep }}
           <q-card-section class="q-gutter-sm">
             <q-input dense filled v-model="editableUser.id_rc" type="text" label="Id Reloj Checador" :disable="true"
               class="col" v-if="editableUser.id_rc || canView"  />
@@ -55,7 +57,7 @@
             <q-select v-model="editableUser.area" :options="areas" option-label="name" label="Área" filled dense
               :class="changedClass('area')" @update:model-value="editableUser.rol = null" :disable="canView" />
             <q-select v-model="editableUser.rol" :options="positions" option-label="name" label="Rol" filled dense
-              :class="changedClass('rol')"   :option-disable="(val) => optionDisable(val)" :disable="VDB.session.credentials.rol.deep <= editableUser.rol.deep"  />
+              :class="changedClass('rol')"   :option-disable="(val) => optionDisable(val)" :disable="VDB.session.credentials.rol.deep >=  editableUser.rol.deep"  />
             <q-select v-model="editableUser.store" :options="stores" option-label="name" label="Sucursal principal"
               filled dense @update:model-value="insfo" :class="changedClass('store')" :disable="canView">
               <template #after>
@@ -74,7 +76,7 @@
       </q-tab-panels>
       <q-card-actions align="center">
         <q-btn color="positive" icon="check" label="Confirmar" :disable="!hasChanges || !isValid"
-          @click="confirm = !confirm" v-if="!canView"/>
+          @click="confirm = !confirm" />
       </q-card-actions>
     </q-card>
 
