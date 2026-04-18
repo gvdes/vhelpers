@@ -42,8 +42,6 @@
         </q-tab-panel>
 
         <q-tab-panel name="work">
-          {{ VDB.session.credentials.rol.deep }}
-          {{ editableUser.rol.deep }}
           <q-card-section class="q-gutter-sm">
             <q-input dense filled v-model="editableUser.id_rc" type="text" label="Id Reloj Checador" :disable="true"
               class="col" v-if="editableUser.id_rc || canView"  />
