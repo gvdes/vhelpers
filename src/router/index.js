@@ -18,10 +18,20 @@ export default route(function (/* { store, ssrContext } */) {
   Router.beforeEach(async (to, from, next) => {
     const vdb = useVDBStore();
     const $q = useQuasar()
-    if (!vdb.modulesLoaded) {
-      await vdb.loadModules();
+    if (!vdb.session) {
+      vdb.loadSession();
+    }
+    if (vdb.session && to.path === '/auth') {
+      return next('/launcher')
     }
 
+    if (!vdb.session && to.path !== '/auth') {
+      return next('/auth');
+    }
+
+    if (vdb.session && !vdb.modulesLoaded) {
+      await vdb.loadModules();
+    }
     const requiredModuleId = to.meta.moduleId;
     if (!requiredModuleId) {
       return next();

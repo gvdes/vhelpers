@@ -35,6 +35,12 @@ export const useVDBStore = defineStore('vdb', {
       this.modules = savedModules;
       this.modulesLoaded = true;
     },
+    async loadSession() {
+      const auth = LocalStorage.getItem('auth')
+      if (auth) {
+        this.session = auth
+      }
+    },
     sessionDestroy() { this.session = null; LocalStorage.clear() }
   }
 })

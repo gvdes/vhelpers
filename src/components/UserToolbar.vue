@@ -31,7 +31,7 @@
         <q-item>
           <q-btn rounded flat class="q-mr-md">
             <q-avatar >
-              <q-img :src="`/avatares/${VDB.session.credentials.avatar}`" />
+              <q-img :src="`/avatares/${VDB.session?.credentials?.avatar}`" />
             </q-avatar>
             <q-menu anchor="bottom right" self="top right">
               <q-list style="min-width: 180px">

@@ -60,7 +60,7 @@ const auths = ref({
 const canSignin = computed(() => (auths.value.nick && auths.value.pass));
 
 const trySignin = async () => {
-  console.log("Iniciando sesion ...", auths.value);
+  // console.log("Iniciando sesion ...", auths.value);
   robot.value.setLoading()
   const user = await authsApi.trySignin(auths.value);
   if (user.fail) {
@@ -68,9 +68,9 @@ const trySignin = async () => {
     robot.value.setError()
     $q.notify({ message: `${mssg}`, color: "negative", icon: "fas fa-bugs" });
   } else {
-    console.log(user)
+    // console.log(user)
     let u = JSON.parse(JSON.stringify(user));
-    console.log(u)
+    // console.log(u)
     VDB.setModules(user.credentials.rol.modules)
     VDB.setStores(user.credentials.stores)
     // delete u.credentials.pass;
