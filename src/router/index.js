@@ -25,9 +25,9 @@ export default route(function (/* { store, ssrContext } */) {
       return next('/launcher')
     }
 
-    if (!vdb.session && to.path !== '/auth') {
-      return next('/auth');
-    }
+    // if (!vdb.session && to.path !== '/auth') {
+    //   return next('/auth');
+    // }
 
     if (vdb.session && !vdb.modulesLoaded) {
       await vdb.loadModules();
