@@ -6,7 +6,7 @@
           <q-toolbar-title>
             Accesso
           </q-toolbar-title>
-          <div class="text-primary text-bold">VH v.2.2</div>
+          <div class="text-primary text-bold">VH v.2.3</div>
         </q-toolbar>
       </q-header>
 

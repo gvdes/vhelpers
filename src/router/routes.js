@@ -130,7 +130,7 @@ const routes = [
     path: '/openbox',
     component: () => import('layouts/OpneBoxesLYT.vue'),
     children: [
-      { path: ':sid', name: 'onsi', component: () => import('pages/CountingCash/receiptCash.vue'), meta: { moduleId:22, requiresAuth: true } }
+      { path: ':sid', name: 'onsi', component: () => import('pages/CountingCash/receiptCash.vue'), meta: { moduleId: 22, requiresAuth: true } }
     ],
     meta: { moduleId: 22, requiresAuth: true }
   },
@@ -139,10 +139,16 @@ const routes = [
     component: () => import('layouts/RequisitionLYT.vue'),
     meta: { moduleId: 5, requiresAuth: true }
   },
-  // {
-  //   path: '/assist',
-  //   component: () => import('layouts/AsssitLYT.vue'),
-  // },
+  {
+    path: '/assist',
+    component: () => import('layouts/AssistLYT.vue'),
+    meta: { moduleId: 99, requiresAuth: true },
+    children: [
+      { path: 'index', name: 'ainx', component: () => import('pages/Assist/Index.vue'), meta: { moduleId: 100, requiresAuth: true } },
+      { path: 'justifications', name: 'ajut', component: () => import('pages/Assist/justification.vue'), meta: { moduleId: 101, requiresAuth: true } },
+      { path: 'report', name: 'arpt', component: () => import('pages/Assist/reports.vue'), meta: { moduleId: 102, requiresAuth: true } },
+    ],
+  },
   {
     path: '/catalog',
     component: () => import('layouts/Catalog.vue'),

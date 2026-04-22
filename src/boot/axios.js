@@ -30,7 +30,7 @@ export default boot(({ router }) => {
         return Promise.reject(error)
       }
       const { status, data } = error.response
-      if (status == 401 || status === 403) {
+      if (status === 403) {
         if (!redirecting) {
           redirecting = true
           localStorage.clear()
