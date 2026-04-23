@@ -376,10 +376,10 @@ const routes = [
     children: [
       { path: 'create', name: 'mngpr', component: () => import('pages/Products/higthProducts.vue'), meta: { moduleId: 49, requiresAuth: true } },
       { path: 'prices', name: 'pricespr', component: () => import('pages/Products/pricesProducts.vue'), meta: { moduleId: 50, requiresAuth: true } },
+      { path: 'compounds', name: 'prcomp', component: () => import('pages/Products/compounds.vue'), meta: { moduleId: 78, requiresAuth: true } },
       { path: 'modify', name: 'modipr', component: () => import('pages/Products/ModifyProducts.vue'), meta: { moduleId: 51, requiresAuth: true } },
       { path: 'requisition', name: 'rmopr', component: () => import('pages/Products/RequisitionProducts.vue'), meta: { moduleId: 65, requiresAuth: true } },
       { path: 'picture', name: 'propic', component: () => import('pages/Products/PictureProducts.vue'), meta: { moduleId: 69, requiresAuth: true } },
-
     ],
   },
   {

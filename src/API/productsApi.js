@@ -72,5 +72,8 @@ export default {
   },
   getReportnotPicture(data) {
     return assist.post(`/Products/getReportnotPicture`, data).then(done => done.data).catch(fail => { return { fail } });
+  },
+  generatePreviewModels(data) {
+    return assist.post(`/Products/previewModels`, data).then(done => done.data).catch(fail => { return { fail } });
   }
 }
