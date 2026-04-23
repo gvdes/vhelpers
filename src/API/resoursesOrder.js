@@ -4,36 +4,18 @@ import orderApi from 'src/API/orderApi';
 const verificarPrecioMayoreo = (prdts, product, rules) => {
   const categoria = product.category.familia.seccion.id;
   const categoriaReglas = rules.find(e => e._category == categoria).rules;
-  // let model = 0;
-  // let family = 0;
-  // let distinct = 0
   let rev;
   if (!categoriaReglas) {
     return false;
   }
-  // let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  // let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-
-  // let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  // let inx = prdts.findIndex((e) => e.id == product.id);
-  // if (inx >= 0) {
-  //   model = sameModel
-  //   family = sameFamily
-  //   distinct = distin
-  // } else {
-  //   model = sameModel + Number(product.pivot.units)
-  //   family = sameFamily + Number(product.pivot.units)
-  //   distinct = distin + Number(product.pivot.units)
-  // }
-  const piezasActuales = Number(product.pivot.units);
-  const model = prdts
-    .filter(p => p.id === product.id)
-    .reduce((acc, curr) => {
-      if (curr.id === product.id) {
-        return acc + piezasActuales;
-      }
-      return acc + Number(totalPiezas(curr.pivot, curr.pieces));
-    }, 0);
+  let piezasActuales = Number(product.pivot.units);
+  let model = prdts.filter(p => p.id === product.id).reduce((acc, curr) => {
+    if (curr.id === product.id) {
+      acc + piezasActuales
+    }
+    return acc + Number(totalPiezas(curr.pivot, curr.pieces));
+  }, 0);
+  // console.log(model)
 
   const family = prdts
     .filter(p => p.category.familia.id === product.category.familia.id)
@@ -70,33 +52,16 @@ const verificarPrecioMayoreo = (prdts, product, rules) => {
 const verificarPrecioDocena = (prdts, product, rules) => {
   const categoria = product.category.familia.seccion.id;
   const categoriaReglas = rules.find(e => e._category == categoria).rules;
-  // let model = 0;
-  // let family = 0;
-  // let distinct = 0
   let rev;
   if (!categoriaReglas) {
     return false;
   }
-  // let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  // let sameFamily = prdts.filter(p => p.category.familia.id === product.category.familia.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  // let distin = prdts.filter(p => p.category.familia.seccion.id === product.category.familia.seccion.id && p.id !== product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  // let inx = prdts.findIndex((e) => e.id == product.id);
-  // if (inx >= 0) {
-  //   model = sameModel
-  //   family = sameFamily
-  //   distinct = distin
-
-  // } else {
-  //   model = sameModel + Number(product.pivot.units)
-  //   family = sameFamily + Number(product.pivot.units)
-  //   distinct = distin + Number(product.pivot.units)
-  // }
   const piezasActuales = Number(product.pivot.units);
   const model = prdts
     .filter(p => p.id === product.id)
     .reduce((acc, curr) => {
       if (curr.id === product.id) {
-        return acc + piezasActuales;
+        acc + piezasActuales;
       }
       return acc + Number(totalPiezas(curr.pivot, curr.pieces));
     }, 0);
@@ -133,10 +98,15 @@ const verificarPrecioDocena = (prdts, product, rules) => {
 }
 
 const verificarPrecioCaja = (prdts, product) => {
-  let model = 0;
-  let sameModel = prdts.filter(p => p.id === product.id).reduce((acc, curr) => acc + Number(totalPiezas(curr.pivot, curr.pieces)), 0);
-  model = sameModel + Number(product.pivot.units)
-  // console.log(model)
+  let piezasActuales = Number(product.pivot.units);
+  let model = prdts
+    .filter(p => p.id === product.id)
+    .reduce((acc, curr) => {
+      if (curr.id === product.id) {
+        return acc + piezasActuales;
+      }
+      return acc + Number(totalPiezas(curr.pivot, curr.pieces));
+    }, 0);
   if (model >= product.pieces) { return true }
   return false
 }
@@ -155,19 +125,35 @@ const actualizarPreciosProductos = async (products, order, rules) => {
 
     let newPriceList = 0;
 
-    if (order.client._price_list <= 3) {
-      if (verificarPrecioCaja(products, p, rules)) {
-        newPriceList = 4;
-      } else if (verificarPrecioDocena(products, p, rules)) {
-        newPriceList = 3;
-      } else if (verificarPrecioMayoreo(products, p, rules)) {
-        newPriceList = 2;
-      } else {
-        newPriceList = 1;
-      }
-    } else {
-      newPriceList = order.client._price_list;
+    // if (order.client._price_list <= 3) {
+    //   if (verificarPrecioCaja(products, p, rules)) {
+    //     newPriceList = 4;
+    //   } else if (verificarPrecioDocena(products, p, rules)) {
+    //     newPriceList = 3;
+    //   } else if (verificarPrecioMayoreo(products, p, rules)) {
+    //     newPriceList = 2;
+    //   } else {
+    //     newPriceList = 1;
+    //   }
+
+    const clientPrice = order.client._price_list;
+    // console.log(clientPrice)
+    if (clientPrice <= 4 && verificarPrecioCaja(products, p, rules)) {
+      clientPrice = 4;
     }
+    if (clientPrice <= 3 && verificarPrecioDocena(products, p, rules)) {
+      clientPrice = 3;
+    }
+    if (clientPrice <= 2 && verificarPrecioMayoreo(products, p, rules)) {
+      clientPrice = 2;
+    }
+    newPriceList = clientPrice;
+
+
+
+    // } else {
+    //   newPriceList = order.client._price_list;
+    // }
 
     const priceData = p.prices.find(e => e.id == newPriceList);
 
@@ -203,20 +189,20 @@ const actualizarPreciosProductosSales = async (products, _price_list, rules,) =>
     // console.log(totalPzsTemp)
     let newPriceList = 0;
 
-    if (_price_list <= 3) {
-      if (verificarPrecioCaja(products, p, rules)) {
-        newPriceList = 4;
-      } else if (verificarPrecioDocena(products, p, rules)) {
-        newPriceList = 3;
-      } else if (verificarPrecioMayoreo(products, p, rules)) {
-        newPriceList = 2;
-      } else {
-        newPriceList = 1;
-      }
-    } else {
-      newPriceList = _price_list;
+   let clientPrice = _price_list;
+    // console.log(clientPrice)
+    if (clientPrice <= 4 && verificarPrecioCaja(products, p, rules)) {
+      clientPrice = 4;
     }
-    // console.log(newPriceList)
+    if (clientPrice <= 3 && verificarPrecioDocena(products, p, rules)) {
+      clientPrice = 3;
+    }
+    if (clientPrice <= 2 && verificarPrecioMayoreo(products, p, rules)) {
+      clientPrice = 2;
+    }
+    newPriceList = clientPrice;
+
+    console.log(newPriceList)
     const priceData = p.prices.find(e => e.id == newPriceList);
     // console.log(priceData)
     if (priceData) {
