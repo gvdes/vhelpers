@@ -86,6 +86,7 @@ const columnasTabla = [
   { name: 'unitPurchase', label: 'Unid. Med. Compra', field: 'UNIDA MED COMPRA', align: 'right' },
   { name: 'proRes', label: 'Pro Res', field: 'PRO RES', align: 'right' },
   { name: 'navMeasures', label: 'Medidas Nav.', field: 'MEDIDAS NAV', align: 'right' },
+  { name: 'cost', label: 'COSTO', field: 'COSTO', align: 'right', format: val => `$${val}` },
   { name: 'aaa', label: 'AAA', field: 'AAA', align: 'right', format: val => `$${val}` },
   { name: 'centro', label: 'Centro', field: 'CENTRO', align: 'right', format: val => `$${val}` },
   { name: 'especial', label: 'Especial', field: 'ESPECIAL', align: 'right', format: val => `$${val}` },
@@ -113,8 +114,7 @@ const buscarEnServidor = async () => {
     const listaApi = respuesta?.productos;
     if (listaApi && listaApi.length > 0) {
       listaApi.forEach(p => {
-        // Procesar array de precios a objeto plano
-        let preciosRelacion = { AAA: 0, CENTRO: 0, ESPECIAL: 0, CAJA: 0, DOCENA: 0, MAYOREO: 0, MENUDEO: 0 };
+        let preciosRelacion = { COSTO: 0, AAA: 0, CENTRO: 0, ESPECIAL: 0, CAJA: 0, DOCENA: 0, MAYOREO: 0, MENUDEO: 0 };
         if (p.PRECIOS) {
           p.PRECIOS.forEach(pre => {
             let lista = pre.LISTA.toUpperCase();
@@ -146,16 +146,19 @@ const buscarEnServidor = async () => {
           'CODIGO DEL COMPUESTO': p.CODIGO,
           'CODIGO DE ARTICULO': articuloBase,
           'TALLA': '',
-          'COLOR': colorDetectado,
+          'COLOR': '',
           'COSTO UNIDAD': parseFloat(p.COSTO) || 0,
           'UNIDADES': 1,
           'MODELO PARA DRIVE': p.CODIGO,
+          'MODELO BAS': articuloBase,
           'COLOR PARA DRIVE': colorDetectado,
         });
       });
       $q.notify({ message: `${listaApi.length} Modelos cargados`, color: 'positive', icon: 'check' });
       ventanaConsulta.value.abierta = false;
+      console.log("Productos cargados:", listaProductos.value);
     } else {
+      console.warn("Respuesta API sin productos:", respuesta);
       $q.notify({ message: 'No se encontraron resultados', color: 'warning' });
     }
   } catch (error) {
