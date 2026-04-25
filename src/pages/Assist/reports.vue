@@ -15,11 +15,12 @@
         </q-input>
         <q-separator spaced inset vertical dark />
         <q-btn icon="event" color="primary" outline dense>
-          <q-menu fit>
+          <q-menu>
             <q-card class="my-card">
               <q-card-section>
                 <q-date v-model="mosDate" landscape minimal mask="YYYY-MM-DD" disable dense />
-                <q-separator spaced inset vertical dark />
+              </q-card-section>
+              <q-card-section>
                 <div class="row">
                   <q-input class="col" v-model="range.min" type="number" label="Min" dense outlined />
                   <q-separator spaced inset vertical dark />
@@ -29,9 +30,7 @@
                 </div>
                 <q-range :min="0" :max="53" v-model="range" :step="1" color="primary" disable />
                 <q-btn flat label="Obtener" @click="getReportFilter" />
-
               </q-card-section>
-
             </q-card>
           </q-menu>
         </q-btn>

@@ -35,27 +35,27 @@
             <q-input v-model="editableUser.celphone" label="Teléfono" filled dense mask="##########"
               :rules="rules.celphone" :class="changedClass('celphone')" v-if="!canView" />
             <q-input v-model="editableUser.email" label="Correo" filled dense :rules="rules.email"
-              :class="changedClass('email')" v-if="!canView"  />
+              :class="changedClass('email')" v-if="!canView" />
             <q-select v-model="editableUser.gender" label="Género" filled dense emit-value map-options
-              :options="genders" :rules="rules.gender" :class="changedClass('gender')" v-if="!canView"  />
+              :options="genders" :rules="rules.gender" :class="changedClass('gender')" v-if="!canView" />
           </q-card-section>
         </q-tab-panel>
 
         <q-tab-panel name="work">
           <q-card-section class="q-gutter-sm">
             <q-input dense filled v-model="editableUser.id_rc" type="text" label="Id Reloj Checador" :disable="true"
-              class="col" v-if="editableUser.id_rc || canView"  />
+              class="col" v-if="editableUser.id_rc || canView" />
             <q-btn outline color="primary" label="Id Reloj Checador" @click="checador = !checador" v-else
-              class="full-width"  />
+              class="full-width" />
             <q-select v-model="editableUser.enterprise" :options="enterprises" option-label="name" label="Empresa"
-              filled dense :class="changedClass('state')" :disable="editableUser.state.id == 1" v-if="!canView"  />
+              filled dense :class="changedClass('state')" :disable="editableUser.state.id == 1" v-if="!canView" />
             <q-select v-model="editableUser.state" :options="states" option-label="name" label="Estado" filled dense
               :class="changedClass('state')" :disable="editableUser.state.id == 1 || canView"
               :option-disable="(val) => optionDisabled(val)" />
             <q-select v-model="editableUser.area" :options="areas" option-label="name" label="Área" filled dense
               :class="changedClass('area')" @update:model-value="editableUser.rol = null" :disable="canView" />
             <q-select v-model="editableUser.rol" :options="positions" option-label="name" label="Rol" filled dense
-              :class="changedClass('rol')"   :option-disable="(val) => optionDisable(val)" :disable="VDB.session.credentials.rol.deep >=  editableUser.rol.deep"  />
+              :class="changedClass('rol')" :option-disable="(val) => optionDisable(val)" :disable="editableUser.rol ? VDB.session.credentials.rol.deep >= editableUser.rol.deep : false" />
             <q-select v-model="editableUser.store" :options="stores" option-label="name" label="Sucursal principal"
               filled dense @update:model-value="insfo" :class="changedClass('store')" :disable="canView">
               <template #after>
@@ -190,7 +190,7 @@ const rules = {
 
 }
 const canView = computed(() =>
- VDB.session.credentials.rol._type == 2
+  VDB.session.credentials.rol._type == 2
 )
 
 const fullName = computed(() =>
@@ -322,10 +322,10 @@ const confirmChanges = async () => {
     $q.loading.hide()
   }
 }
-const optionDisable = (val, ) => {
+const optionDisable = (val,) => {
   // console.log(val.deep)
   // console.log(editableUser.value.rol.deep)
-  if (editableUser.value.rol.deep > val.deep) {
+  if ((editableUser.value.rol?.deep || 0) > val.deep) {
     return true
   }
   return false
