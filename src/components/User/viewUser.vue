@@ -189,9 +189,13 @@ const rules = {
   id_rc: [v => !changed('id_rc') || !!v || 'Selecciona género'],
 
 }
-const canView = computed(() =>
-  VDB.session.credentials.rol._type == 2
-)
+// const canView = computed(() =>
+//   VDB.session.credentials.rol._type == 2
+// )
+const canView = computed(() => {
+  return !['rrhh', 'root'].includes(VDB.session.credentials.rol.alias)
+})
+
 
 const fullName = computed(() =>
   editableUser.value.complete_name

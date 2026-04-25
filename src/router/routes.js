@@ -97,8 +97,8 @@ const routes = [
     component: () => import('layouts/UsersLYT.vue'),
     children: [
       { path: 'index', name: 'uinx', component: () => import('pages/Users/Index.vue'), meta: { moduleId: 79, requiresAuth: true } },
-      { path: 'areas', name: 'uar', component: () => import('pages/Users/Areas.vue'), meta: { moduleId: 97, requiresAuth: true } },
-      { path: 'branches', name: 'ubr', component: () => import('pages/Users/Branches.vue'), meta: { moduleId: 98, requiresAuth: true } },
+      { path: 'areas', name: 'uar', component: () => import('pages/Users/Areas.vue'), meta: { moduleId: 98, requiresAuth: true } },
+      { path: 'branches', name: 'ubr', component: () => import('pages/Users/Branches.vue'), meta: { moduleId: 97, requiresAuth: true } },
     ],
   },
 

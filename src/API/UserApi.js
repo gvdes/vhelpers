@@ -4,8 +4,8 @@ export default {
   getAreas() {
     return assist.get(`/users/getAreas`).then(done => done.data).catch(fail => { return { fail } });
   },
-  getUserWorkpoints() {
-    return assist.get(`/users/getUserWorkpoints`).then(done => done.data).catch(fail => { return { fail } });
+  getUserWorkpoints(data) {
+    return assist.post(`/users/getUserWorkpoints`,data).then(done => done.data).catch(fail => { return { fail } });
   },
   addArea(data) {
     return assist.post(`/users/addArea`, data).then(done => done.data).catch(fail => { return { fail } });

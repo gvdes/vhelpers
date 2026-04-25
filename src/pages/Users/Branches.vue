@@ -31,11 +31,11 @@
             <q-card-section>
               <div></div>
               <div class="text-h6  ">
-                <q-icon name="store" size="30px"  />{{
+                <q-icon name="store" size="30px" />{{
                   props.row.name.toUpperCase()
                 }}
                 ({{ getlist(props.row.id).length }})
-                <q-btn  round flat dense :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                <q-btn round flat dense :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
                   " @click="props.expand = !props.expand" />
               </div>
             </q-card-section>
@@ -45,7 +45,7 @@
                   @dragstart="startDrag($event, item)">
                   <q-card class="my-card" flat bordered>
                     <q-card-section class="row between">
-                      <div class="col text-caption">{{ item.complete_name}}</div>
+                      <div class="col text-caption">{{ item.complete_name }}</div>
                       <div class="col">
                         <q-badge>
                           {{ item.rol?.name }}
@@ -89,7 +89,7 @@
         </q-card-section>
         <q-card-section class="q-gutter-sm">
           <q-select v-model="change.item.area" :options="areas" option-label="name" label="Área" filled dense
-            @update:model-value="change.item.rol = null" />
+            @update:model-value="change.item.rol = null" :disable="!isRH"  />
           <q-select v-model="change.item.rol" :options="positions" option-label="name" label="Rol" filled dense />
           <div class="row">
             <q-select class="col" v-model="change.item.store" :options="stores" option-label="name" label="Origen"
@@ -204,6 +204,9 @@ const filteredUsers = computed(() => {
     return true
   })
 })
+const isRH = computed(() => {
+  return ['rrhh', 'root'].includes(VDB.session.credentials.rol.alias)
+})
 
 const insfo = () => {
   selectedStores.value = []
@@ -221,8 +224,14 @@ const getlist = (list) => {
 
 
 const init = async () => {
-  $q.loading.show({message:'Obteniendo Datos'})
-  const resp = await userApi.getUserWorkpoints()
+  $q.loading.show({ message: 'Obteniendo Datos' })
+  let data = {
+    sid: VDB.session.store.id,
+    uid: VDB.session.credentials.id,
+    zone: VDB.session.credentials.zone ? VDB.session.credentials.zone.stores.map(e => e.id) : null
+  }
+  console.log(data)
+  const resp = await userApi.getUserWorkpoints(data)
   if (resp.fail) {
     console.log(resp)
   } else {

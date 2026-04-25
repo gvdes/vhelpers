@@ -31,10 +31,10 @@
 
 
   <q-page-sticky position="bottom-right" :offset="[17, 17]" v-if="!canView">
-    <q-fab vertical-actions-align="right" color="primary" icon="keyboard_arrow_up" direction="up" outline>
-      <q-fab-action :hide-label="isMobile" outline color="positive" @click="addUser = !addUser" icon="add"
+    <q-fab vertical-actions-align="right" color="primary" icon="keyboard_arrow_up" direction="up" >
+      <q-fab-action :hide-label="isMobile"  color="positive" @click="addUser = !addUser" icon="add"
         label="Agregar" />
-      <q-fab-action :hide-label="isMobile" outline color="negative" @click="mosArchive = !mosArchive" icon="archive"
+      <q-fab-action :hide-label="isMobile"  color="negative" @click="mosArchive = !mosArchive" icon="archive"
         label="Arvhivados" />
     </q-fab>
   </q-page-sticky>
@@ -73,14 +73,18 @@ const maximizedToggle = ref(true)
 const isMobile = computed(() => $q.platform.is.mobile)
 const bsktUser = computed(() => users.value.filter(e => e._state != 4));
 const bsktUserArvhive = computed(() => users.value.filter(e => e._state == 4));
-const canView = computed(() => VDB.session.credentials.rol._type == 2)
+// const canView = computed(() => VDB.session.credentials.rol._type == 2 )
+const canView = computed(() => {
+  return !['rrhh', 'root'].includes(VDB.session.credentials.rol.alias)
+})
 
 const init = async () => {
   $q.loading.show({ message: 'Obteniendo Datos' })
   let data = {
     sid:VDB.session.store.id,
     rid:VDB.session.credentials.rol.id,
-    uid:VDB.session.credentials.id
+    uid:VDB.session.credentials.id,
+    zone: VDB.session.credentials.zone ? VDB.session.credentials.zone.stores.map(e => e.id) : null
   }
   const resp = await userApi.getUsers(data);
   if (resp.fail) {
