@@ -54,6 +54,7 @@
             :users="AssistLYT.users" @reset="reset" @create="addJustification" />
         </q-card>
       </q-dialog>
+
       <router-view />
     </q-page-container>
   </q-layout>
@@ -70,6 +71,8 @@ import { exportFile, useQuasar, date } from 'quasar';
 import dayjs from 'dayjs';
 import { AssistStore } from 'stores/AssistStore';
 import JustCreate from 'src/components/Assist/addJustification.vue'
+import storeTurn from 'src/components/Assist/turns.vue'
+
 const AssistLYT = AssistStore();
 
 const VDB = useVDBStore();
@@ -88,6 +91,9 @@ const newJust = ref({
     notes: null,
     evidence: [],
   }
+})
+const turns = ref({
+  state:false
 })
 const title = computed(() => AssistLYT.title)
 

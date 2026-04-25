@@ -215,7 +215,7 @@
       <q-card class="q-mb-md" flat bordered dense>
         <q-card-section class="row">
           <ProductAutocomplete ref="productRef" class="col" @input="addProdcut" :products="sale.products"
-            :rules="cashLYT.rules" :promotion="cashLYT.promotion" @infProduct="infProduct" :automate="automate" />
+            :rules="cashLYT.rules" :promotion="cashLYT.promotion" @infProduct="infProduct" :automate="automate" :_price_list="sale.client._price_list" />
         </q-card-section>
       </q-card>
     </q-footer>
@@ -527,19 +527,38 @@ const removeUnit = (product) => {
 }
 
 const selectPrice = (product) => {
-  if (sale.value.client._price_list <= 3) {
-    if (Resourse.verificarPrecioCaja(sale.value.products, product, cashLYT.rules)) {
-      return 4;
-    } else if (Resourse.verificarPrecioDocena(sale.value.products, product, cashLYT.rules)) {
-      return 3;
-    } else if (Resourse.verificarPrecioMayoreo(sale.value.products, product, cashLYT.rules)) {
-      return 2;
-    } else {
-      return 1;
-    }
-  } else {
-    return sale.value.client._price_list;
+  const clientPrice = sale.value.client._price_list;
+  if (
+    clientPrice <= 4 &&
+    Resourse.verificarPrecioCaja(
+      sale.value.products,
+      product,
+      cashLYT.rules
+    )
+  ) {
+    return 4;
   }
+  if (
+    clientPrice <= 3 &&
+    Resourse.verificarPrecioDocena(
+      sale.value.products,
+      product,
+      cashLYT.rules
+    )
+  ) {
+    return 3;
+  }
+  if (
+    clientPrice <= 2 &&
+    Resourse.verificarPrecioMayoreo(
+      sale.value.products,
+      product,
+      cashLYT.rules
+    )
+  ) {
+    return 2;
+  }
+  return clientPrice;
 };
 
 const recalculateProduct = (product) => {

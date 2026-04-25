@@ -147,6 +147,7 @@ const routes = [
       { path: 'index', name: 'ainx', component: () => import('pages/Assist/Index.vue'), meta: { moduleId: 100, requiresAuth: true } },
       { path: 'justifications', name: 'ajut', component: () => import('pages/Assist/justification.vue'), meta: { moduleId: 101, requiresAuth: true } },
       { path: 'report', name: 'arpt', component: () => import('pages/Assist/reports.vue'), meta: { moduleId: 102, requiresAuth: true } },
+      { path: 'sanctions', name: 'asant', component: () => import('pages/Assist/sanctions.vue'), meta: { moduleId: 102, requiresAuth: true } }
     ],
   },
   {

@@ -2,15 +2,16 @@
   <div class="QuickRegular row items-center">
     <q-btn color="primary" icon="search" @click="infProduct" dense rounded outline />
     <q-separator spaced inset vertical dark />
-    <q-input ref="iptatc" :loading="data.iptsearch.processing" :disable="data.iptsearch.processing || data.iptsearch.data"
-      v-model="product.code" dense filled color="blue-13" class="text-uppercase " @keypress.enter="search"
-      autocomplete="off" autofocus label="Codigo..." >
+    <q-input ref="iptatc" :loading="data.iptsearch.processing"
+      :disable="data.iptsearch.processing || data.iptsearch.data" v-model="product.code" dense filled color="blue-13"
+      class="text-uppercase " @keypress.enter="search" autocomplete="off" autofocus label="Codigo...">
     </q-input>
     <q-separator spaced inset vertical dark />
     <q-input v-model="product.description" type="text" label="Descripcion..." class="col" filled dense disable />
     <q-separator spaced inset vertical dark />
-    <q-input ref="iptmount" v-model="product.pivot.units" type="number" label="Cantidad..." dense min="1" step="1" :bg-color="automate ? 'negative'  : ''"
-      outlined @keypress="($event.key === '.' || $event.key === '-') && $event.preventDefault()" @update:model-value="val => {
+    <q-input ref="iptmount" v-model="product.pivot.units" type="number" label="Cantidad..." dense min="1" step="1"
+      :bg-color="automate ? 'negative' : ''" outlined
+      @keypress="($event.key === '.' || $event.key === '-') && $event.preventDefault()" @update:model-value="val => {
         if (val <= 0) product.pivot.units = 1
       }" @keypress.enter="selItem" :disable="!product.id" />
     <q-separator spaced inset vertical dark />
@@ -53,7 +54,7 @@ const props = defineProps({
   products: { type: Array, default: [] },
   rules: { type: Array, default: [] },
   promotion: { type: Array, default: [] },
-  automate:{type:Boolean, default:false},
+  automate: { type: Boolean, default: false },
 })
 const createPivot = () => ({
   amount: 0,
@@ -75,13 +76,14 @@ const product = ref({
 const selectedPrice = ref(null);
 
 
-const emit = defineEmits(['input', 'addProduct','infProduct']);
+const emit = defineEmits(['input', 'addProduct', 'infProduct']);
 
 const data = ref({
   target: "",
   iptsearch: {
     processing: false,
-    data:false },
+    data: false
+  },
 })
 const iptatc = ref(null)
 const iptmount = ref(null)
@@ -133,15 +135,15 @@ const search = async () => {
           reset()
           break;
         default:
-          if(resp.stock.gen <= 0){
-            $q.notify({message:'Se generara negativo de este modelo',position:'top',type:'negative'})
+          if (resp.stock.gen <= 0) {
+            $q.notify({ message: 'Se generara negativo de este modelo', position: 'top', type: 'negative' })
           }
           product.value = {
             pivot: createPivot(),
             ...resp
           }
           data.value.iptsearch.data = true
-          if(props.automate){
+          if (props.automate) {
             selItem()
           }
           nextTick(() => {
@@ -156,24 +158,48 @@ const search = async () => {
   }
 }
 
+// const selectPrice = computed(() => {
+//   if (!product.value?.id) return null;
+//   const productosEvaluar = [...props.products, product.value];
+//   // console.log(props._price_list)
+//   if (props._price_list <= 3) {
+//     if (Resourse.verificarPrecioCaja(productosEvaluar, product.value, props.rules)) {
+//       return 4;
+//     } else if (Resourse.verificarPrecioDocena(productosEvaluar, product.value, props.rules)) {
+//       return 3;
+//     } else if (Resourse.verificarPrecioMayoreo(productosEvaluar, product.value, props.rules)) {
+//       return 2;
+//     } else {
+//       return 1;
+//     }
+//   } else {
+//     return props._price_list;
+//   }
+// });
+
 const selectPrice = computed(() => {
   if (!product.value?.id) return null;
   const productosEvaluar = [...props.products, product.value];
-  // console.log(props._price_list)
-  if (props._price_list <= 3) {
-    if (Resourse.verificarPrecioCaja(productosEvaluar, product.value, props.rules)) {
-      return 4;
-    } else if (Resourse.verificarPrecioDocena(productosEvaluar, product.value, props.rules)) {
-      return 3;
-    } else if (Resourse.verificarPrecioMayoreo(productosEvaluar, product.value, props.rules)) {
-      return 2;
-    } else {
-      return 1;
-    }
-  } else {
-    return props._price_list;
+  const clientPrice = props._price_list;
+  console.log(clientPrice)
+  if (clientPrice <= 4 && Resourse.verificarPrecioCaja(productosEvaluar, product.value, props.rules)) {
+    return 4;
   }
-});
+  if ( clientPrice <= 3 && Resourse.verificarPrecioDocena(  productosEvaluar, product.value, props.rules)) {
+    return 3;
+  }
+  if (clientPrice <= 2 && Resourse.verificarPrecioMayoreo(productosEvaluar, product.value, props.rules)){
+    return 2;
+  }
+  return clientPrice;
+})
+
+
+
+
+
+
+
 
 const priceOptions = computed(() => {
   if (!product.value?.prices) return [];

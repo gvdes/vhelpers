@@ -28,4 +28,7 @@ export default {
   getJustifications(data) {
     return assist.post(`/assist/getJustifications`,data).then(done => done.data).catch(fail => { return { fail } });
   },
+  getReport(data) {
+    return assist.post(`/assist/getReport`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }
