@@ -19,6 +19,9 @@ export default {
   Resourcesform(data) {
     return assist.post(`/assist/Resourcesform`,data).then(done => done.data).catch(fail => { return { fail } });
   },
+  resourcesSanctions(data) {
+    return assist.post(`/assist/resourcesSanctions`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
   addForm(data) {
     return assist.post(`/assist/addForm`,data).then(done => done.data).catch(fail => { return { fail } });
   },

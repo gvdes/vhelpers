@@ -115,6 +115,7 @@ const $router = useRouter();
 const $route = useRoute();
 AssistLYT.setTitle('Justificaciones')
 AssistLYT.setShowBtns(true);
+AssistLYT.setshowSanctBtns(false);
 const mediaLoading = ref(false)
 const slide = ref(0)
 const image = ref(false);

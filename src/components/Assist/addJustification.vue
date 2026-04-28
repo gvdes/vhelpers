@@ -2,24 +2,24 @@
   <q-card-section>
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
       <q-select v-model="justification.user" :options="optsUser" label="Colaborador" option-label="complete_name" filled
-        use-input @filter="filterFn" />
+        use-input @filter="filterFn" dense />
       <div class="row">
-        <q-input v-model="justification.start_date" type="date" class="col" filled label="Fecha Inicio"
+        <q-input dense v-model="justification.start_date" type="date" class="col" filled label="Fecha Inicio"
           :stack-label=true :error="validfech" error-message="La fecha de inicio es mayor que la fecha de fin" />
         <q-separator spaced inset vertical dark />
-        <q-input v-model="justification.final_date" type="date" class="col" filled hint="Fecha Fin" label="Fecha Fin"
+        <q-input dense v-model="justification.final_date" type="date" class="col" filled hint="Fecha Fin" label="Fecha Fin"
           :stack-label=true :error="validfech" error-message="La fecha de inicio es mayor que la fecha de fin" />
       </div>
-      <q-select v-model="justification._type" :options="types" label="Tipo de justificacion" filled
+      <q-select v-model="justification._type" dense :options="types" label="Tipo de justificacion" filled
         option-label="name" />
-      <q-input v-model="justification.notes" type="text" label="Motivo(especificar)" filled />
+      <q-input dense v-model="justification.notes" type="text" label="Motivo(especificar)" filled />
 
       <q-card class="my-card">
         <q-card-section class="text-left text-h6 text-bold">
           Evidencia
         </q-card-section>
         <q-card-section>
-          <q-uploader hide-upload-btn :color="dark ? 'dark' : 'white'" :text-color="dark ? 'white' : 'dark'"
+          <q-uploader dense hide-upload-btn :color="dark ? 'dark' : 'white'" :text-color="dark ? 'white' : 'dark'"
             style="height: auto; width: 100%" label="Evidencia" accept="image/*" ref="reference" @added="insertimage"
             field-name="file" multiple flat @rejected="onRejected" max-files="3">
 

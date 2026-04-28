@@ -22,4 +22,23 @@ const $router = useRouter();
 const $route = useRoute();
 AssistLYT.setTitle('Sanciones')
 AssistLYT.setShowBtns(false);
+AssistLYT.setshowSanctBtns(true);
+
+const init = async () => {
+  let data = {
+    sid: VDB.session.store.id,
+    uid: VDB.session.credentials.id,
+    zone: VDB.session.credentials.zone ? VDB.session.credentials.zone.stores.map(e => e.id) : null
+  }
+  const resp = await assistApi.resourcesSanctions(data)
+  if(resp.fail){
+    console.log(resp)
+  }else{
+    console.log(resp)
+    AssistLYT.setUsers
+  }
+
+}
+
+init()
 </script>

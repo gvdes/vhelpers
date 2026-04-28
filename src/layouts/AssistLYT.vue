@@ -12,25 +12,51 @@
           <span class="text-h6">{{ title }}</span>
         </div>
         <div class="row">
-          <q-btn color="primary" icon="add" class="col" outline @click="newJust.state = !newJust.state"
-            v-if="AssistLYT.showBtns" />
-          <q-separator spaced inset vertical dark />
-          <q-btn color="primary" icon="event" class="col" outline v-if="AssistLYT.showBtns">
-            <q-menu>
-              <q-card class="my-card">
-                <q-card-section>
-                  <div>
-                    <div class="q-pb-sm text-center">
+          <div v-if="AssistLYT.showBtns" class="row">
+            <q-btn color="primary" icon="add" class="col" outline @click="newJust.state = !newJust.state"
+              title="Nueva Justificacion" />
+            <q-separator spaced inset vertical dark />
+            <q-btn color="primary" icon="event" class="col" outline title="Fechas de Justificacion">
+              <q-menu>
+                <q-card class="my-card">
+                  <q-card-section>
+                    <div>
+                      <div class="q-pb-sm text-center">
+                      </div>
+                      <q-date v-model="dateranges" range minimal />
                     </div>
-                    <q-date v-model="dateranges" range minimal />
-                  </div>
-                </q-card-section>
-                <q-card-actions vertical align="center">
-                  <q-btn flat label="Obtener" color="positive" @click="buscas" />
-                </q-card-actions>
-              </q-card>
-            </q-menu>
-          </q-btn>
+                  </q-card-section>
+                  <q-card-actions vertical align="center">
+                    <q-btn flat label="Obtener" color="positive" @click="buscas" />
+                  </q-card-actions>
+                </q-card>
+              </q-menu>
+            </q-btn>
+          </div>
+
+          <div v-if="AssistLYT.showSanctBtns" class="row">
+            <q-btn color="primary" icon="add" class="col" outline @click="newSanct.state = !newSanct.state"
+              title="Nueva Sancion" />
+            <!-- <q-separator spaced inset vertical dark /> -->
+            <!-- <q-btn color="primary" icon="event" class="col" outline>
+              <q-menu>
+                <q-card class="my-card">
+                  <q-card-section>
+                    <div>
+                      <div class="q-pb-sm text-center">
+                      </div>
+                      <q-date v-model="dateranges" range minimal />
+                    </div>
+                  </q-card-section>
+                  <q-card-actions vertical align="center">
+                    <q-btn flat label="Obtener" color="positive" @click="buscas" />
+                  </q-card-actions>
+                </q-card>
+              </q-menu>
+            </q-btn> -->
+          </div>
+
+
         </div>
       </q-toolbar>
 
@@ -52,6 +78,29 @@
           </q-bar>
           <JustCreate :justifications="AssistLYT.Justifications" :types="AssistLYT.justificationTypes"
             :users="AssistLYT.users" @reset="reset" @create="addJustification" />
+        </q-card>
+      </q-dialog>
+
+
+
+      <q-dialog v-model="newJust.state" persistent :maximized="maximizedToggle" transition-show="slide-up"
+        transition-hide="slide-down">
+        <q-card>
+          <q-bar>
+            <div class="text-center text-h6">Nueva Justificacion</div>
+            <q-space />
+            <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
+              <q-tooltip v-if="maximizedToggle">Minimize</q-tooltip>
+            </q-btn>
+            <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
+              <q-tooltip v-if="!maximizedToggle">Maximize</q-tooltip>
+            </q-btn>
+            <q-btn dense flat icon="close" @click="reset">
+              <q-tooltip>Close</q-tooltip>
+            </q-btn>
+          </q-bar>
+          <JustCreate :justifications="AssistLYT.Justifications" :types="AssistLYT.justificationTypes"
+          :justification="newJust.justification"   :users="AssistLYT.users" @reset="reset" @create="addJustification" />
         </q-card>
       </q-dialog>
 
@@ -92,8 +141,16 @@ const newJust = ref({
     evidence: [],
   }
 })
-const turns = ref({
-  state:false
+const newSanct = ref({
+  state: false,
+  sanction: {
+    user: null,
+    start_date: null,
+    final_date: null,
+    _type: null,
+    notes: null,
+    evidence: [],
+  }
 })
 const title = computed(() => AssistLYT.title)
 
@@ -120,7 +177,6 @@ const addJustification = async (form) => {
     AssistLYT.addJustification(resp)
     $q.notify({ message: 'Formulario Enviado', type: 'positive', position: 'center' })
     $q.loading.hide()
-
     reset();
   }
 }

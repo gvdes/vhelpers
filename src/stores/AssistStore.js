@@ -5,6 +5,7 @@ export const AssistStore = defineStore('users', {
   state: () => ({
     title: null,
     showBtns: false,
+    showSanctBtns: false,
     users:[],
     justificationTypes:[],
     Justifications:[],
@@ -22,6 +23,9 @@ export const AssistStore = defineStore('users', {
     },
     setShowBtns(data){
       this.showBtns = data
+    },
+    setshowSanctBtns(data){
+      this.showSanctBtns = data
     },
     setUsers(data){
       this.users = data

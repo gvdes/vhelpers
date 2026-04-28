@@ -54,6 +54,7 @@ import ExcelJS from 'exceljs';
 import addDeviceCm from "src/components/Assist/addDevice.vue";
 import dayjs from 'dayjs';
 import { AssistStore } from 'stores/AssistStore';
+import { sortBy } from 'lodash-es';
 const AssistLYT = AssistStore();
 const VDB = useVDBStore();
 const $q = useQuasar();
@@ -61,6 +62,7 @@ const $router = useRouter();
 const $route = useRoute();
 AssistLYT.setTitle('Reporte')
 AssistLYT.setShowBtns(false);
+AssistLYT.setshowSanctBtns(false);
 
 const dates = ref([]);
 const report = ref([]);
@@ -79,22 +81,24 @@ const anio = ref({
 
 const table = ref({
   columns: [
-    { name: 'year', label: 'AÑO', field: r => r.year, align: 'center' },
-    { name: 'week', label: '#', field: r => r.week, align: 'center' },
-    { name: 'id', label: 'Id', field: r => r.employee_id, align: 'center' },
-    { name: 'name', label: 'Nombre', field: r => r.employee, align: 'center' },
-    { name: 'store', label: 'Sucursal', field: r => r.store, align: 'center' },
-    { name: 'turn', label: 'Turno', field: r => r.turn, align: 'center' },
-    { name: 'saturday', label: 'Sabado', field: r => r.sabado, align: 'center' },
-    { name: 'sunday', label: 'Domingo', field: r => r.domingo, align: 'center' },
-    { name: 'monday', label: 'Lunes', field: r => r.lunes, align: 'center' },
-    { name: 'thuesday', label: 'Martes', field: r => r.martes, align: 'center' },
-    { name: 'wednesday', label: 'Miercoles', field: r => r.miercoles, align: 'center' },
-    { name: 'thursday', label: 'Jueves', field: r => r.jueves, align: 'center' },
-    { name: 'friday', label: 'Viernes', field: r => r.viernes, align: 'center' },
-    { name: 'absence', label: 'Faltas', field: r => r.faltas, align: 'center' },
-    { name: 'retardment', label: 'Retardos', field: r => r.retardos, align: 'center' },
-    { name: 'vacation', label: 'Vacaciones', field: r => r.vacaciones, align: 'center' },
+    { name: 'year', label: 'AÑO', field: r => r.year, align: 'left', sortable: true },
+    { name: 'week', label: '#', field: r => r.week, align: 'left', sortable: true },
+    { name: 'id', label: 'Id', field: r => r.employee_id, align: 'left', sortable: true },
+    { name: 'name', label: 'Nombre', field: r => r.employee, align: 'left', sortable: true },
+    { name: 'store', label: 'Sucursal', field: r => r.store, align: 'left', sortable: true },
+    { name: 'position', label: 'Puesto', field: r => r.position, align: 'left', sortable: true },
+    { name: 'trol', label: 'Tipo', field: r => r.type, align: 'left', sortable: true },
+    { name: 'turn', label: 'Turno', field: r => r.turn, align: 'center', sortable: true },
+    { name: 'saturday', label: 'Sabado', field: r => r.sabado, align: 'center', sortable: true },
+    { name: 'sunday', label: 'Domingo', field: r => r.domingo, align: 'center', sortable: true },
+    { name: 'monday', label: 'Lunes', field: r => r.lunes, align: 'center', sortable: true },
+    { name: 'thuesday', label: 'Martes', field: r => r.martes, align: 'center', sortable: true },
+    { name: 'wednesday', label: 'Miercoles', field: r => r.miercoles, align: 'center', sortable: true },
+    { name: 'thursday', label: 'Jueves', field: r => r.jueves, align: 'center', sortable: true },
+    { name: 'friday', label: 'Viernes', field: r => r.viernes, align: 'center', sortable: true },
+    { name: 'absence', label: 'Faltas', field: r => r.faltas, align: 'center', sortable: true },
+    { name: 'retardment', label: 'Retardos', field: r => r.retardos, align: 'center', sortable: true },
+    { name: 'vacation', label: 'Vacaciones', field: r => r.vacaciones, align: 'center', sortable: true },
   ],
   filter: '',
   pagination: { rowsPerPage: 50 }
@@ -119,7 +123,7 @@ const mosDate = computed(() => {
 
 
 const init = async () => {
-
+  $q.loading.show({ message: 'Obteniendo Reporte' })
   let data = {
     sid: VDB.session.store.id,
     rid: VDB.session.credentials.rol.id,
@@ -141,6 +145,7 @@ const init = async () => {
     range.value.max = semAct._week
     anio.value.val = semAct._year
     anio.value.opts = [...new Set(dates.value.map(item => item._year))];
+    $q.loading.hide()
   }
 }
 
@@ -157,7 +162,6 @@ const getReportFilter = async () => {
       start_week: range.value.min,
       end_week: range.value.max
     }
-
   }
   const resp = await assistApi.getReport(data)
   if (resp.error) {
@@ -171,35 +175,44 @@ const getReportFilter = async () => {
 
 const exportTable = () => {
   const workbook = new ExcelJS.Workbook();
-  const targetColumns = ['G', 'H', 'I', 'J', 'K', 'L', 'M'];
+  const targetColumns = ['I', 'J', 'K', 'L', 'M', 'N', 'O'];
 
   const worksheet = workbook.addWorksheet(`Reporte`);
-  const keys = table.value.columns.map(i => i.label);
-  // keys.push('DESCUENTOS');
-  worksheet.addRow(keys);
-  mosconfil.value.forEach((row) => {
-    worksheet.addRow([
-      row.year,
-      row.week,
-      row.employee_id,
-      row.employee,
-      row.store,
-      // row.DISPOSITIVO,
-      row.turn,
-      row.sabado,
-      row.domingo,
-      row.lunes,
-      row.martes,
-      row.miercoles,
-      row.jueves,
-      row.viernes,
-      // Number(row.SANCIONES),
-      Number(row.faltas),
-      Number(row.retardos),
-      Number(row.vacaciones),
-      // Number(row.SANCIONES) + Number((row.RETARDOS * 100))
-    ])
-  })
+  const keys = table.value.columns.map(i => { return { name: i.label, filterButton: true } });
+  const data = mosconfil.value.sort((a, b) => a.store.localeCompare(b.store)).map(row => [
+        row.year,
+        row.week,
+        row.employee_id,
+        row.employee,
+        row.store,
+        row.position,
+        row.type,
+        // row.DISPOSITIVO,
+        row.turn,
+        row.sabado,
+        row.domingo,
+        row.lunes,
+        row.martes,
+        row.miercoles,
+        row.jueves,
+        row.viernes,
+        // Number(row.SANCIONES),
+        Number(row.faltas),
+        Number(row.retardos),
+        Number(row.vacaciones),
+        // Number(row.SANCIONES) + Number((row.RETARDOS * 100))
+  ])
+  worksheet.addTable({
+    name: 'Reporte',
+    ref: 'A1',
+    headerRow: true,
+    // totalsRow: true,
+    style: {
+      showRowStripes: true,
+    },
+    columns: keys,
+    rows:data ,
+  });
 
 
   worksheet.eachRow((row, rowNumber) => {
