@@ -14,7 +14,9 @@ const invoiceFormat = async (invoice) => {
   const currentDate = new Date();
   // const qrData = `http://192.168.10.238:1308/#/checkin/${invoice.id}?key=${invoice.entry_key}`;
   // const qrData = `http://192.168.10.160:8000/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
-  const qrData = `http://192.168.10.189:2201/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  // const qrData = `http://192.168.10.189:2201/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  const qrData = `https://vhelpers.grupovizcarra.mx/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+
 
   const almacenes = {
     1: 'GEN',//cedis
@@ -192,7 +194,9 @@ const transferFormat = async (invoice) => {
   const currentDate = new Date();
   // const qrData = `http://192.168.10.238:1308/#/checkin/${invoice.id}?key=${invoice.entry_key}`;
   // const qrData = `http://192.168.10.160:8000/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
-  const qrData = `http://192.168.10.189:2201/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  const qrData = `https://vhelpers.grupovizcarra.mx/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+  // const qrData = `http://192.168.10.189:2201/#/distribute/checkin/${invoice.id}?key=${invoice.entry_key}`;
+
   const almacenes = [
     { id: 1, alias: 'GEN', name: 'ALMACEN GENERAL' },
     { id: 2, alias: 'STC', name: 'ALMACEN TEXCOCO' },
