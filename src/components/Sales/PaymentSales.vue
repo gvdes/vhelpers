@@ -7,6 +7,7 @@
       <div class="text-right">
         <div class="fs-dec3">Total Actual</div>
         <div class="fw-bold text-h4">$ {{ Number(total).toFixed(2) }}</div>
+        {{ Math.round(total) }}
       </div>
     </div>
     <q-card-section>
@@ -66,12 +67,12 @@
         <div class="col" v-if="pagos.vales">
           <div class="row">
             <q-select class="col" v-model="modes.VALE" :options="valecli.filt" label="Vale"
-              :option-label="r => (`Vale : ${r.id ? r.id.code : ''}`)" dense filled use-input @filter="filterFn" hide-selected fill-input>
+              :option-label="(r) => r?.id?.code ? `Vale : ${r.id.code}` : ''" dense filled use-input @filter="filterFn" hide-selected fill-input>
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section>
-                    <q-item-label>{{ scope.opt.id.code }}</q-item-label>
-                    <q-item-label caption>$ {{ Number(scope.opt.val).toFixed(2) }}</q-item-label>
+                    <q-item-label>{{ scope.opt?.id?.code || 'SC' }}</q-item-label>
+                    <q-item-label caption> $ {{ Number(scope.opt?.val || 0).toFixed(2) }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </template>
@@ -103,7 +104,7 @@
 import { useVDBStore } from 'stores/VDB';
 import axios from 'axios';//para dirigirme bro
 import { exportFile, useQuasar, date } from 'quasar';
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount, watch } from 'vue';
 const VDB = useVDBStore();
 const $q = useQuasar();
 const pagos = ref({
@@ -136,7 +137,9 @@ const superaTotalYNoEsEfe = computed(() => {
   const sumaValores = modesList.reduce((sum, mode) => {
     return sum + Number(mode.val || 0)
   }, 0)
-  return tieneAliasDistintoDeEFE && sumaValores > props.total
+  // return tieneAliasDistintoDeEFE && sumaValores > props.total
+  return tieneAliasDistintoDeEFE && Number(sumaValores) > Number(Number(props.total).toFixed(2))
+
 })
 
 const optionDisabled = (val) => {
@@ -217,6 +220,16 @@ const filterFn = (val, update) => {
   })
 }
 
+watch(
+  () => modes.value.VALE.val,
+  (newVal, oldVal) => {
+    const previous = Number(oldVal || 0)
+    const current = Number(newVal || 0)
+
+    modes.value.PFPA.val =
+      Number(modes.value.PFPA.val) + previous - current
+  }
+)
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown);

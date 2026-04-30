@@ -101,8 +101,8 @@
 
     <div class="row q-ml-sm q-mr-sm">
       <div class="col">
-        <q-table :rows="bascketProductVerified" :columns="columns" hide-bottom :pagination="table.pagination"
-          :filter="table.filter">
+        <q-table   ref="tableRef" :rows="bascketProductVerified" :columns="columns" hide-bottom :pagination="table.pagination"
+          :filter="table.filter" table-style="max-height: 50vh" class="my-sticky-header-table">
           <template v-slot:body-cell-promo="props">
             <q-td align="center">
               <q-badge v-if="props.row.pivot.promo_units > 0" color="red" label="OFERTA " />
@@ -215,7 +215,8 @@
       <q-card class="q-mb-md" flat bordered dense>
         <q-card-section class="row">
           <ProductAutocomplete ref="productRef" class="col" @input="addProdcut" :products="sale.products"
-            :rules="cashLYT.rules" :promotion="cashLYT.promotion" @infProduct="infProduct" :automate="automate" :_price_list="sale.client._price_list" />
+            :rules="cashLYT.rules" :promotion="cashLYT.promotion" @infProduct="infProduct" :automate="automate"
+            :_price_list="sale.client._price_list" />
         </q-card-section>
       </q-card>
     </q-footer>
@@ -247,7 +248,7 @@ const $router = useRouter();
 const $route = useRoute();
 const cashLYT = useLayoutCash();
 
-
+const tableRef = ref(null)
 const searchProduct = ref({
   state: false,
   target: '',
@@ -325,7 +326,10 @@ const sale = ref({
 })
 
 const bascketProductVerified = computed(() => {
-  return (sale.value.products || [])
+  return sale.value.products.map((e, i) => ({
+    ...e,
+    index: i + 1
+  }))
 })
 
 const endSale = ref(false)
@@ -356,12 +360,18 @@ const cantidad = computed(() => sale.value.products.reduce((a, e) => a + Number(
 
 const validForm = computed(() => sale.value.products.length > 0 && sale.value.dependiente && sale.value.client)
 
-const cashback = computed(() => sale.value.products.reduce((a,e) =>  a + (Number(e.pivot.accumulated) || 0), 0 ))
+const cashback = computed(() => sale.value.products.reduce((a, e) => a + (Number(e.pivot.accumulated) || 0), 0))
 // const cashback = computed(() => sale.value.products.filter( e => e.pivot))
 
 
 const columns = computed(() => {
   const cols = [
+    {
+      name: 'index',
+      label: '#',
+      field: 'index',
+      align: 'left'
+    },
     {
       name: 'code',
       label: 'Codigo',
@@ -821,4 +831,30 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyDown, true)
 })
+
+watch(
+  () => sale.value.products.length,
+  async () => {
+    await nextTick()
+
+    const tableEl = tableRef.value?.$el
+    const scrollTarget = tableEl?.querySelector('.q-table__middle')
+
+    if (scrollTarget) {
+      scrollTarget.scrollTop = scrollTarget.scrollHeight
+    }
+  }
+)
+
+
 </script>
+
+<style>
+.my-sticky-header-table thead tr th {
+  /* position: sticky; */
+  /* top: 0; */
+  z-index: 1;
+}
+
+
+</style>
