@@ -134,6 +134,9 @@ const removeEvidence = (scope, rows) => {
     justification.value.evidence.splice(inx, 1);
   }
 }
+watch(() => props.justification, (val) => {
+  justification.value = val
+}, { deep: true })
 
 
 </script>

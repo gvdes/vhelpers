@@ -9,6 +9,7 @@ export const AssistStore = defineStore('users', {
     users:[],
     justificationTypes:[],
     Justifications:[],
+    sanctions:[],
     payments:[],
     states:[]
   }),
@@ -49,6 +50,15 @@ export const AssistStore = defineStore('users', {
       let inx = this.Justifications.findIndex(e => e.id == data.id);
       if(inx >= 0){
         this.Justifications.splice(inx,1,data)
+      }
+    },
+    setSanctions(data){
+      this.sanctions = data
+    },
+    updateUser(data){
+      let inx = this.users.findIndex(e => e.id == data.id);
+      if(inx >= 0){
+        this.users.splice(inx,1,data)
       }
     },
   }

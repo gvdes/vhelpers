@@ -34,4 +34,7 @@ export default {
   getReport(data) {
     return assist.post(`/assist/getReport`,data).then(done => done.data).catch(fail => { return { fail } });
   },
+  addSanction(data) {
+    return assist.post(`/assist/addSanction`,data).then(done => done.data).catch(fail => { return { fail } });
+  },
 }

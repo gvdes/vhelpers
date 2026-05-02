@@ -60,11 +60,11 @@
         </div>
       </q-toolbar>
 
-      <q-dialog v-model="newJust.state" persistent :maximized="maximizedToggle" transition-show="slide-up"
+      <q-dialog v-model="newSanct.state" persistent :maximized="maximizedToggle" transition-show="slide-up"
         transition-hide="slide-down">
         <q-card>
           <q-bar>
-            <div class="text-center text-h6">Nueva Justificacion</div>
+            <div class="text-center text-h6">Nueva Sancion</div>
             <q-space />
             <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
               <q-tooltip v-if="maximizedToggle">Minimize</q-tooltip>
@@ -72,12 +72,12 @@
             <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
               <q-tooltip v-if="!maximizedToggle">Maximize</q-tooltip>
             </q-btn>
-            <q-btn dense flat icon="close" @click="reset">
+            <q-btn dense flat icon="close" @click="resetSanction">
               <q-tooltip>Close</q-tooltip>
             </q-btn>
           </q-bar>
-          <JustCreate :justifications="AssistLYT.Justifications" :types="AssistLYT.justificationTypes"
-            :users="AssistLYT.users" @reset="reset" @create="addJustification" />
+          <SanctCreate :sanction="newSanct.sanction" :users="AssistLYT.users" :sanctions="AssistLYT.sanctions"
+            @create="addSanction" @reset="resetSanction" />
         </q-card>
       </q-dialog>
 
@@ -100,7 +100,7 @@
             </q-btn>
           </q-bar>
           <JustCreate :justifications="AssistLYT.Justifications" :types="AssistLYT.justificationTypes"
-          :justification="newJust.justification"   :users="AssistLYT.users" @reset="reset" @create="addJustification" />
+            :justification="newJust.justification" :users="AssistLYT.users" @reset="reset" @create="addJustification" />
         </q-card>
       </q-dialog>
 
@@ -118,8 +118,10 @@ import { computed, ref, onMounted, watch, onBeforeUnmount } from 'vue';
 import assistApi from "src/API/colabAPI.js";
 import { exportFile, useQuasar, date } from 'quasar';
 import dayjs from 'dayjs';
+import format from 'src/Pdf/Assist/rrhh'
 import { AssistStore } from 'stores/AssistStore';
 import JustCreate from 'src/components/Assist/addJustification.vue'
+import SanctCreate from 'src/components/Assist/addSanction.vue'
 import storeTurn from 'src/components/Assist/turns.vue'
 
 const AssistLYT = AssistStore();
@@ -145,11 +147,8 @@ const newSanct = ref({
   state: false,
   sanction: {
     user: null,
-    start_date: null,
-    final_date: null,
-    _type: null,
-    notes: null,
-    evidence: [],
+    sanction: null,
+    notes: {},
   }
 })
 const title = computed(() => AssistLYT.title)
@@ -195,6 +194,38 @@ const buscas = async () => {
     $q.loading.hide()
     console.log(resp)
     AssistLYT.setJustifications(resp)
+  }
+}
+
+const addSanction = async (val) => {
+  $q.loading.show({message:'Insertando Sancion'})
+  let data = {
+    sanction: val,
+    _created: VDB.session.credentials.id
+  }
+  const resp = await assistApi.addSanction(data);
+  if (resp.fail) {
+    console.log(resp)
+  } else {
+    val.fecha = dayjs(date).format('YYYY-MM-DD')
+    val.hora = dayjs(date).format('HH:mm:ss')
+    if(val.sanction.id == 1 ){
+      format.proceedings(val)
+    }
+    AssistLYT.updateUser(resp);
+    resetSanction()
+    $q.loading.hide();
+  }
+}
+
+const resetSanction = () => {
+  newSanct.value = {
+    state: false,
+    sanction: {
+      user: null,
+      _type: null,
+      notes: {},
+    }
   }
 }
 
